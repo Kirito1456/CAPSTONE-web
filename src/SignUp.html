@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Sign Up Page </title>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+<link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
+</head>
+<body>
+    <h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
+    <form>
+        <div class="login_container">
+            <table class="signup_table">
+                <tr>
+                    <td><label class="signup_lbl">Username:</label></td>
+                    <td><input class="signup_txtbox" type="text" name="username" required></td>
+                </tr>
+                <tr>
+                    <td><label class="signup_lbl">First Name:</label></td>
+                    <td><input class="signup_txtbox" type="text" name="firstname" required></td>
+                </tr>
+                <tr>
+                    <td><label class="signup_lbl">Last Name:</label></td>
+                    <td><input class="signup_txtbox" type="text" name="lastname" required></td>
+                </tr>
+                <tr>
+                    <td><label class="signup_lbl">Email:</label></td>
+                    <td><input class="signup_txtbox" type="text" name="email" required></td>
+                </tr>
+                <tr>
+                    <td><label class="signup_lbl">Sex:</label></td>
+                    <td>
+                        <select class="signup_dropdown" name="sex">
+                            <option value="">-- Select Sex --</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="signup_lbl">Password:</label></td>
+                    <td><input class="signup_txtbox"type="password" name="password" required></td>
+                </tr>
+                <tr>
+                    <td><label class="signup_lbl">Confirm Password:</label></td>
+                    <td><input class="signup_txtbox"type="password" name="confirmpassword" required></td>
+                </tr>
+            </table><br><br>
+            <button id ="signup_btn" type="submit">Create Account</button><br><br>
+        </div>
+    </form>
+</body>
+</html>
