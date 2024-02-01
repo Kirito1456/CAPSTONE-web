@@ -79,16 +79,12 @@
 }
 
 #title{
-    background-color: bisque;
-
     padding-top: 20px;
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
 
 #header{
-    background-color: azure;
-    
     margin-left: 2%;
     float: left;
 
@@ -142,69 +138,70 @@ a{
 }
 
 #information-table{
-    width: 100%;
+    width: 96%;
+    
+    margin-right: 10px;
+    margin-left: 10px;
+    padding-top: 10px;
 }
 
 #user-information{
-    background-color: yellow;
-    padding-left: 10px;
-    padding-right: 10px;
     text-align: center;
     
     margin-left: 1%;
-    float: left;
+    width: 100%;
 }
 
 #head{
-    background-color: aquamarine;
     font-weight: bold;
     padding-bottom: 2px;
+    
 }
 
 #uname, #gender, #birthday, #disease, #last-visit, #room, #status{
-    background-color: antiquewhite;
-
     text-align: center;
 
     font-size: 14px;
-
 }
 
 #uname{
-    width: 45%;
+    width: 35%;
 }
 
 #gender{
-    width: 10%;
+    width: 7%;
 }
 
 #birthday{
-    width: 11%;
+    width: 10%;
 }
 
 #disease{
-    width: 20%;
+    width: 13%;
 }
 
-#last-visited{
-    padding-left: 20px;
-    padding-right: 20px;
+#last-visit{
+    width: 10%;
 }
 
 #room{
-    padding-left: 10px;
-    padding-right: 10px;
+    width: 7%;
 }
 
-#patient-info-1{
+#status{
+    width: 15%;
+}
 
-    background-color: darkgreen;
-
+#patient-info{
     margin-left: 1%;
     border-radius: 5%;
 
     padding-top: 5px;
     padding-bottom: 5px;
+
+    background-color: #85AA9B;
+    border-color: #85AA9B;
+    border-width: 0%;
 }
 
 #photo-icon, #photo{
@@ -220,7 +217,6 @@ a{
 }
 
 #patient-name{
-    background-color: antiquewhite;
 
     display: flex;
     align-items: flex-start;
@@ -234,7 +230,5 @@ a{
 }
 
 #user-name{
-    background-color: fuchsia;
-
     width: 100%;
 }
