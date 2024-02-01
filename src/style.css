@@ -13,6 +13,13 @@ body {
     margin-left: 0px;
 }
 
+.red-asterisk {
+    font-size: 16px;
+    font-weight: bold;
+    color: red;
+    text-align: left;
+}
+
 .login_container {
     padding: 25px;
     text-align: center;
@@ -52,25 +59,53 @@ body {
     color: #F5F5F5;
 }
 
+.signup_lbl2 {
+    font-size: 16px;
+    color: black;
+    text-align: left;
+}
+
 .signup_table {
     margin-left: auto;
     margin-right: auto;
     text-align: left;
 }
 
-.signup_txtbox {
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin: 8px 0;
-    width: 400px;
-    display: inline-block;
+.signup_table td {
+    padding: 2px;
 }
 
-.signup_dropdown {
+.signup_txtbox {
     border-radius: 10px;
-    padding: 10px 12px;
-    margin: 8px 0;
-    width: 428px;
+    padding: 10px 8px;
+    margin: 8px 0px;
+    width: 95%;
+}
+
+.signup_txtboxname {
+    border-radius: 10px;
+    padding: 10px 8px;
+    margin: 8px 0px;
+    width: 185px;
+}
+
+.signup_dd-birthmonth, .signup_dd-birthday, .signup_dd-birthyear {
+    border-radius: 10px;
+    padding: 10px 8px;
+}
+
+.signup_dd-birthmonth {
+    margin: 8px 0px;
+    width: 200px;
+}
+
+.signup_dd-birthday {
+    width: 145px;
+}
+
+.signup_dd-birthyear {
+    margin-right: 8px;
+    width: 170px;
 }
 
 #forgetpassword_lb {
