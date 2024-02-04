@@ -167,20 +167,38 @@ a{
     justify-content: center;
 }
 
+.schedule_table {
+    margin: 0 auto;
+}
+
 .schedule_table td{
     padding: 11px 5px;
 }
 
 .apt_schedule-cell{
-    width: 90%;
+    width: 80%;
 }
 
-#apt_schedule1{
+#apt_schedule-booked{
     height: 40px;
 
-    padding: 10px;
-    border-radius: 10px;
+    text-align: center;
+    padding: 15px;
+    border-radius: 20px;
     background-color: #85AA9B;
+}
+
+#apt_schedule-notbooked{
+    height: 40px;
+
+    text-align: center;
+    padding: 15px;
+    border-radius: 20px;
+    background-color: #F5F5F5;
+}
+
+#apt_schedule-lbl {
+    color: black;
 }
 
 .apt_lbl-schname:hover {
@@ -208,7 +226,7 @@ a{
     justify-content: center;
 }
 
-#apt_request1, #apt_request2, #apt_request3{
+.apt_request {
     width: 95%;
     height: 45px;
 
@@ -221,14 +239,14 @@ a{
     line-height: 1.3;
 }
 
-.apt_lbl-reqname, .apt_lbl-schname {
+.apt_lbl-reqname, .apt_lbl-schdate {
     font-size: 15px;
     font-weight: bold;
     color: white;
     text-align: left;
 }
 
-.apt_lbl-reqdate, .apt_lbl-schdate, .apt_lbl-reqcnumber,.apt_lbl-reqemail {
+.apt_lbl-reqdate, .apt_lbl-schname, .apt_lbl-reqcnumber,.apt_lbl-reqemail {
     font-size: 14px;
     color: white;
     text-align: left;
