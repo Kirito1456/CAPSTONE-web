@@ -1,0 +1,51 @@
+{% extends 'hmis/base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <h2>Register</h2>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_fname">First Name:</label>
+            {{ form.fname }}
+        </div>
+        <div class="form-group">
+            <label for="id_mname">Middle Name:</label>
+            {{ form.mname }}
+        </div>
+        <div class="form-group">
+            <label for="id_lname">Last Name:</label>
+            {{ form.lname }}
+        </div>
+        <div class="form-group">
+            <label for="id_address">Address:</label>
+            {{ form.address }}
+        </div>
+        <div class="form-group">
+            <label for="id_cnumber">Contact Number:</label>
+            {{ form.cnumber }}
+        </div>
+        <div class="form-group">
+            <label for="id_birthday">Date of Birth:</label>
+            {{ form.birthday }}
+        </div>
+        <div class="form-group">
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+        </div>
+        <div class="form-group">
+            <label for="id_password">Password:</label>
+            {{ form.password }}
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'home' %}">Login</a></p>
+{% endblock %}

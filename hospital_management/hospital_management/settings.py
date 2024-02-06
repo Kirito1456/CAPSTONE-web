@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import firebase_admin
+from firebase_admin import credentials
+import pyrebase
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,6 +36,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'hmis',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,7 +60,7 @@ ROOT_URLCONF = 'hospital_management.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +75,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hospital_management.wsgi.application'
 
+# Firebase Configuration
+#FIREBASE_CONFIG_FILE = 'firebase_config.json'
+#cred = credentials.Certificate(FIREBASE_CONFIG_FILE)
+#firebase_admin.initialize_app(cred)
+config={
+    "apiKey": "AIzaSyC0JRWGF4OsRL7-OrsP6F7G15Np5MJzjs4",
+   "authDomain": "hmis-a3bbe.firebaseapp.com",
+    "databaseURL": "https://hmis-a3bbe-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "projectId": "hmis-a3bbe",
+    "storageBucket": "hmis-a3bbe.appspot.com",
+    "messagingSenderId": "796086831145",
+    "appId": "1:796086831145:web:8c4e1406b3bf17f875f438",
+    "measurementId": "G-GWES7Z6T2N"
+}
+firebase=pyrebase.initialize_app(config)
+auth = firebase.auth()
+database=firebase.database()
+#firestore=firebase.firestore()
+#storage = firebase.storage()
+
+# Initialize Firestore
+#firestore_db = firestore.Client()
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -118,6 +146,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
