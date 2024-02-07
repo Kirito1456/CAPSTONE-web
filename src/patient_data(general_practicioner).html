@@ -2,7 +2,7 @@
 
     <head> 
         <title>Patient Data (General Practitioner View)</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="patient_data_style.css">
     </head>
 
     <body bgcolor="#F5F5F5"> 
@@ -34,45 +34,61 @@
                     <div id = "header">Patients</div>
                     <div id = "search"><input id = "search-bar" placeholder="Search Patient Name"></div>
                 </div>
-                <div id = "information-table">
-                    <table id = "user-information">
-                        <tr id = "head">
-                            <th id = "uname">Name</th>
-                            <th id = "gender">Sex</th>
-                            <th id = "birthday">Birthday</th>
-                            <th id = "disease">Disease</th>
-                            <th id = "last-visit">Last Visited</th>
-                            <th id = "room">Room</th>
-                            <th id = "status">Status</th>
-                        </tr>
-                        <tr id = "patient-info">
-                            <td id = "patient-name">
-                                <div id = "photo-icon"><img src="/images/hannie.jpg" id = "photo"></div>
-                                <div id = "user-name">Jeonghan Yoon</div>
-                            </td>
-                            <td>Male</td>
-                            <td>10/04/1995</td>
-                            <td>Pneumonia</td>
-                            <td>08/08/2023</td>
-                            <td>N/A</td>
-                            <td>Outpatient</td>
-                        </tr>
-                        <tr id = "patient-info-1">
-                            <td id = "patient-name">
-                                <div id = "photo-icon"><img src="/images/chaewon.jpg" id = "photo"></div>
-                                <div id = "user-name">Chaewon Kim</div>
-                            </td>
-                            <td>Female</td>
-                            <td>08/01/2000</td>
-                            <td>Flu</td>
-                            <td>08/24/2023</td>
-                            <td>304</td>
-                            <td>Inpatient</td>
-                        </tr>
-                    </table>
+                <div class = "table">
+                    <div id = "information-table">
+                        <table id = "user-information" style="border-bottom: 1px #85AA9B solid;">
+                            <tr id = "head" style="border-bottom: 1px #85AA9B solid;">
+                                <th id = "uname">Name</th>
+                                <th id = "gender">Sex</th>
+                                <th id = "birthday">Birthday</th>
+                                <th id = "disease">Disease</th>
+                                <th id = "last-visit">Last Visited</th>
+                                <th id = "room">Room</th>
+                                <th id = "status">Status</th>
+                            </tr>
+                            <!--add for loop - up to 7-->
+                            <tr id = "patient-info" style="border-bottom: 1px #85AA9B solid;">
+                                <td>
+                                    <a href="patient_personal_information.html"> <!--patient information-->
+                                        <div id = "patient-name"> 
+                                            <div id = "photo-icon"><img src="/images/hannie.jpg" id = "photo"></div>
+                                            <div id = "user-name">Jeonghan Yoon</div>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td>Male</td>
+                                <td>10/04/1995</td>
+                                <td>Pneumonia</td>
+                                <td>08/08/2023</td>
+                                <td>N/A</td>
+                                <td>Outpatient</td>
+                            </tr>
+                            <tr id = "patient-info" >
+                                <td>
+                                    <a href="test.html"> <!--patient information-->
+                                        <div id = "patient-name"> 
+                                            <div id = "photo-icon"><img src="/images/chaewon.jpg" id = "photo"></div>
+                                            <div id = "user-name">Chaewon Kim</div>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td>Female</td>
+                                <td>08/01/2000</td>
+                                <td>Flu</td>
+                                <td>08/24/2023</td>
+                                <td>304</td>
+                                <td>Inpatient</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <a href="#">&laquo;</a>
+                        <a href="#" class="active">1</a>
+                        <a href="#">&raquo;</a>
+                    </div>
                 </div>
             </div>
+            
         </div>
     </body>
-
 </html>

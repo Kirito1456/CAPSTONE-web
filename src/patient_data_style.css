@@ -137,12 +137,17 @@ a{
     color: black;
 }
 
+a:hover{
+    font-weight: bold;
+}
+
 #information-table{
     width: 96%;
     
     margin-right: 10px;
     margin-left: 10px;
     padding-top: 10px;
+    margin-bottom: 10px;
 }
 
 #user-information{
@@ -154,14 +159,18 @@ a{
 
 #head{
     font-weight: bold;
-    padding-bottom: 2px;
-    
+
+    background-color: #85AA9B;
+    border-color: #85AA9B;
+    border-width: 0%;
 }
 
 #uname, #gender, #birthday, #disease, #last-visit, #room, #status{
     text-align: center;
 
     font-size: 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 #uname{
@@ -192,18 +201,6 @@ a{
     width: 15%;
 }
 
-#patient-info{
-    margin-left: 1%;
-    border-radius: 5%;
-
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-    background-color: #85AA9B;
-    border-color: #85AA9B;
-    border-width: 0%;
-}
-
 #photo-icon, #photo{
     border-radius: 50%;
 
@@ -217,11 +214,8 @@ a{
 }
 
 #patient-name{
-
     display: flex;
     align-items: flex-start;
-
-    /*width: 150%;*/
 
     align-items: center;
     text-align: justify;
@@ -231,4 +225,35 @@ a{
 
 #user-name{
     width: 100%;
+}
+
+.table{
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination{
+    display: flex;
+
+    flex-wrap: wrap;
+    justify-content: center;
+
+    bottom: 0px;
+}
+
+.pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+}
+
+.pagination a.active {
+    background-color: #85AA9B;
+    color: white;
+    border: 1px solid #85AA9B;
 }
