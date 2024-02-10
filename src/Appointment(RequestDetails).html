@@ -4,6 +4,10 @@
 <title> Appointment Page </title>
 <link rel="stylesheet" type="text/css" href="style-appointments.css"/>
 <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google Font Link for Icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+<script src="appointment-script.js" defer></script>
 </head>
 <body> 
     <div id = "whole-screen">
@@ -31,14 +35,32 @@
         </div>
         <div id = "appointment-screen">
             <div class="apt-header-btns">
-                <div id = "apt-btn"><a href="">Appointments</a></div>
+                <div id = "apt-btn"><a href="" style="font-weight: bold;">Appointments</a></div>
                 <div id = "apt-btn"><a href="">History</a></div>
             </div>
-            <div id = "apt-calendar">
-                <label class="apt_lbl">Calendar</label>
+            <div id = "apt-calendar" class="wrapper">
+                <header>
+                    <p class="current-date"></p>
+                    <div class="icons">
+                        <span id="prev" class="material-symbols-rounded">chevron_left</span>
+                        <span id="next" class="material-symbols-rounded">chevron_right</span>
+                    </div>
+                </header>
+                <div class="calendar">
+                    <ul class="weeks">
+                        <li>Sun</li>
+                        <li>Mon</li>
+                        <li>Tue</li>
+                        <li>Wed</li>
+                        <li>Thu</li>
+                        <li>Fri</li>
+                        <li>Sat</li>
+                    </ul>
+                    <ul class="days"></ul>
+                </div>
             </div>
             <div id = "apt-schedule">
-                <label class="apt_lbl">Daily Schedule </label><label id="apt_lbl-curdate" class="apt_lbl">(February 04, 2024)</label>
+                <label class="apt_lbl">Daily Schedule </label><label id="apt_lbl-curdate" class="apt_lbl"> (February 10, 2024)</label>
                 <table class="schedule_table">
                     <tr>
                         <td>
@@ -138,7 +160,7 @@
                         <label class="apt_lbl-reqname">Patient Jessica Jones</label><br>
                         <label class="apt_lbl-reqdate">January 28, 2024 | 08:00AM - 09:00AM</label><br>
                         <label class="apt_lbl-reqcnumber">09123456789</label><br>
-                        <label class="apt_lbl-reqemail">jessicajones@gmail.com</label>
+                        <label class="apt_lbl-reqemail">jessicajones@gmail.com</label><br>
                     </div>
                     <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">View Medical Record</a></div>
                     <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">Message Patient</a></div>
