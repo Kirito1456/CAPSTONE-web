@@ -1,29 +1,33 @@
 {% extends 'hmis/base.html' %}
-
-{% block title %}Login{% endblock %}
 {%load static%}
+{% block title %}Login{% endblock %}
+
 
 {% block styles%} 
 <!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-usermanagement.css' %}">
+
 {% endblock styles%}
 
 {% block content %}
-    <h2>Login</h2>
+<h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
     {% if messages %}
         <ul>
             {% for message in messages %}
-                <li>{{ message }}</li>
+            <h3 class="header3">Invalid Login Credentials</h3>
             {% endfor %}
         </ul>
     {% endif %}
+
     <form method="post">
         {% csrf_token %}
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        <button type="submit">Login</button>
+        <div class="login_container">
+            <label class="login_lbl"><span class="tab"></span>Email </label><label class="red-asterisk">*</label>
+            <input class="login_txtbox" type="email" placeholder="Enter Email" name="email" required><br><br>
+            <label class="login_lbl">Password </label><label class="red-asterisk">*</label>
+            <input class="login_txtbox"type="password" placeholder="Enter Password" name="password" required><br><br>
+            <button id ="login_btn" type="submit">Log In</button><br><br>
+            <a href="{% url 'forgotpass' %}" id="login_fp">Forgot Password?</a><br><br>
+        </div>
     </form>
-    <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
 {% endblock %}

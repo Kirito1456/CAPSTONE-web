@@ -1,51 +1,98 @@
 {% extends 'hmis/base.html' %}
+{%load static%}
+{% block title %}Admin Create Account Page{% endblock %}
 
-{% block title %}Register{% endblock %}
+
+{% block styles%} 
+<!-- Stylesheet for the program <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'> -->
+<link rel="stylesheet" href="{% static 'css/style-usermanagement.css' %}">
+{% endblock styles%}
 
 {% block content %}
-    <h2>Register</h2>
-    {% if messages %}
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="user-info"> 
+            <div id="information">
+                <div id="user_admin" class="admin_lbl"> ADMIN </div>
+            </div>
+        </div>
+        <div id="menu"> 
+            <div id = "a1"><a href="{% url 'dashboard' %}">Dashboard</a></div>
+            <div id = "a2"><a href="{% url 'register' %}">Create Account</a></div>
+    </div>
+</div>
+<div class="admin-screen">
+    <form method="post" action="{% url 'create' %}" class="signup_table">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="signup_lbl">Email <span class="red-asterisk">*</span></label>
+            <input class="signup_txtbox" type="email" name="email" placeholder="Enter Email" required>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">First Name <span class="red-asterisk">*</span></label>
+            <input class="signup_txtboxname" type="text" name="fname" placeholder="Enter First Name" required>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">Last Name <span class="red-asterisk">*</span></label>
+            <input class="signup_txtboxname" type="text" name="lname" placeholder="Enter Last Name" required>
+        </div>
+
+        <div class="form-group">
+            <label class="signup_lbl">Contact Number <span class="red-asterisk">*</span></label>
+            <input class="signup_txtbox"type="number" name="cnumber" placeholder="Enter Phone #" required>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">Birthday <span class="red-asterisk">*</span></label>
+            <input class="signup_txtbox" type="date" name="birthday" required>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">Sex <span class="red-asterisk">*</span></label>
+            <input type="radio" Name="sex" Value="Male"><label class="signup_lbl2">Male &ensp;</label>
+            <input type="radio" Name="sex" Value="Female"><label class="signup_lbl2">Female</label>
+        </div>
+        
+        <div class="form-group">
+            <label class="signup_lbl">Role <span class="red-asterisk">*</span></label>
+            <select class="signup_dd-jobtitle" name="role" id="roleSelect" required>
+                <option value="">- Select Role -</option>
+                <option value="Doctor">Doctor</option>
+                <option value="Nurse">Nurse</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="signup_lbl">Department <span class="red-asterisk">*</span></label>
+            <select class="signup_dd-department" name="department" required>
+                <option value="">- Select Department -</option>
+                <option value="General Ward">General Ward</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="signup_lbl">Job Title <span class="red-asterisk">*</span></label>
+            <select class="signup_dd-jobtitle" name="jobTitle" id="jobTitleSelect" required>
+                <option value="">- Select Job Title -</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="signup_lbl">Password <span class="red-asterisk">*</span></label>
+            <input class="signup_txtbox"type="password" name="password" placeholder="Enter Password" required>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">Confirm Password <span class="red-asterisk">*</span></label>
+            <input class="signup_txtbox"type="password" name="confirmpassword" placeholder="Enter Password" required>
+        </div>
+        <button id="signup_btn" type="submit">Create Account</button>
+        {% if messages %}
         <ul>
             {% for message in messages %}
                 <li>{{ message }}</li>
             {% endfor %}
         </ul>
-    {% endif %}
-    <form method="post" action="{% url 'register' %}">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="id_fname">First Name:</label>
-            {{ form.fname }}
-        </div>
-        <div class="form-group">
-            <label for="id_mname">Middle Name:</label>
-            {{ form.mname }}
-        </div>
-        <div class="form-group">
-            <label for="id_lname">Last Name:</label>
-            {{ form.lname }}
-        </div>
-        <div class="form-group">
-            <label for="id_address">Address:</label>
-            {{ form.address }}
-        </div>
-        <div class="form-group">
-            <label for="id_cnumber">Contact Number:</label>
-            {{ form.cnumber }}
-        </div>
-        <div class="form-group">
-            <label for="id_birthday">Date of Birth:</label>
-            {{ form.birthday }}
-        </div>
-        <div class="form-group">
-            <label for="id_email">Email:</label>
-            {{ form.email }}
-        </div>
-        <div class="form-group">
-            <label for="id_password">Password:</label>
-            {{ form.password }}
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
+        {% endif %}
     </form>
-    <p>Already have an account? <a href="{% url 'home' %}">Login</a></p>
+</div>   
+
+<script src="{% static 'js/register.js' %}"></script>
 {% endblock %}

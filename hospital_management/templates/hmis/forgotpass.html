@@ -1,0 +1,33 @@
+{% extends 'hmis/base.html' %}
+{%load static%}
+{% block title %}Admin Create Account Page{% endblock %}
+
+
+{% block styles%} 
+<!-- Stylesheet for the program <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'> -->
+<link rel="stylesheet" href="{% static 'css/style-usermanagement.css' %}">
+{% endblock styles%}
+
+{% block content %}
+{%if msg%}
+    <script>
+        window.alert('{{msg}}');
+    </script>
+{% endif%}
+<h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
+    <form method="post" action="{% url 'reset' %}">
+        {% csrf_token %}
+        <div class="login_container">
+            <table class="forgotpassword_table">
+                <tr>
+                    <td><label class="fp_lbl">Email </label><label class="red-asterisk">*</label></td>
+                    <td><input class="fp_txtbox" type="text" name="email-fp" id="email-fp" required><br></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><label id="forgetpassword_lb">A link will be sent to your e-mail. Please follow the instructions given to reset your password.</label></td>
+                </tr>
+            </table><br><br>
+            <button id="sendlink_btn" type="submit">Send Link</button><br><br>
+        </div>
+    </form>
+{% endblock %}

@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database
-from hmis.forms import PatientRegistrationForm
+from hmis.forms import StaffRegistrationForm
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
 
 # Use the firebase_database object directly
 db = firebase_database
@@ -23,42 +27,106 @@ def home(request):
     return render(request, 'hmis/home.html')
 
 def dashboard(request):
-    return render(request, 'hmis/dashboard.html')
+    # Fetch doctors and nurses data from Firebase
+    doctors = db.child("doctors").get().val()
+    nurses = db.child("nurses").get().val()
+
+    # Combine doctors and nurses data into one dictionary
+    accounts = {}
+    if doctors:
+        accounts.update(doctors)
+    if nurses:
+        accounts.update(nurses)
+
+    # Pass the combined data to the template
+    return render(request, 'hmis/dashboard.html', {'accounts': accounts})
+
 
 def register(request):
+    return render(request, 'hmis/register.html')
+
+def create(request):
     if request.method == 'POST':
-        form = PatientRegistrationForm(request.POST)
+        form = StaffRegistrationForm(request.POST)
         if form.is_valid():
-            # Extract cleaned data from the form
             cleaned_data = form.cleaned_data
 
-            # Create user in Firebase Authentication
             email = cleaned_data['email']
             password = cleaned_data['password']
+            confirmpassword = cleaned_data['confirmpassword']
+
+            # Check if passwords match
+            if password != confirmpassword:
+                messages.error(request, 'Passwords do not match.')
+                return redirect('create')
+
+            # Validate password strength
             try:
+                validate_password(password)
+            except ValidationError as e:
+                messages.error(request, 'Password is too weak.')
+                return redirect('create')
+
+            # Check if email is already used
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'Email is already used.')
+                return redirect('create')
+
+            try:
+                # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
 
+                # Convert birthday to string or format it appropriately
                 cleaned_data['birthday'] = str(cleaned_data['birthday'])
 
-                # Save the form data to the database
-                patient_data = {
-                    'uid' :user['localId'],
+                data = {
+                    'uid': user['localId'],
                     'fname': cleaned_data['fname'],
-                    'mname': cleaned_data['mname'],
                     'lname': cleaned_data['lname'],
-                    'address': cleaned_data['address'],
                     'cnumber': cleaned_data['cnumber'],
                     'birthday': cleaned_data['birthday'],
+                    'sex': cleaned_data['sex'],
+                    'role': cleaned_data['role'],
+                    'jobTitle': cleaned_data['jobTitle'],
+                    'department': cleaned_data['department'],
                     'email': email,
-                    'role': 'patient',  # You can add more fields as needed
                 }
-                db.child('patients').child(user['localId']).set(patient_data)
+
+                # Save the form data to the database
+                # db.child('staff').child(user['localId']).set(data)
+
+                if (cleaned_data['role'] == 'Doctor'):
+                    db.child('doctors').child(user['localId']).set(data)
+                else:
+                    db.child('nurses').child(user['localId']).set(data)
 
                 messages.success(request, 'Registration successful! Please log in.')
-                return redirect('home')
+                return redirect('dashboard')
             except Exception as e:
                 messages.error(request, f'Error: {str(e)}')
     else:
-        form = PatientRegistrationForm()
+        form = StaffRegistrationForm()
 
     return render(request, 'hmis/register.html', {'form': form})
+
+def forgotpass(request):
+    return render(request, 'hmis/forgotpass.html')
+ 
+def reset(request):
+    if request.method == 'POST':
+        # Get the email from the form data
+        email = request.POST.get('email-fp')
+        try:
+            # Send password reset email using Firebase Authentication
+            firebase_auth.send_password_reset_email(email)
+            message = "An email to reset your password has been successfully sent."
+            # Display success message to the user
+            return render(request, 'hmis/forgotpass.html', {"msg": message})
+        except:
+            # Handle any exceptions, such as invalid email or network issues
+            message = "Something went wrong. Please make sure the email you provided is registered."
+            # Display error message to the user
+            return render(request, 'hmis/forgotpass.html', {"msg": message})
+    # If the request method is not POST, render the forgot password form
+    else:
+        return render(request, 'hmis/forgotpass.html')
