@@ -28,6 +28,11 @@
         <input type="text" id="searchInput" placeholder="Search...">
         <button id="searchButton">Search</button>
     </div>
+
+    <div class="button-bar">
+        <button id="doctorsButton">Doctors</button>
+        <button id="nursesButton">Nurses</button>
+    </div>
     
     <table class="accounts_table">
         <thead>
@@ -56,9 +61,20 @@
                 <td><label id="accountT_department" class="accountT_lbl">{{ account_data.department }}</label></td>
                 <td><label id="accountT_jobTitle" class="accountT_lbl">{{ account_data.jobTitle }}</label></td>
             </tr>
+            
             {% endfor %}
+            
         </tbody>
+
+    
+          
+
     </table>
+
+    <div class="container">
+        <a class="previous">&#8249; Previous</a>
+        <a class="next">Next &#8250;</a>
+    </div>
 </div>
 
 <script src="{% static 'js/dashboard.js' %}"></script>
