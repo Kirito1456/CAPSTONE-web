@@ -3,6 +3,13 @@
     height: 100%;
 
     font-family: Arial, Helvetica, sans-serif;
+
+    display: flex;
+    flex-direction: row;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #side-menu{
@@ -151,10 +158,7 @@ a:hover{
     background-color: #E9E9E9;
 
     width: 55%;
-    height: 100%;
-
-    margin-left: 20%;
-    margin-top: 10%;
+    height: 62%;
 
     display: flex;
 
@@ -208,7 +212,7 @@ a:hover{
 }
 
 #bday{
-    width: 20%;
+    width: 22%;
     text-align: center;
 }
 
@@ -219,7 +223,7 @@ a:hover{
 
 
 #age{
-    width: 15%;
+    width: 13%;
     text-align: center;
 }
 
@@ -239,7 +243,7 @@ a:hover{
 
     margin: 10 20 10 20;
 
-    font-size: 15;
+    font-size: 14;
     word-wrap: break-word;
 }
 
@@ -329,4 +333,40 @@ a:hover{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#other-side{
+    position: relative;
+    height: 100%;
+    width: 80%;
+
+    flex-direction: row;
+
+    margin-left: 20%;
+}
+
+#back-button{
+    margin: 20px;
+    padding: 5px;
+    padding-left: 15;
+    padding-right: 15;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border: 10px;
+    border-radius: 10px;
+    border-color: black;
+
+    width: fit-content;
+
+    font-size: 14;
+
+    left: 0;
+
+    position: absolute;
+    top: .5%;
 }
