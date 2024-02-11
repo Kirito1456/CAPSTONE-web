@@ -103,8 +103,8 @@
                         <div id = "vital-signs">
                             <div id = "head">Vital Signs Sheet</div>
                             <div id = "vital-signs-table">
-                                <table>
-                                    <tr>
+                                <table id = "vital-signs">
+                                    <tr id = "label">
                                         <th>Date</th>
                                         <th>Weight</th>
                                         <th>Temperature</th>
@@ -113,15 +113,99 @@
                                         <th>Respiration</th>
                                         <th>Pain Index</th>
                                     </tr>
+                                    <tr>
+                                        <td>01/17/23 11:30AM</td>
+                                        <td>-</td>
+                                        <td>36.6 C</td>
+                                        <td>120/80</td>
+                                        <td>85 bpm</td>
+                                        <td>16</td>
+                                        <td>5/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 10:30AM</td>
+                                        <td>-</td>
+                                        <td>36.7 C</td>
+                                        <td>121/80</td>
+                                        <td>82 bpm</td>
+                                        <td>16</td>
+                                        <td>7/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 09:30AM</td>
+                                        <td>-</td>
+                                        <td>36.8 C</td>
+                                        <td>121/79</td>
+                                        <td>79 bpm</td>
+                                        <td>15</td>
+                                        <td>7/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 08:30AM</td>
+                                        <td>-</td>
+                                        <td>37.0 C</td>
+                                        <td>119/77</td>
+                                        <td>82 bpm</td>
+                                        <td>17</td>
+                                        <td>8/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 07:30AM</td>
+                                        <td>52.60 kg</td>
+                                        <td>36.9 C</td>
+                                        <td>120/80</td>
+                                        <td>83 bpm</td>
+                                        <td>15</td>
+                                        <td>6/10</td>
+                                    </tr>
                                 </table>
+                                <div id = "below-table">
+                                    <div id = "new-entry-button">
+                                        <a href="" id = "new-entry"><!--<img src = "/images/plus-symbol-button.png" id = "plus-icon">-->+ New Entry</a>
+                                    </div>
+                                    <div class="pagination">
+                                        <a href="#">&laquo;</a>
+                                        <a href="#" class="active">1</a>
+                                        <a href="#">&raquo;</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div id = "new-entry-button">+New Entry</div>
                         </div>
                         <div id = "progress-notes">
-                            <div id = "head">Progress Notes</div>
+                            <div id = "head-corner">Progress Notes</div>
+                            <div id = "progress-note">
+                                <div id = "notes">
+                                    <div id = "note">
+                                        - Stable vital signs <br>
+                                        - Medication administered 9:00AM <br>
+                                        - Pain intensity decreased
+                                    </div>
+                                    <div id = "update">
+                                        <div id = "date">Last Update: 01/17/23 11:32AM</div>
+                                        <div id = "updated-by">Updated by: Nurse Jane Doe</div>
+                                    </div>
+                                </div>
+                                <div id = "edit-note-button">
+                                    <a href = "" id = "edit-note"><!--add icon-->Edit Progress Notes</a>
+                                </div>
+                            </div>
                         </div>
                         <div id = "laboratory-tests">
-                            <div id = "head">Laboratory Tests</div>
+                            <div id = "head-corner">Laboratory Tests</div>
+                            <div id = "tests">
+                                <div id = "blood-test">
+                                    <a href = "" id = "blood-test-button"><!--add icon-->View Blood Test</a>
+                                </div>
+                                <div id = "chest-xray">
+                                    <a href = "" id = "chest-xray-button"><!--add icon-->View Chest X-Ray</a>
+                                </div>
+                                <div id = "request-lab-test">
+                                    <a href = "" id = "request-lab-test-button"><!--add icon-->Request New Lab Test</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id = "view-treatment-plan-button">
+                            <a href = "" id = "view-treatment-plan">View Treatment Plan</a>
                         </div>
                     </div>
                 </div>
