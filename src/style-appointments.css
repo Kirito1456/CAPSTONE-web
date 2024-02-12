@@ -327,7 +327,7 @@ a{
 .wrapper header{
   display: flex;
   align-items: center;
-  padding: 5px 30px 5px;
+  padding: 2px 24px 2px;
   justify-content: space-between;
 }
 header .icons{
@@ -376,7 +376,7 @@ header .current-date{
 }
 .calendar .weeks li{
   cursor: default;
-  height: 10px;
+  height: 12px;
 }
 .calendar .days li{
   z-index: 1;
@@ -402,10 +402,11 @@ header .current-date{
   transform: translate(-50%, -50%);
 }
 .days li.active::before{
-  background: #9B59B6;
+  background: #85AA9B;
 }
 .days li:not(.active):hover::before{
   background: #f2f2f2;
+  opacity: 90%;
 }
 
 /* End of Calendar API */
