@@ -178,6 +178,7 @@ a{
 .admin_lbl{
     font-size: 24px;
     font-weight: bold;
+    font-family: "Trebuchet MS", Tahoma, sans-serif;
 }
 
 #admin-screen{
@@ -261,6 +262,7 @@ a{
     cursor: pointer;
     font-weight: bold;
     font-size: 18px;
+    text-align: right;
 }
 
 #signup_btn:hover {

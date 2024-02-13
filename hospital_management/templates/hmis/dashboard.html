@@ -30,6 +30,7 @@
     </div>
 
     <div class="button-bar">
+        <button id="allButton">All</button>
         <button id="doctorsButton">Doctors</button>
         <button id="nursesButton">Nurses</button>
     </div>
@@ -42,6 +43,7 @@
                 <th>Last Name</th>
                 <th>Birthday</th>
                 <th>Sex</th>
+                <th>Role</th>
                 <th>Department</th>
                 <th>Job Title</th>
             </tr>
@@ -58,6 +60,7 @@
                 {% else %}
                     <td><label id="accountT_sex" class="accountT_lbl">F</label></td>
                 {% endif %}
+                <td><label id="accountT_role" class="accountT_lbl">{{ account_data.role }}</label></td>
                 <td><label id="accountT_department" class="accountT_lbl">{{ account_data.department }}</label></td>
                 <td><label id="accountT_jobTitle" class="accountT_lbl">{{ account_data.jobTitle }}</label></td>
             </tr>

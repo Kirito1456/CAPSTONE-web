@@ -1,9 +1,13 @@
-// Wait for the DOM content to be fully loaded
 document.addEventListener("DOMContentLoaded", function() {
-    // Get references to the search input, search button, and accounts table
+    // Get references to the search input, search button, accounts table, and pagination buttons
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     const accountsTable = document.querySelector('.accounts_table tbody');
+    const doctorsButton = document.getElementById('doctorsButton');
+    const nursesButton = document.getElementById('nursesButton');
+    const allButton = document.getElementById('allButton');
+    const previousButton = document.querySelector('.previous'); // Initialize previous button
+    const nextButton = document.querySelector('.next'); // Initialize next button
 
     // Event listener for the search button click
     searchButton.addEventListener('click', function() {
@@ -32,6 +36,50 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 row.style.display = 'none'; // Hide the row
             }
+        });
+    });
+
+    // Event listener for previous button click
+    previousButton.addEventListener('click', function() {
+        window.history.back();
+    });
+
+    // Event listener for next button click
+    nextButton.addEventListener('click', function() {
+        window.history.forward();
+    });
+
+    // Event listener for doctors button click
+    doctorsButton.addEventListener('click', function() {
+        // Show only doctors' accounts
+        document.querySelectorAll('.accounts_table tbody tr').forEach(function(row) {
+            const role = row.querySelector('#accountT_role').textContent;
+            if (role !== 'Doctor') {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        });
+    });
+
+    // Event listener for nurses button click
+    nursesButton.addEventListener('click', function() {
+        // Show only nurses' accounts
+        document.querySelectorAll('.accounts_table tbody tr').forEach(function(row) {
+            const role = row.querySelector('#accountT_role').textContent;
+            if (role !== 'Nurse') {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        });
+    });
+
+    allButton.addEventListener('click', function() {
+        // Show only all accounts
+        document.querySelectorAll('.accounts_table tbody tr').forEach(function(row) {
+            const role = row.querySelector('#accountT_role').textContent;
+            row.style.display = '';
         });
     });
 });
