@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title> Appointment Page </title>
@@ -37,6 +38,7 @@
                 <div id = "apt-btn"><a href="Appointment.html" style="font-weight: bold;">Appointments</a></div>
                 <div id = "apt-btn"><a href="Appointment(History).html">History</a></div>
             </div>
+            <!-- Calendar API -->
             <div id = "apt-calendar" class="wrapper">
                 <header>
                     <p class="current-date"></p>
@@ -58,8 +60,9 @@
                     <ul class="days"></ul>
                 </div>
             </div>
+            <!-- Calendar API -->
             <div id = "apt-schedule">
-                <label class="apt_lbl">Daily Schedule </label><label id="apt_lbl-curdate" class="apt_lbl"> (February 10, 2024)</label>
+                <label class="apt_lbl">Daily Schedule</label><label id="apt_lbl-curdate" class="apt_lbl"> (February 10, 2024)</label>
                 <table class="schedule_table">
                     <tr>
                         <td>
@@ -152,23 +155,28 @@
                     </tr>
                 </table>
             </div>
-            <!-- same content as Appointment.html, only difference is content of apt-requests div-->
-            <div id="apt-requests">
-                <div><a href="Appointment.html"><img src="../images/back-button.png" class = "apt_req-backbutton"></a></div>
-                <div id="apt_reqdetails">
-                    <div id="apt_reqdetails-patientinfo">
-                        <label class="apt_lbl-reqname">Patient Jessica Jones</label><br>
-                        <label class="apt_lbl-reqdate">January 28, 2024 | 08:00AM - 09:00AM</label><br>
-                        <label class="apt_lbl-reqcnumber">09123456789</label><br>
-                        <label class="apt_lbl-reqemail">jessicajones@gmail.com</label><br>
-                    </div>
-                    <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">View Medical Record</a></div>
-                    <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">Message Patient</a></div>
-                    <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">Cancel Appointment</a></div>
+            <div id = "apt-requests">
+                <label class="apt_lbl">Appointment Requests</label>
+                <div class = "apt_request">
+                    <label class="apt_lbl-reqname">Patient Honey Butter</label><br>
+                    <label class="apt_lbl-reqdate">January 28, 2024 | 09:00AM - 10:00AM</label>
+                    <div id="apt_req-mark1"><img src="../images/mark-check.png" class = "apt_req-mark"></div>
+                    <div id="apt_req-mark0"><img src="../images/mark-x.png" class = "apt_req-mark"></div>
+                </div>
+                <div class = "apt_request">
+                    <label class="apt_lbl-reqname">Patient Aless James</label><br>
+                    <label class="apt_lbl-reqdate">January 31, 2024 | 02:00PM - 04:00PM</label>
+                    <div id="apt_req-mark1"><img src="../images/mark-check.png" class = "apt_req-mark"></div>
+                    <div id="apt_req-mark0"><img src="../images/mark-x.png" class = "apt_req-mark"></div>
+                </div>
+                <div class = "apt_request">
+                    <label class="apt_lbl-reqname">Patient Jamie Tims</label><br>
+                    <label class="apt_lbl-reqdate">February 01, 2024 | 08:00AM - 09:00AM</label>
+                    <div id="apt_req-mark1"><img src="../images/mark-check.png" class = "apt_req-mark"></div>
+                    <div id="apt_req-mark0"><img src="../images/mark-x.png" class = "apt_req-mark"></div>
                 </div>
             </div>
         </div>
-        </div>
-    </body>
-
+    </div>
+</body>
 </html>

@@ -15,7 +15,7 @@ body {
     width: 20%;
     height: 100%;
     
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     
@@ -52,13 +52,13 @@ body {
 }
 
 #name{
-    font-size: 24;
+    font-size: 24px;
     font-weight: bold;
     padding-bottom: 5px;
 }
 
 #role{
-    font-size: 12;
+    font-size: 12px;
 }
 
 #menu{
@@ -68,15 +68,14 @@ body {
 }
 
 #a1, #a2, #a3, #a4, #a5, #a6, #a7{
-    margin: 20;
-    padding: 10;
+    margin: 20px;
+    padding: 10px;
 
     background-color: #E9E9E9;
 
     color: black;
     font-style: normal;
     text-decoration: none;
-
 
     border: 10px;
     border-radius: 10px;
@@ -249,36 +248,72 @@ a{
     flex: 1;
 }
 
-.reschedule-button,
-.cancel-button,
-.notes-button,
-.message-button {
-    padding: 6px 12px;
-    margin-top: 8px;
-    margin-right: 8px;
-    border: none;
-    border-radius: 4px; 
-    cursor: pointer; 
-    font-size: 12px;
+.schedule_table {
+    margin: 0 auto;
 }
 
-.message-button{
-    background-color: rgb(0, 147, 173);
-    color: white; 
+.schedule_table td{
+    padding: 11px 5px;
 }
 
-.reschedule-button {
-    background-color: #4CAF50;
-    color: white; 
+.apt_schedule-cell{
+    width: 90%;
 }
 
-.cancel-button {
-    background-color: #f44336; 
+#apt_schedule1{
+    height: 40px;
+
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #85AA9B;
+}
+
+.apt_lbl-schname:hover {
+    cursor: pointer;
+}
+
+.apt_lbl-schdate:hover {
+    cursor: pointer;
+}
+
+#apt-requests {
+    width: 38%;
+    height: 51%;
+    
+    position: absolute;
+    top: 73%;
+    left: 70%;
+    transform: translate(-27%, -50%);
+    
+    background-color: lightgray;
+    border-radius: 1%;
+
+    padding: 10px 12px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#apt_request1, #apt_request2, #apt_request3{
+    width: 95%;
+    height: 45px;
+
+    margin-top: 10px;
+
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #85AA9B;
+
+    line-height: 1.3;
+}
+
+.apt_lbl-reqname, .apt_lbl-schname {
+    font-size: 15px;
+    font-weight: bold;
     color: white;
 }
 
-.notes-button {
-    background-color: lightskyblue; 
+.apt_lbl-reqdate, .apt_lbl-schdate, .apt_lbl-reqcnumber,.apt_lbl-reqemail {
+    font-size: 14px;
     color: white;
 }
 
@@ -317,4 +352,160 @@ a{
 .modal-content select,
 .modal-content button {
     margin-bottom: 10px; 
+}
+
+.apt_req-mark{
+    width: 30px;
+    height: 30px;
+}
+
+#apt_req-mark1 {
+    margin-top: -35px;
+    margin-left: 80%;
+}
+
+#apt_req-mark0 {
+    margin-top: -35px;
+    margin-left: 90%;
+}
+
+/* Calendar API */
+
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+.wrapper{
+  width: 450px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+.wrapper header{
+  display: flex;
+  align-items: center;
+  padding: 2px 24px 2px;
+  justify-content: space-between;
+}
+header .icons{
+  display: flex;
+}
+header .icons span{
+  height: 38px;
+  width: 38px;
+  margin: 0 1px;
+  cursor: pointer;
+  color: #878787;
+  text-align: center;
+  line-height: 38px;
+  font-size: 1.7rem;
+  user-select: none;
+  border-radius: 50%;
+}
+.icons span:last-child{
+  margin-right: -10px;
+}
+header .icons span:hover{
+  background: #f2f2f2;
+}
+header .current-date{
+  font-size: 18px;
+  font-weight: bold;
+}
+.calendar{
+  padding: 1px;
+  margin-top: -22px;
+  margin-left: -18px;
+}
+.calendar ul{
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  text-align: center;
+}
+.calendar .days{
+  margin-bottom: 2px;
+}
+.calendar li{
+  color: #333;
+  width: calc(100% / 7);
+  font-size: 16px;
+}
+.calendar .weeks li{
+  cursor: default;
+  height: 12px;
+}
+.calendar .days li{
+  z-index: 1;
+  cursor: pointer;
+  position: relative;
+  margin-top: 14px;
+}
+.days li.inactive{
+  color: #aaa;
+}
+.days li.active{
+  color: #fff;
+}
+.days li::before{
+  position: absolute;
+  content: "";
+  left: 50%;
+  top: 50%;
+  height: 36px;
+  width: 36px;
+  z-index: -1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.days li.active::before{
+  background: #85AA9B;
+}
+.days li:not(.active):hover::before{
+  background: #f2f2f2;
+  opacity: 90%;
+}
+
+/* End of Calendar API */
+
+
+/* History Page CSS */
+
+#appointment-screen-history{
+    width: 75%;
+    height: 95%;
+    
+    position: absolute;
+    top: 50%;
+    left: 49%;
+    transform: translate(-35%, -50%);
+    
+    border-radius: 2%;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.history_table {
+    border-spacing: 10px 2px;
+    padding-top: 24px;
+    text-align: left;
+    width: 100%;
+}
+
+.history_table th {
+    border-radius: 10px;
+    background-color: #E9E9E9;
+    padding: 10px;
+    text-align: center;
+}
+
+.history_table td {
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.accountH_lbl {
+    font-size: 14px;
+    color: black;
+    text-align: left;
 }
