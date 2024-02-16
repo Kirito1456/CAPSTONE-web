@@ -1,0 +1,37 @@
+{% extends 'hmis/base.html' %}
+{%load static%}
+{% block title %}Appointment{% endblock %}
+
+{% block styles%} 
+<!-- Stylesheet for the program -->
+<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+{% endblock styles%}
+
+{% block content %}
+
+<div id = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="\static\doctorjohn.jpg" id = "display-photo">
+                </div>
+                <div id = "information">
+                    <div id = "name"> John Doe </div>
+                    <div id = "role"> General Practitioner</div>
+                </div>
+            </div>
+            <div id = "menu"> 
+                <div id = "a1"><a href="">Dashboard</a></div>
+                <div id = "a3"><a href="AppointmentUpcoming.html">Appointments</a></div>
+                <div id = "a1"><a href="">Patients</a></div>
+                <div id = "a4"><a href="">Medications</a></div>
+                <div id = "a5"><a href="Message.html">Message</a></div>
+                <div id = "a6" style="font-weight: bold;"><a href="Profile.html">Profile</a></div>
+                <div id = "a7"><a href="">Settings</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

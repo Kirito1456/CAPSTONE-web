@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var modal = document.getElementById('myModal');
     var cancelButton = document.querySelector('.cancel-button');
     
+    
     var today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
 

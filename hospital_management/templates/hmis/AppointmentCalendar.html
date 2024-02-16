@@ -1,23 +1,23 @@
-<html>
-    <head> 
-        <title>Appointments</title>
-        <link rel="stylesheet" href="style-appointments.css">
-        <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Google Font Link for Icons -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-        <script src="appointment-script.js" defer></script>
-    </head>
-    <body> 
+{% extends 'hmis/base.html' %}
+{%load static%}
+{% block title %}Appointment{% endblock %}
+
+{% block styles%} 
+<!-- Stylesheet for the program -->
+<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+{% endblock styles%}
+
+{% block content %}
+
         <div id = "whole-screen">
             <div id = "side-menu">
                 <div id = "all-info">
                     <div id = "user-info"> 
                         <div id = "image">
-                            <img src="/images/hannie.jpg" id = "display-photo">
+                            <img src="\static\doctorjohn.jpg" id = "display-photo">
                         </div>
                         <div id = "information">
-                            <div id = "name"> Jeonghan </div>
+                    <div id = "name"> John Doe </div>
                             <div id = "role"> General Practitioner</div>
                         </div>
                     </div>
@@ -35,9 +35,10 @@
             <div id = "appointment-screen">
                 <div class="apt-header-btns">
                     <div class="apt-header-left">
+                        <div id = "apt-btn" style="font-weight: bold;"><a href="AppointmentCalendar.html">Calendar</a></div>
                         <div id = "apt-btn"><a href="AppointmentUpcoming.html">Upcoming</a></div>
                         <div id = "apt-btn"><a href="AppointmentPast.html">Past</a></div>
-                        <div id = "apt-btn" style="font-weight: bold;"><a href="AppointmentCalendar.html">Calendar</a></div>
+                        
                     </div>
                 </div>
                 <!-- Start of Calendar API -->
@@ -180,6 +181,6 @@
                 </div>
             </div>
         </div>
-    </body>
 
-</html>
+<script src="{% static 'js/appointment.js' %}"></script>
+{% endblock %}
