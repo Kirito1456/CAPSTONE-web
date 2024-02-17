@@ -7,4 +7,5 @@ urlpatterns = [
     path('AppointmentPast.html', views.AppointmentPast, name='AppointmentPast'),
     path('AppointmentCalendar.html', views.AppointmentCalendar, name='AppointmentCalendar'),
     path('Message.html', views.Message, name='Message'),
+    path('AppointmentCalendarRequestDetails.html', views.AppointmentCalendarRequestDetails, name='AppointmentCalendarRequestDetails'),
 ]

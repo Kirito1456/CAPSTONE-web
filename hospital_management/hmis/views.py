@@ -16,3 +16,6 @@ def AppointmentCalendar(request):
 
 def Message(request):
     return render(request, 'hmis/Message.html')
+
+def AppointmentCalendarRequestDetails(request):
+    return render(request, 'hmis/AppointmentCalendarRequestDetails.html')
