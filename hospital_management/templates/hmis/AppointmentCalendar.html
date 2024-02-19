@@ -64,103 +64,88 @@
                     </div>
                 </div>
                 <!-- End of Calendar API -->
-                <div id = "apt-schedule">
-                    <label class="apt_lbl">Daily Schedule </label><label id="apt_lbl-curdate" class="apt_lbl">(February 14, 2024)</label>
-                    <table class="schedule_table">
-                        <tr>
-                            <td>
-                                <div id="apt_schedule-booked" class="apt_schedule-cell"><a href="AppointmentCalendarRequestDetails.html">
-                                    <label class="apt_lbl-schdate">09:00 - 09:30</label><br>
-                                    <label class="apt_lbl-schname">Jessica Jones</label>
-                                </a></div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">09:30 - 10:00</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">10:00 - 10:30</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">10:30 - 11:00</label><br>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">11:00 - 11:30</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">11:30 - 12:00</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">12:00 - 12:30</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">12:30 - 01:00</label><br>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">01:00 - 01:30</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">01:30 - 02:00</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">02:00 - 02:30</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">02:30 - 03:00</label><br>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">03:00 - 03:30</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">03:30 - 04:00</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">04:00 - 04:30</label><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="apt_schedule-notbooked" class="apt_schedule-cell">
-                                    <label id="apt_schedule-lbl" class="apt_lbl-schdate">04:30 - 05:00</label><br>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                <div id="apt-schedule">
+                    <label class="apt_lbl">Daily Schedule </label>
+                    <label id="apt_lbl-curdate" class="apt_lbl">(February 14, 2024)</label>
+                    
+                    <div class="schedule-wrapper">
+                        <div class="apt_schedule-cell" id="apt_schedule-booked">
+                            <a href="AppointmentCalendarRequestDetails.html">
+                                <label class="apt_lbl-schdate">09:00 - 09:30</label><br>
+                                <label class="apt_lbl-schname">Jessica Jones</label>
+                            </a>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">09:30 - 10:00</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">10:00 - 10:30</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">10:30 - 11:00</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">11:00 - 11:30</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">11:30 - 12:00</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">12:00 - 12:30</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">12:30 - 01:00</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">01:00 - 01:30</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">01:30 - 02:00</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">02:00 - 02:30</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">02:30 - 03:00</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">03:00 - 03:30</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">03:30 - 04:00</label><br>
+                        </div>
+                        
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">04:00 - 04:30</label><br>
+                        </div>
+                        
+                        <!--
+                        <div class="apt_schedule-cell" id="apt_schedule-notbooked">
+                            <label class="apt_lbl-schdate">04:30 - 05:00</label><br>
+                        </div>
+                        -->
+                    </div>
                 </div>
+                
                 
             </div>
         </div>
 
+        
+
 <script src="{% static 'js/appointment.js' %}"></script>
+<script src="{% static 'js/appointment-script.js' %}"></script>
 {% endblock %}

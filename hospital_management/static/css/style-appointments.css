@@ -314,28 +314,29 @@ a{
 
 #apt-calendar{
     width: 99%;
-    height: 38%;
+    height: 45%;
     
     position: absolute;
-    top: 25%;
-    left: 30%;
-    transform: translate(-30%, -50%);
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     
     background-color: lightgray;
     border-radius: 1%;
 
     margin: 0 auto;
     justify-content: center;
+    
 }
 
 #apt-schedule {
-    width: 55%;
-    height: 51%;
+    width: 97%;
+    height: 45%;
     
     position: absolute;
-    top: 73%;
-    left: 18%;
-    transform: translate(-31%, -50%);
+    top: 78%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     
     padding: 10px;
     background-color: lightgray;
@@ -344,17 +345,23 @@ a{
     margin: 0 auto;
     justify-content: center;
 }
-
-.schedule_table {
-    margin: 0 auto;
+.schedule-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
-.schedule_table td{
-    padding: 11px 5px;
-}
+.apt_schedule-cell {
+    width:15% ; /* Adjust cell width and spacing as needed */
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: auto; 
+    margin-right: auto;/* Adjust spacing between rows as needed */
 
-.apt_schedule-cell{
-    width: 80%;
+    text-align: center;
+    padding: 15px;
+    border-radius: 20px;
+    background-color: #F5F5F5;
 }
 
 #apt_schedule-booked{
@@ -427,13 +434,13 @@ a{
 .apt_lbl-reqname, .apt_lbl-schdate {
     font-size: 15px;
     font-weight: bold;
-    color: white;
+    color: black;
     text-align: left;
 }
 
 .apt_lbl-reqdate, .apt_lbl-schname, .apt_lbl-reqcnumber,.apt_lbl-reqemail {
     font-size: 14px;
-    color: white;
+    color: black;
     text-align: left;
 }
 
@@ -499,6 +506,7 @@ a{
 
 .wrapper{
   width: 450px;
+  height: auto;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 15px 40px rgba(0,0,0,0.12);
@@ -632,3 +640,4 @@ header .current-date{
     color: black;
     text-align: left;
 }
+
