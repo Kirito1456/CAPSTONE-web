@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
@@ -6,6 +7,7 @@ from hmis.forms import StaffRegistrationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.contrib.auth import logout as auth_logout
 
 
 # Use the firebase_database object directly
@@ -18,13 +20,40 @@ def home(request):
 
         try:
             user = firebase_auth.sign_in_with_email_and_password(email, password)
+            session_id = user['localId']
+            request.session['uid'] = str(session_id)
+            print(request.session['uid'])
+
+            #db.child('sessions').child(user['localId']).set(user)
             
             messages.success(request, 'Login successful!')
+
+            # Fetch doctors and nurses data from Firebase
+            doctors = db.child("doctors").get().val()
+            nurses = db.child("nurses").get().val()
+
+            # Combine doctors and nurses data into one dictionary
+            accounts = {}
+            if doctors:
+                accounts.update(doctors)
+            if nurses:
+                accounts.update(nurses)
+
             # You can access user['idToken'] for Firebase user token if needed
             if email == "admin@gmail.com":
                 return redirect('dashboard')
-            else:
+            
+            doctor_found = False
+            for account in accounts.values():
+                if account["role"] == "Doctor" and account["email"] == email:
+                    doctor_found = True
+                    break
+
+            if doctor_found:
                 return redirect('AppointmentUpcoming')
+            else:
+                return redirect('register')
+                
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
 
@@ -79,7 +108,17 @@ def create(request):
             try:
                 # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
+                print(user)
 
+                # Adjust this line according to the actual structure of the response object
+                #uid = user['localId']  # Accessing 'localId' from the user object
+    
+                 # Ensure you have the correct value of uid
+                print(user['localId'])
+
+                # Get idToken from the session (if needed)
+                #idToken = request.session['uid']
+                
                 data = {
                     'uid': user['localId'],
                     'fname': cleaned_data['fname'],
@@ -99,6 +138,8 @@ def create(request):
                     db.child('doctors').child(user['localId']).set(data)
                 else:
                     db.child('nurses').child(user['localId']).set(data)
+                
+                
                 
                 messages.success(request, 'Registration successful! Please log in.')
                 return redirect('home')
@@ -131,15 +172,82 @@ def reset(request):
     # If the request method is not POST, render the forgot password form
     else:
         return render(request, 'hmis/forgotpass.html')
-    
+
+
+def logout(request):
+    #auth_logout(request)
+    #request.session.flush()
+    try:
+        del request.session['uid']
+    except:
+        pass
+    return render(request, 'hmis/home.html')
+
+# Function to get upcoming appointments
 def AppointmentUpcoming(request):
-    return render(request, 'hmis/AppointmentUpcoming.html')
- 
+    #print(request.session['uid'])
+    
+    # Get data from Firebase
+    upcomings = db.child("appointments").get().val()
+    patients = db.child("patients").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid']
+
+    # Filter and sort upcoming appointments
+    upcoming_appointments = {}
+    for appointment_id, appointment_data in upcomings.items():
+        if appointment_data["doctorUID"] == uid:
+            appointment_date_str = appointment_data.get("appointmentDate", "")
+            appointment_time_str = appointment_data.get("appointmentTime", "")
+        
+            if appointment_date_str and appointment_time_str:
+                # Convert appointment date string to datetime object
+                appointment_datetime = datetime.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+            
+                # Check if appointment date is in the future
+                if appointment_datetime >= datetime.datetime.now():
+                    upcoming_appointments[appointment_id] = appointment_data
+
+    # Sort appointments by date
+    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: datetime.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+
+    # Pass the combined data to the template
+    return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
+                                                             'patients': patients, 'uid': uid, 'doctors': doctors})
+
 def AppointmentPast(request):
-    return render(request, 'hmis/AppointmentPast.html')
+    # Get data from Firebase
+    pasts = db.child("appointments").get().val()
+    patients = db.child("patients").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid']
+
+    # Filter and sort upcoming appointments
+    past_appointments = {}
+    for appointment_id, appointment_data in pasts.items():
+        if appointment_data["doctorUID"] == uid:
+            appointment_date_str = appointment_data.get("appointmentDate", "")
+            appointment_time_str = appointment_data.get("appointmentTime", "")
+        
+            if appointment_date_str and appointment_time_str:
+            # Convert appointment date string to datetime object
+                appointment_datetime = datetime.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+            
+            # Check if appointment date is in the future
+                if appointment_datetime < datetime.datetime.now():
+                    past_appointments[appointment_id] = appointment_data
+
+    # Sort appointments by date
+    sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: datetime.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+
+    # Pass the combined data to the template
+    return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
+                                                         'uid': uid, 'doctors': doctors})
 
 def AppointmentCalendar(request):
-    return render(request, 'hmis/AppointmentCalendar.html')
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid']
+    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors})
 
 def Message(request):
     return render(request, 'hmis/Message.html')

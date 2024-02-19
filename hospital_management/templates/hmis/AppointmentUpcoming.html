@@ -1,42 +1,48 @@
 {% extends 'hmis/base.html' %}
-{%load static%}
+{% load static %}
+
 {% block title %}Appointment{% endblock %}
 
-{% block styles%} 
+{% block styles %} 
 <!-- Stylesheet for the program -->
 <link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
-{% endblock styles%}
+{% endblock styles %}
 
 {% block content %}
-<div id = "whole-screen">
-    <div id = "side-menu">
-        <div id = "all-info">
-            <div id = "user-info"> 
-                <div id = "image">
-                    <img src="\static\doctorjohn.jpg" id = "display-photo">
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="all-info">
+            <div id="user-info"> 
+                <div id="image">
+                    <img src="\static\doctorjohn.jpg" id="display-photo">
                 </div>
-                <div id = "information">
-                    <div id = "name"> John Doe </div>
-                    <div id = "role"> General Practitioner</div>
+                <div id="information">
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role"> {{ doctor_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
-            <div id = "menu"> 
-                <div id = "a1"><a href="">Dashboard</a></div>
-                <div id = "a3" style="font-weight: bold;"><a href="AppointmentUpcoming.html">Appointments</a></div>
-                <div id = "a1"><a href="">Patients</a></div>
-                <div id = "a4"><a href="">Medications</a></div>
-                <div id = "a5"><a href="Message.html">Message</a></div>
-                <div id = "a6"><a href="">Profile</a></div>
-                <div id = "a7"><a href="">Settings</a></div>
+            <div id="menu"> 
+                <div id="a1"><a href="">Dashboard</a></div>
+                <div id="a3" style="font-weight: bold;"><a href="AppointmentUpcoming.html">Appointments</a></div>
+                <div id="a1"><a href="">Patients</a></div>
+                <div id="a4"><a href="">Medications</a></div>
+                <div id="a5"><a href="Message.html">Message</a></div>
+                <div id="a6"><a href="">Profile</a></div>
+                <div id="a7"><a href="">Settings</a></div>
+                <div id="a7"><a href="{% url 'logout' %}">Logout</a></div>
             </div>
         </div>
     </div>
-    <div id = "appointment-screen">
+    <div id="appointment-screen">
         <div class="apt-header-btns">
             <div class="apt-header-left">
-                <div id = "apt-btn"><a href="AppointmentCalendar.html">Calendar</a></div>
-                <div id = "apt-btn" style="font-weight: bold;"><a href="AppointmentUpcoming.html">Upcoming</a></div>
-                <div id = "apt-btn"><a href="AppointmentPast.html">Past</a></div>
+                <div id="apt-btn"><a href="AppointmentCalendar.html">Calendar</a></div>
+                <div id="apt-btn" style="font-weight: bold;"><a href="AppointmentUpcoming.html">Upcoming</a></div>
+                <div id="apt-btn"><a href="AppointmentPast.html">Past</a></div>
             </div>
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="Search...">
@@ -50,37 +56,44 @@
                     <th>Time</th>
                     <th>Name</th>
                     <th>Visit Type</th>
-                    <th>Status</th>
                     <th>Details</th>
                 </tr>
             </thead>
             <tbody>
+                {% for appointment_id, appointment_data in appointments.items %}
                 <tr>
-                    <td><label id="accountT_date" class="accountT_lbl">Appointment Date</label></td>
-                    <td><label id="accountT_time" class="accountT_lbl">Appointment Time</label></td>
-                    <td><label id="accountT_fullname" class="accountT_lbl">Patient Full Name</label></td>
-                    <td><label id="accountT_visittype" class="accountT_lbl">Follow-Up Visit</label></td> 
-                    <td><label id="accountT_status" class="accountT_lbl">Confirmed</label></td> 
-                    <td><label id="accountT_details" class="accountT_lbl"><a href="#" id="details-link">Click for More Details</a></label>
-                        <div class="details-container" style="display: none;">
-                            <div class="detail-wrapper">
-                                <div class="detailname" style="font-weight: bold;">E-mail: </div>
-                                <div class="detailvalue">juan@gmail.com</div>
+                    <td><label class="accountT_lbl">{{ appointment_data.appointmentDate }}</label></td>
+                    <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
+                    {% for patient_id, patient_data in patients.items %}
+                        {% if patient_data.uid == appointment_data.patientName %}
+                            <td><label class="accountT_lbl">{{ patient_data.lname }}, {{ patient_data.fname }}</label></td>
+                        {% endif %}
+                    {% endfor %}
+                    <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
+                    <td><label class="accountT_lbl"><a href="#" id="details-link">Click for More Details</a></label>
+                    {% for patient_id, patient_data in patients.items %}
+                        {% if patient_data.uid == appointment_data.patientName %}
+                            <div class="details-container" style="display: none;">
+                                <div class="detail-wrapper">
+                                    <div class="detailname" style="font-weight: bold;">E-mail: </div>
+                                    <div class="detailvalue">{{ patient_data.email }}</div>
+                                </div>
+                                <div class="detail-wrapper">
+                                    <div class="detailname" style="font-weight: bold;">Phone Number: </div>
+                                    <div class="detailvalue">09123456789</div>
+                                </div>
+                                <div class="detail-wrapper">
+                                    <div class="detailname" style="font-weight: bold;">Location: </div>
+                                    <div class="detailvalue">123 Cornelia St., Sunshine City</div>
+                                </div>
+                                <div class="button-container">
+                                    <button class="reschedule-button">Reschedule</button>
+                                    <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
+                                    <button class="cancel-button">Cancel Appointment</button>
+                                </div>
                             </div>
-                            <div class="detail-wrapper">
-                                <div class="detailname" style="font-weight: bold;">Phone Number: </div>
-                                <div class="detailvalue">09123456789</div>
-                            </div>
-                            <div class="detail-wrapper">
-                                <div class="detailname" style="font-weight: bold;">Location: </div>
-                                <div class="detailvalue">123 Cornelia St., Sunshine City</div>
-                            </div>
-                            <div class="button-container">
-                                <button class="reschedule-button">Reschedule</button>
-                                <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
-                                <button class="cancel-button">Cancel Appointment</button>
-                            </div>
-                        </div>
+                        {% endif %}
+                    {% endfor %}
                         <div id="myModal" class="modal">
                             <div class="modal-content">
                                 <span class="close">&times;</span>
@@ -94,10 +107,10 @@
                                 </form>
                             </div>
                         </div>
-                    </td>
-                    
+                    </td>   
                 </tr>
-                
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>

@@ -17,8 +17,12 @@
                             <img src="\static\doctorjohn.jpg" id = "display-photo">
                         </div>
                         <div id = "information">
-                    <div id = "name"> John Doe </div>
-                            <div id = "role"> General Practitioner</div>
+                            {% for doctor_id, doctor_data in doctors.items %}
+                                {% if doctor_data.uid == uid %}
+                                    <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                                    <div id="role"> {{ doctor_data.specialization}}</div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                     <div id = "menu"> 
@@ -29,6 +33,7 @@
                         <div id = "a5"><a href="Message.html">Message</a></div>
                         <div id = "a6"><a href="">Profile</a></div>
                         <div id = "a7"><a href="">Settings</a></div>
+                        <div id = "a7"><a href="{% url 'logout' %}">Logout</a></div>
                     </div>
                 </div>
             </div>
@@ -66,14 +71,14 @@
                 <!-- End of Calendar API -->
                 <div id="apt-schedule">
                     <label class="apt_lbl">Daily Schedule </label>
-                    <label id="apt_lbl-curdate" class="apt_lbl">(February 14, 2024)</label>
+                    <label id="apt_lbl-curdate" class="apt_lbl"></label>
                     
                     <div class="schedule-wrapper">
                         <div class="apt_schedule-cell" id="apt_schedule-booked">
-                            <a href="AppointmentCalendarRequestDetails.html">
+                            
                                 <label class="apt_lbl-schdate">09:00 - 09:30</label><br>
                                 <label class="apt_lbl-schname">Jessica Jones</label>
-                            </a>
+                            
                         </div>
                         
                         <div class="apt_schedule-cell" id="apt_schedule-notbooked">
@@ -144,8 +149,30 @@
             </div>
         </div>
 
-        
+<!-- Modal 
+    <div>
+        <a href="AppointmentCalendar.html"><img src="../images/back-button.png" class="apt_req-backbutton"></a>
+    </div>
+-->
+<div id="apt-requests-modal" class="modal">
+    <div class="modal-content">
+        <div id="apt_reqdetails">
+            <div id="apt_reqdetails-patientinfo">
+                <label class="apt_lbl-reqname">Patient Jessica Jones</label><br>
+                <label class="apt_lbl-reqdate">January 28, 2024 | 08:00AM - 09:00AM</label><br>
+                <label class="apt_lbl-reqcnumber">09123456789</label><br>
+                <label class="apt_lbl-reqemail">jessicajones@gmail.com</label><br>
+            </div>
+            <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">View Medical Record</a></div>
+            <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">Message Patient</a></div>
+            <div id="apt-reqs-viewMR-btn"><a href="" class="apt-reqbtn-lbl">Cancel Appointment</a></div>
+        </div>
+    </div>
+</div>
 
-<script src="{% static 'js/appointment.js' %}"></script>
+        
 <script src="{% static 'js/appointment-script.js' %}"></script>
+<script src="{% static 'js/appointment.js' %}"></script>
+
+
 {% endblock %}

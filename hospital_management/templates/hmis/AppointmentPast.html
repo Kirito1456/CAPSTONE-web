@@ -16,8 +16,12 @@
                     <img src="\static\doctorjohn.jpg" id = "display-photo">
                 </div>
                 <div id = "information">
-                    <div id = "name"> John Doe </div>
-                    <div id = "role"> General Practitioner</div>
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role"> {{ doctor_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
             <div id = "menu"> 
@@ -28,6 +32,7 @@
                 <div id = "a5"><a href="Message.html">Message</a></div>
                 <div id = "a6"><a href="">Profile</a></div>
                 <div id = "a7"><a href="">Settings</a></div>
+                <div id = "a7"><a href="{% url 'logout' %}">Logout</a></div>
             </div>
         </div>
     </div>
@@ -50,37 +55,45 @@
                     <th>Time</th>
                     <th>Name</th>
                     <th>Visit Type</th>
-                    <th>Status</th>
                     <th>Details</th>
                 </tr>
             </thead>
             <tbody>
+                {% for appointment_id, appointment_data in appointments.items %}
                 <tr>
-                    <td><label id="accountT_date" class="accountT_lbl">Appointment Date</label></td>
-                    <td><label id="accountT_time" class="accountT_lbl">Appointment Time</label></td>
-                    <td><label id="accountT_fullname" class="accountT_lbl">Patient Full Name</label></td>
-                    <td><label id="accountT_visittype" class="accountT_lbl">Follow-Up Visit</label></td> 
-                    <td><label id="accountT_status" class="accountT_lbl">Finished</label></td> 
+                    <td><label id="accountT_date" class="accountT_lbl">{{ appointment_data.appointmentDate }}</label></td>
+                    <td><label id="accountT_time" class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
+                    {% for patient_id, patient_data in patients.items %}
+                        {% if patient_data.uid == appointment_data.patientName %}
+                            <td><label id="accountT_fullname" class="accountT_lbl">{{ patient_data.lname }}, {{ patient_data.fname }}</label></td>
+                        {% endif %}
+                    {% endfor %}
+                    <td><label id="accountT_visittype" class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td> 
                     <td><label id="accountT_details" class="accountT_lbl"><a href="#" id="details-link">Click for More Details</a></label>
-                        <div class="details-container" style="display: none;">
-                            <div class="detail-wrapper">
-                                <div class="detailname" style="font-weight: bold;">E-mail: </div>
-                                <div class="detailvalue">juan@gmail.com</div>
-                            </div>
-                            <div class="detail-wrapper">
-                                <div class="detailname" style="font-weight: bold;">Phone Number: </div>
-                                <div class="detailvalue">09123456789</div>
-                            </div>
-                            <div class="detail-wrapper">
-                                <div class="detailname" style="font-weight: bold;">Location: </div>
-                                <div class="detailvalue">123 Cornelia St., Sunshine City</div>
-                            </div>
-                            <div class="button-container">
-                                <button class="notes-button">View Notes</button>
-                            </div>
-                        </div>
+                        {% for patient_id, patient_data in patients.items %}
+                            {% if patient_data.uid == appointment_data.patientName %}
+                                <div class="details-container" style="display: none;">
+                                    <div class="detail-wrapper">
+                                        <div class="detailname" style="font-weight: bold;">E-mail: </div>
+                                        <div class="detailvalue">{{ patient_data.email }}</div>
+                                    </div>
+                                    <div class="detail-wrapper">
+                                        <div class="detailname" style="font-weight: bold;">Phone Number: </div>
+                                        <div class="detailvalue">09123456789</div>
+                                    </div>
+                                    <div class="detail-wrapper">
+                                        <div class="detailname" style="font-weight: bold;">Location: </div>
+                                        <div class="detailvalue">123 Cornelia St., Sunshine City</div>
+                                    </div>
+                                    <div class="button-container">
+                                        <button class="notes-button">View Notes</button>
+                                    </div>
+                                </div>
+                        {% endif %}
+                    {% endfor %}
                     </td>
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

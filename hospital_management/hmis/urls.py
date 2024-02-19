@@ -8,6 +8,7 @@ urlpatterns = [
     path('create/', views.create, name='create'),
     path('reset/', views.reset , name='reset'),
     path('forgotpass/', views.forgotpass, name='forgotpass'),
+    path('logout/', views.logout, name='logout'),
     path('AppointmentUpcoming.html', views.AppointmentUpcoming, name='AppointmentUpcoming'),
     path('AppointmentPast.html', views.AppointmentPast, name='AppointmentPast'),
     path('AppointmentCalendar.html', views.AppointmentCalendar, name='AppointmentCalendar'),
