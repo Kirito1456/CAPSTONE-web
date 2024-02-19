@@ -20,8 +20,7 @@ class Staff(models.Model):
     uid = models.CharField(max_length=255, blank=True, null=True)
     fname = models.CharField(max_length=100)
     lname = models.CharField(max_length=100)
-    cnumber = models.CharField(max_length=20)
-    birthday = models.DateField()
+    cnumber = models.CharField(max_length=20, null=True)
     SEX_CHOICES = (
         ('Male', 'Male'),
         ('Female', 'Female'),
@@ -34,7 +33,7 @@ class Staff(models.Model):
         ('Head Nurse', 'Head Nurse'),
         ('Nurse Assistant', 'Nurse Assistant'),
     )
-    jobTitle = models.CharField(max_length=20, choices=JOB_TITLE_CHOICES)
+    specialization = models.CharField(max_length=20, choices=JOB_TITLE_CHOICES)
 
     ROLE_CHOICES = (
         ('Doctor', 'Doctor'),
@@ -47,6 +46,24 @@ class Staff(models.Model):
     )
     department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, null=True)
     email = models.EmailField()
+
+    def __str__(self):
+        return self.name  # or return self.email or any other field
+
+class Appointment(models.Model):
+    aDate = models.DateField()
+    aTime = models.TimeField()
+    aName = models.CharField(max_length=255)
+    aVisitType = models.CharField(max_length=255, default='')
+    aStatus = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name  # or return self.email or any other field
+
+class Details(models.Model):
+    aEmail = models.EmailField(unique=True)
+    aCNumber = models.IntegerField()
+    aAddress = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name  # or return self.email or any other field

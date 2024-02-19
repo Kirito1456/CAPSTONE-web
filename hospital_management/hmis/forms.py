@@ -59,17 +59,15 @@ class StaffRegistrationForm(forms.ModelForm):
 
     # Use forms.ChoiceField for sex and jobTitle fields
     sex = forms.ChoiceField(choices=SEX_CHOICES)
-    jobTitle = forms.ChoiceField(choices=JOB_TITLE_CHOICES)
+    specialization = forms.ChoiceField(choices=JOB_TITLE_CHOICES)
     role = forms.ChoiceField(choices=ROLE_CHOICES)
     department = forms.ChoiceField(choices=DEPARTMENT_CHOICES)
 
     class Meta:
         model = Staff
-        fields = ('fname', 'lname', 'cnumber', 'birthday', 'sex', 'department', 'jobTitle', 'email')
+        fields = ('fname', 'lname', 'role', 'sex', 'department', 'specialization', 'email')
         widgets = {
             'fname': forms.TextInput(attrs={'placeholder': 'Enter your first name'}),
             'lname': forms.TextInput(attrs={'placeholder': 'Enter your last name'}),
-            'cnumber': forms.TextInput(attrs={'placeholder': 'Enter your contact number'}),
-            'birthday': forms.DateInput(attrs={'type': 'date'}),
             'email': forms.EmailInput(attrs={'placeholder': 'Enter your email'}),
         }

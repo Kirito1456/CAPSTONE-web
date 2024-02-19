@@ -18,9 +18,13 @@ def home(request):
 
         try:
             user = firebase_auth.sign_in_with_email_and_password(email, password)
+            
             messages.success(request, 'Login successful!')
             # You can access user['idToken'] for Firebase user token if needed
-            return redirect('dashboard')
+            if email == "admin@gmail.com":
+                return redirect('dashboard')
+            else:
+                return redirect('AppointmentUpcoming')
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
 
@@ -58,36 +62,32 @@ def create(request):
             # Check if passwords match
             if password != confirmpassword:
                 messages.error(request, 'Passwords do not match.')
-                return redirect('create')
+                return redirect('register')
 
             # Validate password strength
             try:
                 validate_password(password)
             except ValidationError as e:
                 messages.error(request, 'Password is too weak.')
-                return redirect('create')
+                return redirect('register')
 
             # Check if email is already used
             if User.objects.filter(email=email).exists():
                 messages.error(request, 'Email is already used.')
-                return redirect('create')
+                return redirect('register')
 
             try:
                 # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
 
-                # Convert birthday to string or format it appropriately
-                cleaned_data['birthday'] = str(cleaned_data['birthday'])
-
                 data = {
                     'uid': user['localId'],
                     'fname': cleaned_data['fname'],
                     'lname': cleaned_data['lname'],
-                    'cnumber': cleaned_data['cnumber'],
-                    'birthday': cleaned_data['birthday'],
+                    'cnumber': '',
                     'sex': cleaned_data['sex'],
                     'role': cleaned_data['role'],
-                    'jobTitle': cleaned_data['jobTitle'],
+                    'specialization': cleaned_data['specialization'],
                     'department': cleaned_data['department'],
                     'email': email,
                 }
@@ -99,13 +99,14 @@ def create(request):
                     db.child('doctors').child(user['localId']).set(data)
                 else:
                     db.child('nurses').child(user['localId']).set(data)
-
+                
                 messages.success(request, 'Registration successful! Please log in.')
-                return redirect('dashboard')
+                return redirect('home')
             except Exception as e:
                 messages.error(request, f'Error: {str(e)}')
     else:
         form = StaffRegistrationForm()
+       
 
     return render(request, 'hmis/register.html', {'form': form})
 
@@ -130,3 +131,18 @@ def reset(request):
     # If the request method is not POST, render the forgot password form
     else:
         return render(request, 'hmis/forgotpass.html')
+    
+def AppointmentUpcoming(request):
+    return render(request, 'hmis/AppointmentUpcoming.html')
+ 
+def AppointmentPast(request):
+    return render(request, 'hmis/AppointmentPast.html')
+
+def AppointmentCalendar(request):
+    return render(request, 'hmis/AppointmentCalendar.html')
+
+def Message(request):
+    return render(request, 'hmis/Message.html')
+
+def AppointmentCalendarRequestDetails(request):
+    return render(request, 'hmis/AppointmentCalendarRequestDetails.html')

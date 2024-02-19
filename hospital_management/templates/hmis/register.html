@@ -9,18 +9,8 @@
 {% endblock styles%}
 
 {% block content %}
-<div id="whole-screen">
-    <div id="side-menu">
-        <div id="user-info"> 
-            <div id="information">
-                <div id="user_admin" class="admin_lbl"> ADMIN </div>
-            </div>
-        </div>
-        <div id="menu"> 
-            <div id = "a1"><a href="{% url 'dashboard' %}">Dashboard</a></div>
-            <div id = "a2"><a href="{% url 'register' %}">Create Account</a></div>
-    </div>
-</div>
+
+
 <div class="admin-screen">
     <form method="post" action="{% url 'create' %}" class="signup_table">
         {% csrf_token %}
@@ -35,15 +25,6 @@
         <div class="form-group">
             <label class="signup_lbl">Last Name <span class="red-asterisk">*</span></label>
             <input class="signup_txtboxname" type="text" name="lname" placeholder="Enter Last Name" required>
-        </div>
-
-        <div class="form-group">
-            <label class="signup_lbl">Contact Number <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox"type="number" name="cnumber" placeholder="Enter Phone #" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Birthday <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox" type="date" name="birthday" required>
         </div>
         <div class="form-group">
             <label class="signup_lbl">Sex <span class="red-asterisk">*</span></label>
@@ -69,9 +50,9 @@
         </div>
 
         <div class="form-group">
-            <label class="signup_lbl">Job Title <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-jobtitle" name="jobTitle" id="jobTitleSelect" required>
-                <option value="">- Select Job Title -</option>
+            <label class="signup_lbl">Specialization <span class="red-asterisk">*</span></label>
+            <select class="signup_dd-jobtitle" name="specialization" id="jobTitleSelect" required>
+                <option value="">- Select Specialization -</option>
             </select>
         </div>
         
