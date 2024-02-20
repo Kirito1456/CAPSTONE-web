@@ -14,6 +14,8 @@ from django.contrib.auth import logout as auth_logout
 db = firebase_database
 
 def home(request):
+    storage = messages.get_messages(request)
+    storage.used = True
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
@@ -199,11 +201,7 @@ def AppointmentUpcoming(request):
     upcomings = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
     doctors = db.child("doctors").get().val()
-    uid = request.session['uid']
-
-    print(request.session['uid'])
-
-    
+    uid = request.session['uid']    
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -226,6 +224,61 @@ def AppointmentUpcoming(request):
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors})
+
+
+def delete_appointment(request):
+    if request.method == 'POST':
+        try:
+            # Get the appointment ID from the form data
+            appointment_id = request.POST.get('cancel')
+
+            # Construct the path to the data you want to delete
+            path_to_data = f"/appointments/{appointment_id}"  # Adjust the path as per your Firebase structure
+
+            # Use the reference to access the data and delete it
+            db.child(path_to_data).remove()
+
+            messages.success(request, 'Appointment canceled successfully')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
+        return redirect('AppointmentUpcoming')  # Redirect to the appointments list page
+
+    # Render a template if the request method is not POST
+    return render(request, 'hmis/AppointmentUpcoming.html')
+
+def update_appointment(request):
+    if request.method == 'POST':
+        try:
+            appID = request.POST.get('appID')
+            new_date = request.POST.get('new-appointment-date')
+            new_time = request.POST.get('new-appointment-time')
+            print(new_time)
+
+            # Format time and date objects to desired format
+            new_time_formatted = datetime.datetime.strptime(new_time, "%H:%M")
+            #new_date_formatted = new_time_formatted.strftime("%I:%M %p")            
+            print(new_time_formatted)
+
+            new_time_str = new_time_formatted.strftime("%I:%M %p")
+            print(new_time_str)
+
+            # Construct the path to the appointment data in Firebase
+            appointment_path = f"/appointments/{appID}"  # Adjust the path as per your Firebase structure
+
+            # Update appointment data in Firebase
+            db.child(appointment_path).update({
+                'appointmentDate': new_date,
+                'appointmentTime': new_time_str
+            }) 
+
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
+        return redirect('AppointmentUpcoming')  # Redirect to the appointments list page
+
+    # Handle GET request or invalid form submission
+    return redirect('AppointmentUpcoming')
 
 def AppointmentPast(request):
 

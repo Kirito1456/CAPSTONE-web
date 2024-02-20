@@ -60,6 +60,7 @@
                 </tr>
             </thead>
             <tbody>
+                {% if appointments %}
                 {% for appointment_id, appointment_data in appointments.items %}
                 <tr>
                     <td><label class="accountT_lbl">{{ appointment_data.appointmentDate }}</label></td>
@@ -80,42 +81,45 @@
                                     </div>
                                     <div class="detail-wrapper">
                                         <div class="detailname" style="font-weight: bold;">Phone Number: </div>
-                                        <div class="detailvalue">09123456789</div>
+                                        <div class="detailvalue">{{ patient_data.cnumber }}</div>
                                     </div>
                                     <div class="detail-wrapper">
                                         <div class="detailname" style="font-weight: bold;">Location: </div>
-                                        <div class="detailvalue">123 Cornelia St., Sunshine City</div>
+                                        <div class="detailvalue">{{ patient_data.address}}</div>
                                     </div>
                                     <div class="button-container">
                                         <button class="reschedule-button" onclick="openModal()">Reschedule</button>
                                         <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
-                                        <button class="cancel-button" onclick="cancelAppointment()">Cancel Appointment</button>
+                                        <form action="{% url 'delete_appointment' %}" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="cancel-button" onclick="cancelAppointment()" name='cancel' value={{ appointment_id }}>Cancel Appointment</button>
+                                        </form>
                                     </div>
                                 </div>
                         {% endif %}
                     {% endfor %}
                     </td>    
                        
-                        
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2>Reschedule Appointment</h2>
+                            <form id="reschedule-form" method="post" action="{% url 'update_appointment' %}">
+                                {% csrf_token %}
+                                <label for="new-appointment-date">New Date:</label>
+                                <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
+                                <label for="new-appointment-time">New Time:</label>
+                                <select id="new-appointment-time" name="new-appointment-time"></select><br>
+                                <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
+                            </form>
+                        </div>
+                    </div>
                        
                 </tr>
                 {% endfor %}
+                {% endif %}
             </tbody>
         </table>
-    </div>
-</div>
-
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Reschedule Appointment</h2>
-        <form id="reschedule-form">
-            <label for="new-appointment-date">New Date:</label>
-            <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
-            <label for="new-appointment-time">New Time:</label>
-            <select id="new-appointment-time" name="new-appointment-time"></select><br>
-            <button type="submit">Submit</button>
-        </form>
     </div>
 </div>
 
