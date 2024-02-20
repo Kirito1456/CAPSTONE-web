@@ -214,7 +214,7 @@ a{
     text-align: left;
 }
 
-#details-link {
+.details-link {
     color: blue;
     cursor: pointer; 
 }

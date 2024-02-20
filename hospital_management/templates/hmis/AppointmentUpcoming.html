@@ -70,10 +70,9 @@
                         {% endif %}
                     {% endfor %}
                     <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
-                    <td><label class="accountT_lbl"><a href="#" id="details-link" >Click for More Details</a></label>
+                    <td><label class="accountT_lbl"><a href="#" class="details-link" >Click for More Details</a></label>
                     {% for patient_id, patient_data in patients.items %}
                         {% if appointment_data.patientName == patient_data.uid  %}
-                            
                                 <div class="details-container" style="display: none;">
                                     <div class="detail-wrapper">
                                         <div class="detailname" style="font-weight: bold;">E-mail: </div>
@@ -88,14 +87,15 @@
                                         <div class="detailvalue">123 Cornelia St., Sunshine City</div>
                                     </div>
                                     <div class="button-container">
-                                        <button class="reschedule-button">Reschedule</button>
+                                        <button class="reschedule-button" onclick="openModal()">Reschedule</button>
                                         <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
-                                        <button class="cancel-button">Cancel Appointment</button>
+                                        <button class="cancel-button" onclick="cancelAppointment()">Cancel Appointment</button>
                                     </div>
                                 </div>
-                            </td>    
                         {% endif %}
                     {% endfor %}
+                    </td>    
+                       
                         
                        
                 </tr>

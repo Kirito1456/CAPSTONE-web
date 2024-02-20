@@ -69,7 +69,7 @@
                         {% endif %}
                     {% endfor %}
                     <td><label id="accountT_visittype" class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td> 
-                    <td><label id="accountT_details" class="accountT_lbl"><a href="#" id="details-link">Click for More Details</a></label>
+                    <td><label id="accountT_details" class="accountT_lbl"><a href="#" class="details-link">Click for More Details</a></label>
                         {% for patient_id, patient_data in patients.items %}
                             {% if patient_data.uid == appointment_data.patientName %}
                                 <div class="details-container" style="display: none;">
