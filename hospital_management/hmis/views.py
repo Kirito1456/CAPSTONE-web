@@ -177,21 +177,33 @@ def reset(request):
 def logout(request):
     #auth_logout(request)
     #request.session.flush()
+    storage = messages.get_messages(request)
+    storage.used = True
     try:
         del request.session['uid']
-    except:
+        messages.success(request, 'Logged out successfully.')
+    except KeyError:
         pass
-    return render(request, 'hmis/home.html')
+    
+    #firebase_auth.signOut()
+    return redirect('home')
 
 # Function to get upcoming appointments
 def AppointmentUpcoming(request):
     #print(request.session['uid'])
+    
+    if request.session.get('uid') is None:
+        return redirect('home')
     
     # Get data from Firebase
     upcomings = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']
+
+    print(request.session['uid'])
+
+    
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -216,6 +228,10 @@ def AppointmentUpcoming(request):
                                                              'patients': patients, 'uid': uid, 'doctors': doctors})
 
 def AppointmentPast(request):
+
+    if request.session.get('uid') is None:
+        return redirect('home')
+    
     # Get data from Firebase
     pasts = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
@@ -245,6 +261,10 @@ def AppointmentPast(request):
                                                          'uid': uid, 'doctors': doctors})
 
 def AppointmentCalendar(request):
+    
+    if request.session.get('uid') is None:
+        return redirect('home')
+    
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']
     return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors})

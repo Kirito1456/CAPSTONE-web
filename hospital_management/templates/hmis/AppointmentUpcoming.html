@@ -70,48 +70,52 @@
                         {% endif %}
                     {% endfor %}
                     <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
-                    <td><label class="accountT_lbl"><a href="#" id="details-link">Click for More Details</a></label>
+                    <td><label class="accountT_lbl"><a href="#" id="details-link" >Click for More Details</a></label>
                     {% for patient_id, patient_data in patients.items %}
-                        {% if patient_data.uid == appointment_data.patientName %}
-                            <div class="details-container" style="display: none;">
-                                <div class="detail-wrapper">
-                                    <div class="detailname" style="font-weight: bold;">E-mail: </div>
-                                    <div class="detailvalue">{{ patient_data.email }}</div>
+                        {% if appointment_data.patientName == patient_data.uid  %}
+                            
+                                <div class="details-container" style="display: none;">
+                                    <div class="detail-wrapper">
+                                        <div class="detailname" style="font-weight: bold;">E-mail: </div>
+                                        <div class="detailvalue">{{ patient_data.email }}</div>
+                                    </div>
+                                    <div class="detail-wrapper">
+                                        <div class="detailname" style="font-weight: bold;">Phone Number: </div>
+                                        <div class="detailvalue">09123456789</div>
+                                    </div>
+                                    <div class="detail-wrapper">
+                                        <div class="detailname" style="font-weight: bold;">Location: </div>
+                                        <div class="detailvalue">123 Cornelia St., Sunshine City</div>
+                                    </div>
+                                    <div class="button-container">
+                                        <button class="reschedule-button">Reschedule</button>
+                                        <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
+                                        <button class="cancel-button">Cancel Appointment</button>
+                                    </div>
                                 </div>
-                                <div class="detail-wrapper">
-                                    <div class="detailname" style="font-weight: bold;">Phone Number: </div>
-                                    <div class="detailvalue">09123456789</div>
-                                </div>
-                                <div class="detail-wrapper">
-                                    <div class="detailname" style="font-weight: bold;">Location: </div>
-                                    <div class="detailvalue">123 Cornelia St., Sunshine City</div>
-                                </div>
-                                <div class="button-container">
-                                    <button class="reschedule-button">Reschedule</button>
-                                    <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
-                                    <button class="cancel-button">Cancel Appointment</button>
-                                </div>
-                            </div>
+                            </td>    
                         {% endif %}
                     {% endfor %}
-                        <div id="myModal" class="modal">
-                            <div class="modal-content">
-                                <span class="close">&times;</span>
-                                <h2>Reschedule Appointment</h2>
-                                <form id="reschedule-form">
-                                    <label for="new-appointment-date">New Date:</label>
-                                    <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
-                                    <label for="new-appointment-time">New Time:</label>
-                                    <select id="new-appointment-time" name="new-appointment-time"></select><br>
-                                    <button type="submit">Submit</button>
-                                </form>
-                            </div>
-                        </div>
-                    </td>   
+                        
+                       
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Reschedule Appointment</h2>
+        <form id="reschedule-form">
+            <label for="new-appointment-date">New Date:</label>
+            <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
+            <label for="new-appointment-time">New Time:</label>
+            <select id="new-appointment-time" name="new-appointment-time"></select><br>
+            <button type="submit">Submit</button>
+        </form>
     </div>
 </div>
 

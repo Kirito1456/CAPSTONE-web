@@ -10,11 +10,12 @@
 {% endblock styles%}
 
 {% block content %}
+
 <h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
     {% if messages %}
         <ul>
             {% for message in messages %}
-            <h3 class="header3">Invalid Login Credentials</h3>
+            <h3 class="header3">{{ message }}</h3>
             {% endfor %}
         </ul>
     {% endif %}
