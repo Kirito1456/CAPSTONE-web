@@ -1,0 +1,216 @@
+{%load static%}
+<html>
+    <title>{% block title %}Patient Data{% endblock %}</title>
+
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/patient_personal_information_style.css' %}">
+{% endblock styles%}
+
+    <body bgcolor="#F5F5F5"> 
+        <div id = "whole-screen">
+            <div id = "side-menu">
+                <div id = "all-info">
+                    <div id = "user-info"> 
+                        <div id = "image">
+                            <img src="{% static 'hannie.jpg' %}" id = "display-photo">
+                        </div>
+                        <div id = "information">
+                            <div id = "name"> Jeonghan </div>
+                            <div id = "role"> General Practitioner</div>
+                        </div>
+                    </div>
+                    <div id = "menu"> 
+                        <div id = "a1"><a href="">Dashboard</a></div>
+                        <div id = "a2"><a href="">Appointments</a></div>
+                        <div id = "a3" style="font-weight: bold;"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                        <div id = "a4"><a href="">Medications</a></div>
+                        <div id = "a5"><a href="">Message</a></div>
+                        <div id = "a6"><a href="">Profile</a></div>
+                        <div id = "a7"><a href="">Settings</a></div>
+                    </div>
+                </div>
+            </div>
+            <div id = "other-side">
+                <div id = "back-button">
+                    <a href="{% url 'patient_data_doctor_view' %}"> << back </a>
+                </div>
+                <div id = "patient-info">
+                    <div id = "personal-information">
+                        <div id = "head">Personal Information</div>
+                        <div id = "row-1">
+                            <div id = "first">
+                                <div id = "fname">Juanita</div>
+                                <div id = "fname-label">First Name</div>
+                            </div>
+                            <div id = "last">
+                                <div id = "lname">Dela Cruz</div>
+                                <div id = "lname-label">Last Name</div>
+                            </div>
+                        </div>
+                        <div id = "row-2">
+                            <div id = "gender">
+                                <div id = "gender-view">Female</div>
+                                <div id = "gender-label">Gender</div>
+                            </div>
+                            <div id = "bday">
+                                <div id = "birthday">01/03/2003</div>
+                                <div id = "bday-label">Date of Birth</div>
+                            </div>
+                            <div id = "age">
+                                <div id = "age-view">21</div>
+                                <div id = "age-label">Age</div>
+                            </div>
+                        </div>
+                        <div id = "row-3">
+                            <div id = "blood-type">
+                                <div id = "blood-type-view">O+</div>
+                                <div id = "blood-type-label">Blood Type</div>
+                            </div>
+                            <div id = "height">
+                                <div id = "height-view">180 cm</div>
+                                <div id = "height-label">Height</div>
+                            </div><div id = "weight">
+                                <div id = "weight-view">52 kg</div>
+                                <div id = "weight-label">Weight</div>
+                            </div>
+                        </div>
+                        <div id = "row-4">
+                            <div id = "address">
+                                <div id = "address-view">2401 Taft Anvenue Malate, Manila</div>
+                                <div id = "address-label">Address</div>
+                            </div>
+                        </div>
+                        <div id = "row-5">
+                            <div id = "phone">
+                                <div id = "phone-number">09123456789</div>
+                                <div id = "phone-number-label">Phone Number</div>
+                            </div>
+                            <div id = "telephone">
+                                <div id = "telephone-number">0281234567</div>
+                                <div id = "telephone-number-label">Last Name</div>
+                            </div>
+                        </div>
+                        <div id = "row-6">
+                            <div id = "email">
+                                <div id = "e-mail">juanita.delacruz@gmail.com</div>
+                                <div id = "email-label">E-mail Address</div>
+                            </div>
+                        </div>
+                        <div id = "view-medical-history">
+                            <a href = "{% url 'patient_medical_history' %}" id = "view-medical-history-button">View Medical History</a>
+                        </div>
+                    </div>
+                    <div id = "medical-information">
+                        <div id = "vital-signs">
+                            <div id = "head">Vital Signs Sheet</div>
+                            <div id = "vital-signs-table">
+                                <table id = "vital-signs">
+                                    <tr id = "label">
+                                        <th>Date</th>
+                                        <th>Weight</th>
+                                        <th>Temperature</th>
+                                        <th>Blood Pressure</th>
+                                        <th>Pulse</th>
+                                        <th>Respiration</th>
+                                        <th>Pain Index</th>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 11:30AM</td>
+                                        <td>-</td>
+                                        <td>36.6 C</td>
+                                        <td>120/80</td>
+                                        <td>85 bpm</td>
+                                        <td>16</td>
+                                        <td>5/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 10:30AM</td>
+                                        <td>-</td>
+                                        <td>36.7 C</td>
+                                        <td>121/80</td>
+                                        <td>82 bpm</td>
+                                        <td>16</td>
+                                        <td>7/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 09:30AM</td>
+                                        <td>-</td>
+                                        <td>36.8 C</td>
+                                        <td>121/79</td>
+                                        <td>79 bpm</td>
+                                        <td>15</td>
+                                        <td>7/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 08:30AM</td>
+                                        <td>-</td>
+                                        <td>37.0 C</td>
+                                        <td>119/77</td>
+                                        <td>82 bpm</td>
+                                        <td>17</td>
+                                        <td>8/10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>01/17/23 07:30AM</td>
+                                        <td>52.60 kg</td>
+                                        <td>36.9 C</td>
+                                        <td>120/80</td>
+                                        <td>83 bpm</td>
+                                        <td>15</td>
+                                        <td>6/10</td>
+                                    </tr>
+                                </table>
+                                <div id = "below-table">
+                                    <div id = "new-entry-button">
+                                        <a href="{% url 'new_vital_sign_entry' %}" id = "new-entry"><!--<img src = "/images/plus-symbol-button.png" id = "plus-icon">-->+ New Entry</a>
+                                    </div>
+                                    <div class="pagination">
+                                        <a href="#">&laquo;</a>
+                                        <a href="#" class="active">1</a>
+                                        <a href="#">&raquo;</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id = "progress-notes">
+                            <div id = "head-corner">Progress Notes</div>
+                            <div id = "progress-note">
+                                <div id = "notes">
+                                    <div id = "note">
+                                        - Stable vital signs <br>
+                                        - Medication administered 9:00AM <br>
+                                        - Pain intensity decreased
+                                    </div>
+                                    <div id = "update">
+                                        <div id = "date">Last Update: 01/17/23 11:32AM</div>
+                                        <div id = "updated-by">Updated by: Nurse Jane Doe</div>
+                                    </div>
+                                </div>
+                                <div id = "edit-note-button">
+                                    <a href = "" id = "edit-note"><!--add icon-->Edit Progress Notes</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id = "laboratory-tests">
+                            <div id = "head-corner">Laboratory Tests</div>
+                            <div id = "tests">
+                                <div id = "blood-test">
+                                    <a href = "" id = "blood-test-button"><!--add icon-->View Blood Test</a>
+                                </div>
+                                <div id = "chest-xray">
+                                    <a href = "" id = "chest-xray-button"><!--add icon-->View Chest X-Ray</a>
+                                </div>
+                                <div id = "request-lab-test">
+                                    <a href = "" id = "request-lab-test-button"><!--add icon-->Request New Lab Test</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id = "view-treatment-plan-button">
+                            <a href = "{% url 'view_treatment_plan' %}" id = "view-treatment-plan">View Treatment Plan</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

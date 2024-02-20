@@ -130,3 +130,19 @@ def reset(request):
     # If the request method is not POST, render the forgot password form
     else:
         return render(request, 'hmis/forgotpass.html')
+
+
+def patient_data_doctor_view(request):
+    return render(request, 'hmis/patient_data_doctor_view.html')
+
+def patient_personal_information(request):
+    return render(request, 'hmis/patient_personal_information.html')
+
+def new_vital_sign_entry(request):
+    return render(request, 'hmis/new_vital_sign_entry.html')
+
+def patient_medical_history(request):
+    return render(request, 'hmis/patient_medical_history.html')
+
+def view_treatment_plan(request):
+    return render(request, 'hmis/view_treatment_plan.html')
