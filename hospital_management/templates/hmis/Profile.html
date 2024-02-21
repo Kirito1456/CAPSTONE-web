@@ -1,10 +1,10 @@
 {% extends 'hmis/base.html' %}
 {%load static%}
-{% block title %}Appointment{% endblock %}
+{% block title %}Update Profile{% endblock %}
 
 {% block styles%} 
 <!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-usermanagement.css' %}">
 {% endblock styles%}
 
 {% block content %}
@@ -17,8 +17,12 @@
                     <img src="\static\doctorjohn.jpg" id = "display-photo">
                 </div>
                 <div id = "information">
-                    <div id = "name"> John Doe </div>
-                    <div id = "role"> General Practitioner</div>
+                    {% for account_id, account_data in accounts.items %}
+                        {% if account_data.uid == uid %}
+                            <div id="name"> {{ account_data.fname }} {{ account_data.lname }}</div>
+                            <div id="role"> {{ account_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
             <div id = "menu"> 
@@ -27,11 +31,85 @@
                 <div id = "a1"><a href="">Patients</a></div>
                 <div id = "a4"><a href="">Medications</a></div>
                 <div id = "a5"><a href="Message.html">Message</a></div>
-                <div id = "a6" style="font-weight: bold;"><a href="Profile.html">Profile</a></div>
+                <div id = "a6" style="font-weight: bold;"><a href="{% url 'Profile' %}">Profile</a></div>
                 <div id = "a7"><a href="">Settings</a></div>
             </div>
         </div>
     </div>
 </div>
+
+{% for account_id, account_data in accounts.items %}
+{% if account_data.uid == uid %}
+<div class="admin-screen">
+    <form method="post" action="{% url 'update_profile' %}" class="signup_table">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="signup_lbl">Email <span class="red-asterisk">*</span></label>
+            <input class="signup_txtbox" type="email" name="email" placeholder="Enter Email" value={{ account_data.email }} disabled>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">First Name <span class="red-asterisk">*</span></label>
+            <input class="signup_txtboxname" type="text" name="fname" placeholder="Enter First Name" value={{ account_data.fname }} disabled>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">Last Name <span class="red-asterisk">*</span></label>
+            <input class="signup_txtboxname" type="text" name="lname" placeholder="Enter Last Name" value={{ account_data.lname }} disabled>
+        </div>
+        <div class="form-group">
+            <label class="signup_lbl">Sex <span class="red-asterisk">*</span></label>
+            <input type="radio" name="sex" value="Male" {% if account_data.sex == 'Male' %} checked {% endif %} disabled><label class="signup_lbl2">Male &ensp;</label>
+            <input type="radio" name="sex" value="Female" {% if account_data.sex == 'Female' %} checked {% endif %} disabled><label class="signup_lbl2">Female</label>
+        </div>
+
+        <div class="form-group">
+            <label class="signup_lbl">Office Number <span class="red-asterisk">*</span></label>
+            <input class="signup_txtbox" type="number" name="cnumber" placeholder="Enter Office Number" value={{ account_data.cnumber }} required>
+        </div>
+        
+        <div class="form-group">
+            <label class="signup_lbl">Role <span class="red-asterisk">*</span></label>
+            <select class="signup_dd-jobtitle" name="role" id="roleSelect"  required disabled>
+                {% if account_data.role == 'Doctor' %}
+                    <option value="Doctor" selected>Doctor</option>
+                    <option value="Nurse">Nurse</option>
+                {% elif account_data.role == 'Nurse' %}
+                    <option value="Doctor">Doctor</option>
+                    <option value="Nurse" selected>Nurse</option>
+                {% endif %}
+            </select>
+        </div>
+        <input type = "hidden" name="rselected" value={{ account_data.role }}>
+        <div class="form-group">
+            <label class="signup_lbl">Department <span class="red-asterisk">*</span></label>
+            <select class="signup_dd-department" name="department" required>
+                <option value="">- Select Department -</option>
+                {% if account_data.department == 'General Ward' %}
+                    <option value="General Ward" selected>General Ward</option>
+                {% endif %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="signup_lbl">Specialization <span class="red-asterisk">*</span></label>
+            <select class="signup_dd-jobtitle" name="specialization" id="jobTitleSelect" required disabled>
+                <option value={{ account_data.specialization }}>{{ account_data.specialization }}</option>
+            </select>
+        </div>
+
+        <button id="signup_btn" type="submit" name='update' value={{ uid }}>Update Account</button>
+
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </form>
+</div>
+{% endif %}
+{% endfor %}   
+
+<script src="{% static 'js/register.js' %}"></script>
 
 {% endblock %}

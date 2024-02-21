@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import logout as auth_logout
+from django.core.mail import send_mail
 
 
 # Use the firebase_database object directly
@@ -27,6 +28,14 @@ def home(request):
             print(request.session['uid'])
 
             #db.child('sessions').child(user['localId']).set(user)
+
+            subject = 'Welcome to My Site'
+            message = 'Thank you for creating an account!'
+            from_email = 'jmmojica0701@gmail.com'
+            recipient_list = [email]
+            send_mail(subject, message, from_email, recipient_list)
+            
+            send_mail(subject, message, from_email, recipient_list)
             
             messages.success(request, 'Login successful!')
 
@@ -110,13 +119,13 @@ def create(request):
             try:
                 # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
-                print(user)
+                #print(user)
 
                 # Adjust this line according to the actual structure of the response object
                 #uid = user['localId']  # Accessing 'localId' from the user object
     
                  # Ensure you have the correct value of uid
-                print(user['localId'])
+                #print(user['localId'])
 
                 # Get idToken from the session (if needed)
                 #idToken = request.session['uid']
@@ -189,6 +198,53 @@ def logout(request):
     
     #firebase_auth.signOut()
     return redirect('home')
+
+def profile(request):
+    # Fetch doctors and nurses data from Firebase
+    doctors = db.child("doctors").get().val()
+    nurses = db.child("nurses").get().val()
+    uid = request.session['uid'] 
+
+            # Combine doctors and nurses data into one dictionary
+    accounts = {}
+    if doctors:
+        accounts.update(doctors)
+    if nurses:
+        accounts.update(nurses)
+
+    return render(request, 'hmis/Profile.html', {'uid': uid, 'accounts': accounts})
+
+def update_profile (request):
+    if request.method == 'POST':
+        try:
+            uid = request.POST.get('update')
+            onumber = request.POST.get('cnumber')
+            department = request.POST.get('department')
+            role = request.POST.get('rselected')
+            #print(uid)
+            #print(role)
+
+            db_path = ""
+
+            # Construct the path to the appointment data in Firebase
+            if role == 'Doctor':
+                db_path = f"/doctors/{uid}"
+            elif role == 'Nurse':
+                db_path = f"/nurses/{uid}"  # Adjust the path as per your Firebase structure
+
+            # Update appointment data in Firebase
+            db.child(db_path).update({
+                'cnumber': onumber,
+                'department': department
+            }) 
+
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
+        return redirect('Profile')  # Redirect to the appointments list page
+
+    # Handle GET request or invalid form submission
+    return redirect('Profile')
 
 # Function to get upcoming appointments
 def AppointmentUpcoming(request):
