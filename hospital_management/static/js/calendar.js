@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function() {
       { hdate: "24-02-2024", task: "2:30 PM Meg Griffin" },
       { hdate: "24-02-2024", task: "4:00 PM Brian Griffin" },
       { hdate: "24-02-2024", task: "4:30 PM Dan Heng" },
-      // Additional tasks...
     ];
   
     const calendar = document.querySelector("#calendar");
