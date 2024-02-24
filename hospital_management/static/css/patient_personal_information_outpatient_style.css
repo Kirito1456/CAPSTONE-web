@@ -8,7 +8,7 @@
 }
 
 #side-menu{
-    width: 20%;
+    width: 16%;
     height: 100%;
     
     position: absolute;
@@ -334,57 +334,6 @@ a:hover{
     height: 95%;
 }
 
-#vital-signs-table{
-    margin: 10px 0 5px 20px;
-    width: 95%;
-
-    justify-content: center;
-    align-items: center;
-}
-
-#vital-signs{
-    text-align: center;
-
-    width: 100%;
-}
-
-th{
-    font-size: 15;
-}
-
-td{
-    padding: 5px;
-    font-size: 14;
-}
-
-#new-entry-button, #new-entry{
-    padding: 5px 5px 5px 5px;
-
-    background-color: #85AA9B;
-    color: #fff;
-
-    border-radius: 10px;
-
-    width: fit-content;
-    margin: 10px;
-
-    font-size: 12;
-
-}
-
-#notes{
-    display: flex;
-    flex-direction: row;
-
-    justify-content: space-between;
-}
-
-#progress-note{
-    justify-content: space-between;
-
-    margin: 10px 30px 10px 30px;
-}
-
 #view-treatment-plan, #view-treatment-plan-button{
     background-color: #85AA9B;
     color: #fff;
@@ -429,26 +378,6 @@ td{
     justify-items: center;
 }
 
-#edit-note-button{
-    margin: 10px 0 10px 0;
-}
-
-#edit-note-button, #edit-note{
-    padding: 5px 5px 5px 5px;
-
-    background-color: #85AA9B;
-    color: #fff;
-
-    border-radius: 10px;
-
-    width: fit-content;
-
-    font-size: 12;
-
-    display: flexbox;
-    justify-content: space-around;
-}
-
 #tests{
     display: flex;
     flex-direction: row;
@@ -456,31 +385,6 @@ td{
     justify-content: space-around;
 
     margin: 10px 30px 10px 30px;
-
-}
-
-#plus-icon{
-    width: 10px;
-    height: 10px;
-}
-
-#new-entry-button, #new-entry{
-    padding: 5px 5px 5px 5px;
-
-    background-color: #85AA9B;
-    color: #fff;
-
-    border-radius: 10px;
-
-    width: fit-content;
-    margin: 10px;
-
-    font-size: 12;
-
-    display: flexbox;
-    justify-content: flex-end;
-    align-items: flex-end;
-    right: 0px;
 
 }
 
