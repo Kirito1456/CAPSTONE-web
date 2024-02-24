@@ -52,7 +52,6 @@
                         
                     </div>
                 </div>
-
                 <div class="container">
 
                     <div class="header">
@@ -89,6 +88,11 @@
             
         </div>
 
+<script>
+    var task = JSON.parse('{{ task_json | escapejs | safe  }}');
+</script>
+        
+        
         
 <script src="{% static 'js/appointment-script.js' %}"></script>
 <script src="{% static 'js/appointment.js' %}"></script>

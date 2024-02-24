@@ -9,7 +9,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import logout as auth_logout
 from django.core.mail import send_mail
-
+import json
 
 # Use the firebase_database object directly
 db = firebase_database
@@ -29,13 +29,13 @@ def home(request):
 
             #db.child('sessions').child(user['localId']).set(user)
 
-            subject = 'Welcome to My Site'
-            message = 'Thank you for creating an account!'
-            from_email = 'jmmojica0701@gmail.com'
+            # subject = 'Welcome to My Site'
+            # message = 'Thank you for creating an account!'
+            # from_email = 'jmmojica0701@gmail.com'
             recipient_list = [email]
-            send_mail(subject, message, from_email, recipient_list)
+            # send_mail(subject, message, from_email, recipient_list)
             
-            send_mail(subject, message, from_email, recipient_list)
+            # send_mail(subject, message, from_email, recipient_list)
             
             messages.success(request, 'Login successful!')
 
@@ -368,7 +368,7 @@ def AppointmentPast(request):
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
                                                          'uid': uid, 'doctors': doctors})
-
+    
 def AppointmentCalendar(request):
     
     if request.session.get('uid') is None:
@@ -376,7 +376,28 @@ def AppointmentCalendar(request):
     
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']
-    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors})
+
+    id = request.session.get('uid')
+    patients = db.child("patients").get().val()
+    appointments = db.child("appointments").get().val()
+
+    task = []
+    for appointment_id, appointment_data in appointments.items():
+        if appointment_data.get('doctorUID') == id:
+            hdate = appointment_data.get('appointmentDate')
+            appointment_time = appointment_data.get('appointmentTime')
+            patient_uid = appointment_data.get('patientName')
+        
+            for patient_id, patient_data in patients.items():
+                if patient_uid == patient_id:
+                    patient_name = patient_data.get('fname') +  ' ' + patient_data.get('lname')
+                    task_item = {'hdate': hdate, 'task':f"{appointment_time} {patient_name}"}
+                    task.append(task_item)
+
+    task_json = json.dumps(task)
+    
+    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json})
+
 
 def Message(request):
     return render(request, 'hmis/Message.html')

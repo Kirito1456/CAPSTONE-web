@@ -1,18 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const task = [ 
-      { hdate: "21-02-2024", task: "9:30 AM Taylor Swift" },
-      { hdate: "22-02-2024", task: "9:30 AM Taylor Sheesh" },
-      { hdate: "22-02-2024", task: "10:30 AM Jake Sim" },
-      { hdate: "23-02-2024", task: "9:30 AM Jay Park" },
-      { hdate: "23-02-2024", task: "11:00 AM Winnie He" },
-      { hdate: "23-02-2024", task: "2:00 PM Wendy He" },
-      { hdate: "23-02-2024", task: "4:00 PM Chola He" },
-      { hdate: "24-02-2024", task: "10:30 AM Peter Griffin" },
-      { hdate: "24-02-2024", task: "11:00 AM Stewie Griffin" },
-      { hdate: "24-02-2024", task: "2:30 PM Meg Griffin" },
-      { hdate: "24-02-2024", task: "4:00 PM Brian Griffin" },
-      { hdate: "24-02-2024", task: "4:30 PM Dan Heng" },
-    ];
+
+    var dateOfTask = "";
+    var taskDetails = "";
+    task.forEach(item => {
+        var hdate = item.hdate;
+        var taskitem = item.task;
+        dateOfTask += hdate + "<br>";
+        taskDetails += taskitem + "<br>";
+    });
   
     const calendar = document.querySelector("#calendar");
     const monthBanner = document.querySelector("#month");
@@ -51,10 +46,9 @@ document.addEventListener("DOMContentLoaded", function() {
         dayBox.classList.add("day");
         const monthVal = month + 1 < 10 ? "0" + (month + 1) : month + 1;
         const dateVal = i - emptyDays < 10 ? "0" + (i - emptyDays) : i - emptyDays;
-        const dateText = `${dateVal}-${monthVal}-${year}`;
+        const dateText = `${year}-${monthVal}-${dateVal}`;
         if (i > emptyDays) {
           dayBox.innerText = i - emptyDays;
-          const eventOfTheDay = events.find((e) => e.date == dateText);
           const tasksOfTheDay = task.filter((e) => e.hdate == dateText);
   
           if (i - emptyDays === day && navigation == 0) {
@@ -66,8 +60,19 @@ document.addEventListener("DOMContentLoaded", function() {
             eventDiv.classList.add("event");
             eventDiv.classList.add("task");
             eventDiv.innerText = task.task;
+
+            const currentDate = new Date();
+
+            const taskDateParts = task.hdate.split("-");
+            const taskDate = new Date(taskDateParts[0], taskDateParts[1] - 1, taskDateParts[2]);
+
+            if (currentDate > taskDate) {
+              eventDiv.style.textDecoration = "line-through";
+            }
+          
             dayBox.appendChild(eventDiv);
           });
+
   
           if (tasksOfTheDay.length > 2) {
             const showMoreButton = document.createElement("button");
