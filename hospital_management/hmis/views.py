@@ -132,8 +132,14 @@ def reset(request):
         return render(request, 'hmis/forgotpass.html')
 
 
+
 def patient_data_doctor_view(request):
-    return render(request, 'hmis/patient_data_doctor_view.html')
+    # Fetch patients from Firebase
+    patients = db.child("patients").get().val()
+    patientsdata = db.child("patientdata").get().val()
+
+    # Pass the patients data to the template
+    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata})
 
 def patient_personal_information(request):
     return render(request, 'hmis/patient_personal_information.html')

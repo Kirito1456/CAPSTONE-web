@@ -48,38 +48,28 @@
                                 <th id = "status">Status</th>
                             </tr>
                             <!--add for loop - up to 7-->
-                            <tr id = "patient-info" style="border-bottom: 1px #85AA9B solid;">
+                            {% for patients_id, patients_data in patients.items %}
+                            <tr id = "patient-info">
                                 <td>
                                     <a href="{% url 'patient_personal_information' %}"> <!--patient information-->
                                         <div id = "patient-name"> 
                                             <div id = "photo-icon"><img src="{% static 'hannie.jpg' %}" id = "photo"></div>
-                                            <div id = "user-name">Jeonghan Yoon</div>
+                                            <div id = "user-name">{{ patients_data.fname }} {{ patients_data.lname }}</div>
                                         </div>
                                     </a>
                                 </td>
                                 <td>Male</td>
                                 <td>10/04/1995</td>
-                                <td>Pneumonia</td>
-                                <td>08/08/2023</td>
-                                <td>N/A</td>
-                                <td>Outpatient</td>
+                                {% for patientsdata_id, patientsdata_data in patientsdata.items %}
+                                    {% if patients_data.uid == patientsdata_data.patientid %}
+                                    <td>{{ patientsdata_data.disease }}</td>
+                                    <td>{{ patientsdata_data.lastVisited }}</td>
+                                    <td>{{ patientsdata_data.room }}</td>
+                                    <td>{{ patientsdata_data.status }}</td>
+                                    {% endif %}
+                                {% endfor %}
                             </tr>
-                            <tr id = "patient-info" >
-                                <td>
-                                    <a href="test.html"> <!--patient information-->
-                                        <div id = "patient-name"> 
-                                            <div id = "photo-icon"><img src="{% static 'chaewon.jpg' %}" id = "photo"></div>
-                                            <div id = "user-name">Chaewon Kim</div>
-                                        </div>
-                                    </a>
-                                </td>
-                                <td>Female</td>
-                                <td>08/01/2000</td>
-                                <td>Flu</td>
-                                <td>08/24/2023</td>
-                                <td>304</td>
-                                <td>Inpatient</td>
-                            </tr>
+                            {% endfor %}
                         </table>
                     </div>
                     <div class="pagination">
