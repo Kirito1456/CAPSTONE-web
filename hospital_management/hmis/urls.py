@@ -13,4 +13,6 @@ urlpatterns = [
     path('new_vital_sign_entry/', views.new_vital_sign_entry, name='new_vital_sign_entry'),
     path('patient_medical_history/', views.patient_medical_history, name='patient_medical_history'),
     path('view_treatment_plan/', views.view_treatment_plan, name='view_treatment_plan'),
+    path('patient_medication_doctor/', views.view_patient_medication_doctor, name='view_medication_doctor'),
+    path('patient_medication_nurse/', views.view_patient_medication_nurse, name='view_medication_nurse'),
 ]
