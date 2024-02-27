@@ -3,10 +3,10 @@
 <title>{% block title %}Patient Data{% endblock %}</title>
 
 {% block styles%} 
-<link rel="stylesheet" href="{% static 'css/patient_medication_style.css' %}">
+<link rel="stylesheet" href="{% static 'css/medication-table-style.css' %}">
 {% endblock styles%}
 
-
+{% block content %}
         <div id = "whole-screen">
             <div id = "side-menu">
                 <div id = "all-info">
@@ -33,39 +33,72 @@
             <div id = "other-information">
                 <div id = "title">
                     <div id = "header">Medication Orders</div>
-                    <div id = "search"><input id = "search-bar" placeholder="Search Patient Name"></div>
+                    <div id = "side">
+                        <div id = "search"><input id = "search-bar" placeholder="Search Patient Name"></div>
+                    </div>  
+                </div>
+                <div id = "patient-info">
+                    <div id = "title-head">Patient Information</div>
+                    <div id = "patient-information"> 
+                        <div id = "first">
+                            <div id = "fname">Juanita</div>
+                            <div id = "fname-label">First Name</div>
+                        </div>
+                        <div id = "last">
+                            <div id = "lname">Dela Cruz</div>
+                            <div id = "lname-label">Last Name</div>
+                        </div>
+                        <div id = "gender">
+                            <div id = "gender-view">Female</div>
+                            <div id = "gender-label">Gender</div>
+                        </div>
+                        <div id = "bday">
+                            <div id = "birthday">01/03/2003</div>
+                            <div id = "bday-label">Date of Birth</div>
+                        </div>
+                        <div id = "age">
+                            <div id = "age-view">21</div>
+                            <div id = "age-label">Age</div>
+                        </div>
+                    </div>
                 </div>
                 <div class = "table">
                     <div id = "information-table">
                         <table id = "user-information" style="border-bottom: 1px #85AA9B solid;">
                             <tr id = "head" style="border-bottom: 1px #85AA9B solid;">
-                                <th id = "uname">Name</th>
-                                <th id = "room">Room</th>
-                                <th id = "status">Status</th>
-                                <th id = "disease">Disease</th>
-                                <th id = "last-update">Last Updated</th>
+                                <th id = "date">Date</th>
+                                <th id = "medication">Prescribed Medication</th>
+                                <th id = "category">Category</th>
                             </tr>
                             <!--add for loop - up to 7-->
-                            {% for patients_id, patients_data in patients.items %}
-                            <tr id = "patient-info">
+                            <!--{% for patients_id, patients_data in patients.items %}-->
+                            <tr id = "medication-info">
                                 <td>
                                     <a href="{% url 'patient_personal_information' %}"> <!--patient information-->
-                                        <div id = "patient-name"> 
-                                            <div id = "photo-icon"><img src="{% static 'hannie.jpg' %}" id = "photo"></div>
-                                            <div id = "user-name">{{ patients_data.fname }} {{ patients_data.lname }}</div>
-                                        </div>
+                                        <div id = "date">01-01-2024</div>
                                     </a>
                                 </td>
-                                {% for patientsdata_id, patientsdata_data in patientsdata.items %}
+                                <td>gfygeask walwskwmkfd</td>
+                                <td>inpatient</td>
+                                <!--{% for patientsdata_id, patientsdata_data in patientsdata.items %}
                                     {% if patients_data.uid == patientsdata_data.patientid %}
                                     <td>{{ patientsdata_data.room }}</td>
                                     <td>{{ patientsdata_data.status }}</td>
                                     <td>{{ patientsdata_data.disease }}</td>
                                     <td>{{ patientsdata_data.lastVisited }}</td> 
                                     {% endif %}
-                                {% endfor %}
+                                {% endfor %}-->
                             </tr>
-                            {% endfor %}
+                            <!--{% endfor %}-->
+                            <tr>
+                                <td>
+                                    <a href="{% url 'patient_personal_information' %}"> <!--patient information-->
+                                        <div id = "date">01-01-2024</div>
+                                    </a>
+                                </td>
+                                <td>gfygeask walwskwmkfd</td>
+                                <td>inpatient</td>
+                            </tr>
                         </table>
                     </div>
                     <div class="pagination">
@@ -77,3 +110,4 @@
             </div>
             
         </div>
+{% endblock %}

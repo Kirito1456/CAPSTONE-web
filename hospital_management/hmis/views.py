@@ -153,8 +153,17 @@ def patient_medical_history(request):
 def view_treatment_plan(request):
     return render(request, 'hmis/view_treatment_plan.html')
 
-def view_patient_medication_doctor(request):
+def patient_medication_doctor(request):
     return render(request, 'hmis/patient_medication_doctor.html')
 
-def view_patient_medication_nurse(request):
+def patient_medication_nurse(request):
     return render(request, 'hmis/patient_medication_nurse.html')
+
+def patient_medication_table(request):
+    return render(request, 'hmis/patient_medication_table.html')
+
+def inpatient_medication_order(request):
+    return render(request, 'hmis/inpatient_medication_order.html')
+
+def outpatient_medication_order(request):
+    return render(request, 'hmis/outpatient_medication_order.html')
