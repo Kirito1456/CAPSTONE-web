@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +76,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'hospital_management.wsgi.application'
+ASGI_APPLICATION = 'hospital_management.asgi.application'
 
 # Firebase Configuration
 #FIREBASE_CONFIG_FILE = 'firebase_config.json'
