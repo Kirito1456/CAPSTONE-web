@@ -153,7 +153,22 @@ def patient_data_doctor_view(request):
     return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata})
 
 def patient_personal_information(request):
-    return render(request, 'hmis/patient_personal_information_inpatient.html')
+    patients = db.child("patients").get().val()
+    patientsdata = db.child("patientdata").get().val()
+
+    chosenPatient = request.GET.get('chosenPatient', '')
+
+    chosenPatientData = {}
+    for patients_id, patients_data in patients.items():
+        if chosenPatient == patients_data["uid"]:
+            chosenPatientData[patients_id] = patients_data
+
+    chosenPatientDatas = {}
+    for patientsdata_id, patientsdata_data in patientsdata.items():
+        if chosenPatient == patientsdata_data["patientid"]:
+            chosenPatientDatas[patientsdata_id] = patientsdata_data
+
+    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas})
 
 def new_vital_sign_entry(request):
     return render(request, 'hmis/new_vital_sign_entry.html')

@@ -35,64 +35,67 @@
                     <a href="{% url 'patient_data_doctor_view' %}"> << Back </a>
                 </div>
                 <div id = "patient-info">
+                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
                     <div id = "personal-information">
                         <div id = "head">Personal Information</div>
                         <div id = "row-1">
                             <div id = "first">
-                                <div id = "fname">Juanita</div>
+                                <div id = "fname">{{ chosenPatientData_data.fname }}</div>
                                 <div id = "fname-label">First Name</div>
                             </div>
                             <div id = "last">
-                                <div id = "lname">Dela Cruz</div>
+                                <div id = "lname">{{ chosenPatientData_data.lname }}</div>
                                 <div id = "lname-label">Last Name</div>
                             </div>
                         </div>
                         <div id = "row-2">
                             <div id = "gender">
-                                <div id = "gender-view">Female</div>
+                                <div id = "gender-view">{{ chosenPatientData_data.gender }}</div>
                                 <div id = "gender-label">Gender</div>
                             </div>
                             <div id = "bday">
-                                <div id = "birthday">01/03/2003</div>
+                                <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
                                 <div id = "bday-label">Date of Birth</div>
                             </div>
                             <div id = "age">
-                                <div id = "age-view">21</div>
+                                <div id = "age-view">??</div>
                                 <div id = "age-label">Age</div>
                             </div>
                         </div>
+                        {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
                         <div id = "row-3">
                             <div id = "blood-type">
-                                <div id = "blood-type-view">O+</div>
+                                <div id = "blood-type-view">{{ chosenPatientDatas_data.bloodtype }}</div>
                                 <div id = "blood-type-label">Blood Type</div>
                             </div>
                             <div id = "height">
-                                <div id = "height-view">180 cm</div>
+                                <div id = "height-view">{{ chosenPatientDatas_data.height }} cm</div>
                                 <div id = "height-label">Height</div>
                             </div><div id = "weight">
-                                <div id = "weight-view">52 kg</div>
+                                <div id = "weight-view">{{ chosenPatientDatas_data.weight }} kg</div>
                                 <div id = "weight-label">Weight</div>
                             </div>
                         </div>
+                        {% endfor %}
                         <div id = "row-4">
                             <div id = "address">
-                                <div id = "address-view">2401 Taft Anvenue Malate, Manila</div>
+                                <div id = "address-view">{{ chosenPatientData_data.address }}</div>
                                 <div id = "address-label">Address</div>
                             </div>
                         </div>
                         <div id = "row-5">
                             <div id = "phone">
-                                <div id = "phone-number">09123456789</div>
+                                <div id = "phone-number">{{ chosenPatientData_data.cnumber }}</div>
                                 <div id = "phone-number-label">Phone Number</div>
                             </div>
                             <div id = "telephone">
-                                <div id = "telephone-number">0281234567</div>
-                                <div id = "telephone-number-label">Last Name</div>
+                                <div id = "telephone-number">??</div>
+                                <div id = "telephone-number-label">Telephone Number</div>
                             </div>
                         </div>
                         <div id = "row-6">
                             <div id = "email">
-                                <div id = "e-mail">juanita.delacruz@gmail.com</div>
+                                <div id = "e-mail">{{ chosenPatientData_data.email }}</div>
                                 <div id = "email-label">E-mail Address</div>
                             </div>
                         </div>
@@ -100,6 +103,7 @@
                             <a href = "{% url 'patient_medical_history' %}" id = "view-medical-history-button">View Medical History</a>
                         </div>
                     </div>
+                    {% endfor %}
                     <div id = "medical-information">
                         <div id = "vital-signs">
                             <div id = "head">Vital Signs Sheet</div>
