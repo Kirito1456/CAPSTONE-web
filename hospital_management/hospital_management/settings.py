@@ -15,10 +15,14 @@ import os
 import firebase_admin
 from firebase_admin import credentials
 import pyrebase
+import pytesseract
+
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -105,6 +109,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'mongodb': {
+        'ENGINE': 'djongo',
+        'NAME': 'pharmacy',
+        'CLIENT': {
+            'host': 'pharmacy.h3k6bxm.mongodb.net',
+            'port': 27017,
+            'username': 'admin',
+            'password': 'Qvr4tlGx4qFPdgoU',
+            'authSource': 'pharmacy',
+            'authMechanism': 'SCRAM-SHA-1',
+        },
     }
 }
 

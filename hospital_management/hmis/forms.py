@@ -1,7 +1,7 @@
 # forms.py
 from django.forms import ModelForm
 from django import forms
-from hmis.models import Patient, Staff
+from hmis.models import Patient, Staff, Medications
 
 class PatientRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -72,4 +72,29 @@ class StaffRegistrationForm(forms.ModelForm):
             'cnumber': forms.TextInput(attrs={'placeholder': 'Enter your contact number'}),
             'birthday': forms.DateInput(attrs={'type': 'date'}),
             'email': forms.EmailInput(attrs={'placeholder': 'Enter your email'}),
+        }
+
+class MedicationsListForm(forms.ModelForm):
+    
+    ROUTE_CHOICES = (
+        ('Oral', 'Oral'),
+        ('Injection', 'Injection'),
+        ('Topical', 'Topical'),
+    )
+
+    FREQUENCY_CHOICES = (
+        ('Once Daily', 'Once Daily'),
+        ('Twice Daily', 'Twice Daily'),
+        ('Thrice Daily', 'Thrice Daily'),
+    )
+
+    route = forms.ChoiceField(choices=ROUTE_CHOICES)
+    frequency = forms.ChoiceField(choices=FREQUENCY_CHOICES)
+
+    class Meta:
+        model = Medications
+        fields = ('medicationname', 'dosage', 'route', 'frequency', 'additionalremarks')
+        widgets = {
+            'dosage': forms.TextInput(attrs={'placeholder': 'Enter Dosage'}),
+            'additionalremarks': forms.EmailInput(attrs={'placeholder': 'Enter Remarks'}),
         }

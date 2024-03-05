@@ -1,115 +1,300 @@
 {%load static%}
-<html>
-    <title>{% block title %}Patient Data{% endblock %}</title>
+<title>{% block title %}Patient Data{% endblock %}</title>
 
 {% block styles%} 
+<!-- <link rel="stylesheet" href="{% static 'css/patient_medication_style.css' %}"> -->
 <link rel="stylesheet" href="{% static 'css/view_treatment_plan_style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
+
 {% endblock styles%}
 
-    <body> 
-        <div id = "whole-screen">
-            <div id = "side-menu">
-                <div id = "all-info">
-                    <div id = "user-info"> 
-                        <div id = "image">
-                            <img src="{% static 'hannie.jpg' %}" id = "display-photo">
-                        </div>
-                        <div id = "information">
-                            <div id = "name"> Jeonghan </div>
-                            <div id = "role"> General Practitioner</div>
-                        </div>
-                    </div>
-                    <div id = "menu"> 
-                        <div id = "a1"><a href="">Dashboard</a></div>
-                        <div id = "a2"><a href="">Appointments</a></div>
-                        <div id = "a3" style="font-weight: bold;"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                        <div id = "a4"><a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
-                        <div id = "a5"><a href="">Message</a></div>
-                        <div id = "a6"><a href="">Profile</a></div>
-                        <div id = "a7"><a href="">Settings</a></div>
-                    </div>
+{% block content %}
+<div class = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="{% static 'hannie.jpg' %}" id = "display-photo">
+                </div>
+                <div id = "information">
+                    <div id = "name"> Jeonghan </div>
+                    <div id = "role"> General Practitioner</div>
                 </div>
             </div>
-            <div id = "other-side">
-                <div id = "back-button">
-                    <a href="{% url 'patient_personal_information' %}"> << Back </a>
+            <div id = "menu"> 
+                <div id = "a1"><a href="">Dashboard</a></div>
+                <div id = "a2"><a href="">Appointments</a></div>
+                <div id = "a3"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id = "a4" style="font-weight: bold;"><a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
+                <div id = "a5"><a href="">Message</a></div>
+                <div id = "a6"><a href="">Profile</a></div>
+                <div id = "a7"><a href="">Settings</a></div>
+            </div>
+        </div>
+    </div>
+    <div id = "other-information">
+        <div id = "title">
+            <div id = "left">
+                <div id = "view-medication"><a href="{% url 'patient_medication_doctor' %}">View Medication Orders/Prescriptions</a></div>
+                <div id = "create-medication" style="font-weight: bold;"><a href="{% url 'outpatient_medication_order' %}">Create Medication Order/Prescription</a></div>
+            </div>
+        </div>
+
+        <div id = "treatment-plan">
+            <div id = "patient-information">
+                <div id = "first">
+                    <div id = "fname-label">Name of Patient</div>
+                    <select id="fname">
+                        <option value="" selected disabled>Select Patient</option>
+                        {% for patients_id, patients_data in patients.items %}
+                        <option value="{{ patients_data.id }}" 
+                                data-birthday="{{ patients_data.bday }}" 
+                                data-gender="{{ patients_data.gender }}">
+                            {{ patients_data.fname }} {{ patients_data.lname }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div id = "treatment-plan">
-                    <div id = "head-corner">Patient Treatment Plan</div>
-                    <div id = "patient-information">
-                        <div id = "first">
-                            <div id = "fname">Juanita</div>
-                            <div id = "fname-label">First Name</div>
-                        </div>
-                        <div id = "last">
-                            <div id = "lname">Dela Cruz</div>
-                            <div id = "lname-label">Last Name</div>
-                        </div>
-                        <div id = "gender">
-                            <div id = "gender-view">Female</div>
-                            <div id = "gender-label">Gender</div>
-                        </div>
-                        <div id = "bday">
-                            <div id = "birthday">01/03/2003</div>
-                            <div id = "bday-label">Date of Birth</div>
-                        </div>
-                        <div id = "age">
-                            <div id = "age-view">21</div>
-                            <div id = "age-label">Age</div>
-                        </div>
+                <div id = "gender">
+                    <div id = "gender-label">Gender</div>
+                    <div id = "gender-view"></div>
+                </div>
+                <div id = "bday">
+                    <div id = "bday-label">Date of Birth</div>
+                    <div id = "birthday-view"></div>
+                </div>
+                <div id = "age">
+                    <div id = "age-label">Age</div>
+                    <div id = "age-view"></div>
+                </div>   
+                <div id="today">
+                <style>
+                    #today{
+                        width: fit-content;
+                        text-align: center;
+                        margin: 10px;
+                    }
+                    #today-label {
+                        text-align: center;
+                        font-size: 12px;
+                        margin-bottom: 5px;
+                        font-weight: bold;
+                    }
+                    #today-view{
+                        padding: 8px;
+                        background-color: #D9D9D9;
+                        color: black;
+                        border-radius: 10px;
+                        font-size: 14px;
+                        border: 1px solid black;
+                    }
+                </style>
+                <div id="today-label">Today's Date</div>
+                <div id="today-view"></div>
+                </div>
+                
+                
+            </div>
+            <hr>
+            <div id = "uploading-photo">
+                <div id = "uploading-header">Upload Handwritten Image</div>
+                <form id="upload-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div id="upload">
+                        <input type="file" id="file-input" style="display: none;" onchange="displayFileName(this)">
+                        <label for="file-input" id="file-label"><i class="fas fa-plus"></i>&nbsp; Choose Photo</label>
+                        <span id="selected-file"></span>
+                        <button id="remove-button" type="button" onclick="removeFile()" style="display: none;">Remove</button>
+                        <button id="upload-button" type="submit" style="display: none;">Upload Photo</button>
                     </div>
-                    <div id = "head">List of Prescribed Medications</div>
-                    <div id = "prescribed-medication">
-                        <div id = "medication-list">
-                            <table id = "medication-table">
-                                <tr id = "label">
+                </form>                
+            </div>
+            <hr>
+            <form id="medication-form" method="post" action="{% url 'outpatient_medication_order' %}">
+                {% csrf_token %}
+                <div id="medications-container">
+                    <div id="head">Medications List</div>
+                    <div id="medication-list">
+                        <table id="medication-table">
+                            <thead>
+                                <tr id="label">
+                                    <th><input type="checkbox" id="select-all-checkbox"></th>
                                     <th>Medication Name</th>
-                                    <th>Purpose</th>
                                     <th>Dosage</th>
                                     <th>Route</th>
                                     <th>Frequency</th>
+                                    <th>Additional Remarks</th> <!-- New column -->
                                 </tr>
+                            </thead>
+                            <tbody>
                                 <tr>
-                                    <td>Paracetamol</td>
-                                    <td>For fever</td>
-                                    <td>1 tablet</td>
-                                    <td>Oral</td>
-                                    <td>Every 4 hours</td>
+                                    <td><input type="checkbox" class="remove-checkbox"></td>
+                                    <td name="medicinename">Medicine Name</td>
+                                    <td><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></td>
+                                    <td>
+                                        <select class="route-dropdown" name="route">
+                                            <option value="" selected disabled>Select Route</option>
+                                            <option value="Oral">Oral</option>
+                                            <option value="Injection">Injection</option>
+                                            <option value="Topical">Topical</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="frequency-dropdown" name="frequency">
+                                            <option value="" selected disabled>Select Frequency</option>
+                                            <option value="Once Daily">Once Daily</option>
+                                            <option value="Twice Daily">Twice Daily</option>
+                                            <option value="Thrice Daily">Thrice Daily</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></td> <!-- New column -->
                                 </tr>
-                                <tr>
-                                    <td>Paracetamol</td>
-                                    <td>For fever</td>
-                                    <td>1 tablet</td>
-                                    <td>Oral</td>
-                                    <td>Every 4 hours</td>
-                                </tr>
-                                <tr>
-                                    <td>Paracetamol</td>
-                                    <td>For fever</td>
-                                    <td>1 tablet</td>
-                                    <td>Oral</td>
-                                    <td>Every 4 hours</td>
-                                </tr>
-                                <tr>
-                                    <td>Paracetamol</td>
-                                    <td>For fever</td>
-                                    <td>1 tablet</td>
-                                    <td>Oral</td>
-                                    <td>Every 4 hours</td>
-                                </tr>
-                            </table>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="update-with-new-order">
+                        <style>
+                            #update-with-new-order {
+                                display: flex;
+                                justify-content: space-between;
+                                margin: 15px;
+                            }
+
+                            #remove-medication-button {
+                                margin-top: 10px;
+                            }
+
+                            #remove-medication-button a {
+                                background-color: red;
+                                color: white;
+                                padding: 3px;
+                                border-radius: 5px;
+                                font-size: 12px;
+                            }
+
+                            #add-medication-button a, #submit-medication-button a {
+                                background-color: green;
+                                color: white;
+                                padding: 3px;
+                                border-radius: 5px;
+                                font-size: 12px;
+                            }
+                        </style>
+                        <div id="buttons-container">
+                            <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
+                            <div id="remove-medication-button"><a href="#" id="remove-medication-link">Remove Selected</a></div>
                         </div>
-                        <div id = "update-with-new-order">
-                            <div id = "new-medication-order"><a href = "" id = "medication-order-button">New Medication Order</a></div>
-                            <div id = "update">
-                                <div id = "date-time">Last Update: 01/17/23 07:00 AM</div>
-                                <div id = "updated-by">Updated By: Dr. John Doe</div>
-                            </div>
-                        </div>
+                        <div id="submit-medication-button"><a href="#" id="submit-medication-link">Create Order/Prescription</a></div>
                     </div>
                 </div>
-            </div>
+            </form>
+            
         </div>
-    </body>
+</div>
 
-</html>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var birthdayString = document.getElementById("birthday-view").innerText;
+        var birthday = new Date(birthdayString);
+        var today = new Date();
+        var ageYear = today.getFullYear() - birthday.getFullYear();
+        var ageMonth = today.getMonth() - birthday.getMonth();
+
+        document.getElementById("fname").addEventListener("change", function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var birthdayString = selectedOption.getAttribute("data-birthday");
+            var gender = selectedOption.getAttribute("data-gender");
+            var birthday = new Date(birthdayString);
+            var today = new Date();
+            var ageYear = today.getFullYear() - birthday.getFullYear();
+            var ageMonth = today.getMonth() - birthday.getMonth();
+
+            // Adjust age months if negative
+            if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
+                ageYear--;
+                ageMonth += 12;
+            }
+
+            // Update age view with correct values
+            document.getElementById("age-view").innerText = ageYear + " years and " + ageMonth + " months";
+
+            // Update other patient information
+            updatePatientInfo(birthdayString, gender);
+        });
+
+
+        function updatePatientInfo(birthday, gender) {
+            document.getElementById("birthday-view").innerText = birthday;
+            document.getElementById("gender-view").innerText = gender;
+        }
+
+
+        
+        var todayDate = today.toISOString().split('T')[0]; 
+        document.getElementById("today-view").innerText = todayDate;
+
+        // Add event listener to select all checkbox
+        document.getElementById("select-all-checkbox").addEventListener("change", function() {
+            selectAllCheckboxes();
+        });
+
+        document.getElementById("add-medication-button").addEventListener("click", function() {
+            addMedicationRow();
+        });
+        
+        document.getElementById("remove-medication-button").addEventListener("click", function() {
+            removeSelectedMedications();
+        });
+    });
+
+
+
+    function selectAllCheckboxes() {
+        var checkboxes = document.getElementsByClassName("remove-checkbox");
+        var selectAllCheckbox = document.getElementById("select-all-checkbox");
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = selectAllCheckbox.checked;
+        }
+    }
+
+    function addMedicationRow() {
+    var table = document.getElementById("medication-table").getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(table.rows.length);
+    newRow.innerHTML = `
+        <td><input type="checkbox" class="remove-checkbox"></td>
+        <td>Medicine Name</td>
+        <td><input type="text" class="dosage-input" placeholder="Dosage"></td>
+        <td>
+            <select class="route-dropdown">
+                <option value="" selected disabled>Select Route</option>
+                <option value="Oral">Oral</option>
+                <option value="Injection">Injection</option>
+                <option value="Topical">Topical</option>
+            </select>
+        </td>
+        <td>
+            <select class="frequency-dropdown">
+                <option value="" selected disabled>Select Frequency</option>
+                <option value="Once Daily">Once Daily</option>
+                <option value="Twice Daily">Twice Daily</option>
+                <option value="Three Times Daily">Three Times Daily</option>
+            </select>
+        </td>
+        <td><input type="text" class="remarks-input" placeholder="Additional Remarks"></td> <!-- New column -->`;
+    }
+
+
+    function removeSelectedMedications() {
+        var checkboxes = document.getElementsByClassName("remove-checkbox");
+        for (var i = checkboxes.length - 1; i >= 0; i--) {
+            if (checkboxes[i].checked) {
+                checkboxes[i].closest("tr").remove();
+            }
+        }
+    }
+
+</script>
+
+<script src="{% static 'js/ocr.js' %}"></script>
+
+{% endblock %}

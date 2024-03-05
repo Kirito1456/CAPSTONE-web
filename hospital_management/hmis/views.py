@@ -2,11 +2,22 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database
-from hmis.forms import StaffRegistrationForm
+from hmis.forms import StaffRegistrationForm, MedicationsListForm
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
+from django.conf import settings
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.core.files.storage import FileSystemStorage
+
+ 
+from PIL import Image 
+from pytesseract import pytesseract 
+
+import uuid
+import json
+from .database import connect_to_mongodb
 
 # Use the firebase_database object directly
 db = firebase_database
@@ -142,7 +153,7 @@ def patient_data_doctor_view(request):
     return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata})
 
 def patient_personal_information(request):
-    return render(request, 'hmis/patient_personal_information.html')
+    return render(request, 'hmis/patient_personal_information_inpatient.html')
 
 def new_vital_sign_entry(request):
     return render(request, 'hmis/new_vital_sign_entry.html')
@@ -153,8 +164,17 @@ def patient_medical_history(request):
 def view_treatment_plan(request):
     return render(request, 'hmis/view_treatment_plan.html')
 
+def view_treatment_plan(request, fname, lname, gender, bday):
+    return render(request, 'hmis/view_treatment_plan.html', {'fname': fname, 'lname': lname, 'gender': gender, 'bday': bday})
+
 def patient_medication_doctor(request):
-    return render(request, 'hmis/patient_medication_doctor.html')
+    # Fetch patients data from Firebase
+    patients = db.child("patients").get().val()
+    patientsdata = db.child("patientdata").get().val()
+
+    # Pass the combined data to the template
+    return render(request, 'hmis/patient_medication_doctor.html', {'patients': patients, 'patientsdata': patientsdata})
+
 
 def patient_medication_nurse(request):
     return render(request, 'hmis/patient_medication_nurse.html')
@@ -162,8 +182,39 @@ def patient_medication_nurse(request):
 def patient_medication_table(request):
     return render(request, 'hmis/patient_medication_table.html')
 
+def patient_medication_table(request, fname, lname, gender, bday):
+    return render(request, 'hmis/patient_medication_table.html', {'fname': fname, 'lname': lname, 'gender': gender, 'bday': bday})
+
 def inpatient_medication_order(request):
     return render(request, 'hmis/inpatient_medication_order.html')
 
+def perform_ocr(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        uploaded_image = request.FILES['image']
+        img = Image.open(uploaded_image)
+        text = pytesseract.image_to_string(img)
+        return HttpResponse(text)
+    
+    # Return a bad request response if no image is uploaded or if request method is not POST
+    return HttpResponse('No image uploaded or invalid request.')
+
+def pharmacy_drugs(request):
+    collection = connect_to_mongodb()
+    cursor = collection.find().limit(10)
+
+    # Convert the cursor to a list of dictionaries
+    data = list(cursor)
+    print(data)
+
+    # Pass the data to the template for rendering
+    return render(request, 'hmis/test.html', {'data': data})
+
+def generate_unique_id():
+    return str(uuid.uuid4())
+
 def outpatient_medication_order(request):
-    return render(request, 'hmis/outpatient_medication_order.html')
+    patients = db.child("patients").get().val()
+    return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients})
+
+
+

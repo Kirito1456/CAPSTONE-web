@@ -2,6 +2,27 @@ from django.db import models
 
 # Create your models here.
 
+class Medications(models.Model):
+    uid = models.CharField(max_length=255, blank=True, null=True)
+    medicationname = models.CharField(max_length=255)
+    dosage = models.CharField(max_length=255)
+    ROUTE_CHOICES = (
+        ('Oral', 'Oral'),
+        ('Injection', 'Injection'),
+        ('Topical', 'Topical'),
+    )
+    route = models.CharField(max_length=20, choices=ROUTE_CHOICES , null=True)
+    FREQUENCY_CHOICES = (
+        ('Once Daily', 'Once Daily'),
+        ('Twice Daily', 'Twice Daily'),
+        ('Thrice Daily', 'Thrice Daily'),
+    )
+    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES , null=True)
+    additionalremarks = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
 class Patient(models.Model):
     uid = models.CharField(max_length=255, blank=True, null=True)
     fname = models.CharField(max_length=255)
