@@ -68,27 +68,6 @@
                     <div id = "age-view"></div>
                 </div>   
                 <div id="today">
-                <style>
-                    #today{
-                        width: fit-content;
-                        text-align: center;
-                        margin: 10px;
-                    }
-                    #today-label {
-                        text-align: center;
-                        font-size: 12px;
-                        margin-bottom: 5px;
-                        font-weight: bold;
-                    }
-                    #today-view{
-                        padding: 8px;
-                        background-color: #D9D9D9;
-                        color: black;
-                        border-radius: 10px;
-                        font-size: 14px;
-                        border: 1px solid black;
-                    }
-                </style>
                 <div id="today-label">Today's Date</div>
                 <div id="today-view"></div>
                 </div>
@@ -114,72 +93,40 @@
                 {% csrf_token %}
                 <div id="medications-container">
                     <div id="head">Medications List</div>
-                    <div id="medication-list">
-                        <table id="medication-table">
-                            <thead>
-                                <tr id="label">
-                                    <th><input type="checkbox" id="select-all-checkbox"></th>
-                                    <th>Medication Name</th>
-                                    <th>Dosage</th>
-                                    <th>Route</th>
-                                    <th>Frequency</th>
-                                    <th>Additional Remarks</th> <!-- New column -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><input type="checkbox" class="remove-checkbox"></td>
-                                    <td name="medicinename">Medicine Name</td>
-                                    <td><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></td>
-                                    <td>
-                                        <select class="route-dropdown" name="route">
-                                            <option value="" selected disabled>Select Route</option>
-                                            <option value="Oral">Oral</option>
-                                            <option value="Injection">Injection</option>
-                                            <option value="Topical">Topical</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select class="frequency-dropdown" name="frequency">
-                                            <option value="" selected disabled>Select Frequency</option>
-                                            <option value="Once Daily">Once Daily</option>
-                                            <option value="Twice Daily">Twice Daily</option>
-                                            <option value="Thrice Daily">Thrice Daily</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></td> <!-- New column -->
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div id="medication-list-container">
+                        <div id="table-header">
+                            <div style="flex: 1; text-align: center;"><input type="checkbox" id="select-all-checkbox"></div>
+                            <div style="flex: 1; text-align: center;">Medicine Name</div>
+                            <div style="flex: 1; text-align: center;">Dosage</div>
+                            <div style="flex: 1; text-align: center;">Route</div>
+                            <div style="flex: 1; text-align: center;">Frequency</div>
+                            <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                        </div>
+                        <div id="table-body">
+                            <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
+                            <div style="flex: 1; text-align: center;"><input type="text" placeholder="Medicine Name"></div>
+                            <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
+                            <div style="flex: 1; text-align: center;">
+                                <select class="route-dropdown" name="route">
+                                    <option value="" selected disabled>Select Route</option>
+                                    <option value="Oral">Oral</option>
+                                    <option value="Injection">Injection</option>
+                                    <option value="Topical">Topical</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <select class="frequency-dropdown" name="frequency">
+                                    <option value="" selected disabled>Select Frequency</option>
+                                    <option value="Once Daily">Once Daily</option>
+                                    <option value="Twice Daily">Twice Daily</option>
+                                    <option value="Thrice Daily">Thrice Daily</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
+                        </div>
                     </div>
+                    
                     <div id="update-with-new-order">
-                        <style>
-                            #update-with-new-order {
-                                display: flex;
-                                justify-content: space-between;
-                                margin: 15px;
-                            }
-
-                            #remove-medication-button {
-                                margin-top: 10px;
-                            }
-
-                            #remove-medication-button a {
-                                background-color: red;
-                                color: white;
-                                padding: 3px;
-                                border-radius: 5px;
-                                font-size: 12px;
-                            }
-
-                            #add-medication-button a, #submit-medication-button a {
-                                background-color: green;
-                                color: white;
-                                padding: 3px;
-                                border-radius: 5px;
-                                font-size: 12px;
-                            }
-                        </style>
                         <div id="buttons-container">
                             <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
                             <div id="remove-medication-button"><a href="#" id="remove-medication-link">Remove Selected</a></div>
@@ -192,109 +139,7 @@
         </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var birthdayString = document.getElementById("birthday-view").innerText;
-        var birthday = new Date(birthdayString);
-        var today = new Date();
-        var ageYear = today.getFullYear() - birthday.getFullYear();
-        var ageMonth = today.getMonth() - birthday.getMonth();
-
-        document.getElementById("fname").addEventListener("change", function() {
-            var selectedOption = this.options[this.selectedIndex];
-            var birthdayString = selectedOption.getAttribute("data-birthday");
-            var gender = selectedOption.getAttribute("data-gender");
-            var birthday = new Date(birthdayString);
-            var today = new Date();
-            var ageYear = today.getFullYear() - birthday.getFullYear();
-            var ageMonth = today.getMonth() - birthday.getMonth();
-
-            // Adjust age months if negative
-            if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
-                ageYear--;
-                ageMonth += 12;
-            }
-
-            // Update age view with correct values
-            document.getElementById("age-view").innerText = ageYear + " years and " + ageMonth + " months";
-
-            // Update other patient information
-            updatePatientInfo(birthdayString, gender);
-        });
-
-
-        function updatePatientInfo(birthday, gender) {
-            document.getElementById("birthday-view").innerText = birthday;
-            document.getElementById("gender-view").innerText = gender;
-        }
-
-
-        
-        var todayDate = today.toISOString().split('T')[0]; 
-        document.getElementById("today-view").innerText = todayDate;
-
-        // Add event listener to select all checkbox
-        document.getElementById("select-all-checkbox").addEventListener("change", function() {
-            selectAllCheckboxes();
-        });
-
-        document.getElementById("add-medication-button").addEventListener("click", function() {
-            addMedicationRow();
-        });
-        
-        document.getElementById("remove-medication-button").addEventListener("click", function() {
-            removeSelectedMedications();
-        });
-    });
-
-
-
-    function selectAllCheckboxes() {
-        var checkboxes = document.getElementsByClassName("remove-checkbox");
-        var selectAllCheckbox = document.getElementById("select-all-checkbox");
-        for (var i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].checked = selectAllCheckbox.checked;
-        }
-    }
-
-    function addMedicationRow() {
-    var table = document.getElementById("medication-table").getElementsByTagName('tbody')[0];
-    var newRow = table.insertRow(table.rows.length);
-    newRow.innerHTML = `
-        <td><input type="checkbox" class="remove-checkbox"></td>
-        <td>Medicine Name</td>
-        <td><input type="text" class="dosage-input" placeholder="Dosage"></td>
-        <td>
-            <select class="route-dropdown">
-                <option value="" selected disabled>Select Route</option>
-                <option value="Oral">Oral</option>
-                <option value="Injection">Injection</option>
-                <option value="Topical">Topical</option>
-            </select>
-        </td>
-        <td>
-            <select class="frequency-dropdown">
-                <option value="" selected disabled>Select Frequency</option>
-                <option value="Once Daily">Once Daily</option>
-                <option value="Twice Daily">Twice Daily</option>
-                <option value="Three Times Daily">Three Times Daily</option>
-            </select>
-        </td>
-        <td><input type="text" class="remarks-input" placeholder="Additional Remarks"></td> <!-- New column -->`;
-    }
-
-
-    function removeSelectedMedications() {
-        var checkboxes = document.getElementsByClassName("remove-checkbox");
-        for (var i = checkboxes.length - 1; i >= 0; i--) {
-            if (checkboxes[i].checked) {
-                checkboxes[i].closest("tr").remove();
-            }
-        }
-    }
-
-</script>
-
+<script src="{% static 'js/create-medication.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
 
 {% endblock %}

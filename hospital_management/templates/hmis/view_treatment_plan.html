@@ -58,27 +58,6 @@
                     <div id = "age-view"></div>
                 </div>   
                 <div id="today">
-                <style>
-                    #today{
-                        width: fit-content;
-                        text-align: center;
-                        margin: 10px;
-                    }
-                    #today-label {
-                        text-align: center;
-                        font-size: 12px;
-                        margin-bottom: 5px;
-                        font-weight: bold;
-                    }
-                    #today-view{
-                        padding: 8px;
-                        background-color: #D9D9D9;
-                        color: black;
-                        border-radius: 10px;
-                        font-size: 14px;
-                        border: 1px solid black;
-                    }
-                </style>
                 <div id="today-label">Date</div>
                 <div id="today-view">Date of Making the Order</div>
                 </div>
@@ -86,35 +65,31 @@
                 
             </div>
             <hr>
+
             <div id="medications-container">
                 <div id="head">Medications List</div>
-                <div id="medication-list">
-                    <table id="medication-table">
-                        <thead>
-                            <tr id="label">
-                                <th>Medication Name</th>
-                                <th>Dosage</th>
-                                <th>Route</th>
-                                <th>Frequency</th>
-                                <th>Additional Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td name="medicinename">Medicine Name</td>
-                                <td name="dosage">Dosage</td>
-                                <td name="route">Route</td>
-                                <td name="frequency">Frequency</td>
-                                <td name="additionalremarks">Additional Remarks</td> 
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="medication-list-container">
+                    <div id="table-header" style="font-size: 14px;">
+                        <div style="flex: 1; text-align: center;">Medication Name</div>
+                        <div style="flex: 1; text-align: center;">Dosage</div>
+                        <div style="flex: 1; text-align: center;">Route</div>
+                        <div style="flex: 1; text-align: center;">Frequency</div>
+                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                    </div>
+                    <div id="table-body" style="font-size: 14px;">
+                        <div style="flex: 1; text-align: center;">Medication Name</div>
+                        <div style="flex: 1; text-align: center;">Dosage</div>
+                        <div style="flex: 1; text-align: center;">Route</div>
+                        <div style="flex: 1; text-align: center;">Frequency</div>
+                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                    </div>
                 </div>
-                <div class="pagination">
-                    <a href="#">&laquo;</a>
-                    <a href="#" class="active">1</a>
-                    <a href="#">&raquo;</a>
-                </div>
+            </div>
+            <div class="pagination">
+                <a href="#">&laquo;</a>
+                <a href="#" class="active">1</a>
+                <a href="#">&raquo;</a>
+            </div>
             </div>
         </div>
 </div>

@@ -2,6 +2,74 @@ body{
     margin: 0;
 }
 
+#today{
+    width: fit-content;
+    text-align: center;
+    margin: 10px;
+}
+#today-label {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+#today-view{
+    padding: 8px;
+    background-color: #D9D9D9;
+    color: black;
+    border-radius: 10px;
+    font-size: 14px;
+    border: 1px solid black;
+}
+
+#update-with-new-order {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px;
+}
+
+#remove-medication-button {
+    margin-top: 10px;
+}
+
+#remove-medication-button a {
+    background-color: red;
+    color: white;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+#add-medication-button a, #submit-medication-button a {
+    background-color: green;
+    color: white;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+#table-header{
+   display: flex; 
+   font-weight: bold; 
+   background-color: #85AA9B; 
+   color: white; 
+   padding: 5px; 
+   margin: 5px; 
+   margin-right: 10px;
+}
+
+#table-body{
+    display: flex;
+    padding: 5px; 
+    margin: 5px; 
+    margin-right: 10px;
+ }
+
+#medication-list{
+    display: flex; 
+    flex-direction: column;
+}
+
 .whole-screen{
     font-family: 'Inter';
     display: flex;
@@ -298,16 +366,6 @@ a:hover{
     font-size: 12;
     margin-bottom: 5px;
     font-weight: bold;
-}
-
-
-
-#medication-list{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    margin: 10px;
 }
 
 #medication-table{

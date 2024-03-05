@@ -58,29 +58,24 @@
             <hr>
             <div id="medications-container">
                 <div id="head">Medications List</div>
-                <div id="medication-list">
-                    <table id="medication-table">
-                        <thead>
-                            <tr id="label">
-                                <th>Date</th>
-                                <th>Prescripted Medication</th>
-                                <th>Additional Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><a href="{% url 'view_treatment_plan' fname=fname lname=lname gender=gender bday=bday %}">Date</a></td>
-                                <td>Medicine Name</td>
-                                <td>Additional Remarks</td>                            
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="medication-list-container">
+                    <div id="table-header" style="font-size: 14px;">
+                        <div style="flex: 1; text-align: center;">Date</div>
+                        <div style="flex: 1; text-align: center;">Prescripted Medication</div>
+                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                    </div>
+                    <div id="table-body" style="font-size: 14px;">
+                        <div style="flex: 1; text-align: center;"><a href="{% url 'view_treatment_plan' fname=fname lname=lname gender=gender bday=bday %}">Date</a></div>
+                        <div style="flex: 1; text-align: center;">Medicine Name</div>
+                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                    </div>
                 </div>
-                <div class="pagination">
-                    <a href="#">&laquo;</a>
-                    <a href="#" class="active">1</a>
-                    <a href="#">&raquo;</a>
-                </div>
+            </div>
+
+            <div class="pagination">
+                <a href="#">&laquo;</a>
+                <a href="#" class="active">1</a>
+                <a href="#">&raquo;</a>
             </div>
         </div>
     </div>
