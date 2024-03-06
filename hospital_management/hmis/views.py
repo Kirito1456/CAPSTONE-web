@@ -163,12 +163,25 @@ def patient_personal_information(request):
         if chosenPatient == patients_data["uid"]:
             chosenPatientData[patients_id] = patients_data
 
+            #retrieve patient birthdate
+            chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
+            #calculate patient age function
+            chosenPatientAge = calculate_age(chosenPatientBirthday)
+
     chosenPatientDatas = {}
     for patientsdata_id, patientsdata_data in patientsdata.items():
         if chosenPatient == patientsdata_data["patientid"]:
             chosenPatientDatas[patientsdata_id] = patientsdata_data
 
-    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas})
+    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientAge' : chosenPatientAge})
+
+#Calculate age function for retrieving patient data
+from datetime import datetime
+def calculate_age(birthday):
+    today = datetime.today()
+    print(today)
+    birthdate = datetime.strptime(birthday, '%Y-%m-%d').date()
+    return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
 def new_vital_sign_entry(request):
     return render(request, 'hmis/new_vital_sign_entry.html')
