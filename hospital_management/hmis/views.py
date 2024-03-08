@@ -52,7 +52,7 @@ def home(request):
 
             # You can access user['idToken'] for Firebase user token if needed
             if email == "admin@gmail.com":
-                return redirect('dashboard')
+                return redirect('clinics')
             
             doctor_found = False
             for account in accounts.values():
@@ -71,23 +71,63 @@ def home(request):
     return render(request, 'hmis/home.html')
 
 def dashboard(request):
+
+    if request.method == 'POST':
+        # Get the clinic ID from the form data
+        clinic_id = request.POST.get('staff')
+
+        # Fetch all doctors and nurses data from Firebase
+        all_doctors = db.child("doctors").get().val()
+        all_nurses = db.child("nurses").get().val()
+
+        # Initialize an empty dictionary to store filtered accounts
+        accounts = {}
+
+        # Filter doctors by clinic ID and add to accounts
+        if all_doctors:
+            for doctor_id, doctor_data in all_doctors.items():
+                if doctor_data.get("clinic") == clinic_id:
+                    accounts[doctor_id] = doctor_data
+
+        # Filter nurses by clinic ID and add to accounts
+        if all_nurses:
+            for nurse_id, nurse_data in all_nurses.items():
+                if nurse_data.get("clinic") == clinic_id:
+                    accounts[nurse_id] = nurse_data
+
+        # Pass the filtered data to the template
+        return render(request, 'hmis/dashboard.html', {'accounts': accounts})
+    else:
+        # Handle GET request or other cases where no POST data is available
+        return render(request, 'hmis/dashboard.html', {})
+
+
+
+
+def clinics(request):
     # Fetch doctors and nurses data from Firebase
-    doctors = db.child("doctors").get().val()
-    nurses = db.child("nurses").get().val()
+    clinics = db.child("clinics").get().val()
 
     # Combine doctors and nurses data into one dictionary
     accounts = {}
-    if doctors:
-        accounts.update(doctors)
-    if nurses:
-        accounts.update(nurses)
+    if clinics:
+        accounts.update(clinics)
 
     # Pass the combined data to the template
-    return render(request, 'hmis/dashboard.html', {'accounts': accounts})
+    return render(request, 'hmis/clinics.html', {'accounts': accounts})
+
 
 
 def register(request):
-    return render(request, 'hmis/register.html')
+    
+    clinics = db.child("clinics").get().val()
+
+    # Combine doctors and nurses data into one dictionary
+    accounts = {}
+    if clinics:
+        accounts.update(clinics)
+    
+    return render(request, 'hmis/register.html', {'accounts': accounts})
 
 def create(request):
     if request.method == 'POST':
@@ -134,13 +174,13 @@ def create(request):
                     'uid': user['localId'],
                     'fname': cleaned_data['fname'],
                     'lname': cleaned_data['lname'],
-                    'cnumber': '',
+                    #'cnumber': '',
                     'sex': cleaned_data['sex'],
                     'role': cleaned_data['role'],
                     'specialization': cleaned_data['specialization'],
                     'department': cleaned_data['department'],
-                    'clinicname': cleaned_data['clinicname'],
-                    'clinicaddress': cleaned_data['clinicaddress'],
+                    'clinic': cleaned_data['clinic'],
+                    #'clinicaddress': cleaned_data['clinicaddress'],
                     'email': email,
                 }
 
