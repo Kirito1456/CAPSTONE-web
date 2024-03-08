@@ -81,7 +81,7 @@
             </div>
             <input type = "hidden" name="rselected" value={{ account_data.role }}>
             <div class="form-group">
-                <label class="signup_lbl">Department </label>
+                <label class="signup_lbl">Department/Specialization </label>
                 <select class="signup_dd-department" name="department" required>
                     <option value="">- Select Department -</option>
                     {% if account_data.department == 'General Ward' %}
@@ -91,10 +91,21 @@
             </div>
 
             <div class="form-group">
-                <label class="signup_lbl">Specialization </label>
+                <label class="signup_lbl">Sub-Specialization </label>
                 <select class="signup_dd-jobtitle" name="specialization" id="jobTitleSelect" required disabled>
                     <option value={{ account_data.specialization }}>{{ account_data.specialization }}</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label class="signup_lbl">Clinic Name </label>
+                <input class="signup_txtboxname" name="clinicname" placeholder="Enter Clinic Name" value={{ account_data.clinicname }} disabled>
+            </div>
+
+
+            <div class="form-group">
+                <label class="signup_lbl">Clinic Address </label>
+                <input class="signup_txtboxname" name="clinicaddress" placeholder="Enter Clinic Address" value={{ account_data.clinicaddress }} disabled>
             </div>
 
             <button id="signup_btn" type="submit" name='update' value={{ uid }}>Update Account</button>
@@ -113,6 +124,9 @@
     </div>
 </div>  
 
+<script>
+    console.log("{{ account_data.clinicname }}");
+</script>
 <script src="{% static 'js/register.js' %}"></script>
 
 {% endblock %}

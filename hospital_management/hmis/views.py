@@ -139,6 +139,8 @@ def create(request):
                     'role': cleaned_data['role'],
                     'specialization': cleaned_data['specialization'],
                     'department': cleaned_data['department'],
+                    'clinicname': cleaned_data['clinicname'],
+                    'clinicaddress': cleaned_data['clinicaddress'],
                     'email': email,
                 }
 
@@ -211,7 +213,7 @@ def profile(request):
         accounts.update(doctors)
     if nurses:
         accounts.update(nurses)
-
+    
     return render(request, 'hmis/Profile.html', {'uid': uid, 'accounts': accounts})
 
 def update_profile (request):
@@ -221,6 +223,8 @@ def update_profile (request):
             onumber = request.POST.get('cnumber')
             department = request.POST.get('department')
             role = request.POST.get('rselected')
+            clinicname = request.POST.get('clinicname')
+            clinicaddress = request.POST.get('clinicaddress')
             #print(uid)
             #print(role)
 
@@ -235,7 +239,9 @@ def update_profile (request):
             # Update appointment data in Firebase
             db.child(db_path).update({
                 'cnumber': onumber,
-                'department': department
+                'department': department,
+                'clinicname': clinicname,
+                'clinicaddress': clinicaddress
             }) 
 
         except Exception as e:

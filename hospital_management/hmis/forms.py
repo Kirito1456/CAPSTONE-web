@@ -65,9 +65,11 @@ class StaffRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Staff
-        fields = ('fname', 'lname', 'role', 'sex', 'department', 'specialization', 'email')
+        fields = ('fname', 'lname', 'role', 'sex', 'clinicname', 'clinicaddress', 'department', 'specialization', 'email')
         widgets = {
             'fname': forms.TextInput(attrs={'placeholder': 'Enter your first name'}),
             'lname': forms.TextInput(attrs={'placeholder': 'Enter your last name'}),
             'email': forms.EmailInput(attrs={'placeholder': 'Enter your email'}),
+            'clinicname': forms.TextInput(attrs={'placeholder': 'Enter your clinic name'}),
+            'clinicaddress': forms.TextInput(attrs={'placeholder': 'Enter your clinic address'}),
         }
