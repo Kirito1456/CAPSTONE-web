@@ -244,5 +244,11 @@ def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
     return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients})
 
+def diagnostic_lab_reports(request):
+    return render(request, 'hmis/diagnostic_lab_reports.html')
 
+def diagnostic_imagery_reports(request):
+    return render(request, 'hmis/diagnostic_imagery_reports.html')
 
+def patient_personal_information_inpatient(request):
+    return render(request, 'hmis/patient_personal_information_inpatient.html')

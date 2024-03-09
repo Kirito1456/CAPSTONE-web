@@ -1,0 +1,146 @@
+{%load static%}
+<html>
+    <title>Patient Data</title>
+
+<link rel="stylesheet" href="{% static 'css/lab-reports-style.css' %}">
+
+    <body> 
+        <div id = "whole-screen">
+            <div id = "side-menu">
+                <div id = "all-info">
+                    <div id = "user-info"> 
+                        <div id = "image">
+                            <img src="{% static 'hannie.jpg' %}" id = "display-photo">
+                        </div>
+                        <div id = "information">
+                            <div id = "name"> Jeonghan </div>
+                            <div id = "role"> General Practitioner</div>
+                        </div>
+                    </div>
+                    <div id = "menu"> 
+                        <div id = "a1"><a href="">Dashboard</a></div>
+                        <div id = "a2"><a href="">Appointments</a></div>
+                        <div id = "a3" style="font-weight: bold;"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                        <div id = "a4"><a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
+                        <div id = "a5"><a href="">Message</a></div>
+                        <div id = "a6"><a href="">Profile</a></div>
+                        <div id = "a7"><a href="">Settings</a></div>
+                    </div>
+                </div>
+            </div>
+            <div id = "other-side">
+                <div id = "back">
+                    <div id = "back-button">
+                        <a href="{% url 'patient_personal_information_inpatient' %}"> << Back </a>
+                    </div>
+                </div>
+                <div id = "lab-reports">
+                    <div id = "head-corner">Patient Information</div>
+                    <div id = "patient-information">
+                        <div id = "first">
+                            <div id = "fname">Juanita</div>
+                            <div id = "fname-label">First Name</div>
+                        </div>
+                        <div id = "last">
+                            <div id = "lname">Dela Cruz</div>
+                            <div id = "lname-label">Last Name</div>
+                        </div>
+                        <div id = "gender">
+                            <div id = "gender-view">Female</div>
+                            <div id = "gender-label">Gender</div>
+                        </div>
+                        <div id = "bday">
+                            <div id = "birthday">01/03/2003</div>
+                            <div id = "bday-label">Date of Birth</div>
+                        </div>
+                        <div id = "age">
+                            <div id = "age-view">21</div>
+                            <div id = "age-label">Age</div>
+                        </div>
+                    </div>
+                    <div id = "head">Lab Test Reports</div>
+                    <div id = "lab-tests">
+                        <div id = "lab-reports-list">
+                            <table id = "reports-table">
+                                <tr id = "label">
+                                    <th class="date">Date</th>
+                                    <th class="type">Lab Test Type</th>
+                                    <th class="report">Report</th>
+                                    <th class="note">Doctor's Notes</th>
+                                </tr>
+                                <tr>
+                                    <td>January 10, 2020</td>
+                                    <td>Blood Test</td>
+                                    <td><a href = "" id = "download-reports">Download Results</a></td>
+                                    <td id = "notes">
+                                        <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
+                                        <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>January 10, 2020</td>
+                                    <td>Blood Test</td>
+                                    <td><a href = "" id = "download-reports">Download Results</a></td>
+                                    <td id = "notes">
+                                        <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
+                                        <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>January 10, 2020</td>
+                                    <td>Blood Test</td>
+                                    <td><a href = "" id = "download-reports">Download Results</a></td>
+                                    <td id = "notes">
+                                        <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
+                                        <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>January 10, 2020</td>
+                                    <td>Blood Test</td>
+                                    <td><a href = "" id = "download-reports">Download Results</a></td>
+                                    <td id = "notes">
+                                        <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
+                                        <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>January 10, 2020</td>
+                                    <td>Blood Test</td>
+                                    <td><a href = "" id = "download-reports">Download Results</a></td>
+                                    <td id = "notes">
+                                        <div id = "doctor-notes">notes blah blah blah</div>
+                                        <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>January 10, 2020</td>
+                                    <td>Blood Test</td>
+                                    <td><a href = "" id = "download-reports">Download Results</a></td>
+                                    <td id = "notes">
+                                        <div id = "doctor-notes">notes blah blah blah</div>
+                                        <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>January 10, 2020</td>
+                                    <td>Blood Test</td>
+                                    <td><a href = "" id = "download-reports">Download Results</a></td>
+                                    <td id = "notes">
+                                        <div id = "doctor-notes">notes blah blah blah</div>
+                                        <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="pagination">
+                                <a href="#">&laquo;</a>
+                                <a href="#" class="active">1</a>
+                                <a href="#">&raquo;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

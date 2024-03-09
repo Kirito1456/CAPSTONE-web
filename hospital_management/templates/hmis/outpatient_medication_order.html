@@ -1,14 +1,11 @@
 {%load static%}
-<title>{% block title %}Patient Data{% endblock %}</title>
+<title>Medication Prescription</title>
 
-{% block styles%} 
 <!-- <link rel="stylesheet" href="{% static 'css/patient_medication_style.css' %}"> -->
 <link rel="stylesheet" href="{% static 'css/view_treatment_plan_style.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
 
-{% endblock styles%}
 
-{% block content %}
 <div class = "whole-screen">
     <div id = "side-menu">
         <div id = "all-info">
@@ -141,5 +138,3 @@
 
 <script src="{% static 'js/create-medication.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
-
-{% endblock %}

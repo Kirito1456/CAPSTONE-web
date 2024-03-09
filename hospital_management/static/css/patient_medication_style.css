@@ -12,6 +12,8 @@ body{
 #side-menu{
     background-color: #85AA9B;
     flex: 0 0 16%;
+
+    position: fixed;
 }
 
 #other-information{
