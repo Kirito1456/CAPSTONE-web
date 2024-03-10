@@ -25,4 +25,5 @@ urlpatterns = [
     path('diagnostic_lab_reports/', views.diagnostic_lab_reports, name='diagnostic_lab_reports'),
     path('diagnostic_imagery_reports/', views.diagnostic_imagery_reports, name="diagnostic_imagery_reports"),
     path('patient_personal_information_inpatient/', views.patient_personal_information_inpatient, name="patient_personal_information_inpatient"),
+    path('edit_medical_surgical_history/', views.edit_medical_surgical_history, name="edit_medical_surgical_history"),
 ]

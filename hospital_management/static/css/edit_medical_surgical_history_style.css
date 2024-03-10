@@ -83,19 +83,6 @@
     
 }
 
-#title{
-    padding-top: 20px;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-
-    margin-left: 10px;
-
-    display: flex;
-    flex-direction: row;
-
-    justify-content: space-between;
-}
-
 #head-corner, #head, #medical-surgical-history-title{
     float: left;
 
@@ -112,35 +99,6 @@
     color: #E9E9E9;
 
     padding-bottom: 5;
-}
-
-#side{
-    justify-content: flex-end;
-
-    display: flex;
-    flex-direction: row;
-
-    width: 50%;
-
-}
-
-#search{
-    width: 250px;
-
-    margin-right: 2%;
-
-    float: right;
-}
-
-#search-bar{
-    border-radius: 25px;
-
-    width: 100%;
-    
-    padding: 5px;
-    padding-left: 10px;
-    border: 0ch;
-    background-color: #D9D9D9;
 }
 
 #a1, #a2, #a3, #a4, #a5, #a6, #a7{
@@ -354,15 +312,15 @@ th{
 }
 
 th.diagnosis-date{
-    width: 15%;
+    width: 20%;
 }
 
-th.illness{
-    width: 25%;
+th.illness, th.edit{
+    width: 10%;
 }
 
 th.treatment, th.remark{
-    width: 30%;
+    width: 45%;
 }
 
 th.start, th.end{
@@ -416,14 +374,16 @@ td{
     font-size: 14;
 }
 
-#edit-medical-surgical-history, #edit-drug-history, #edit-allergy, #edit-immunization, #edit-family-history{
+#add-medical-surgical-history{
     display: flex;
     justify-content: flex-end;
+
+
 }
 
-#edit-medical-surgical-history-button, #edit-drug-history-button, #edit-allergy-button, #edit-immunization-button, #edit-family-history-button{
+#add-medical-surgical-history-button{
     padding: 3 5;
-    background-color: #D9D9D9;
+    background-color: #85AA9B;
 
     width: 3.5%;
 
@@ -434,22 +394,17 @@ td{
     border-radius: 5px;
 
     margin-bottom: 10;
+
+    color: #E9E9E9;
 }
 
-#edit-medical-history{
-    display: flex;
-    justify-content: center;
-}
-
-#edit-medical-history-button{
-    background-color: #85AA9B;
-
-    padding: 8;
-
-    width: 5%;
-
+#date-diagnosis, #illnesses, #treatment-plan{
     text-align: center;
+}
 
+#delete{
+    background-color: red;
+    color: #E9E9E9;
+    padding: 3 5;
     border-radius: 5px;
 }
-

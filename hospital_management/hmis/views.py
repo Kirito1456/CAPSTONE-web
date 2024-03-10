@@ -252,3 +252,6 @@ def diagnostic_imagery_reports(request):
 
 def patient_personal_information_inpatient(request):
     return render(request, 'hmis/patient_personal_information_inpatient.html')
+
+def edit_medical_surgical_history(request):
+    return render(request, 'hmis/edit_medical_surgical_history.html')
