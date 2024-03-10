@@ -153,7 +153,7 @@ def patient_data_doctor_view(request):
     # Pass the patients data to the template
     return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata})
 
-def patient_personal_information(request):
+def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
 
@@ -254,6 +254,3 @@ def diagnostic_lab_reports(request):
 
 def diagnostic_imagery_reports(request):
     return render(request, 'hmis/diagnostic_imagery_reports.html')
-
-def patient_personal_information_inpatient(request):
-    return render(request, 'hmis/patient_personal_information_inpatient.html')
