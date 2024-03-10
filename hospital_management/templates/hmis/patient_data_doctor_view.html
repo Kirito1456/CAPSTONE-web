@@ -47,11 +47,11 @@
                                 <th id = "room">Room</th>
                                 <th id = "status">Status</th>
                             </tr>
-                            <!--add for loop - up to 7-->
+                            <!--add if statement for inpatient or outpatient-->
                             {% for patients_id, patients_data in patients.items %}
                             <tr id = "patient-info">
                                 <td>
-                                    <a href="{% url 'patient_personal_information' %}?chosenPatient={{patients_data.uid}}"> <!--patient information-->
+                                    <a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patients_data.uid}}"> <!--patient information-->
                                         <div id = "patient-name"> 
                                             <div id = "photo-icon"><img src="{% static 'hannie.jpg' %}" id = "photo"></div>
                                             <div id = "user-name">{{ patients_data.fname }} {{ patients_data.lname }}</div>
