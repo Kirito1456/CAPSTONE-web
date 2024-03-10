@@ -44,7 +44,15 @@ document.addEventListener("DOMContentLoaded", function() {
         newTableBody.id = "table-body";
         newTableBody.innerHTML = `
             <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-            <div style="flex: 1; text-align: center;"><input type="text" placeholder="Medicine Name"></div>
+            <div style="flex: 1; text-align: center;">
+                <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                <datalist id="medicine_name_suggestions">
+                    {% for medicine in medicines_list %}
+                        <option value="{{ medicine }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+            
             <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
             <div style="flex: 1; text-align: center;">
                 <select class="route-dropdown" name="route">
@@ -88,4 +96,27 @@ function selectAllCheckboxes() {
     for (var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = selectAllCheckbox.checked;
     }
+}
+
+
+// Event listener for input field
+document.getElementById('medicine_name_input').addEventListener('input', function() {
+    var query = this.value;
+    var suggestions = Array.from(document.getElementById('medicine_name_suggestions').options)
+        .map(option => option.value)
+        .filter(medicine => medicine.toLowerCase().includes(query.toLowerCase()));
+
+    displayAutocompleteSuggestions(suggestions);
+});
+
+// Function to display autocomplete suggestions
+function displayAutocompleteSuggestions(suggestions) {
+    var dropdown = document.getElementById('medicine_name_suggestions');
+    dropdown.innerHTML = ''; // Clear previous suggestions
+
+    suggestions.forEach(function(suggestion) {
+        var option = document.createElement('option');
+        option.value = suggestion;
+        dropdown.appendChild(option);
+    });
 }

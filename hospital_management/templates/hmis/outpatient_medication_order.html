@@ -104,7 +104,15 @@
                         </div>
                         <div id="table-body">
                             <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-                            <div style="flex: 1; text-align: center;"><input type="text" placeholder="Medicine Name"></div>
+                            <div style="flex: 1; text-align: center;">
+                                <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                                <datalist id="medicine_name_suggestions">
+                                    {% for medicine in medicines_list %}
+                                        <option value="{{ medicine }}">
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+
                             <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
                             <div style="flex: 1; text-align: center;">
                                 <select class="route-dropdown" name="route">
@@ -141,5 +149,7 @@
 
 <script src="{% static 'js/create-medication.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
-
+<script>
+    
+</script>
 {% endblock %}

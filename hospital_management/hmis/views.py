@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from hmis.models import Medications
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database
 from hmis.forms import StaffRegistrationForm, MedicationsListForm
@@ -31,7 +32,7 @@ def home(request):
             user = firebase_auth.sign_in_with_email_and_password(email, password)
             messages.success(request, 'Login successful!')
             # You can access user['idToken'] for Firebase user token if needed
-            return redirect('dashboard')
+            return redirect('patient_data_doctor_view')
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
 
@@ -242,7 +243,11 @@ def generate_unique_id():
 
 def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
-    return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients})
+    collection = connect_to_mongodb()
+    medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
+    medicines_list = [medication['Generic Name'] for medication in medications_cursor]
+
+    return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients, 'medicines_list': medicines_list})
 
 
 
