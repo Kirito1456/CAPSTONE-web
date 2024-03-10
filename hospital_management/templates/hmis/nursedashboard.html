@@ -1,0 +1,60 @@
+{% extends 'hmis/base.html' %}
+{% load static %}
+
+{% block title %}Nurse Dashboard{% endblock %}
+
+{% block styles %} 
+<!-- Stylesheet for the program -->
+<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="all-info">
+            <div id="user-info"> 
+                <div id="image">
+                    <img src="\static\doctorjane.jpg" id="display-photo">
+                </div>
+                <div id="information">
+                    {% for nurse_id, nurse_data in nurses.items %}
+                        {% if nurse_data.uid == uid %}
+                            <div id="name"> {{ nurse_data.fname }} {{ nurse_data.lname }}</div>
+                            <div id="role"> {{ nurse_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="menu"> 
+                <div id="a1" style="font-weight: bold;"><a href="">Dashboard</a></div>
+                <div id="a1"><a href="">Patients</a></div>
+                <div id="a4"><a href="">Medications</a></div>
+                <div id="a7"><a href="{% url 'logout' %}">Logout</a></div>
+            </div>
+        </div>
+    </div>
+    <div id = "other-information">
+        <div id = "title">
+            <div id = "left">
+                <div id = "view-medication" style="font-weight: bold;"><a href="">View Medication Orders/Prescriptions</a></div>
+                <div id = "create-medication"><a href="">Create Medication Order/Prescription</a></div>
+            </div>  
+            <div id = "right">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search Patient Name">
+                    <button id="searchButton">Search</button>
+                </div>
+            </div>  
+        </div>
+
+        <div class="pagination">
+            <a href="#">&laquo;</a>
+            <a href="#" class="active">1</a>
+            <a href="#">&raquo;</a>
+        </div>
+    </div>
+    
+</div>
+
+<script src="{% static 'js/appointment.js' %}"></script>
+{% endblock %}

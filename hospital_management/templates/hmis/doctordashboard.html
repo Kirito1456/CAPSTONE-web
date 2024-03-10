@@ -1,0 +1,42 @@
+{% extends 'hmis/base.html' %}
+{% load static %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block styles %} 
+<!-- Stylesheet for the program -->
+<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="all-info">
+            <div id="user-info"> 
+                <div id="image">
+                    <img src="\static\doctorjohn.jpg" id="display-photo">
+                </div>
+                <div id="information">
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role"> {{ doctor_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="menu"> 
+                <div id="a1" style="font-weight: bold;"><a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                <div id="a3"><a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
+                <div id="a1"><a href="">Patients</a></div>
+                <div id="a4"><a href="">Medications</a></div>
+                <div id="a5"><a href="">Message</a></div>
+                <div id="a7"><a href="{% url 'logout' %}">Logout</a></div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<script src="{% static 'js/appointment.js' %}"></script>
+{% endblock %}

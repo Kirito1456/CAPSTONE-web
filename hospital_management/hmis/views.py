@@ -55,13 +55,18 @@ def home(request):
                 return redirect('dashboard')
             
             doctor_found = False
+            nurse_found = False
             for account in accounts.values():
                 if account["role"] == "Doctor" and account["email"] == email:
                     doctor_found = True
+                elif account["role"] == "Nurse" and account["email"] == email:
+                    nurse_found = True
                     break
 
             if doctor_found:
-                return redirect('AppointmentUpcoming')
+                return redirect('DoctorDashboard')
+            elif nurse_found:
+                return redirect('NurseDashboard')
             else:
                 return redirect('register')
                 
@@ -410,3 +415,15 @@ def Message(request):
 
 def AppointmentCalendarRequestDetails(request):
     return render(request, 'hmis/AppointmentCalendarRequestDetails.html')
+
+def NurseDashboard(request):
+    nurses = db.child("nurses").get().val()
+    uid = request.session['uid'] 
+
+    return render(request, 'hmis/nursedashboard.html', {'nurses': nurses, 'uid': uid})
+
+def DoctorDashboard(request):
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+
+    return render(request, 'hmis/doctordashboard.html', {'doctors': doctors, 'uid': uid})
