@@ -22,4 +22,7 @@ urlpatterns = [
     path('inpatient_medication_order/', views.inpatient_medication_order, name = 'inpatient_medication_order'),
     path('perform_ocr/', views.perform_ocr, name='perform_ocr'),
     path('test/', views.pharmacy_drugs, name='pharmacy_drugs'),
+    path('diagnostic_lab_reports/', views.diagnostic_lab_reports, name='diagnostic_lab_reports'),
+    path('diagnostic_imagery_reports/', views.diagnostic_imagery_reports, name="diagnostic_imagery_reports"),
+    path('patient_personal_information_inpatient/', views.patient_personal_information_inpatient, name="patient_personal_information_inpatient"),
 ]

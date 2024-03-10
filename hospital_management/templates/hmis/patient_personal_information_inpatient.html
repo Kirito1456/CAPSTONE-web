@@ -1,10 +1,8 @@
 {%load static%}
 <html>
-    <title>{% block title %}Patient Data{% endblock %}</title>
+    <title>Patient Data</title>
 
-{% block styles%} 
 <link rel="stylesheet" href="{% static 'css/patient_personal_information_inpatient_style.css' %}">
-{% endblock styles%}
 
     <body> 
         <div id = "whole-screen">
@@ -190,13 +188,13 @@
                             </div>
                         </div>
                         <div id = "laboratory-tests">
-                            <div id = "head-corner">Laboratory Tests</div>
+                            <div id = "head-corner">Diagnostic Tests</div>
                             <div id = "tests">
                                 <div id = "blood-test">
-                                    <a href = "" id = "blood-test-button"><!--add icon-->View Blood Test</a>
+                                    <a href = "" id = "blood-test-button"><!--add icon-->View Lab Reports</a>
                                 </div>
                                 <div id = "chest-xray">
-                                    <a href = "" id = "chest-xray-button"><!--add icon-->View Chest X-Ray</a>
+                                    <a href = "" id = "chest-xray-button"><!--add icon-->View Imagery Results</a>
                                 </div>
                                 <div id = "request-lab-test">
                                     <a href = "" id = "request-lab-test-button"><!--add icon-->Request New Lab Test</a>

@@ -1,7 +1,4 @@
 #whole-screen{
-    width: 100%;
-    height: 95%;
-
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -14,6 +11,14 @@
     left: 0;
     
     background-color: #85AA9B;
+}
+
+#other-side{
+    width: 84%;
+
+    right: 0%;
+    top: 0%;
+    position: absolute;
 }
 
 #other-information{
@@ -89,6 +94,20 @@
     flex-direction: row;
 
     justify-content: space-between;
+}
+
+#head-corner, #head{
+    float: left;
+
+    font-size: 18;
+
+    font-weight: bold;
+
+    padding-top: 5px;
+
+    background-color: #85AA9B;
+
+    text-align: center;
 }
 
 #header{
@@ -277,7 +296,7 @@ a:hover{
     justify-content: center;
     align-items: flex-end;
 
-    bottom: 0px;
+    margin-bottom: 10;
 }
 
 .pagination a {
@@ -300,13 +319,13 @@ th{
 }
 
 #patient-information{
-    margin: 0 23 0 28;
-
     padding-top: 5;
-    padding-bottom: 5;
+    padding-bottom: 20;
 
     display: flex;
-    flex-direction: row;    
+    flex-direction: row;  
+
+    background-color: #E9E9E9;
 }
 
 #title-head{
@@ -391,3 +410,139 @@ th{
 
     font-size: 12;
 }
+
+#other-side, #lab-reports{
+    display: flex;
+    flex-direction: column;
+}
+
+#back, #back-button{
+    margin: 20px;
+}
+
+#back-button{
+    padding: 5px;
+    padding-left: 10;
+    padding-right: 10;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    text-align: center;
+
+    border: 10px;
+    border-radius: 10px;
+    border-color: black;
+
+    width: 5%;
+
+    font-size: 14;
+
+    left: 0;
+
+    position: absolute;
+    top: -1%;
+}
+
+#lab-reports{
+    margin-left: 50;
+    margin-right: 50;
+    margin-top: 10;
+}
+
+#lab-tests{
+    background-color: #E9E9E9;
+}
+
+#lab-reports-list{
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    flex-direction: column;
+}
+
+#reports-table{
+    margin-top: 10;
+    margin-bottom: 15;
+
+    width: 95%;
+
+    text-align: center;
+
+    table-layout:fixed;
+
+    background-color: #D9D9D9;
+
+    font-size: 15;
+}
+
+th.date{
+    width: 15%
+}
+
+th.type{
+    width: 15%;
+}
+
+th.report{
+    width: 18%;
+}
+
+th.note{
+    width: 52%;
+}
+
+#download-reports{
+    background-color: #85AA9B;
+    padding: 5;
+    padding-left: 10;
+    padding-right: 10;
+
+    border-radius: 5%;   
+}
+
+td{
+    margin-top: 10;
+    margin-bottom: 10;
+}
+
+#notes{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    padding: 5;
+    padding-left: 10;
+    padding-right: 10;
+}
+
+#doctor-notes{
+    display: flex;
+    justify-content: flex-start;
+    word-wrap: break-word;
+
+    width: 70%;
+    text-align: justify;
+}
+
+#add-notes{
+    display: flex;
+    justify-content: flex-end;
+
+    justify-content: center;
+    align-items: center;
+
+    background-color: #85AA9B;
+    padding: 5;
+    padding-left: 10;
+    padding-right: 10;
+
+    border-radius: 5%;
+}
+
