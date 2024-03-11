@@ -30,11 +30,6 @@
     </div>
     <div id = "appointment-screen">
         <div id="container">
-            <div class="button-bar">
-                <button id="allButton">All</button>
-                <button id="doctorsButton">Doctors</button>
-                <button id="nursesButton">Nurses</button>
-            </div>
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="Search...">
                 <button id="searchButton">Search</button>
@@ -45,28 +40,26 @@
         <table class="accounts_table">
             <thead>
                 <tr>
-                    <th>Email</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Sex</th>
-                    <th>Department</th>
-                    <th>Specialization</th>
+                    <th>Clinic Name</th>
+                    <th>Office Number</th>
+                    <th>Floor Number</th>
+                    <th>Room Number</th>
+                    <th>Staffs</th>
                 </tr>
             </thead>
             <tbody>
                 {% for account_id, account_data in accounts.items %}
                 <tr>
-                    <td><label id="accountT_email" class="accountT_lbl">{{ account_data.email }}</label></td>
-                    <td><label id="accountT_firstname" class="accountT_lbl">{{ account_data.fname }}</label></td>
-                    <td><label id="accountT_lastname" class="accountT_lbl">{{ account_data.lname }}</label></td>
-                    {% if account_data.sex == 'Male' %}
-                        <td><label id="accountT_sex" class="accountT_lbl">M</label></td>
-                    {% else %}
-                        <td><label id="accountT_sex" class="accountT_lbl">F</label></td>
-                    {% endif %}
-                    <td style="display: none;"><label id="accountT_role" class="accountT_lbl">{{ account_data.role }}</label></td>
-                    <td><label id="accountT_department" class="accountT_lbl">{{ account_data.department }}</label></td>
-                    <td><label id="accountT_jobTitle" class="accountT_lbl">{{ account_data.specialization }}</label></td>
+                    <td><label id="accountT_email" class="accountT_lbl">{{ account_data.name }}</label></td>
+                    <td><label id="accountT_firstname" class="accountT_lbl">{{ account_data.onumber }}</label></td>
+                    <td><label id="accountT_lastname" class="accountT_lbl">{{ account_data.fnumber }}</label></td>
+                    <td><label id="accountT_lastname" class="accountT_lbl">{{ account_data.rnumber }}</label></td>
+                    <td>
+                        <form action="{% url 'dashboard' %}" method="post">
+                            {% csrf_token %}
+                            <button class="accountT_lbl" name="staff" type="submit" value="{{ account_id }}">View Staffs</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

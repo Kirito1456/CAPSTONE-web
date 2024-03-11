@@ -20,9 +20,9 @@ class Staff(models.Model):
     uid = models.CharField(max_length=255, blank=True, null=True)
     fname = models.CharField(max_length=100)
     lname = models.CharField(max_length=100)
-    cnumber = models.CharField(max_length=20, null=True)
-    clinicname = models.CharField(max_length=255, null=True)
-    clinicaddress = models.CharField(max_length=255, null=True)
+    #cnumber = models.CharField(max_length=20, null=True)
+    clinic = models.CharField(max_length=255, null=True)
+    #clinicaddress = models.CharField(max_length=255, null=True)
     SEX_CHOICES = (
         ('Male', 'Male'),
         ('Female', 'Female'),
