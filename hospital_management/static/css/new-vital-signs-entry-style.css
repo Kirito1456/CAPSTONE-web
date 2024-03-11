@@ -268,15 +268,15 @@ a:hover{
     flex-direction: row;
 }
 
-#temperature-label, #temperature-input, #blood-pressure-label, #blood-pressure-input, #pulse-label, #pulse-input, #respiration-label, #respiration-input, #pain-index-label, #pain-index-input{
+#temperature-label, #temperature-input, #blood-pressure-label, #blood-pressure-input, #pulse-label, #pulse-input, #respiration-label, #respiration-input, #weight-label, #weight-input, #pain-index-label, #pain-index-input{
     margin-bottom: 5;
 }
 
-#temperature-input, #blood-pressure-input, #pulse-input, #respiration-input, #pain-index-input{
+#temperature-input, #blood-pressure-input, #pulse-input, #respiration-input, #weight-input, #pain-index-input{
     margin-bottom: 15;
 }
 
-#temperature-input, #blood-pressure-input, #pulse-input, #respiration-input, #pain-index-input{
+#temperature-input, #blood-pressure-input, #pulse-input, #respiration-input, #weight-input, #pain-index-input{
     width: 50%;
 
     display: flex;
@@ -285,7 +285,7 @@ a:hover{
     align-items: center;
 }
 
-#temperature-text, #blood-pressure-text-1, #blood-pressure-text-2, #pulse-text, #respiration-text, select{
+#temperature-text, #blood-pressure-text-1, #blood-pressure-text-2, #pulse-text, #respiration-text, #weight-text, select{
     border-radius: 25px;
 
     width: 100%;

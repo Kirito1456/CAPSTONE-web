@@ -156,6 +156,7 @@ def patient_data_doctor_view(request):
 def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
+    vitalsigns = db.child("vitalsigns").get().val()
 
     chosenPatient = request.GET.get('chosenPatient', '')
 
@@ -174,7 +175,13 @@ def patient_personal_information_inpatient(request):
         if chosenPatient == patientsdata_data["patientid"]:
             chosenPatientDatas[patientsdata_id] = patientsdata_data
 
-    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientAge' : chosenPatientAge})
+    #Get Vital Signs Data of Chosen Patient
+    chosenPatientVitalEntryData = {}
+    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+        if chosenPatient == vitalsigns_data["patientid"]:
+            chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+
+    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 #Calculate age function for retrieving patient data
 from datetime import datetime
@@ -185,7 +192,24 @@ def calculate_age(birthday):
     return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
 def new_vital_sign_entry(request):
-    return render(request, 'hmis/new_vital_sign_entry.html')
+    patients = db.child("patients").get().val()
+
+    chosenPatient = request.GET.get('chosenPatient', '')
+
+    chosenPatientData = {}
+    for patients_id, patients_data in patients.items():
+        if chosenPatient == patients_data["uid"]:
+            chosenPatientData[patients_id] = patients_data
+
+            #retrieve patient birthdate
+            chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
+            #calculate patient age function
+            chosenPatientAge = calculate_age(chosenPatientBirthday)
+
+    return render(request, 'hmis/new_vital_sign_entry.html', {'chosenPatientData': chosenPatientData, 'chosenPatientAge' : chosenPatientAge})
+
+def add_vitalsign_entry(request):
+    return render(request, 'hmis/add_vitalsign_entry.html')
 
 def patient_medical_history(request):
     return render(request, 'hmis/patient_medical_history.html')
@@ -254,9 +278,6 @@ def diagnostic_lab_reports(request):
 
 def diagnostic_imagery_reports(request):
     return render(request, 'hmis/diagnostic_imagery_reports.html')
-
-def patient_personal_information_inpatient(request):
-    return render(request, 'hmis/patient_personal_information_inpatient.html')
 
 def edit_medical_surgical_history(request):
     return render(request, 'hmis/edit_medical_surgical_history.html')

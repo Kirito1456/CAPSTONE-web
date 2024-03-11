@@ -30,79 +30,84 @@
                     </div>
                 </div>
             </div>
+            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
             <div id = "other-side">
-                <div id = "back-button">
-                    <a href="{% url 'patient_personal_information' %}"> << Back </a>
-                </div>
                 <div id = "new-vital-sign">
                     <div id = "head-corner">New Vital Signs Entry</div>
                     <div id = "patient-information">
                         <div id = "first">
-                            <div id = "fname">Juanita</div>
+                            <div id = "fname">{{ chosenPatientData_data.fname }}</div>
                             <div id = "fname-label">First Name</div>
                         </div>
                         <div id = "last">
-                            <div id = "lname">Dela Cruz</div>
+                            <div id = "lname">{{ chosenPatientData_data.lname }}</div>
                             <div id = "lname-label">Last Name</div>
                         </div>
                         <div id = "gender">
-                            <div id = "gender-view">Female</div>
+                            <div id = "gender-view">{{ chosenPatientData_data.gender }}</div>
                             <div id = "gender-label">Gender</div>
                         </div>
                         <div id = "bday">
-                            <div id = "birthday">01/03/2003</div>
+                            <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
                             <div id = "bday-label">Date of Birth</div>
                         </div>
                         <div id = "age">
-                            <div id = "age-view">21</div>
+                            <div id = "age-view">{{ chosenPatientAge }}</div>
                             <div id = "age-label">Age</div>
                         </div>
                     </div>
                     <div id = "head">Vital Signs</div>
-                    <div id = "new-entry">
-                        <div id = "side-1">
-                            <div id = "temperature">
-                                <div id = "temperature-label">Temperature</div>
-                                <div id = "temperature-input"><input type="number" id = "temperature-text"> &nbsp;°C</div>
-                            </div>
-                            <div id = "blood-pressure">
-                                <div id = "blood-pressure-label">Blood Pressure</div>
-                                <div id = "blood-pressure-input">
-                                    <input type="number" id = "blood-pressure-text-1"> &nbsp;/&nbsp; <input type="number" id = "blood-pressure-text-2">
+                    <form method="post" action="{% url 'add_vitalsign_entry' %}">
+                        <div id = "new-entry">
+                            <div id = "side-1">
+                                <div id = "temperature">
+                                    <div id = "temperature-label">Temperature</div>
+                                    <div id = "temperature-input"><input type="number" id = "temperature-text"> &nbsp;°C</div>
+                                </div>
+                                <div id = "blood-pressure">
+                                    <div id = "blood-pressure-label">Blood Pressure</div>
+                                    <div id = "blood-pressure-input">
+                                        <input type="number" id = "blood-pressure-text-1"> &nbsp;/&nbsp; <input type="number" id = "blood-pressure-text-2">
+                                    </div>
+                                </div>
+                                <div id = "pulse">
+                                    <div id = "publse-label">Pulse</div>
+                                    <div id = "pulse-input"><input type="number" id = "pulse-text">&nbsp;bpm</div>
                                 </div>
                             </div>
-                            <div id = "pulse">
-                                <div id = "publse-label">Pulse</div>
-                                <div id = "pulse-input"><input type="number" id = "pulse-text">&nbsp;bpm</div>
-                            </div>
-                        </div>
-                        <div id = "side-2">
-                            <div id = "respiration">
-                                <div id = "respiration-label">Respiration</div>
-                                <div id = "respiration-input"><input type = "number" id = "respiration-text"></div>
-                            </div>
-                            <div id = "pain-index">
-                                <div id = "pain-index-label">Pain Index</div>
-                                <div id = "pain-index-input">
-                                    <select name="pain" id="pain-index-dropown">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                    </select>&nbsp;/&nbsp;10
+                            <div id = "side-2">
+                                <div id = "respiration">
+                                    <div id = "respiration-label">Respiration</div>
+                                    <div id = "respiration-input"><input type = "number" id = "respiration-text"></div>
+                                </div>
+                                <div id = "pain-index">
+                                    <div id = "pain-index-label">Pain Index</div>
+                                    <div id = "pain-index-input">
+                                        <select name="pain" id="pain-index-dropown">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                        </select>&nbsp;/&nbsp;10
+                                    </div>
+                                </div>
+                                <div id = "weight">
+                                    <div id = "weight-label">Weight</div>
+                                    <div id = "weight-input"><input type = "number" id = "weight-text"> &nbsp;kg</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div id = "add-entry"><a href = "{% url 'patient_personal_information' %}" id = "add-entry-button">Add Entry</a></div>
+                        <div id = "add-entry"><button id="add-entry-button" type="submit">Add Entry</button></div>
+                    </form>
                 </div>
             </div>
+            {% endfor %}
         </div>
     </body>
 </html>

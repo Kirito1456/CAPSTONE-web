@@ -10,6 +10,7 @@ urlpatterns = [
     path('forgotpass/', views.forgotpass, name='forgotpass'),
     path('patient_data_doctor_view/', views.patient_data_doctor_view, name='patient_data_doctor_view'),
     path('new_vital_sign_entry/', views.new_vital_sign_entry, name='new_vital_sign_entry'),
+    path('add_vitalsign_entry/', views.add_vitalsign_entry, name='add_vitalsign_entry'),
     path('patient_medical_history/', views.patient_medical_history, name='patient_medical_history'),
     path('view_treatment_plan/', views.view_treatment_plan, name='view_treatment_plan'),
     path('view_treatment_plan/<str:fname>/<str:lname>/<str:gender>/<str:bday>/', views.view_treatment_plan, name='view_treatment_plan'),

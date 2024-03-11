@@ -110,56 +110,24 @@
                                         <th>Respiration</th>
                                         <th>Pain Index</th>
                                     </tr>
+                                    {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
                                     <tr>
-                                        <td>01/17/23 11:30AM</td>
-                                        <td>-</td>
-                                        <td>36.6 C</td>
-                                        <td>120/80</td>
-                                        <td>85 bpm</td>
-                                        <td>16</td>
-                                        <td>5/10</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.temperature }} C</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
                                     </tr>
-                                    <tr>
-                                        <td>01/17/23 10:30AM</td>
-                                        <td>-</td>
-                                        <td>36.7 C</td>
-                                        <td>121/80</td>
-                                        <td>82 bpm</td>
-                                        <td>16</td>
-                                        <td>7/10</td>
-                                    </tr>
-                                    <tr>
-                                        <td>01/17/23 09:30AM</td>
-                                        <td>-</td>
-                                        <td>36.8 C</td>
-                                        <td>121/79</td>
-                                        <td>79 bpm</td>
-                                        <td>15</td>
-                                        <td>7/10</td>
-                                    </tr>
-                                    <tr>
-                                        <td>01/17/23 08:30AM</td>
-                                        <td>-</td>
-                                        <td>37.0 C</td>
-                                        <td>119/77</td>
-                                        <td>82 bpm</td>
-                                        <td>17</td>
-                                        <td>8/10</td>
-                                    </tr>
-                                    <tr>
-                                        <td>01/17/23 07:30AM</td>
-                                        <td>52.60 kg</td>
-                                        <td>36.9 C</td>
-                                        <td>120/80</td>
-                                        <td>83 bpm</td>
-                                        <td>15</td>
-                                        <td>6/10</td>
-                                    </tr>
+                                    {% endfor %}
                                 </table>
                                 <div id = "below-table">
+                                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
                                     <div id = "new-entry-button">
-                                        <a href="{% url 'new_vital_sign_entry' %}" id = "new-entry"><!--<img src = "/images/plus-symbol-button.png" id = "plus-icon">-->+ New Entry</a>
+                                        <a href="{% url 'new_vital_sign_entry' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "new-entry"><!--<img src = "/images/plus-symbol-button.png" id = "plus-icon">-->+ New Entry</a>
                                     </div>
+                                    {% endfor %}
                                     <div class="pagination">
                                         <a href="#">&laquo;</a>
                                         <a href="#" class="active">1</a>
