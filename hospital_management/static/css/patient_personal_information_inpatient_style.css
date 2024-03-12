@@ -299,7 +299,7 @@ a:hover{
 
 #view-medical-history, #view-medical-history-button{
     margin: 20;
-    margin-bottom: 30;
+    margin-bottom: 10px;
     padding: 10;
 
     background-color: #85AA9B;
