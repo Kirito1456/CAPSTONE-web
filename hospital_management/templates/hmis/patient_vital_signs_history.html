@@ -1,0 +1,69 @@
+
+{%load static%}
+<title>{% block title %}Patient Vital Signs History{% endblock %}</title>
+
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/patient_vital_sign_history.css' %}">
+{% endblock styles%}
+
+{% block content %}
+        <div id = "whole-screen">
+            <div id = "side-menu">
+                <div id = "all-info">
+                    <div id = "user-info"> 
+                        <div id = "image">
+                            <img src="{% static 'hannie.jpg' %}" id = "display-photo">
+                        </div>
+                        <div id = "information">
+                            <div id = "name"> Jeonghan </div>
+                            <div id = "role"> General Practitioner</div>
+                        </div>
+                    </div>
+                    <div id = "menu"> 
+                        <div id = "a1"><a href="">Dashboard</a></div>
+                        <div id = "a2"><a href="">Appointments</a></div>
+                        <div id = "a3" style="font-weight: bold;"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                        <div id = "a4"><a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
+                        <div id = "a5"><a href="">Message</a></div>
+                        <div id = "a6"><a href="">Profile</a></div>
+                        <div id = "a7"><a href="">Settings</a></div>
+                    </div>
+                </div>
+            </div>
+            <div id = "other-information">
+                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                <div id = "title">
+                    <div id = "header">Vital Signs History of {{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
+                </div>
+                {% endfor %}
+                <div class = "table">
+                    <div id = "information-table">
+                        <table id = "user-information" style="border-bottom: 1px #85AA9B solid;">
+                            <tr id = "head" style="border-bottom: 1px #85AA9B solid;">
+                                <th class = "tableheader">Date</th>
+                                <th class = "tableheader">Weight</th>
+                                <th class = "tableheader">Temperature</th>
+                                <th class = "tableheader">Blood Pressure</th>
+                                <th class = "tableheader">Pulse</th>
+                                <th class = "tableheader">Respiration</th>
+                                <th class = "tableheader">Pain Index</th>
+                            </tr>
+                            <!--add if statement for inpatient or outpatient-->
+                            {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
+                                <tr>
+                                    <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
+                                    <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
+                                    <td>{{ chosenPatientVitalEntryData_data.temperature }} C</td>
+                                    <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
+                                    <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
+                                    <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
+                                    <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+{% endblock %}

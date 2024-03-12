@@ -144,14 +144,12 @@
                                 <div id = "below-table">
                                     {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
                                     <div id = "new-entry-button">
-                                        <a href="{% url 'new_vital_sign_entry' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "new-entry"><!--<img src = "/images/plus-symbol-button.png" id = "plus-icon">-->+ New Entry</a>
+                                        <a href="{% url 'new_vital_sign_entry' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "new-entry">+ New Entry</a>
+                                    </div>
+                                    <div id = "view-vs-history-button" class="pagination">
+                                        <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "view-vs-history">View History</a>
                                     </div>
                                     {% endfor %}
-                                    <div class="pagination">
-                                        <a href="#">&laquo;</a>
-                                        <a href="#" class="active">1</a>
-                                        <a href="#">&raquo;</a>
-                                    </div>
                                 </div>
                             </div>
                         </div>

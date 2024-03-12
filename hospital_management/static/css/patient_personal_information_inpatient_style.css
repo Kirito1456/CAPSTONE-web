@@ -361,7 +361,7 @@ td{
     font-size: 14;
 }
 
-#new-entry-button, #new-entry{
+#new-entry-button, #new-entry, #view-vs-history, #view-vs-history-button{
     padding: 5px 5px 5px 5px;
 
     background-color: #85AA9B;
@@ -468,7 +468,7 @@ td{
     height: 10px;
 }
 
-#new-entry-button, #new-entry{
+#new-entry-button, #new-entry, #view-vs-history, #view-vs-history-button{
     padding: 5px 5px 5px 5px;
 
     background-color: #85AA9B;
@@ -501,30 +501,6 @@ td{
     align-items: center;
     justify-content: center;
     text-align: center;
-}
-
-.pagination{
-    display: flex;
-
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: flex-end;
-
-    margin-bottom: 1.5%;
-}
-
-.pagination a {
-    color: black;
-    padding: 2px 8px;
-    text-decoration: none;
-    transition: background-color .3s;
-    border: 1px solid #ddd;
-}
-
-.pagination a.active {
-    background-color: #85AA9B;
-    color: white;
-    border: 1px solid #85AA9B;
 }
 
 #below-table{

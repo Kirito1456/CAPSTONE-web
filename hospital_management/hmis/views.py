@@ -211,6 +211,24 @@ def new_vital_sign_entry(request):
 def add_vitalsign_entry(request):
     return render(request, 'hmis/add_vitalsign_entry.html')
 
+def patient_vital_signs_history(request):
+    patients = db.child("patients").get().val()
+    vitalsigns = db.child("vitalsigns").get().val()
+
+    chosenPatient = request.GET.get('chosenPatient', '')
+
+    chosenPatientData = {}
+    for patients_id, patients_data in patients.items():
+        if chosenPatient == patients_data["uid"]:
+            chosenPatientData[patients_id] = patients_data
+
+    #Get Vital Signs Data of Chosen Patient
+    chosenPatientVitalEntryData = {}
+    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+        if chosenPatient == vitalsigns_data["patientid"]:
+            chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+    return render(request, 'hmis/patient_vital_signs_history.html', {'chosenPatientData': chosenPatientData, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData})
+
 def patient_medical_history(request):
     return render(request, 'hmis/patient_medical_history.html')
 
