@@ -41,7 +41,6 @@
                             <tr id = "head" style="border-bottom: 1px #85AA9B solid;">
                                 <th id = "uname">Name</th>
                                 <th id = "gender">Sex</th>
-                                <th id = "birthday">Birthday</th>
                                 <th id = "disease">Disease</th>
                                 <th id = "last-visit">Last Visited</th>
                                 <th id = "room">Room</th>
@@ -58,24 +57,25 @@
                                         </div>
                                     </a>
                                 </td>
-                                <td>Male</td>
-                                <td>10/04/1995</td>
+                                <td>{{ patients_data.gender }}</td>
                                 {% for patientsdata_id, patientsdata_data in patientsdata.items %}
                                     {% if patients_data.uid == patientsdata_data.patientid %}
-                                    <td>{{ patientsdata_data.disease }}</td>
-                                    <td>{{ patientsdata_data.lastVisited }}</td>
-                                    <td>{{ patientsdata_data.room }}</td>
-                                    <td>{{ patientsdata_data.status }}</td>
+                                        {% if patientsdata_data.status == "Inpatient" %}
+                                            <td>{{ patientsdata_data.disease }}</td>
+                                            <td>{{ patientsdata_data.lastVisited }}</td>
+                                            <td>{{ patientsdata_data.room }}</td>
+                                            <td>{{ patientsdata_data.status }}</td>
+                                        {% elif patientsdata_data.status == "Outpatient" %}
+                                            <td>{{ patientsdata_data.disease }}</td>
+                                            <td>{{ patientsdata_data.lastVisited }}</td>
+                                            <td>-</td>
+                                            <td>{{ patientsdata_data.status }}</td>
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             </tr>
                             {% endfor %}
                         </table>
-                    </div>
-                    <div class="pagination">
-                        <a href="#">&laquo;</a>
-                        <a href="#" class="active">1</a>
-                        <a href="#">&raquo;</a>
                     </div>
                 </div>
             </div>
