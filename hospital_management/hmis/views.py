@@ -463,6 +463,7 @@ def AppointmentCalendarRequestDetails(request):
 def AppointmentScheduling(request):
     doctors = db.child("doctors").get().val()
     uid = request.session.get('uid')
+    schedule = db.child("appointmentschedule").get().val()
 
     if request.method == 'POST':
         selected_days = request.POST.getlist('selected_days')  # Get list of selected days
@@ -493,7 +494,8 @@ def AppointmentScheduling(request):
     else:
         form = None  # No need for form if not using forms.py
 
-    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'form': form})
+    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'form': form, 'schedule': schedule})
+
 def NurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 

@@ -2,6 +2,38 @@ const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const clients_table = document.querySelector('.clients_table tbody');
 
+const editBtn = document.getElementById("edit-btn");
+const saveBtn = document.getElementById("save-btn");
+const cnclBtn = document.getElementById("cncl-btn");
+const appointmentForm = document.getElementById("appointment-form");
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+const inputs = document.querySelectorAll('input[type="text"]');
+
+function toggleInputs(disabled) {
+    checkboxes.forEach(checkbox => {
+        checkbox.disabled = disabled;
+    });
+    inputs.forEach(input => {
+        input.disabled = disabled;
+    });
+}
+
+toggleInputs(true);
+saveBtn.style.display = "none";
+cnclBtn.style.display = "none";
+
+editBtn.addEventListener("click", function(event) {
+    event.preventDefault(); 
+    toggleInputs(false);
+    saveBtn.style.display = "inline-block";
+    cnclBtn.style.display = "inline-block";
+});
+
+cnclBtn.addEventListener("click", function() {
+    saveBtn.style.display = "none";
+    cnclBtn.style.display = "none";
+    toggleInputs(true);
+});
 
 
 

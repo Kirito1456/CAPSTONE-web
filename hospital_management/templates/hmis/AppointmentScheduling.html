@@ -84,11 +84,11 @@
                     </div>
                 </div>
             </div>
-
+            
             <div id="time-selection">
                 <div class="time-slot">
                     <label for="morning-start" style="font-weight: bold;">Morning Start: </label>
-                    <input type="text" id="morning-start" class="timepicker" placeholder="Select time" name="morning_start">
+                    <input type="text" id="morning-start" class="timepicker" placeholder="{{ schedule }}" name="morning_start">
                     <label for="morning-end" style="font-weight: bold;">Morning End: </label>
                     <input type="text" id="morning-end" class="timepicker" placeholder="Select time" name="morning_end">
                 </div>
@@ -99,13 +99,11 @@
                     <input type="text" id="afternoon-end" class="timepicker" placeholder="Select time" name="afternoon_end">
                 </div>
             </div>
-
+            
             <div id="btn-container">
                 <button id="edit-btn">Edit</button>
                 <button id="save-btn" type="submit">Save</button>
                 <button id="cncl-btn">Cancel</button>
-                <!-- <button id="save-btn" style="display: none;">Save</button>
-                <button id="cncl-btn" style="display: none;">Cancel</button> -->
             </div>
         </form>
 
@@ -119,7 +117,7 @@
         enableTime: true,
         noCalendar: true,
         dateFormat: "H:i",
-        time_24hr: true
+        time_24hr: false
     });
 </script>
 <script src="{% static 'js/appointment.js' %}"></script>
