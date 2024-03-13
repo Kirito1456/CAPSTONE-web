@@ -43,10 +43,10 @@ class Staff(models.Model):
     )
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES , null=True)
-    DEPARTMENT_CHOICES = (
-        ('General Ward', 'General Ward'),
-    )
-    department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, null=True)
+    #DEPARTMENT_CHOICES = (
+    #    ('General Ward', 'General Ward'),
+    #)
+    #department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, null=True)
     email = models.EmailField()
 
     def __str__(self):
@@ -71,17 +71,17 @@ class Details(models.Model):
         return self.name  # or return self.email or any other field
         
 class AppointmentSchedule(models.Model):
-    # DAY_CHOICES = [
-    #     ('Sunday', 'Sunday'),
-    #     ('Monday', 'Monday'),
-    #     ('Tuesday', 'Tuesday'),
-    #     ('Wednesday', 'Wednesday'),
-    #     ('Thursday', 'Thursday'),
-    #     ('Friday', 'Friday'),
-    #     ('Saturday', 'Saturday'),
-    # ]
+    DAYS_CHOICES = [
+        ('sunday', 'Sunday'),
+        ('monday', 'Monday'),
+        ('tuesday', 'Tuesday'),
+        ('wednesday', 'Wednesday'),
+        ('thursday', 'Thursday'),
+        ('friday', 'Friday'),
+        ('saturday', 'Saturday'),
+    ]
 
-    # day = models.CharField(max_length=20, choices=DAY_CHOICES)
+    selected_days = models.CharField(max_length=200, choices=DAYS_CHOICES, null=True)
     morning_start = models.TimeField()
     morning_end = models.TimeField()
     afternoon_start = models.TimeField()

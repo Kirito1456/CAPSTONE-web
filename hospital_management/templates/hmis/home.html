@@ -28,7 +28,7 @@
             <label class="login_lbl">Password </label><label class="red-asterisk">*</label>
             <input class="login_txtbox"type="password" placeholder="Enter Password" name="password" required><br><br>
             <button id ="login_btn" type="submit">Log In</button><br><br>
-            <a href="{% url 'register' %}" id="login_fp">Create Account</a> <a href="{% url 'forgotpass' %}" id="login_fp">Forgot Password?</a><br><br>
+            <a href="{% url 'register' %}" id="login_fp">Create Account</a> | <a href="{% url 'forgotpass' %}" id="login_fp">Forgot Password?</a><br><br>
         </div>
     </form>
 {% endblock %}

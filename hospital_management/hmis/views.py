@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import logout as auth_logout
 from django.core.mail import send_mail
 import json
+import uuid
 
 # Use the firebase_database object directly
 db = firebase_database
@@ -162,43 +163,46 @@ def create(request):
                 return redirect('register')
 
             try:
+
+                # Check if clinic data is provided
+                id = str(uuid.uuid1())
+                clinic_data = {
+                    'name': request.POST.get('newclinic'),
+                    'fnumber': request.POST.get('fnumber'),
+                    'onumber': request.POST.get('onumber'),
+                    'rnumber': request.POST.get('rnumber'),
+                    'uid': id
+                }
+
+                #print(clinic_data)
+
+                if clinic_data['name']:
+                    # Save new clinic data
+                    clinic_ref =  db.child('clinics').child(id).set(clinic_data)
+                    #clinic_id = clinic_ref.key  # Get the unique key of the pushed clinic
+                    cleaned_data['clinic'] = id
+
                 # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
-                #print(user)
 
-                # Adjust this line according to the actual structure of the response object
-                #uid = user['localId']  # Accessing 'localId' from the user object
-    
-                 # Ensure you have the correct value of uid
-                #print(user['localId'])
-
-                # Get idToken from the session (if needed)
-                #idToken = request.session['uid']
                 
                 data = {
                     'uid': user['localId'],
                     'fname': cleaned_data['fname'],
                     'lname': cleaned_data['lname'],
-                    #'cnumber': '',
                     'sex': cleaned_data['sex'],
                     'role': cleaned_data['role'],
                     'specialization': cleaned_data['specialization'],
-                    'department': cleaned_data['department'],
+                    #'department': cleaned_data['department'],
                     'clinic': cleaned_data['clinic'],
-                    #'clinicaddress': cleaned_data['clinicaddress'],
                     'email': email,
                 }
-
-                # Save the form data to the database
-                # db.child('staff').child(user['localId']).set(data)
 
                 if (cleaned_data['role'] == 'Doctor'):
                     db.child('doctors').child(user['localId']).set(data)
                 else:
                     db.child('nurses').child(user['localId']).set(data)
-                
-                
-                
+                               
                 messages.success(request, 'Registration successful! Please log in.')
                 return redirect('home')
             except Exception as e:
@@ -463,6 +467,10 @@ def AppointmentScheduling(request):
     if request.method == 'POST':
         form = AppointmentScheduleForm(request.POST)
         if form.is_valid():
+            selected_days = []
+            for day in ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']:
+                if form.cleaned_data[day]:
+                    selected_days.append(day)
 
             # Extract form data
             morning_start = form.cleaned_data['morning_start']
@@ -479,7 +487,7 @@ def AppointmentScheduling(request):
             # Create data dictionary
             data = {
                 'uid': uid,
-                'days': days,
+                'days': selected_days,
                 'morning_start': morning_start_str,
                 'morning_end': morning_end_str,
                 'afternoon_start': afternoon_start_str,

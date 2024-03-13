@@ -4,9 +4,21 @@ from django import forms
 from hmis.models import Patient, Staff, AppointmentSchedule
 
 class AppointmentScheduleForm(forms.ModelForm):
+    DAYS_CHOICES = [
+        ('sunday', 'Sunday'),
+        ('monday', 'Monday'),
+        ('tuesday', 'Tuesday'),
+        ('wednesday', 'Wednesday'),
+        ('thursday', 'Thursday'),
+        ('friday', 'Friday'),
+        ('saturday', 'Saturday'),
+    ]
+
+    selected_days = forms.MultipleChoiceField(choices=DAYS_CHOICES, widget=forms.CheckboxSelectMultiple)
+
     class Meta:
         model = AppointmentSchedule
-        fields = ('morning_start', 'morning_end', 'afternoon_start', 'afternoon_end')
+        fields = ('selected_days', 'morning_start', 'morning_end', 'afternoon_start', 'afternoon_end')
 
         labels = {
             'morning_start': 'Morning Start',
@@ -72,19 +84,19 @@ class StaffRegistrationForm(forms.ModelForm):
         ('Nurse Assistant', 'Nurse Assistant'),
     )
 
-    DEPARTMENT_CHOICES = (
-        ('General Ward', 'General Ward'),
-    )
+    # DEPARTMENT_CHOICES = (
+    #    ('General Ward', 'General Ward'),
+    #)
 
     # Use forms.ChoiceField for sex and jobTitle fields
     sex = forms.ChoiceField(choices=SEX_CHOICES)
     specialization = forms.ChoiceField(choices=JOB_TITLE_CHOICES)
     role = forms.ChoiceField(choices=ROLE_CHOICES)
-    department = forms.ChoiceField(choices=DEPARTMENT_CHOICES)
+    #department = forms.ChoiceField(choices=DEPARTMENT_CHOICES)
 
     class Meta:
         model = Staff
-        fields = ('fname', 'lname', 'role', 'sex', 'clinic', 'department', 'specialization', 'email')
+        fields = ('fname', 'lname', 'role', 'sex', 'clinic',  'specialization', 'email')
         widgets = {
             'fname': forms.TextInput(attrs={'placeholder': 'Enter your first name'}),
             'lname': forms.TextInput(attrs={'placeholder': 'Enter your last name'}),

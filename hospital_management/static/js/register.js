@@ -35,4 +35,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Initialize job titles based on default role selection
     updateJobTitles();
+
+    var clinicSelect = document.getElementById("clinicSelect");
+    var othersFields = document.getElementById("othersFields");
+
+    clinicSelect.addEventListener("change", function() {
+        if (this.value === "Others") {
+            othersFields.style.display = "block";
+        } else {
+            othersFields.style.display = "none";
+        }
+    });
 });
