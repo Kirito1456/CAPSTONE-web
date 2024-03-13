@@ -81,11 +81,11 @@ class AppointmentSchedule(models.Model):
         ('saturday', 'Saturday'),
     ]
 
-    selected_days = models.CharField(max_length=200, choices=DAYS_CHOICES, null=True)
+    selected_days = models.CharField(max_length=10, choices=DAYS_CHOICES)
     morning_start = models.TimeField()
     morning_end = models.TimeField()
     afternoon_start = models.TimeField()
     afternoon_end = models.TimeField()
 
     def __str__(self):
-        return self.name
+         return f"Appointment Schedule for {', '.join(self.get_selected_days_display())}"
