@@ -43,10 +43,10 @@ class Staff(models.Model):
     )
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES , null=True)
-    DEPARTMENT_CHOICES = (
-        ('General Ward', 'General Ward'),
-    )
-    department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, null=True)
+    #DEPARTMENT_CHOICES = (
+    #    ('General Ward', 'General Ward'),
+    #)
+    #department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, null=True)
     email = models.EmailField()
 
     def __str__(self):
