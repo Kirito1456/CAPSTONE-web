@@ -6,6 +6,7 @@
 {% block styles %} 
 <!-- Stylesheet for the program -->
 <link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 {% endblock styles %}
 
 {% block content %}
@@ -36,7 +37,56 @@
         </div>
     </div>
     
+    <div id="appointment-screen">
+        <div id="notification-icon">
+            <i class="fas fa-bell" id="notification-icon-img"></i>
+        </div>
+        <div id="notification-popup">
+            <ul id="notification-list">
+                <!-- Notification items will be populated here dynamically -->
+            </ul>
+        </div>
+    </div>
 </div>
 
 <script src="{% static 'js/appointment.js' %}"></script>
+<script>
+    // JavaScript for Notification Popup
+document.addEventListener("DOMContentLoaded", function() {
+    var notificationIcon = document.getElementById("notification-icon");
+    var notificationPopup = document.getElementById("notification-popup");
+    var notificationList = document.getElementById("notification-list");
+
+    // Dummy data for notifications
+    var dummyNotifications = [
+        "New appointment scheduled",
+        "Reminder: Follow up with patient #1234",
+        "Daily report is available"
+    ];
+
+    // Function to populate the notification list
+    function populateNotifications() {
+        notificationList.innerHTML = ""; // Clear existing list
+
+        dummyNotifications.forEach(function(notification) {
+            var listItem = document.createElement("li");
+            listItem.textContent = notification;
+            notificationList.appendChild(listItem);
+        });
+    }
+
+    // Initial population of notifications
+    populateNotifications();
+
+    notificationIcon.addEventListener("click", function() {
+        // Toggle the display of notification popup
+        if (notificationPopup.style.display === "none" || notificationPopup.style.display === "") {
+            notificationPopup.style.display = "block";
+        } else {
+            notificationPopup.style.display = "none";
+        }
+    });
+});
+
+</script>
 {% endblock %}

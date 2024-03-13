@@ -707,3 +707,54 @@ header .current-date{
 #edit-btn {
     background-color: #007bff;
 }
+
+#notification-icon {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#notification-icon-img {
+    font-size: 24px; /* Adjust the size as needed */
+}
+
+/* CSS for Notification Popup */
+#notification-popup {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* CSS for Notification List */
+#notification-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#notification-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+#notification-list li:last-child {
+    border-bottom: none;
+}
