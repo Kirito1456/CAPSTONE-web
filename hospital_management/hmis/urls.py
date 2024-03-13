@@ -12,6 +12,7 @@ urlpatterns = [
     path('Profile.html', views.profile, name='Profile'),
     path('update_profile/', views.update_profile, name='update_profile'),
     path('AppointmentUpcoming.html', views.AppointmentUpcoming, name='AppointmentUpcoming'),
+    path('AppointmentScheduling.html', views.AppointmentScheduling, name='AppointmentScheduling'),
     path('nursdashboard.html', views.NurseDashboard, name='NurseDashboard'),
     path('doctordashboard.html', views.DoctorDashboard, name='DoctorDashboard'),
     path('AppointmentPast.html', views.AppointmentPast, name='AppointmentPast'),

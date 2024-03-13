@@ -69,3 +69,23 @@ class Details(models.Model):
 
     def __str__(self):
         return self.name  # or return self.email or any other field
+        
+class AppointmentSchedule(models.Model):
+    # DAY_CHOICES = [
+    #     ('Sunday', 'Sunday'),
+    #     ('Monday', 'Monday'),
+    #     ('Tuesday', 'Tuesday'),
+    #     ('Wednesday', 'Wednesday'),
+    #     ('Thursday', 'Thursday'),
+    #     ('Friday', 'Friday'),
+    #     ('Saturday', 'Saturday'),
+    # ]
+
+    # day = models.CharField(max_length=20, choices=DAY_CHOICES)
+    morning_start = models.TimeField()
+    morning_end = models.TimeField()
+    afternoon_start = models.TimeField()
+    afternoon_end = models.TimeField()
+
+    def __str__(self):
+        return self.name

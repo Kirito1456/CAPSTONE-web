@@ -2,6 +2,9 @@ const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const clients_table = document.querySelector('.clients_table tbody');
 
+
+
+
 // Event listener for the search button click
 searchButton.addEventListener('click', function() {
     // Get the search text entered by the user and convert it to lowercase
@@ -94,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     var today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
+
 
     // Function to check if a given date is a weekend
     function isWeekend(date) {

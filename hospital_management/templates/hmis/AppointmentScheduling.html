@@ -1,11 +1,14 @@
 {% extends 'hmis/base.html' %}
 {% load static %}
 
-{% block title %}Doctor Dashboard{% endblock %}
+{% block title %}My Schedule{% endblock %}
 
 {% block styles %} 
 <!-- Stylesheet for the program -->
 <link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
 {% endblock styles %}
 
 {% block content %}
@@ -35,8 +38,89 @@
             </div>
         </div>
     </div>
-    
+    <div id="appointment-screen">
+        <div class="apt-header-btns">
+            <div class="apt-header-left">
+                <div id = "apt-btn"><a href="AppointmentCalendar.html">Calendar</a></div>
+                <div id = "apt-btn"><a href="AppointmentUpcoming.html">Upcoming</a></div>
+                <div id = "apt-btn"><a href="AppointmentPast.html">Past</a></div>
+                <div id="apt-btn" style="font-weight: bold;"><a href="AppointmentScheduling.html">Schedule</a></div>
+            </div>
+        </div>
+
+        <form method="post" action="{% url 'AppointmentScheduling' %}">
+            {% csrf_token %}
+            <div id="day-selection">
+                <h2>Select Your Appointment Schedule</h2>
+                <label style="font-weight: bold;">Select Days:</label>
+                <div class="day-checkboxes">
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="sunday" value="sunday">
+                        <label for="sunday">Sunday</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="monday" value="monday">
+                        <label for="monday">Monday</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="tuesday" value="tuesday">
+                        <label for="tuesday">Tuesday</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="wednesday" value="wednesday">
+                        <label for="wednesday">Wednesday</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="thursday" value="thursday">
+                        <label for="thursday">Thursday</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="friday" value="friday">
+                        <label for="friday">Friday</label>
+                    </div>
+                    <div class="day-checkbox">
+                        <input type="checkbox" id="saturday" value="saturday">
+                        <label for="saturday">Saturday</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="time-selection">
+                <div class="time-slot">
+                    <label for="morning-start" style="font-weight: bold;">Morning Start: </label>
+                    <input type="text" id="morning-start" class="timepicker" placeholder="Select time" name="morning_start">
+                    <label for="morning-end" style="font-weight: bold;">Morning End: </label>
+                    <input type="text" id="morning-end" class="timepicker" placeholder="Select time" name="morning_end">
+                </div>
+                <div class="time-slot">
+                    <label for="afternoon-start" style="font-weight: bold;">Afternoon Start: </label>
+                    <input type="text" id="afternoon-start" class="timepicker" placeholder="Select time" name="afternoon_start">
+                    <label for="afternoon-end" style="font-weight: bold;">Afternoon End: </label>
+                    <input type="text" id="afternoon-end" class="timepicker" placeholder="Select time" name="afternoon_end">
+                </div>
+            </div>
+
+            <div id="btn-container">
+                <button id="edit-btn">Edit</button>
+                <button id="save-btn" type="submit">Save</button>
+                <button id="cncl-btn">Cancel</button>
+                <!-- <button id="save-btn" style="display: none;">Save</button>
+                <button id="cncl-btn" style="display: none;">Cancel</button> -->
+            </div>
+        </form>
+
+    </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    flatpickr('.timepicker', {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true
+    });
+</script>
 <script src="{% static 'js/appointment.js' %}"></script>
 {% endblock %}

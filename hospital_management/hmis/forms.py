@@ -1,7 +1,26 @@
 # forms.py
 from django.forms import ModelForm
 from django import forms
-from hmis.models import Patient, Staff
+from hmis.models import Patient, Staff, AppointmentSchedule
+
+class AppointmentScheduleForm(forms.ModelForm):
+    class Meta:
+        model = AppointmentSchedule
+        fields = ('morning_start', 'morning_end', 'afternoon_start', 'afternoon_end')
+
+        labels = {
+            'morning_start': 'Morning Start',
+            'morning_end': 'Morning End',
+            'afternoon_start': 'Afternoon Start',
+            'afternoon_end': 'Afternoon End'
+        }
+
+        widgets = {
+            'morning_start': forms.TimeInput(attrs={'class': 'timepicker'}),
+            'morning_end': forms.TimeInput(attrs={'class': 'timepicker'}),
+            'afternoon_start': forms.TimeInput(attrs={'class': 'timepicker'}),
+            'afternoon_end': forms.TimeInput(attrs={'class': 'timepicker'})
+        }
 
 class PatientRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)

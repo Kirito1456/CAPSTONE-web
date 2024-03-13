@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database
-from hmis.forms import StaffRegistrationForm
+from hmis.forms import StaffRegistrationForm, AppointmentScheduleForm
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -455,6 +455,43 @@ def Message(request):
 
 def AppointmentCalendarRequestDetails(request):
     return render(request, 'hmis/AppointmentCalendarRequestDetails.html')
+
+def AppointmentScheduling(request):
+    doctors = db.child("doctors").get().val()
+    uid = request.session.get('uid')
+
+    if request.method == 'POST':
+        form = AppointmentScheduleForm(request.POST)
+        if form.is_valid():
+
+            # Extract form data
+            morning_start = form.cleaned_data['morning_start']
+            morning_end = form.cleaned_data['morning_end']
+            afternoon_start = form.cleaned_data['afternoon_start']
+            afternoon_end = form.cleaned_data['afternoon_end']
+
+            # Convert time objects to string representations
+            morning_start_str = morning_start.strftime('%H:%M:%S')
+            morning_end_str = morning_end.strftime('%H:%M:%S')
+            afternoon_start_str = afternoon_start.strftime('%H:%M:%S')
+            afternoon_end_str = afternoon_end.strftime('%H:%M:%S')
+
+            # Create data dictionary
+            data = {
+                'uid': uid,
+                'days': days,
+                'morning_start': morning_start_str,
+                'morning_end': morning_end_str,
+                'afternoon_start': afternoon_start_str,
+                'afternoon_end': afternoon_end_str,
+            }
+
+            db.child('appointmentschedule').child(uid).set(data)
+            
+            return redirect('AppointmentScheduling')
+    else:
+        form = AppointmentScheduleForm()
+    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'form': form})
 
 def NurseDashboard(request):
     nurses = db.child("nurses").get().val()

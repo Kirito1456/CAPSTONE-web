@@ -15,7 +15,7 @@ body {
     width: 16%;
     height: 100%;
     
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     
@@ -639,4 +639,71 @@ header .current-date{
     font-size: 14px;
     color: black;
     text-align: left;
+}
+
+#day-selection, #time-selection, #btn-container {
+    margin: 20px;
+}
+
+.day-checkboxes {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex; 
+}
+
+.day-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.day-checkbox label {
+    display: inline-block;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.day-checkbox input[type="checkbox"]:checked + label {
+    background-color: #85AA9B;
+    color: #fff;
+}
+
+/* Timepicker styling */
+.time-slot {
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.time-slot label {
+    display: block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+.timepicker {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 150px;
+    margin-right: 10px;
+}
+
+/* Button styling */
+#save-btn, #cncl-btn, #edit-btn {
+    padding: 6px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: green;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+#cncl-btn {
+    background-color: #dc3545;
+}
+
+#edit-btn {
+    background-color: #007bff;
 }
