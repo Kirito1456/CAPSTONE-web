@@ -465,42 +465,35 @@ def AppointmentScheduling(request):
     uid = request.session.get('uid')
 
     if request.method == 'POST':
-        form = AppointmentScheduleForm(request.POST)
-        if form.is_valid():
-            selected_days = []
-            for day in ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']:
-                if form.cleaned_data[day]:
-                    selected_days.append(day)
+        selected_days = request.POST.getlist('selected_days')  # Get list of selected days
+        morning_start = request.POST.get('morning_start')
+        morning_end = request.POST.get('morning_end')
+        afternoon_start = request.POST.get('afternoon_start')
+        afternoon_end = request.POST.get('afternoon_end')
 
-            # Extract form data
-            morning_start = form.cleaned_data['morning_start']
-            morning_end = form.cleaned_data['morning_end']
-            afternoon_start = form.cleaned_data['afternoon_start']
-            afternoon_end = form.cleaned_data['afternoon_end']
+        try:
+            if not isinstance(selected_days, list):
+                selected_days = [selected_days]
 
-            # Convert time objects to string representations
-            morning_start_str = morning_start.strftime('%H:%M:%S')
-            morning_end_str = morning_end.strftime('%H:%M:%S')
-            afternoon_start_str = afternoon_start.strftime('%H:%M:%S')
-            afternoon_end_str = afternoon_end.strftime('%H:%M:%S')
-
-            # Create data dictionary
+            # Save appointment schedule to Firebase
             data = {
                 'uid': uid,
                 'days': selected_days,
-                'morning_start': morning_start_str,
-                'morning_end': morning_end_str,
-                'afternoon_start': afternoon_start_str,
-                'afternoon_end': afternoon_end_str,
+                'morning_start': str(morning_start),
+                'morning_end': str(morning_end),
+                'afternoon_start': str(afternoon_start),
+                'afternoon_end': str(afternoon_end),
             }
-
             db.child('appointmentschedule').child(uid).set(data)
-            
-            return redirect('AppointmentScheduling')
-    else:
-        form = AppointmentScheduleForm()
-    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'form': form})
 
+            messages.success(request, 'Appointment schedule saved successfully!')
+            return redirect('AppointmentScheduling')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+    else:
+        form = None  # No need for form if not using forms.py
+
+    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'form': form})
 def NurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 
