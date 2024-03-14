@@ -58,6 +58,7 @@
             <hr>
             <div id="medications-container">
                 <div id="head">Medications List</div>
+                
                 <div id="medication-list-container">
                     <div id="table-header" style="font-size: 14px;">
                         <div style="flex: 1; text-align: center;">Date</div>
@@ -65,11 +66,14 @@
                         <div style="flex: 1; text-align: center;">Additional Remarks</div>
                     </div>
                     <div id="table-body" style="font-size: 14px;">
-                        <div style="flex: 1; text-align: center;"><a href="{% url 'view_treatment_plan' fname=fname lname=lname gender=gender bday=bday %}">Date</a></div>
+                        {% for po_data in prescriptionsorders.items %}
+                        <div style="flex: 1; text-align: center;"><a href="{% url 'view_treatment_plan' fname=fname lname=lname gender=gender bday=bday %}">{{po_data.todaydate}}</a></div>
                         <div style="flex: 1; text-align: center;">Medicine Name</div>
                         <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                        {% endfor %}
                     </div>
                 </div>
+                
             </div>
 
             <div class="pagination">

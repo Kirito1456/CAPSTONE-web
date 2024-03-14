@@ -41,19 +41,23 @@
         </div>
 
         <div id = "treatment-plan">
+            <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}">
+                {% csrf_token %}
             <div id = "patient-information">
                 <div id = "first">
                     <div id = "fname-label">Name of Patient</div>
-                    <select id="fname">
+                    
+                        <select id="fname" name="patient_uid">
                         <option value="" selected disabled>Select Patient</option>
                         {% for patients_id, patients_data in patients.items %}
-                        <option value="{{ patients_data.id }}" 
+                        <option value="{{ patients_data.uid }}" 
                                 data-birthday="{{ patients_data.bday }}" 
                                 data-gender="{{ patients_data.gender }}">
                             {{ patients_data.fname }} {{ patients_data.lname }}
                         </option>
                         {% endfor %}
                     </select>
+                    
                 </div>
                 <div id = "gender">
                     <div id = "gender-label">Gender</div>
@@ -70,27 +74,15 @@
                 <div id="today">
                 <div id="today-label">Today's Date</div>
                 <div id="today-view"></div>
+                <input type="hidden" name="todaydate" id="todayinput">
                 </div>
                 
+                <div id = "uploading-photo">
+                    <button onclick="openModal()" type="button">Upload Handwritten Image</button>           
+                </div>
                 
             </div>
             <hr>
-            <div id = "uploading-photo">
-                <div id = "uploading-header">Upload Handwritten Image</div>
-                <form id="upload-form" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div id="upload">
-                        <input type="file" id="file-input" style="display: none;" onchange="displayFileName(this)">
-                        <label for="file-input" id="file-label"><i class="fas fa-plus"></i>&nbsp; Choose Photo</label>
-                        <span id="selected-file"></span>
-                        <button id="remove-button" type="button" onclick="removeFile()" style="display: none;">Remove</button>
-                        <button id="upload-button" type="submit" style="display: none;">Upload Photo</button>
-                    </div>
-                </form>                
-            </div>
-            <hr>
-            <form id="medication-form" method="post" action="{% url 'outpatient_medication_order' %}">
-                {% csrf_token %}
                 <div id="medications-container">
                     <div id="head">Medications List</div>
                     <div id="medication-list-container">
@@ -139,12 +131,31 @@
                             <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
                             <div id="remove-medication-button"><a href="#" id="remove-medication-link">Remove Selected</a></div>
                         </div>
-                        <div id="submit-medication-button"><a href="#" id="submit-medication-link">Create Order/Prescription</a></div>
+                        <button id="submit-medication-button" type="submit">Create Order/Prescription</button>
                     </div>
                 </div>
+                
             </form>
             
         </div>
+</div>
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Uploading Photo</h2>
+        <div id = "uploading-header">Upload Handwritten Image</div>
+        <form id="upload-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div id="upload">
+                <input type="file" id="file-input" style="display: none;" onchange="displayFileName(this)">
+                <label for="file-input" id="file-label"><i class="fas fa-plus"></i>&nbsp; Choose Photo</label>
+                <span id="selected-file"></span>
+                <button id="remove-button" type="button" onclick="removeFile()" style="display: none;">Remove</button>
+                <button id="upload-button" type="submit" style="display: none;">Upload Photo</button>
+            </div>
+        </form>     
+    </div>
 </div>
 
 <script src="{% static 'js/create-medication.js' %}"></script>

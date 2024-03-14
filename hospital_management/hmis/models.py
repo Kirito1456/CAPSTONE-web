@@ -1,6 +1,13 @@
 from django.db import models
 
 # Create your models here.
+class Prescription(models.Model):
+    patient_id = models.CharField(max_length=100)
+    medicine_name = models.CharField(max_length=100)
+    dosage = models.CharField(max_length=100)
+    route = models.CharField(max_length=100)
+    frequency = models.CharField(max_length=100)
+    additional_remarks = models.CharField(max_length=100)
 
 class Medications(models.Model):
     uid = models.CharField(max_length=255, blank=True, null=True)

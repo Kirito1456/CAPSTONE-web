@@ -1,9 +1,62 @@
+function selectAllCheckboxes() {
+    var checkboxes = document.getElementsByClassName("remove-checkbox");
+    var selectAllCheckbox = document.getElementById("select-all-checkbox");
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = selectAllCheckbox.checked;
+    }
+}
+
+
+// Event listener for input field
+document.getElementById('medicine_name_input').addEventListener('input', function() {
+    var query = this.value;
+    var suggestions = Array.from(document.getElementById('medicine_name_suggestions').options)
+        .map(option => option.value)
+        .filter(medicine => medicine.toLowerCase().includes(query.toLowerCase()));
+
+    displayAutocompleteSuggestions(suggestions);
+});
+
+// Function to display autocomplete suggestions
+function displayAutocompleteSuggestions(suggestions) {
+    var dropdown = document.getElementById('medicine_name_suggestions');
+    dropdown.innerHTML = ''; // Clear previous suggestions
+
+    suggestions.forEach(function(suggestion) {
+        var option = document.createElement('option');
+        option.value = suggestion;
+        dropdown.appendChild(option);
+    });
+}
+
+var modal = document.getElementById("myModal");
+var span = document.getElementsByClassName("close")[0];
+
+modal.style.display = "none";
+
+function openModal() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     var birthdayString = document.getElementById("birthday-view").innerText;
     var birthday = new Date(birthdayString);
     var today = new Date();
     var ageYear = today.getFullYear() - birthday.getFullYear();
     var ageMonth = today.getMonth() - birthday.getMonth();
+    var modal = document.getElementById('myModal');
 
     document.getElementById("fname").addEventListener("change", function() {
         var selectedOption = this.options[this.selectedIndex];
@@ -32,6 +85,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var todayDate = today.toISOString().split('T')[0];
     document.getElementById("today-view").innerText = todayDate;
+    var txt = document.getElementById("todayinput");
+    txt.value = todayDate;
 
     document.getElementById("select-all-checkbox").addEventListener("change", function() {
         selectAllCheckboxes();
@@ -46,11 +101,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
             <div style="flex: 1; text-align: center;">
                 <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                <datalist id="medicine_name_suggestions">
-                    {% for medicine in medicines_list %}
-                        <option value="{{ medicine }}">
-                    {% endfor %}
-                </datalist>
+                
             </div>
             
             <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
@@ -89,34 +140,3 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
 });
-
-function selectAllCheckboxes() {
-    var checkboxes = document.getElementsByClassName("remove-checkbox");
-    var selectAllCheckbox = document.getElementById("select-all-checkbox");
-    for (var i = 0; i < checkboxes.length; i++) {
-        checkboxes[i].checked = selectAllCheckbox.checked;
-    }
-}
-
-
-// Event listener for input field
-document.getElementById('medicine_name_input').addEventListener('input', function() {
-    var query = this.value;
-    var suggestions = Array.from(document.getElementById('medicine_name_suggestions').options)
-        .map(option => option.value)
-        .filter(medicine => medicine.toLowerCase().includes(query.toLowerCase()));
-
-    displayAutocompleteSuggestions(suggestions);
-});
-
-// Function to display autocomplete suggestions
-function displayAutocompleteSuggestions(suggestions) {
-    var dropdown = document.getElementById('medicine_name_suggestions');
-    dropdown.innerHTML = ''; // Clear previous suggestions
-
-    suggestions.forEach(function(suggestion) {
-        var option = document.createElement('option');
-        option.value = suggestion;
-        dropdown.appendChild(option);
-    });
-}

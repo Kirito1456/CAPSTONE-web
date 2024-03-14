@@ -232,7 +232,7 @@ def patient_vital_signs_history(request):
 def patient_medical_history(request):
     return render(request, 'hmis/patient_medical_history.html')
 
-def view_treatment_plan(request):
+def view_treatment_plan_all(request):
     return render(request, 'hmis/view_treatment_plan.html')
 
 def view_treatment_plan(request, fname, lname, gender, bday):
@@ -251,10 +251,12 @@ def patient_medication_nurse(request):
     return render(request, 'hmis/patient_medication_nurse.html')
 
 def patient_medication_table(request):
-    return render(request, 'hmis/patient_medication_table.html')
+    prescriptionsorders = db.child("prescriptionorders").get().val()
+    return render(request, 'hmis/patient_medication_table.html', {'prescriptionsorders': prescriptionsorders})
 
 def patient_medication_table(request, fname, lname, gender, bday):
-    return render(request, 'hmis/patient_medication_table.html', {'fname': fname, 'lname': lname, 'gender': gender, 'bday': bday})
+    prescriptionsorders = db.child("prescriptionorders").get().val()
+    return render(request, 'hmis/patient_medication_table.html', {'fname': fname, 'lname': lname, 'gender': gender, 'bday': bday, 'prescriptionsorders': prescriptionsorders})
 
 def inpatient_medication_order(request):
     return render(request, 'hmis/inpatient_medication_order.html')
@@ -290,6 +292,36 @@ def outpatient_medication_order(request):
     medicines_list = [medication['Generic Name'] for medication in medications_cursor]
 
     return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients, 'medicines_list': medicines_list})
+
+def save_prescriptions(request):
+    if request.method == 'POST':
+        patient_id = request.POST['patient_uid'] 
+        medicine_name = request.POST.getlist('medicine_name')
+        dosage = request.POST.getlist('dosage')
+        route = request.POST.getlist('route')
+        frequency = request.POST.getlist('frequency')
+        additional_remarks = request.POST.getlist('additionalremarks')  
+        todaydate = request.POST['todaydate'] 
+        print(todaydate, patient_id, medicine_name, dosage, route, frequency, additional_remarks)
+        try:
+            id = str(uuid.uuid1())
+            data = {
+                'prescriptionsoderUID': id,
+                'medicine_name': medicine_name,
+                'dosage': dosage,
+                'route': route,
+                'frequency': frequency,
+                'additional_remarks': additional_remarks,
+                'patient_id': patient_id,
+                'todaydate': todaydate
+            }
+            db.child('prescriptionsorders').child(id).set(data)
+
+            messages.success(request, 'Prescription saved successfully!')
+            return redirect('patient_medication_doctor')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+    return render(request, 'hmis/view_treatment_plan.html')
 
 def diagnostic_lab_reports(request):
     return render(request, 'hmis/diagnostic_lab_reports.html')
