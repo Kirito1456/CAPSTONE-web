@@ -55,31 +55,31 @@
                 <label style="font-weight: bold;">Select Days:</label>
                 <div class="day-checkboxes">
                     <div class="day-checkbox">
-                        <input type="checkbox" id="sunday" name="selected_days" value="sunday">
+                        <input type="checkbox" id="sunday" name="selected_days" value="sunday" {% if 'sunday' in selected_days %}checked{% endif %}>
                         <label for="sunday">Sunday</label>
                     </div>
                     <div class="day-checkbox">
-                        <input type="checkbox" id="monday" name="selected_days" value="monday">
+                        <input type="checkbox" id="monday" name="selected_days" value="monday" {% if 'monday' in selected_days %}checked{% endif %}>
                         <label for="monday">Monday</label>
                     </div>
                     <div class="day-checkbox">
-                        <input type="checkbox" id="tuesday" name="selected_days" value="tuesday">
+                        <input type="checkbox" id="tuesday" name="selected_days" value="tuesday" {% if 'tuesday' in selected_days %}checked{% endif %}>
                         <label for="tuesday">Tuesday</label>
                     </div>
                     <div class="day-checkbox">
-                        <input type="checkbox" id="wednesday" name="selected_days" value="wednesday">
+                        <input type="checkbox" id="wednesday" name="selected_days" value="wednesday" {% if 'wednesday' in selected_days %}checked{% endif %}>
                         <label for="wednesday">Wednesday</label>
                     </div>
                     <div class="day-checkbox">
-                        <input type="checkbox" id="thursday" name="selected_days" value="thursday">
+                        <input type="checkbox" id="thursday" name="selected_days" value="thursday" {% if 'thursday' in selected_days %}checked{% endif %}>
                         <label for="thursday">Thursday</label>
                     </div>
                     <div class="day-checkbox">
-                        <input type="checkbox" id="friday" name="selected_days" value="friday">
+                        <input type="checkbox" id="friday" name="selected_days" value="friday" {% if 'friday' in selected_days %}checked{% endif %}>
                         <label for="friday">Friday</label>
                     </div>
                     <div class="day-checkbox">
-                        <input type="checkbox" id="saturday" name="selected_days" value="saturday">
+                        <input type="checkbox" id="saturday" name="selected_days" value="saturday" {% if 'saturday' in selected_days %}checked{% endif %}>
                         <label for="saturday">Saturday</label>
                     </div>
                 </div>
@@ -88,15 +88,15 @@
             <div id="time-selection">
                 <div class="time-slot">
                     <label for="morning-start" style="font-weight: bold;">Morning Start: </label>
-                    <input type="text" id="morning-start" class="timepicker" placeholder="{{ schedule }}" name="morning_start">
+                    <input type="text" id="morning-start" class="timepicker" placeholder="Select time" name="morning_start" value="{{ morning_start }}">
                     <label for="morning-end" style="font-weight: bold;">Morning End: </label>
-                    <input type="text" id="morning-end" class="timepicker" placeholder="Select time" name="morning_end">
+                    <input type="text" id="morning-end" class="timepicker" placeholder="Select time" name="morning_end" value="{{ morning_end }}">
                 </div>
                 <div class="time-slot">
                     <label for="afternoon-start" style="font-weight: bold;">Afternoon Start: </label>
-                    <input type="text" id="afternoon-start" class="timepicker" placeholder="Select time" name="afternoon_start">
+                    <input type="text" id="afternoon-start" class="timepicker" placeholder="Select time" name="afternoon_start" value="{{ afternoon_start }}">
                     <label for="afternoon-end" style="font-weight: bold;">Afternoon End: </label>
-                    <input type="text" id="afternoon-end" class="timepicker" placeholder="Select time" name="afternoon_end">
+                    <input type="text" id="afternoon-end" class="timepicker" placeholder="Select time" name="afternoon_end" value="{{ afternoon_end }}">
                 </div>
             </div>
             

@@ -164,6 +164,7 @@ def create(request):
 
             try:
 
+                
                 # Check if clinic data is provided
                 id = str(uuid.uuid1())
                 clinic_data = {
@@ -492,10 +493,23 @@ def AppointmentScheduling(request):
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
     else:
-        form = None  # No need for form if not using forms.py
+        # Retrieve appointment schedule data from Firebase
+        appointment_schedule = db.child('appointmentschedule').child(uid).get().val()
+        if appointment_schedule:
+            selected_days = appointment_schedule.get('days', [])
+            morning_start = appointment_schedule.get('morning_start', '')
+            morning_end = appointment_schedule.get('morning_end', '')
+            afternoon_start = appointment_schedule.get('afternoon_start', '')
+            afternoon_end = appointment_schedule.get('afternoon_end', '')
+        else:
+            # Set default values if no appointment schedule found
+            selected_days = []
+            morning_start = ''
+            morning_end = ''
+            afternoon_start = ''
+            afternoon_end = ''
 
-    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'form': form, 'schedule': schedule})
-
+    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'selected_days': selected_days, 'morning_start': morning_start, 'morning_end': morning_end, 'afternoon_start': afternoon_start, 'afternoon_end': afternoon_end})
 def NurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 

@@ -81,7 +81,7 @@ class StaffRegistrationForm(forms.ModelForm):
         ('Dermatologist', 'Dermatologist'),
         ('Pediatrician', 'Pediatrician'),
         ('Head Nurse', 'Head Nurse'),
-        ('Nurse Assistant', 'Nurse Assistant'),
+        ('Bedside Nurse', 'Bedside Nurse'),
     )
 
     # DEPARTMENT_CHOICES = (
