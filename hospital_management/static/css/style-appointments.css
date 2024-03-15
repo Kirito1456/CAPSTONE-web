@@ -758,3 +758,30 @@ header .current-date{
 #notification-list li:last-child {
     border-bottom: none;
 }
+
+.patient-card {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    font-size: 14px;
+}
+.patient-card-info {
+    background-color: #698a7c;
+    color: #fff;
+    padding: 8px; 
+    flex: 0 0 30%;
+}
+.patient-card-medication {
+    background-color: #fff;
+    padding: 8px; 
+    flex: 1; 
+}
+.patient-card h3 {
+    margin-top: 0;
+    font-size: 16px;
+}
+.patient-card p {
+    margin-bottom: 3px;
+}

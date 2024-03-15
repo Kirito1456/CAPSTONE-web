@@ -499,8 +499,8 @@ def AppointmentScheduling(request):
 def NurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 
-
-    return render(request, 'hmis/nursedashboard.html', {'nurses': nurses, 'uid': uid})
+    patients = db.child("patients").get().val()
+    return render(request, 'hmis/nursedashboard.html', {'nurses': nurses, 'uid': uid, 'patients': patients})
 
 def DoctorDashboard(request):
     doctors = db.child("doctors").get().val()
