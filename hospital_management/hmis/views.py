@@ -164,6 +164,7 @@ def create(request):
 
             try:
 
+                
                 # Check if clinic data is provided
                 id = str(uuid.uuid1())
                 clinic_data = {
