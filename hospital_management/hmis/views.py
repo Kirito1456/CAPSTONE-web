@@ -514,6 +514,14 @@ def NurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 
     patients = db.child("patients").get().val()
+
+    # for patient_id, patient_data in patients.items():
+    #     patient_data['room_number'] = random.randint(100, 999)
+
+    # context = {
+    #     'patients': patients,
+    # }
+
     return render(request, 'hmis/nursedashboard.html', {'nurses': nurses, 'uid': uid, 'patients': patients})
 
 def DoctorDashboard(request):

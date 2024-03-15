@@ -42,7 +42,7 @@
                 <div class="patient-card-info">
                     <h3>Name: {{ patient_data.fname }} {{ patient_data.lname }}</h3>
                     <p>Patient ID: #{{ patient_id }}</p>
-                    <p>Room Number: {{ patient_data.room_number }}</p>
+                    <p>Room Number: random.randint(100, 999)</p> <!-- Show "To Be Assigned" if room_number is not set -->
                     <p>Birthday: {{ patient_data.bday }}</p>
                     <p>Gender: {{ patient_data.gender }}</p>
                 </div>
