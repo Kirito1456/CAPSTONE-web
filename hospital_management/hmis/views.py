@@ -553,5 +553,56 @@ def HeadNurseDashboard(request):
     uid = request.session['uid'] 
 
     rooms = db.child("rooms").get().val()
-    print(rooms)
+    #print(rooms)
+    if request.method == 'POST':
+        for room_id, room_data in rooms.items():
+            morning = request.POST.get(f'morning_{room_id}')  
+            afternoon = request.POST.get(f'afternoon_{room_id}')
+            graveyard = request.POST.get(f'graveyard_{room_id}')
+
+            try:
+                # Save to Firebase
+                data = {
+                    'nurse_assigned': {
+                        'morning': morning,
+                        'afternoon': afternoon,
+                        'graveyard': graveyard,
+                    }
+                }
+                db.child('rooms').child(room_id).update(data)
+
+                messages.success(request, 'Room Assignments saved successfully!')
+                return redirect('HeadNurseDashboard')
+            except Exception as e:
+                messages.error(request, f'Error: {str(e)}')
     return render(request, 'hmis/HeadNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})
+
+# def roomAssignments(request):
+#     nurses = db.child("nurses").get().val()
+#     uid = request.session['uid'] 
+
+#     rooms = db.child("rooms").get().val()
+
+#     if request.method == 'POST':
+#         morning = request.POST.get('morning')  
+#         afternoon = request.POST.get('afternoon')
+#         graveyard = request.POST.get('graveyard')
+#         id = request.POST.get('roomID')
+
+#         try:
+#             # Save to Firebase
+#             data = {
+#                 'nurse_assigned': {
+#                     'morning': morning,
+#                     'afternoon': afternoon,
+#                     'graveyard': graveyard,
+#                 }
+#             }
+#             db.child('rooms').child(id).set(data)
+
+#             messages.success(request, 'Room Assignments saved successfully!')
+#             return redirect('HeadNurseDashboard')
+#         except Exception as e:
+#             messages.error(request, f'Error: {str(e)}')
+ 
+#     return render(request, 'hmis/HeadNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})

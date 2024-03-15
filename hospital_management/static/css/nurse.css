@@ -232,3 +232,66 @@ a{
     font-weight: bold; /* Making the text bold on hover */
 }
 
+.clients_table {
+    padding-top: 24px;
+    text-align: left;
+    width: 100%;
+}
+
+.clients_table th {
+    border-radius: 10px;
+    background-color: #85AA9B;
+    
+    padding: 8px;
+    text-align: center;
+}
+
+.clients_table td {
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.accountT_lbl {
+    font-size: 14px;
+    color: black;
+    text-align: left;
+}
+
+/* Alternate row colors */
+.clients_table tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Lighter color */
+}
+
+.clients_table tr:nth-child(even) {
+    background-color: #D3D3D3; /* Darker color */
+}
+
+.clients_table th:nth-child(1),
+.clients_table td:nth-child(1) {
+    width: 5%; /* Date column width */
+}
+
+.clients_table th:nth-child(2),
+.clients_table td:nth-child(2) {
+    width: 5%; /* Time column width */
+}
+
+.clients_table th:nth-child(3),
+.clients_table td:nth-child(3) {
+    width: 5%; /* Name column width */
+}
+
+.clients_table th:nth-child(4),
+.clients_table td:nth-child(4) {
+    width: 5%; /* Visit Type column width */
+}
+
+.clients_table th:nth-child(5),
+.clients_table td:nth-child(5) {
+    width: 5%; /* Status column width */
+}
+
+.clients_table th:nth-child(6),
+.clients_table td:nth-child(6) {
+    width: 10%; /* Details column width */
+}
