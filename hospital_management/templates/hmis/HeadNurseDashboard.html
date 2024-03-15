@@ -1,0 +1,176 @@
+<!-- your_template.html -->
+
+{% extends 'hmis/base.html' %}
+{% load static %}
+
+{% block title %}Nurse Dashboard{% endblock %}
+
+{% block styles %} 
+<!-- Stylesheet for the program -->
+<link rel="stylesheet" href="{% static 'css/nurse.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+    .clients_table {
+    padding-top: 24px;
+    text-align: left;
+    width: 100%;
+}
+
+.clients_table th {
+    border-radius: 10px;
+    background-color: #85AA9B;
+    
+    padding: 8px;
+    text-align: center;
+}
+
+.clients_table td {
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.accountT_lbl {
+    font-size: 14px;
+    color: black;
+    text-align: left;
+}
+
+/* Alternate row colors */
+.clients_table tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Lighter color */
+}
+
+.clients_table tr:nth-child(even) {
+    background-color: #D3D3D3; /* Darker color */
+}
+
+.clients_table th:nth-child(1),
+.clients_table td:nth-child(1) {
+    width: 5%; /* Date column width */
+}
+
+.clients_table th:nth-child(2),
+.clients_table td:nth-child(2) {
+    width: 5%; /* Time column width */
+}
+
+.clients_table th:nth-child(3),
+.clients_table td:nth-child(3) {
+    width: 5%; /* Name column width */
+}
+
+.clients_table th:nth-child(4),
+.clients_table td:nth-child(4) {
+    width: 5%; /* Visit Type column width */
+}
+
+.clients_table th:nth-child(5),
+.clients_table td:nth-child(5) {
+    width: 5%; /* Status column width */
+}
+
+.clients_table th:nth-child(6),
+.clients_table td:nth-child(6) {
+    width: 10%; /* Details column width */
+}
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="all-info">
+            <div id="user-info"> 
+                <div id="image">
+                    <img src="{% static 'doctorjane.jpg' %}" id="display-photo">
+                </div>
+                <div id="information">
+                    {% for nurse_id, nurse_data in nurses.items %}
+                        {% if nurse_data.uid == uid %}
+                            <div id="name">{{ nurse_data.fname }} {{ nurse_data.lname }}</div>
+                            <div id="role">{{ nurse_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="menu"> 
+                <div id="a1" style="font-weight: bold;"><a href="">Dashboard</a></div>
+                <div id="a7"><a href="{% url 'logout' %}">Logout</a></div>
+            </div>
+        </div>
+    </div>
+    <div id="appointment-screen">
+        <div id="current-date-time"></div>
+        <table class="clients_table">
+            <thead>
+                <tr>
+                    <th>Floor Number</th>
+                    <th>Room Number</th>
+                    <th>Assigned Nurses</th>
+                </tr>
+            </thead>
+            <form method="post">
+            {% csrf_token %}
+                <tbody>
+                    {% for room_id, room_data in rooms.items %}
+                    <tr>
+                        <td>{{ room_data.fnumber }}</td>
+                        <td>{{ room_data.rnumber }}</td>
+                        
+                        <td>
+                            <div>
+                                <label>Morning: </label>
+                                <select class="frequency-dropdown" name="frequency">
+                                    {% for nurse_id, nurse_data in nurses.items %}
+                                        {% if nurse_id == room_data.nurse_assigned.morning %}
+                                            <option value="nurse_id" selected>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                        {% endif %}
+                                        <option value="nurse_id">{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                    {% endfor %}
+                                </select><br>
+                                <label>Afternoon: </label>
+                                <select class="frequency-dropdown" name="frequency">
+                                    {% for nurse_id, nurse_data in nurses.items %}
+                                        {% if nurse_id == room_data.nurse_assigned.afternoon %}
+                                            <option value="nurse_id" selected>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                        {% endif %}
+                                        <option value="nurse_id">{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                    {% endfor %}
+                                </select><br>
+                                <label>Graveyard: </label>
+                                <select class="frequency-dropdown" name="frequency">
+                                    {% for nurse_id, nurse_data in nurses.items %}
+                                        {% if nurse_id == room_data.nurse_assigned.graveyard %}
+                                            <option value="nurse_id" selected>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                        {% endif %}
+                                        <option value="nurse_id">{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                    {% endfor %}
+                                </select><br>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+
+                </tbody>
+            </form>
+        </table>
+        
+        <button class="save-button">Save</button>
+    </div>
+</div>
+<script src="{% static 'js/nurse.js' %}"></script>
+
+<script>
+    // JavaScript code to display current date and time
+    function displayDateTime() {
+        var currentDate = new Date();
+        var dateTimeString = currentDate.toLocaleString();
+        document.getElementById('current-date-time').innerText = dateTimeString;
+    }
+
+    // Call the function initially and update every second
+    displayDateTime();
+    setInterval(displayDateTime, 1000);
+</script>
+{% endblock %}

@@ -57,16 +57,21 @@ def home(request):
             
             doctor_found = False
             nurse_found = False
+            headnurse_found = False
             for account in accounts.values():
                 if account["role"] == "Doctor" and account["email"] == email:
                     doctor_found = True
                 elif account["role"] == "Nurse" and account["email"] == email:
                     nurse_found = True
+                    if account["specialization"] == "Head Nurse" and account["email"] == email:
+                        headnurse_found = True
                     break
 
             if doctor_found:
                 return redirect('DoctorDashboard')
-            elif nurse_found:
+            elif nurse_found and headnurse_found:
+                return redirect('HeadNurseDashboard')
+            elif nurse_found and headnurse_found == False:
                 return redirect('NurseDashboard')
             else:
                 return redirect('register')
@@ -542,3 +547,11 @@ def DoctorDashboard(request):
     uid = request.session['uid'] 
 
     return render(request, 'hmis/doctordashboard.html', {'doctors': doctors, 'uid': uid})
+
+def HeadNurseDashboard(request):
+    nurses = db.child("nurses").get().val()
+    uid = request.session['uid'] 
+
+    rooms = db.child("rooms").get().val()
+    print(rooms)
+    return render(request, 'hmis/HeadNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})

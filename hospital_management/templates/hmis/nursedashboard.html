@@ -1,3 +1,5 @@
+<!-- your_template.html -->
+
 {% extends 'hmis/base.html' %}
 {% load static %}
 
@@ -7,7 +9,6 @@
 <!-- Stylesheet for the program -->
 <link rel="stylesheet" href="{% static 'css/nurse.css' %}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
 {% endblock styles %}
 
 {% block content %}
@@ -36,13 +37,15 @@
         </div>
     </div>
     <div id="appointment-screen">
+        <div id="current-date-time"></div>
+        
         <div id="patient-cards">
             {% for patient_id, patient_data in patients.items %}
             <div class="patient-card">
                 <div class="patient-card-info">
                     <h3>Name: {{ patient_data.fname }} {{ patient_data.lname }}</h3>
                     <p>Patient ID: #{{ patient_id }}</p>
-                    <p>Room Number: random.randint(100, 999)</p> <!-- Show "To Be Assigned" if room_number is not set -->
+                    <p>Room Number: </p> 
                     <p>Birthday: {{ patient_data.bday }}</p>
                     <p>Gender: {{ patient_data.gender }}</p>
                 </div>
@@ -57,4 +60,17 @@
     </div>
 </div>
 <script src="{% static 'js/nurse.js' %}"></script>
+
+<script>
+    // JavaScript code to display current date and time
+    function displayDateTime() {
+        var currentDate = new Date();
+        var dateTimeString = currentDate.toLocaleString();
+        document.getElementById('current-date-time').innerText = dateTimeString;
+    }
+
+    // Call the function initially and update every second
+    displayDateTime();
+    setInterval(displayDateTime, 1000);
+</script>
 {% endblock %}
