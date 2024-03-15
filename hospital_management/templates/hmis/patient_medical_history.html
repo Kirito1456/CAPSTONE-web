@@ -31,7 +31,7 @@
             <div id = "other-side">
                 <div id = "back">
                     <div id = "back-button">
-                        <a href="{% url 'patient_personal_information' %}"> << Back </a>
+                        <a href=""> << Back </a>
                     </div>
                 </div>
                 <div id = "patient-medical-info">
@@ -81,7 +81,7 @@
                             </table>
                         </div>
                         <div id = "edit-medical-surgical-history">
-                            <a href = "" id = "edit-medical-surgical-history-button">Edit</a>
+                            <a href = "{% url 'edit_medical_surgical_history' %}" id = "edit-medical-surgical-history-button">Edit</a>
                         </div>
                     </div>
                     <div id = "drug-history">
@@ -105,7 +105,7 @@
                             </table>
                         </div>
                         <div id = "edit-drug-history">
-                                <a href = "" id = "edit-drug-history-button">Edit</a>
+                                <a href = "{% url 'edit_drug_history' %}" id = "edit-drug-history-button">Edit</a>
                         </div>
                     </div>
                     <div id = "allergy">
@@ -123,7 +123,7 @@
                             </table>
                         </div>
                         <div id = "edit-allergy">
-                            <a href = "" id = "edit-allergy-button">Edit</a>
+                            <a href = "{% url 'edit_allergy' %}" id = "edit-allergy-button">Edit</a>
                         </div>
                     </div>
                     <div id = "immunization">
@@ -145,7 +145,7 @@
                             </table>
                         </div>
                         <div id = "edit-immunization">
-                            <a href = "" id = "edit-immunization-button">Edit</a>
+                            <a href = "{% url 'edit_immunization_history' %}" id = "edit-immunization-button">Edit</a>
                         </div>
                     </div>
                     <div id = "family-history">
@@ -165,17 +165,60 @@
                             </table>
                         </div>
                         <div id = "edit-family-history">
-                            <a href = "" id = "edit-family-history-button">Edit</a>
+                            <a href = "{% url 'edit_family_history' %}" id = "edit-family-history-button">Edit</a>
                         </div>
                     </div>
                     <div id = "social-history"> 
                         <div id = "head">Social History</div>
                         <div id = "social-history-info">
-
+                            <script>
+                                document.getElementById("social-history-info").style.pointerEvents = "none";
+                            </script>
+                            <div id = "social-info">
+                                <div id = "smoking">
+                                    Smoking?
+                                    <input type="radio" id="yes" name="smoking-answer" value="yes">
+                                    <label for="yes">Yes</label>
+                                    <input type="radio" id="no" name="smoking-answer" value="no">
+                                    <label for="no">No</label>
+                                </div>
+                                <div id = "alcohol">
+                                    Alcohol?
+                                    <input type="radio" id="yes" name="alcohol-answer" value="yes">
+                                    <label for="yes">Yes</label>
+                                    <input type="radio" id="no" name="alcohol-answer" value="no">
+                                    <label for="no">No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id = "edit-social-history">
+                            <a id = "edit-social-history-button" onclick = "edit()">Edit</a>
+                            <a id = "save-social-history" onclick = "save()" style = "display: none;">Save</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </body>
+
+    <script>
+        function edit() {
+            // Enable radio buttons for editing
+            document.getElementById("social-history-info").style.pointerEvents = "";
+    
+            // Hide the edit button and show the save button
+            document.getElementById("edit-social-history-button").style.display = "none";
+            document.getElementById("save-social-history").style.display = "inline";
+        }
+    
+        function save() {
+            // Disable radio buttons after saving
+            document.getElementById("social-history-info").style.pointerEvents = "none";
+    
+            // Hide the save button and show the edit button
+            document.getElementById("edit-social-history-button").style.display = "inline";
+            document.getElementById("save-social-history").style.display = "none";
+        }
+    </script>
+
 </html>

@@ -1,0 +1,163 @@
+{%load static%}
+<html>
+    <title>Edit Drug History</title>
+
+<link rel="stylesheet" href="{% static 'css/edit_drug_history_styles.css' %}">
+
+    <body> 
+        <div id = "whole-screen">
+            <div id = "side-menu">
+                <div id = "all-info">
+                    <div id = "user-info"> 
+                        <div id = "image">
+                            <img src="{% static 'hannie.jpg' %}" id = "display-photo">
+                        </div>
+                        <div id = "information">
+                            <div id = "name"> Jeonghan </div>
+                            <div id = "role"> General Practitioner</div>
+                        </div>
+                    </div>
+                    <div id = "menu"> 
+                        <div id = "a1"><a href="">Dashboard</a></div>
+                        <div id = "a2"><a href="">Appointments</a></div>
+                        <div id = "a3" style="font-weight: bold;"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                        <div id = "a4"><a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
+                        <div id = "a5"><a href="">Message</a></div>
+                        <div id = "a6"><a href="">Profile</a></div>
+                        <div id = "a7"><a href="">Settings</a></div>
+                    </div>
+                </div>
+            </div>
+            <div id = "other-side">
+                <div id = "back">
+                    <div id = "back-button">
+                        <a href="{% url 'patient_medical_history' %}"> << Back </a>
+                    </div>
+                </div>
+                <div id = "patient-medical-info">
+                    <div id = "personal-info">
+                        <div id = "head">Patient Medical History</div>
+                        <div id = "patient-information">
+                            <div id = "first">
+                                <div id = "fname">Juanita</div>
+                                <div id = "fname-label">First Name</div>
+                            </div>
+                            <div id = "last">
+                                <div id = "lname">Dela Cruz</div>
+                                <div id = "lname-label">Last Name</div>
+                            </div>
+                            <div id = "gender">
+                                <div id = "gender-view">Female</div>
+                                <div id = "gender-label">Gender</div>
+                            </div>
+                            <div id = "bday">
+                                <div id = "birthday">01/03/2003</div>
+                                <div id = "bday-label">Date of Birth</div>
+                            </div>
+                            <div id = "age">
+                                <div id = "age-view">21</div>
+                                <div id = "age-label">Age</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id = "drug-history">
+                    <div id = "head">Drug History</div>
+                    <div id = "drug-table">
+                        <table id = "drug-history-table">
+                            <tr>
+                                <th class="member">Member</th>
+                                <th class="illnesses">Illness/es</th>
+                                <th class="age">Age of Diagnosis</th>
+                                <th class = "edit">Edit</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id = "member">Mother</div>
+                                    <input id="member-input" type="text" style="display: none;">
+                                </td>
+                                <td>
+                                    <div id = "illness">High Blood Pressure</div>
+                                    <input id="illness-input" type="text" style="display: none;">
+                                </td>
+                                <td>
+                                    <div id = "age-data">45</div>
+                                    <input id="age-data-input" type="number" style="display: none;">
+                                </td>
+                                <td>
+                                    <a id = "edit" onclick = "edit()">Edit</a>
+                                    <a id = "save" onclick = "save()" style = "display: none;">Save</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id = "add-drug-history">
+                        <a id = "add-drug-history-button">Add</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+        function edit() {
+            // Get the elements for member, illness, and age data
+            var memberElement = document.getElementById("member");
+            var illnessElement = document.getElementById("illness");
+            var ageDataElement = document.getElementById("age-data");
+    
+            // Get the input elements for member, illness, and age data
+            var memberInput = document.getElementById("member-input");
+            var illnessInput = document.getElementById("illness-input");
+            var ageDataInput = document.getElementById("age-data-input");
+    
+            // Set the input values to the current data values
+            memberInput.value = memberElement.textContent;
+            illnessInput.value = illnessElement.textContent;
+            ageDataInput.value = ageDataElement.textContent;
+    
+            // Show input elements and hide div elements
+            memberInput.style.display = "block";
+            memberElement.style.display = "none";
+            illnessInput.style.display = "block";
+            illnessElement.style.display = "none";
+            ageDataInput.style.display = "block";
+            ageDataElement.style.display = "none";
+    
+            // Show the Save link and hide the Edit link
+            document.getElementById("edit").style.display = "none";
+            document.getElementById("save").style.display = "inline";
+        }
+    
+        function save() {
+            // Get the elements for member, illness, and age data
+            var memberElement = document.getElementById("member");
+            var illnessElement = document.getElementById("illness");
+            var ageDataElement = document.getElementById("age-data");
+    
+            // Get the input elements for member, illness, and age data
+            var memberInput = document.getElementById("member-input");
+            var illnessInput = document.getElementById("illness-input");
+            var ageDataInput = document.getElementById("age-data-input");
+    
+            // Update the div elements with the input values
+            memberElement.textContent = memberInput.value;
+            illnessElement.textContent = illnessInput.value;
+            ageDataElement.textContent = ageDataInput.value;
+    
+            // Show div elements and hide input elements
+            memberInput.style.display = "none";
+            memberElement.style.display = "block";
+            illnessInput.style.display = "none";
+            illnessElement.style.display = "block";
+            ageDataInput.style.display = "none";
+            ageDataElement.style.display = "block";
+    
+            // Show the Edit link and hide the Save link
+            document.getElementById("edit").style.display = "inline";
+            document.getElementById("save").style.display = "none";
+        }
+    </script>
+    
+
+</html>

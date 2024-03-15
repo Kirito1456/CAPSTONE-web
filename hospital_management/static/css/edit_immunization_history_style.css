@@ -260,22 +260,15 @@ a:hover{
     font-size: 12;
 }
 
-#medical-history{
-    margin: 0 40 20 50;
+#drug-history{
+    margin: 0 40 40 50;
 
     display: flex;
     flex-direction: column;
     
     width: 92.2%;
-}
 
-#past-medical-surgical-history, #drug-history, #allergy, #immunization, #family-history, #social-history{
-    margin: 0 0 20 0;
-
-    display: flex;
-    flex-direction: column;
-
-    background-color: #E9E9E9;
+    background-color: #E9E9E9
 }
 
 #family-history-table, #immunization-table, #allergy-table, #drug-table, #medical-surgical-history-table{
@@ -311,60 +304,12 @@ th{
     font-size: 16;
 }
 
-th.diagnosis-date{
-    width: 20%;
-}
-
-th.illness, th.edit{
-    width: 10%;
-}
-
-th.treatment, th.remark{
+th.member, th.illnesses{
     width: 45%;
 }
 
-th.start, th.end{
-    width: 15%;
-}
-
-th.medication{
-    width: 20%;
-}
-
-th.purpose, th.dosage{
-    width: 25%;
-}
-
-th.allergen, th.severity{
-    width: 50%;
-}
-
-th.given-date{
-    width: 15%;
-}
-
-th.vaccine{
-    width: 30%
-}
-
-th.administer{
-    width: 30%;
-}
-
-th.dosage-number{
-    width: 25%;
-}
-
-th.member{
-    width: 35%;
-}
-
-th.Illness{
-    width: 50%;
-}
-
-th.age{
-    width: 15%;
+th.age, th.edit{
+    width: 5%;
 }
 
 td{
@@ -374,12 +319,14 @@ td{
     font-size: 14;
 }
 
-#add-medical-surgical-history{
+#add-immunization-history{
     display: flex;
     justify-content: flex-end;
+
+
 }
 
-#add-medical-surgical-history-button{
+#add-immunization-history-button{
     padding: 3 5;
     background-color: #85AA9B;
 
@@ -396,13 +343,13 @@ td{
     color: #E9E9E9;
 }
 
-#date-input, #illness-input, #treatment-input, #remark-input{
-    display: flex;
-    justify-content: center;
+#member-input, #illness-input, #age-data-input{
+    margin: 0 auto;
+    display: block; /* Ensures the input element is a block-level element */
 
     text-align: center;
 
-    width: 100%;
+    width: 95%;
 
     height: max-content;
 
@@ -414,14 +361,4 @@ td{
     background-color: #E9E9E9;
     padding: 3 5;
     border-radius: 5px;
-}
-
-#medical-surgical-history-remark{
-    min-width: 100%;
-    min-height: fit-content;
-    text-align: justify;
-}
-
-#illnesses, #treatment-plan{
-    width: 95%;
 }

@@ -1,6 +1,6 @@
 {%load static%}
 <html>
-    <title>Patient Data</title>
+    <title>Edit Medical/Surgical History</title>
 
 <link rel="stylesheet" href="{% static 'css/edit_medical_surgical_history_style.css' %}">
 
@@ -31,7 +31,7 @@
             <div id = "other-side">
                 <div id = "back">
                     <div id = "back-button">
-                        <a href="{% url 'patient_personal_information' %}"> << Back </a>
+                        <a href="{% url 'patient_medical_history' %}"> << Back </a>
                     </div>
                 </div>
                 <div id = "patient-medical-info">
@@ -73,7 +73,30 @@
                                     <th class = "remark">Remarks</th>
                                     <th class = "edit">Edit</th>
                                 </tr>
-                                <tr>
+                                <tr id = "row-1">
+                                    <td>
+                                        <div id = "date-diagnosis">2014-02-09</div>
+                                        <input id="date-input" type="date" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "illness">Asthma</div>
+                                        <input id="illness-input" type="text" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "treatment">Medication</div>
+                                        <input id="treatment-input" type="text" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "remark">Weekly visit is required iuehoiwe ijwdo wjediowhnsekdj ihwdiown wjdiowklnd ,efef kfdn</div>
+                                        <input id="remark-input" type="text" style="display: none;">
+                                        
+                                    </td>
+                                    <td>
+                                        <a id = "edit" onclick = "edit()">Edit</a>
+                                        <a id = "save" onclick = "save()" style = "display: none;">Save</a>
+                                    </td>
+                                </tr>
+                                <tr id = "row-2">
                                     <td><input type="date" id = "date-diagnosis">
                                         <script>
                                             document.getElementById("date-diagnosis").value = "2014-02-09";
@@ -89,19 +112,97 @@
                                             document.getElementById("treatment-plan").value = "Medication";
                                         </script>
                                     </td>
-                                    <td><textarea>Weekly visit is required iuehoiwe ijwdo wjediowhnsekdj ihwdiown wjdiowklnd ,efef kfd</textarea></td>
+                                    <td><textarea id = "medical-surgical-history-remark">Weekly visit is required iuehoiwe ijwdo wjediowhnsekdj ihwdiown wjdiowklnd ,efef kfd</textarea></td>
                                     <td>
-                                        <a href = "" id = "delete">Delete</a>
+                                        <a href = "" id = "edit">Edit</a>
                                     </td>
                                 </tr>
                             </table>
                         </div>
                         <div id = "add-medical-surgical-history">
-                            <a href = "" id = "add-medical-surgical-history-button">Add</a>
+                            <a id = "add-medical-surgical-history-button">Add</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </body>
+
+    <script>
+        function edit() {
+            var dateElement = document.getElementById("date-diagnosis");
+            var dateInput = document.getElementById("date-input");
+
+            var illnessElement = document.getElementById("illness");
+            var illnessInput = document.getElementById("illness-input");
+
+            var treatmentElement = document.getElementById("treatment");
+            var treatmentInput = document.getElementById("treatment-input");
+
+            var remarkElement = document.getElementById("remark");
+            var remarkInput = document.getElementById("remark-input");
+
+            // Populate input fields with current values from div elements
+            dateInput.value = dateElement.textContent;
+            illnessInput.value = illnessElement.textContent;
+            treatmentInput.value = treatmentElement.textContent;
+            remarkInput.value = remarkElement.textContent;
+
+            // Hide the divs and show the input fields
+            dateElement.style.display = "none";
+            dateInput.style.display = "block";
+
+            illnessElement.style.display = "none";
+            illnessInput.style.display = "block";
+
+            treatmentElement.style.display = "none";
+            treatmentInput.style.display = "block";
+
+            remarkElement.style.display = "none";
+            remarkInput.style.display = "block";
+
+            // Show the save button and hide the edit button
+            document.getElementById("edit").style.display = "none";
+            document.getElementById("save").style.display = "inline";
+        }
+
+        function save() {
+            var dateElement = document.getElementById("date-diagnosis");
+            var dateInput = document.getElementById("date-input");
+            
+            var illnessElement = document.getElementById("illness");
+            var illnessInput = document.getElementById("illness-input");
+
+            var treatmentElement = document.getElementById("treatment");
+            var treatmentInput = document.getElementById("treatment-input");
+
+            var remarkElement = document.getElementById("remark");
+            var remarkInput = document.getElementById("remark-input");
+
+            // Update the div content with the input field value
+            dateElement.textContent = dateInput.value;
+            illnessElement.textContent = illnessInput.value;
+            treatmentElement.textContent = treatmentInput.value;
+            remarkElement.textContent = remarkInput.value;
+
+            // Hide the input fields and show the divs
+            dateInput.style.display = "none";
+            dateElement.style.display = "block";
+            
+            illnessInput.style.display = "none";
+            illnessElement.style.display = "block";
+
+            treatmentInput.style.display = "none";
+            treatmentElement.style.display = "block";
+
+            remarkInput.style.display = "none";
+            remarkElement.style.display = "block";
+
+            // Show the edit button and hide the save button
+            document.getElementById("edit").style.display = "inline";
+            document.getElementById("save").style.display = "none";
+        }
+
+    </script>
+
 </html>
