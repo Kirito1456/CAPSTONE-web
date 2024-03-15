@@ -163,7 +163,7 @@ def create(request):
                 return redirect('register')
 
             try:
-
+                clinic = request.POST.get('clinic')
                 
                 # Check if clinic data is provided
                 id = str(uuid.uuid1())
@@ -181,7 +181,7 @@ def create(request):
                     # Save new clinic data
                     clinic_ref =  db.child('clinics').child(id).set(clinic_data)
                     #clinic_id = clinic_ref.key  # Get the unique key of the pushed clinic
-                    cleaned_data['clinic'] = id
+                    clinic = id
 
                 # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
@@ -195,14 +195,27 @@ def create(request):
                     'role': cleaned_data['role'],
                     'specialization': cleaned_data['specialization'],
                     #'department': cleaned_data['department'],
-                    'clinic': cleaned_data['clinic'],
+                    'clinic': clinic,
                     'email': email,
                 }
+
+                data2 = {
+                    'uid': user['localId'],
+                    'fname': cleaned_data['fname'],
+                    'lname': cleaned_data['lname'],
+                    'sex': cleaned_data['sex'],
+                    'role': cleaned_data['role'],
+                    'specialization': cleaned_data['specialization'],
+                    #'department': cleaned_data['department'],
+                    #'clinic': clinic,
+                    'email': email,
+                }
+
 
                 if (cleaned_data['role'] == 'Doctor'):
                     db.child('doctors').child(user['localId']).set(data)
                 else:
-                    db.child('nurses').child(user['localId']).set(data)
+                    db.child('nurses').child(user['localId']).set(data2)
                                
                 messages.success(request, 'Registration successful! Please log in.')
                 return redirect('home')
