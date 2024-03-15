@@ -21,7 +21,7 @@ class Staff(models.Model):
     fname = models.CharField(max_length=100)
     lname = models.CharField(max_length=100)
     #cnumber = models.CharField(max_length=20, null=True)
-    clinic = models.CharField(max_length=255, null=True)
+    #clinic = models.CharField(max_length=255, null=True)
     #clinicaddress = models.CharField(max_length=255, null=True)
     SEX_CHOICES = (
         ('Male', 'Male'),

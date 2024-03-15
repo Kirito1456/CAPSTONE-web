@@ -2,6 +2,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // Get the select elements
     const roleSelect = document.getElementById('roleSelect');
     const jobTitleSelect = document.getElementById('jobTitleSelect');
+    var clinicSelect = document.getElementById("doctorClinic");
+    var clinicSelect = document.getElementById("clinicSelect");
+    var othersFields = document.getElementById("othersFields");
     
     // Define the job titles for each role
     const doctorJobTitles = ['General Practitioner', 'Dermatologist', 'Pediatrician'];
@@ -28,6 +31,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 jobTitleSelect.appendChild(option);
             });
         }
+        if (this.value === "Doctor") {
+            doctorClinic.style.display = "block";
+        } else {
+            doctorClinic.style.display = "none";
+            othersFields.style.display = "none";
+        }
+
     }
 
     // Event listener for role selection change
@@ -36,9 +46,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Initialize job titles based on default role selection
     updateJobTitles();
 
-    var clinicSelect = document.getElementById("clinicSelect");
-    var othersFields = document.getElementById("othersFields");
-
+    
     clinicSelect.addEventListener("change", function() {
         if (this.value === "Others") {
             othersFields.style.display = "block";
