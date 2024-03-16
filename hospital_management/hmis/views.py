@@ -127,6 +127,13 @@ def clinics(request):
     # Pass the combined data to the template
     return render(request, 'hmis/clinics.html', {'accounts': accounts})
 
+def nursesAdmin(request):
+    # Fetch doctors and nurses data from Firebase
+    nurses = db.child("nurses").get().val()
+
+
+    # Pass the combined data to the template
+    return render(request, 'hmis/nurses.html', {'nurses': nurses})
 
 
 def register(request):
@@ -211,6 +218,7 @@ def create(request):
                     'sex': cleaned_data['sex'],
                     'role': cleaned_data['role'],
                     'specialization': cleaned_data['specialization'],
+                    'shift': '',
                     #'department': cleaned_data['department'],
                     #'clinic': clinic,
                     'email': email,

@@ -1,0 +1,78 @@
+{% extends 'hmis/base.html' %}
+{%load static%}
+{% block title %}Dashboard{% endblock %}
+
+{% block styles%} 
+<!-- Stylesheet for the program -->
+<!-- <link rel="stylesheet" href="{% static 'css/style-appointments.css' %}"> -->
+<link rel="stylesheet" href="{% static 'css/style-user.css' %}">
+
+{% endblock styles%}
+
+{% block content %}
+
+<div id = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="\static\doctorjohn.jpg" id = "display-photo">
+                </div>
+                <div id = "information">
+                    <div id ="user_admin" class="admin_lbl"> ADMIN </div>
+                </div>
+            </div>
+            <div id = "menu"> 
+                <div id = "a1"><a href="{% url 'clinics' %}">Clinics</a></div>
+                <div id = "a3" style="font-weight: bold;"><a href="{% url 'nursesAdmin' %}">Nurses</a></div>
+                <div id = "a2"><a href="{% url 'logout' %}">Logout</a></div>
+            </div>
+        </div>
+    </div>
+    <div id = "appointment-screen">
+        <div id="container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <button id="searchButton">Search</button>
+            </div>
+        </div>
+        
+        <form method="post" action="{% url 'nursesAdmin' %}">
+            {% csrf_token %}
+            <table class="accounts_table">
+                <thead>
+                    <tr>
+                        <th>Nurse Name</th>
+                        <th>Role</th>
+                        <th>Shift</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nurses_id, nurses_data in nurses.items %}
+                    <tr>
+                        <td><label id="accountT_email" class="accountT_lbl">{{ nurses_data.fname }} {{ nurses_data.lname }}</label></td>
+                        <td><label id="accountT_firstname" class="accountT_lbl">{{ nurses_data.specialization }}</label></td>
+                        <td><label id="accountT_lastname" class="accountT_lbl">
+                            <select name="shift">
+                                <option value="morning">Morning: 7AM-3PM</option>
+                                <option value="afternoon">Afternoon: 3PM-11PM</option>
+                                <option value="graveyard">Graveyard: 11PM-7AM</option>
+                            </select>
+                        </label></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Save</button>
+        </form>
+        
+        <div class="container">
+            <a class="previous">&#8249; Previous</a>
+            <a class="next">Next &#8250;</a>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}
