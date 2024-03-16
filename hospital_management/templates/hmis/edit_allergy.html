@@ -62,9 +62,9 @@
                     </div>
                 </div>
                 <div id = "drug-history">
-                    <div id = "head">Drug History</div>
-                    <div id = "drug-table">
-                        <table id = "drug-history-table">
+                    <div id = "head">Allergy</div>
+                    <div id = "allergy-table">
+                        <table id = "allergies-table">
                             <tr>
                                 <th class = "allergen">Allergen</th>
                                 <th class="severity">Reaction/Severity</th>
@@ -72,16 +72,16 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <div id = "allergen">Peanut</div>
-                                    <input id="allergen-input" type="text" style="display: none;">
+                                    <div id = "allergen-text-1">Peanut</div>
+                                    <input id="allergen-input-1" type="text" style="display: none;">
                                 </td>
                                 <td>
-                                    <div id = "severity">???</div>
-                                    <input id="severity-input" type="text" style="display: none;">
+                                    <div id = "severity-text-1">???</div>
+                                    <input id="severity-input-1" type="text" style="display: none;">
                                 </td>
                                 <td>
-                                    <a id = "edit" onclick = "edit()">Edit</a>
-                                    <a id = "save" onclick = "save()" style = "display: none;">Save</a>
+                                    <a id = "edit-1" onclick = "edit(this)">Edit</a>
+                                    <a id = "save-1" onclick = "save(this)" style = "display: none;">Save</a>
                                 </td>
                             </tr>
                         </table>
@@ -95,14 +95,21 @@
     </body>
 
     <script>
-        function edit() {
+        function edit(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
             // Get the div elements
-            var allergenElement = document.getElementById("allergen");
-            var severityElement = document.getElementById("severity");
+            var allergenElement = document.getElementById("allergen-text-" + rowIndex);
+            var severityElement = document.getElementById("severity-text-" + rowIndex);
 
             // Get the input elements
-            var allergenInput = document.getElementById("allergen-input");
-            var severityInput = document.getElementById("severity-input");
+            var allergenInput = document.getElementById("allergen-input-" + rowIndex);
+            var severityInput = document.getElementById("severity-input-" + rowIndex);
+
+            // Update the text content of the div elements with the input field values
+            allergenInput.value = allergenElement.textContent;
+            severityInput.value = severityElement.textContent;
 
             // Display the input fields and hide the div elements
             allergenInput.style.display = "block";
@@ -112,18 +119,22 @@
             severityElement.style.display = "none";
 
             // Show the save button and hide the edit button
-            document.getElementById("edit").style.display = "none";
-            document.getElementById("save").style.display = "inline";
+            document.getElementById("edit-" + rowIndex).style.display = "none";
+            document.getElementById("save-" + rowIndex).style.display = "inline";
         }
 
-        function save() {
-            // Get the input elements
-            var allergenInput = document.getElementById("allergen-input");
-            var severityInput = document.getElementById("severity-input");
+
+        function save(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
 
             // Get the div elements
-            var allergenElement = document.getElementById("allergen");
-            var severityElement = document.getElementById("severity");
+            var allergenElement = document.getElementById("allergen-text-" + rowIndex);
+            var severityElement = document.getElementById("severity-text-" + rowIndex);
+
+            // Get the input elements
+            var allergenInput = document.getElementById("allergen-input-" + rowIndex);
+            var severityInput = document.getElementById("severity-input-" + rowIndex);
 
             // Update the text content of the div elements with the input field values
             allergenElement.textContent = allergenInput.value;
@@ -137,9 +148,114 @@
             severityElement.style.display = "block";
 
             // Show the edit button and hide the save button
-            document.getElementById("edit").style.display = "inline";
-            document.getElementById("save").style.display = "none";
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
         }
+
+
+        function add() {
+            // Retrieve reference to the table
+            var table = document.getElementById("allergies-table");
+
+            // Create a new row element
+            var newRow = document.createElement("tr");
+
+            // Create cells for allergen and severity
+            var allergenCell = document.createElement("td");
+            var severityCell = document.createElement("td");
+
+            // Set content for allergen cell
+            var allergenContent = document.createElement("div");
+            var allergenInput = document.createElement("input");
+            allergenInput.value = ""; // Set initial value of input field
+            allergenInput.type = "text"; // Set type of input field
+            allergenInput.id = "allergen-input-" + (table.rows.length);
+            allergenContent.style.display = "none"; // Initially hidden
+            allergenContent.id = "allergen-text-" + (table.rows.length);
+            allergenCell.appendChild(allergenContent);
+            allergenCell.appendChild(allergenInput);
+
+            // Set content for severity cell
+            var severityContent = document.createElement("div");
+            var severityInput = document.createElement("input");
+            severityInput.value = ""; // Set initial value of input field
+            severityInput.type = "text"; // Set type of input field
+            severityInput.id = "severity-input-" + (table.rows.length);
+            severityContent.style.display = "none"; // Initially hidden
+            severityContent.id = "severity-text-" + (table.rows.length);
+            severityCell.appendChild(severityContent);
+            severityCell.appendChild(severityInput);
+
+            // Create cell for buttons
+            var buttonCell = document.createElement("td");
+
+            // Create Edit and Save buttons
+            var editButton = document.createElement("a");
+            editButton.textContent = "Edit";
+            editButton.id = "edit-" + (table.rows.length);
+            editButton.style.display = "none"; // Initially hidden
+
+            var saveButton = document.createElement("a");
+            saveButton.textContent = "Save";
+            saveButton.id = "save-" + (table.rows.length); // Check this line
+
+
+            // Append buttons to cell
+            buttonCell.appendChild(editButton);
+            buttonCell.appendChild(saveButton);
+
+            // Append cells to row
+            newRow.appendChild(allergenCell);
+            newRow.appendChild(severityCell);
+            newRow.appendChild(buttonCell);
+
+            // Append row to table
+            table.appendChild(newRow);
+
+            saveButton.onclick = function() { save_new_row(this); }; // Check this line
+            editButton.onclick = function() { edit(this); }; // Check this line
+        }
+
+
+        function save_new_row(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
+            console.log("Row index:", rowIndex);
+
+            // Get the div elements
+            var allergenElement = document.getElementById("allergen-text-" + rowIndex);
+            var severityElement = document.getElementById("severity-text-" + rowIndex);
+
+            console.log("Allergen element:", allergenElement);
+            console.log("Severity element:", severityElement);
+
+            // Get the input elements
+            var allergenInput = document.getElementById("allergen-input-" + rowIndex);
+            var severityInput = document.getElementById("severity-input-" + rowIndex);
+
+            console.log("Allergen input:", allergenInput);
+            console.log("Severity input:", severityInput);
+
+            // Update the text content of the div elements with the input field values
+            allergenElement.textContent = allergenInput.value;
+            severityElement.textContent = severityInput.value;
+
+            // Hide the input fields and show the div elements
+            allergenInput.style.display = "none";
+            allergenElement.style.display = "block";
+
+            severityInput.style.display = "none";
+            severityElement.style.display = "block";
+
+            // Show the edit button and hide the save button
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
+            document.getElementById("save-" + rowIndex).onclick = function() { save(this); }; // Check this line
+        }
+
+
+
 
     </script>
 

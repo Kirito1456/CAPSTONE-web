@@ -75,88 +75,57 @@
                             </tr>
                             <tr id = "row-1">
                                 <td>
-                                    <div id = "medication">Paracetamol</div>
-                                    <input id="medication-input" type="text" style="display: none;">
+                                    <div id = "medication-1">Paracetamol</div>
+                                    <input id="medication-input-1" type="text" style="display: none;">
                                 </td>
                                 <td>
-                                    <div id = "purpose">Flu</div>
-                                    <input id="purpose-input" type="text" style="display: none;">
+                                    <div id = "purpose-1">Flu</div>
+                                    <input id="purpose-input-1" type="text" style="display: none;">
                                 </td>
                                 <td>
-                                    <div id = "dosage">1 times/day</div>
-                                    <input id="dosage-input" type="number" style="display: none;">
+                                    <div id = "dosage-1">1 times/day</div>
+                                    <input id="dosage-input-1" type="number" style="display: none;">
                                 </td>
                                 <td>
-                                    <div id = "start-date">2024-03-09</div>
-                                    <input id="start-date-input" type="date" style="display: none;">
+                                    <div id = "start-date-1">2024-03-09</div>
+                                    <input id="start-date-input-1" type="date" style="display: none;">
                                 </td>
                                 <td>
-                                    <div id = "end-date">2024-03-11</div>
-                                    <input id="end-date-input" type="date" style="display: none;">
+                                    <div id = "end-date-1">2024-03-11</div>
+                                    <input id="end-date-input-1" type="date" style="display: none;">
                                 </td>
                                 <td>
-                                    <a href = "" id = "edit" onclick = "edit()">Edit</a>
-                                    <a href = "" id = "save" onclick = "save()" style = "display: none;">Save</a>
-                                </td>
-                            </tr>
-                            <tr id = "row-2">
-                                <td><input id = "drug-name">
-                                    <script type="text/javascript">
-                                        document.getElementById("drug-name").value = "Paracetamol";
-                                    </script>
-                                </td>
-                                <td>
-                                    <input id = "reason">
-                                    <script type="text/javascript">
-                                        document.getElementById("reason").value = "Flu";
-                                    </script>
-                                </td>
-                                <td>
-                                    <input type="number" id = "dosage-day">
-                                    <script type="text/javascript">
-                                        document.getElementById("dosage-day").value = "1";
-                                    </script>/day
-                                </td>
-                                <td>
-                                    <input type="date" id = "start-date">
-                                    <script type="text/javascript">
-                                        document.getElementById("start-date").value = "2024-03-09";
-                                    </script>
-                                </td>
-                                <td>
-                                    <input type="date" id = "end-date">
-                                    <script type="text/javascript">
-                                        document.getElementById("end-date").value = "2024-03-11";
-                                    </script>
-                                </td>
-                                <td>
-                                    <a href = "" id = "save">Save</a>
+                                    <a id = "edit-1" onclick = "edit(this)">Edit</a>
+                                    <a id = "save-1" onclick = "save(this)" style = "display: none;">Save</a>
                                 </td>
                             </tr>
                         </table>
                     </div>
                     <div id = "add-drug-history">
-                        <a href = "" id = "add-drug-history-button">Add</a>
+                        <a id = "add-drug-history-button" onclick = "add()">Add</a>
                     </div>
                 </div>
             </div>
         </div>
     </body>
     <script>
-        function edit() {
+        function edit(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
             // Get div elements
-            var medicationElement = document.getElementById("medication");
-            var purposeElement = document.getElementById("purpose");
-            var dosageElement = document.getElementById("dosage");
-            var startDateElement = document.getElementById("start-date");
-            var endDateElement = document.getElementById("end-date");
+            var medicationElement = document.getElementById("medication-" + rowIndex);
+            var purposeElement = document.getElementById("purpose-"  + rowIndex);
+            var dosageElement = document.getElementById("dosage-"  + rowIndex);
+            var startDateElement = document.getElementById("start-date-" + rowIndex);
+            var endDateElement = document.getElementById("end-date-"  + rowIndex);
 
             // Get input fields
-            var medicationInput = document.getElementById("medication-input");
-            var purposeInput = document.getElementById("purpose-input");
-            var dosageInput = document.getElementById("dosage-input");
-            var startDateInput = document.getElementById("start-date-input");
-            var endDateInput = document.getElementById("end-date-input");
+            var medicationInput = document.getElementById("medication-input-" + rowIndex);
+            var purposeInput = document.getElementById("purpose-input-" + rowIndex);
+            var dosageInput = document.getElementById("dosage-input-" + rowIndex);
+            var startDateInput = document.getElementById("start-date-input-" + rowIndex);
+            var endDateInput = document.getElementById("end-date-input-" + rowIndex);
 
             // Populate input fields with current values from div elements
             medicationInput.value = medicationElement.textContent;
@@ -182,24 +151,27 @@
             endDateInput.style.display = "block";
 
             // Show the save button and hide the edit button
-            document.getElementById("edit").style.display = "none";
-            document.getElementById("save").style.display = "inline";
+            document.getElementById("edit-" + rowIndex).style.display = "none";
+            document.getElementById("save-" + rowIndex).style.display = "inline";
         }
 
-        function save() {
+        function save(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
             // Get div elements
-            var medicationElement = document.getElementById("medication");
-            var purposeElement = document.getElementById("purpose");
-            var dosageElement = document.getElementById("dosage");
-            var startDateElement = document.getElementById("start-date");
-            var endDateElement = document.getElementById("end-date");
+            var medicationElement = document.getElementById("medication-" + rowIndex);
+            var purposeElement = document.getElementById("purpose-"  + rowIndex);
+            var dosageElement = document.getElementById("dosage-"  + rowIndex);
+            var startDateElement = document.getElementById("start-date-" + rowIndex);
+            var endDateElement = document.getElementById("end-date-"  + rowIndex);
 
             // Get input fields
-            var medicationInput = document.getElementById("medication-input");
-            var purposeInput = document.getElementById("purpose-input");
-            var dosageInput = document.getElementById("dosage-input");
-            var startDateInput = document.getElementById("start-date-input");
-            var endDateInput = document.getElementById("end-date-input");
+            var medicationInput = document.getElementById("medication-input-" + rowIndex);
+            var purposeInput = document.getElementById("purpose-input-" + rowIndex);
+            var dosageInput = document.getElementById("dosage-input-" + rowIndex);
+            var startDateInput = document.getElementById("start-date-input-" + rowIndex);
+            var endDateInput = document.getElementById("end-date-input-" + rowIndex);
 
             // Update the divs with the input field values
             medicationElement.textContent = medicationInput.value;
@@ -225,9 +197,165 @@
             endDateElement.style.display = "block";
 
             // Show the edit button and hide the save button
-            document.getElementById("edit").style.display = "inline";
-            document.getElementById("save").style.display = "none";
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
         }
+
+        function add(){
+            // Retrieve reference to the table
+            var table = document.getElementById("drug-history-table");
+
+            // Create a new row element
+            var newRow = document.createElement("tr");
+
+            console.log("Creating new row...");
+
+            //Create cells for medication name, purpose, dosage/times, start and end date
+            var medicationCell = document.createElement("td");
+            var purposeCell = document.createElement("td");
+            var dosageCell = document.createElement("td");
+            var startDateCell = document.createElement("td");
+            var endDateCell = document.createElement("td");
+
+            //set content for medication name cell
+            var medicationContent = document.createElement("div");
+            var medicationInput = document.createElement("input");
+            medicationInput.value = "";
+            medicationInput.type = "text";
+            medicationInput.id = "medication-input-" + (table.rows.length);
+            medicationContent.style.display = "none";
+            medicationContent.id = "medication-" + (table.rows.length);
+            medicationCell.appendChild(medicationContent);
+            medicationCell.appendChild(medicationInput);
+
+            //set content for purpose cell
+            var purposeContent = document.createElement("div");
+            var purposeInput = document.createElement("input");
+            purposeInput.value = "";
+            purposeInput.type = "text";
+            purposeInput.id = "purpose-input-" + (table.rows.length);
+            purposeContent.style.display = "none";
+            purposeContent.id = "purpose-" + (table.rows.length);
+            purposeCell.appendChild(purposeContent);
+            purposeCell.appendChild(purposeInput);
+
+            //set content for dosage cell
+            var dosageContent = document.createElement("div");
+            var dosageInput = document.createElement("input");
+            dosageInput.value = "";
+            dosageInput.type = "text";
+            dosageInput.id = "dosage-input-" + (table.rows.length);
+            dosageContent.style.display = "none";
+            dosageContent.id = "dosage-" + (table.rows.length);
+            dosageCell.appendChild(dosageContent);
+            dosageCell.appendChild(dosageInput);
+
+            //set content for start date cell
+            var startDateContent = document.createElement("div");
+            var startDateInput = document.createElement("input");
+            startDateInput.value = "";
+            startDateInput.type = "text";
+            startDateInput.id = "start-date-input-" + (table.rows.length);
+            startDateContent.style.display = "none";
+            startDateContent.id = "start-date-" + (table.rows.length);
+            startDateCell.appendChild(startDateContent);
+            startDateCell.appendChild(startDateInput);
+
+            //set content for end date cell
+            var endDateContent = document.createElement("div");
+            var endDateInput = document.createElement("input");
+            endDateInput.value = "";
+            endDateInput.type = "text";
+            endDateInput.id = "end-date-input-" + (table.rows.length);
+            endDateContent.style.display = "none";
+            endDateContent.id = "end-date-" + (table.rows.length);
+            endDateCell.appendChild(endDateContent);
+            endDateCell.appendChild(endDateInput);
+
+            // Create cell for buttons
+            var buttonCell = document.createElement("td");
+
+            var editButton = document.createElement("a");
+            editButton.textContent = "Edit";
+            editButton.id = "edit-" + (table.rows.length);
+            editButton.style.display = "none"; // Initially hidden
+
+            var saveButton = document.createElement("a");
+            saveButton.textContent = "Save";
+            saveButton.id = "save-" + (table.rows.length); // Check this line
+
+            // Append buttons to cell
+            buttonCell.appendChild(editButton);
+            buttonCell.appendChild(saveButton);
+
+            // Append cells to row
+            newRow.appendChild(medicationCell);
+            newRow.appendChild(purposeCell);
+            newRow.appendChild(dosageCell);
+            newRow.appendChild(startDateCell);
+            newRow.appendChild(endDateCell);
+            newRow.appendChild(buttonCell);
+
+            // Append row to table
+            table.appendChild(newRow);
+
+            // Add event listeners to buttons
+            saveButton.onclick = function() { save_new_row(this); };
+            editButton.onclick = function() { edit(this); };
+
+            console.log("New row added successfully.");
+
+        }
+
+        function save_new_row(button){
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
+            // Get div elements
+            var medicationElement = document.getElementById("medication-" + rowIndex);
+            var purposeElement = document.getElementById("purpose-"  + rowIndex);
+            var dosageElement = document.getElementById("dosage-"  + rowIndex);
+            var startDateElement = document.getElementById("start-date-" + rowIndex);
+            var endDateElement = document.getElementById("end-date-"  + rowIndex);
+
+            // Get input fields
+            var medicationInput = document.getElementById("medication-input-" + rowIndex);
+            var purposeInput = document.getElementById("purpose-input-" + rowIndex);
+            var dosageInput = document.getElementById("dosage-input-" + rowIndex);
+            var startDateInput = document.getElementById("start-date-input-" + rowIndex);
+            var endDateInput = document.getElementById("end-date-input-" + rowIndex);
+
+            // Update the divs with the input field values
+            medicationElement.textContent = medicationInput.value;
+            purposeElement.textContent = purposeInput.value;
+            dosageElement.textContent = dosageInput.value + " times/day";
+            startDateElement.textContent = startDateInput.value;
+            endDateElement.textContent = endDateInput.value;
+
+            // Hide the input fields and show the divs
+            medicationInput.style.display = "none";
+            medicationElement.style.display = "block";
+
+            purposeInput.style.display = "none";
+            purposeElement.style.display = "block";
+
+            dosageInput.style.display = "none";
+            dosageElement.style.display = "block";
+
+            startDateInput.style.display = "none";
+            startDateElement.style.display = "block";
+
+            endDateInput.style.display = "none";
+            endDateElement.style.display = "block";
+
+            // Show the edit button and hide the save button
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
+
+            document.getElementById("save-" + rowIndex).onclick = function() { save(this); };
+        }
+
+        
     </script>
 
 

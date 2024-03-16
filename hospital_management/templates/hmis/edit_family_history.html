@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div id = "drug-history">
-                    <div id = "head">Drug History</div>
+                    <div id = "head">Family History</div>
                     <div id = "drug-table">
                         <table id = "drug-history-table">
                             <tr>
@@ -71,28 +71,28 @@
                                 <th class="age">Age of Diagnosis</th>
                                 <th class = "edit">Edit</th>
                             </tr>
-                            <tr>
+                            <tr id = "row-1">
                                 <td>
-                                    <div id = "member">Mother</div>
-                                    <input id="member-input" type="text" style="display: none;">
+                                    <div id = "member-1">Mother</div>
+                                    <input id="member-input-1" type="text" style="display: none;">
                                 </td>
                                 <td>
-                                    <div id = "illness">High Blood Pressure</div>
-                                    <input id="illness-input" type="text" style="display: none;">
+                                    <div id = "illness-1">High Blood Pressure</div>
+                                    <input id="illness-input-1" type="text" style="display: none;">
                                 </td>
                                 <td>
-                                    <div id = "age-data">45</div>
-                                    <input id="age-data-input" type="number" style="display: none;">
+                                    <div id = "age-data-1">45</div>
+                                    <input id="age-data-input-1" type="number" style="display: none;">
                                 </td>
                                 <td>
-                                    <a id = "edit" onclick = "edit()">Edit</a>
-                                    <a id = "save" onclick = "save()" style = "display: none;">Save</a>
+                                    <a id = "edit-1" onclick = "edit(this)">Edit</a>
+                                    <a id = "save-1" onclick = "save(this)" style = "display: none;">Save</a>
                                 </td>
                             </tr>
                         </table>
                     </div>
                     <div id = "add-drug-history">
-                        <a id = "add-drug-history-button">Add</a>
+                        <a id = "add-drug-history-button" onclick = "add()">Add</a>
                     </div>
                 </div>
             </div>
@@ -100,16 +100,19 @@
     </body>
 
     <script>
-        function edit() {
+        function edit(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
             // Get the elements for member, illness, and age data
-            var memberElement = document.getElementById("member");
-            var illnessElement = document.getElementById("illness");
-            var ageDataElement = document.getElementById("age-data");
+            var memberElement = document.getElementById("member-" + rowIndex);
+            var illnessElement = document.getElementById("illness-" + rowIndex);
+            var ageDataElement = document.getElementById("age-data-" + rowIndex);
     
             // Get the input elements for member, illness, and age data
-            var memberInput = document.getElementById("member-input");
-            var illnessInput = document.getElementById("illness-input");
-            var ageDataInput = document.getElementById("age-data-input");
+            var memberInput = document.getElementById("member-input-" + rowIndex);
+            var illnessInput = document.getElementById("illness-input-" + rowIndex);
+            var ageDataInput = document.getElementById("age-data-input-" + rowIndex);
     
             // Set the input values to the current data values
             memberInput.value = memberElement.textContent;
@@ -125,20 +128,23 @@
             ageDataElement.style.display = "none";
     
             // Show the Save link and hide the Edit link
-            document.getElementById("edit").style.display = "none";
-            document.getElementById("save").style.display = "inline";
+            document.getElementById("edit-" + rowIndex).style.display = "none";
+            document.getElementById("save-" + rowIndex).style.display = "inline";
         }
     
-        function save() {
+        function save(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
             // Get the elements for member, illness, and age data
-            var memberElement = document.getElementById("member");
-            var illnessElement = document.getElementById("illness");
-            var ageDataElement = document.getElementById("age-data");
+            var memberElement = document.getElementById("member-" + rowIndex);
+            var illnessElement = document.getElementById("illness-" + rowIndex);
+            var ageDataElement = document.getElementById("age-data-" + rowIndex);
     
             // Get the input elements for member, illness, and age data
-            var memberInput = document.getElementById("member-input");
-            var illnessInput = document.getElementById("illness-input");
-            var ageDataInput = document.getElementById("age-data-input");
+            var memberInput = document.getElementById("member-input-" + rowIndex);
+            var illnessInput = document.getElementById("illness-input-" + rowIndex);
+            var ageDataInput = document.getElementById("age-data-input-" + rowIndex);
     
             // Update the div elements with the input values
             memberElement.textContent = memberInput.value;
@@ -154,8 +160,111 @@
             ageDataElement.style.display = "block";
     
             // Show the Edit link and hide the Save link
-            document.getElementById("edit").style.display = "inline";
-            document.getElementById("save").style.display = "none";
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
+        }
+
+
+        function add() {
+            // Retrieve reference to the table
+            var table = document.getElementById("drug-history-table");
+
+            // Create a new row element
+            var newRow = document.createElement("tr");
+
+            // Create cells for member, illness, and age
+            var memberCell = document.createElement("td");
+            var illnessCell = document.createElement("td");
+            var ageCell = document.createElement("td");
+
+            // Set content for member cell
+            var memberContent = document.createElement("div");
+            var memberInput = document.createElement("input");
+            memberInput.value = "";
+            memberInput.type = "text";
+            memberInput.id = "member-input-" + (table.rows.length);
+            memberContent.style.display = "none";
+            memberContent.id = "member-" + (table.rows.length);
+            memberCell.appendChild(memberContent);
+            memberCell.appendChild(memberInput);
+
+            // Set content for illness cell
+            var illnessContent = document.createElement("div");
+            var illnessInput = document.createElement("input");
+            illnessInput.value = "";
+            illnessInput.type = "text";
+            illnessInput.id = "illness-input-" + (table.rows.length);
+            illnessContent.style.display = "none";
+            illnessContent.id = "illness-" + (table.rows.length);
+            illnessCell.appendChild(illnessContent);
+            illnessCell.appendChild(illnessInput);
+
+            // Set content for age cell
+            var ageContent = document.createElement("div");
+            var ageInput = document.createElement("input");
+            ageInput.value = "";
+            ageInput.type = "text";
+            ageInput.id = "age-data-input-" + (table.rows.length);
+            ageContent.style.display = "none";
+            ageContent.id = "age-data-" + (table.rows.length);
+            ageCell.appendChild(ageContent);
+            ageCell.appendChild(ageInput);
+
+            // Create cell for buttons
+            var buttonCell = document.createElement("td");
+
+            // Create Edit and Save buttons
+            var editButton = document.createElement("a");
+            editButton.textContent = "Edit";
+            editButton.id = "edit-" + (table.rows.length);
+            editButton.style.display = "none";
+
+            var saveButton = document.createElement("a");
+            saveButton.textContent = "Save";
+            saveButton.id = "save-" + (table.rows.length);
+
+            // Append buttons to cell
+            buttonCell.appendChild(editButton);
+            buttonCell.appendChild(saveButton);
+
+            // Append cells to row
+            newRow.appendChild(memberCell);
+            newRow.appendChild(illnessCell);
+            newRow.appendChild(ageCell);
+            newRow.appendChild(buttonCell);
+
+            // Append row to table
+            table.appendChild(newRow);
+
+            // Set event listeners for buttons
+            saveButton.onclick = function() { save_new_row(this); };
+            editButton.onclick = function() { edit(this); };
+        }
+
+        function save_new_row(button) {
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+            var memberInput = document.getElementById("member-input-" + rowIndex);
+            var illnessInput = document.getElementById("illness-input-" + rowIndex);
+            var ageInput = document.getElementById("age-data-input-" + rowIndex);
+            var memberContent = document.getElementById("member-" + rowIndex);
+            var illnessContent = document.getElementById("illness-" + rowIndex);
+            var ageContent = document.getElementById("age-data-" + rowIndex);
+
+            memberContent.textContent = memberInput.value;
+            illnessContent.textContent = illnessInput.value;
+            ageContent.textContent = ageInput.value;
+
+            memberInput.style.display = "none";
+            memberContent.style.display = "block";
+            illnessInput.style.display = "none";
+            illnessContent.style.display = "block";
+            ageInput.style.display = "none";
+            ageContent.style.display = "block";
+
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
+
+            document.getElementById("save-" + rowIndex).onclick = function() { save(this); };
         }
     </script>
     
