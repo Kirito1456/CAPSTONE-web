@@ -149,9 +149,11 @@ def patient_data_doctor_view(request):
     # Fetch patients from Firebase
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
+    doctors = db.child("doctors").get().val()
+    
 
     # Pass the patients data to the template
-    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata})
+    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata, 'doctors': doctors})
 
 def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
