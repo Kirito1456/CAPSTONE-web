@@ -28,4 +28,8 @@ urlpatterns = [
     path('diagnostic_imagery_reports/', views.diagnostic_imagery_reports, name="diagnostic_imagery_reports"),
     path('patient_personal_information_inpatient/', views.patient_personal_information_inpatient, name="patient_personal_information_inpatient"),
     path('edit_medical_surgical_history/', views.edit_medical_surgical_history, name="edit_medical_surgical_history"),
+    path('edit_drug_history/', views.edit_drug_history, name='edit_drug_history'),
+    path('edit_allergy/', views.edit_allergy, name="edit_allergy"),
+    path('edit_immunization_history/', views.edit_immunization_history, name="edit_immunization_history"),
+    path('edit_family_history/', views.edit_family_history, name="edit_family_history"),
 ]

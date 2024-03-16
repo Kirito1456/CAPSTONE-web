@@ -333,3 +333,15 @@ def diagnostic_imagery_reports(request):
 
 def edit_medical_surgical_history(request):
     return render(request, 'hmis/edit_medical_surgical_history.html')
+
+def edit_drug_history(request):
+    return render(request, 'hmis/edit_drug_history.html')
+
+def edit_allergy(request):
+    return render(request, 'hmis/edit_allergy.html')
+
+def edit_immunization_history(request):
+    return render(request, 'hmis/edit_immunization_history.html')
+
+def edit_family_history(request):
+    return render(request, 'hmis/edit_family_history.html')

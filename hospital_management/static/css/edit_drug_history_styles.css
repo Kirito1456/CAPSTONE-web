@@ -260,22 +260,15 @@ a:hover{
     font-size: 12;
 }
 
-#medical-history{
-    margin: 0 40 20 50;
+#drug-history{
+    margin: 0 40 40 50;
 
     display: flex;
     flex-direction: column;
     
     width: 92.2%;
-}
 
-#past-medical-surgical-history, #drug-history, #allergy, #immunization, #family-history, #social-history{
-    margin: 0 0 20 0;
-
-    display: flex;
-    flex-direction: column;
-
-    background-color: #E9E9E9;
+    background-color: #E9E9E9
 }
 
 #family-history-table, #immunization-table, #allergy-table, #drug-table, #medical-surgical-history-table{
@@ -328,43 +321,15 @@ th.start, th.end{
 }
 
 th.medication{
-    width: 20%;
-}
-
-th.purpose, th.dosage{
     width: 25%;
 }
 
-th.allergen, th.severity{
-    width: 50%;
-}
-
-th.given-date{
-    width: 15%;
-}
-
-th.vaccine{
-    width: 30%
-}
-
-th.administer{
+th.purpose{
     width: 30%;
 }
 
-th.dosage-number{
-    width: 25%;
-}
-
-th.member{
-    width: 35%;
-}
-
-th.Illness{
-    width: 50%;
-}
-
-th.age{
-    width: 15%;
+th.dosage{
+    width: 20%;
 }
 
 td{
@@ -374,12 +339,14 @@ td{
     font-size: 14;
 }
 
-#add-medical-surgical-history{
+#add-drug-history{
     display: flex;
     justify-content: flex-end;
+
+
 }
 
-#add-medical-surgical-history-button{
+#add-drug-history-button{
     padding: 3 5;
     background-color: #85AA9B;
 
@@ -396,13 +363,14 @@ td{
     color: #E9E9E9;
 }
 
-#date-input, #illness-input, #treatment-input, #remark-input{
+#medication-input, #purpose-input, #dosage-input, #start-date-input, #end-date-input{
     display: flex;
     justify-content: center;
+    align-items: center;
 
     text-align: center;
 
-    width: 100%;
+    width: 90%;
 
     height: max-content;
 
@@ -414,14 +382,4 @@ td{
     background-color: #E9E9E9;
     padding: 3 5;
     border-radius: 5px;
-}
-
-#medical-surgical-history-remark{
-    min-width: 100%;
-    min-height: fit-content;
-    text-align: justify;
-}
-
-#illnesses, #treatment-plan{
-    width: 95%;
 }
