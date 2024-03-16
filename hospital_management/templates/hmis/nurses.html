@@ -53,10 +53,12 @@
                         <td><label id="accountT_email" class="accountT_lbl">{{ nurses_data.fname }} {{ nurses_data.lname }}</label></td>
                         <td><label id="accountT_firstname" class="accountT_lbl">{{ nurses_data.specialization }}</label></td>
                         <td><label id="accountT_lastname" class="accountT_lbl">
-                            <select name="shift">
-                                <option value="morning">Morning: 7AM-3PM</option>
-                                <option value="afternoon">Afternoon: 3PM-11PM</option>
-                                <option value="graveyard">Graveyard: 11PM-7AM</option>
+                            <input type="hidden" value="{{nurses_id}}" name="nurseID">
+                            <select name="shift_{{ nurses_id }}">
+                                <option value="">- Select Shift -</option>
+                                <option value="morning" {% if nurses_data.shift == 'morning'%} selected {% endif %}>Morning: 7AM-3PM</option>
+                                <option value="afternoon" {% if nurses_data.shift == 'afternoon'%} selected {% endif %}>Afternoon: 3PM-11PM</option>
+                                <option value="graveyard" {% if nurses_data.shift == 'graveyard'%} selected {% endif %}>Graveyard: 11PM-7AM</option>
                             </select>
                         </label></td>
                     </tr>

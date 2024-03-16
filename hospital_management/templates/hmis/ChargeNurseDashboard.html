@@ -45,7 +45,7 @@
                     <th>Assigned Nurses</th>
                 </tr>
             </thead>
-            <form method="post" action="{% url 'HeadNurseDashboard' %}">
+            <form method="post" action="{% url 'ChargeNurseDashboard' %}">
             {% csrf_token %}
                 <tbody>
                     {% for room_id, room_data in rooms.items %}
@@ -57,31 +57,31 @@
                             <div>
                                 <label>Morning: </label>
                                 <select class="frequency-dropdown" name="morning_{{ room_id }}">
+                                    <option value="">- Select Nurse -</option>
                                     {% for nurse_id, nurse_data in nurses.items %}
-                                        {% if nurse_id == room_data.nurse_assigned.morning %}
-                                            <option value="{{ nurse_id }}" selected>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
-                                        {% else %}
-                                            <option value="{{ nurse_id }}">{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                        {% if nurse_data.shift == 'morning' and nurse_data.specialization != 'Charge Nurse' %}
+                                            <option value="{{ nurse_id }}" 
+                                            {% if nurse_id == room_data.nurse_assigned.morning %} selected {% endif %}>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select><br>
                                 <label>Afternoon: </label>
                                 <select class="frequency-dropdown" name="afternoon_{{ room_id }}">
+                                    <option value="">- Select Nurse -</option>
                                     {% for nurse_id, nurse_data in nurses.items %}
-                                        {% if nurse_id == room_data.nurse_assigned.afternoon %}
-                                            <option value="{{ nurse_id }}" selected>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
-                                        {% else %}
-                                            <option value="{{ nurse_id }}">{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                        {% if nurse_data.shift == 'afternoon' and nurse_data.specialization != 'Charge Nurse'%}
+                                            <option value="{{ nurse_id }}" 
+                                            {% if nurse_id == room_data.nurse_assigned.afternoon %} selected {% endif %}>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
                                         {% endif %}    
                                     {% endfor %}
                                 </select><br>
                                 <label>Graveyard: </label>
                                 <select class="frequency-dropdown" name="graveyard_{{ room_id }}">
+                                    <option value="">- Select Nurse -</option>
                                     {% for nurse_id, nurse_data in nurses.items %}
-                                        {% if nurse_id == room_data.nurse_assigned.graveyard %}
-                                            <option value="{{ nurse_id }}" selected>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
-                                        {% else %}
-                                            <option value="{{ nurse_id }}">{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
+                                        {% if nurse_data.shift == 'graveyard' and nurse_data.specialization != 'Charge Nurse' %}
+                                            <option value="{{ nurse_id }}" 
+                                            {% if nurse_id == room_data.nurse_assigned.graveyard %} selected {% endif %}>{{ nurse_data.fname }} {{ nurse_data.lname }}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select><br>

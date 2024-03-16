@@ -57,21 +57,21 @@ def home(request):
             
             doctor_found = False
             nurse_found = False
-            headnurse_found = False
+            chargenurse_found = False
             for account in accounts.values():
                 if account["role"] == "Doctor" and account["email"] == email:
                     doctor_found = True
                 elif account["role"] == "Nurse" and account["email"] == email:
                     nurse_found = True
-                    if account["specialization"] == "Head Nurse" and account["email"] == email:
-                        headnurse_found = True
+                    if account["specialization"] == "Charge Nurse" and account["email"] == email:
+                        chargenurse_found = True
                     break
 
             if doctor_found:
                 return redirect('DoctorDashboard')
-            elif nurse_found and headnurse_found:
-                return redirect('HeadNurseDashboard')
-            elif nurse_found and headnurse_found == False:
+            elif nurse_found and chargenurse_found:
+                return redirect('ChargeNurseDashboard')
+            elif nurse_found and chargenurse_found == False:
                 return redirect('NurseDashboard')
             else:
                 return redirect('register')
@@ -130,6 +130,20 @@ def clinics(request):
 def nursesAdmin(request):
     # Fetch doctors and nurses data from Firebase
     nurses = db.child("nurses").get().val()
+
+    if request.method == 'POST':
+        try:
+            for nurse_id in request.POST.getlist('nurseID'):
+                shift = request.POST.get(f'shift_{nurse_id}')  
+                data = {
+                    'shift': shift
+                }
+                db.child('nurses').child(nurse_id).update(data)
+
+                messages.success(request, 'Nurse Assignments saved successfully!')
+            return redirect('nursesAdmin')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
 
 
     # Pass the combined data to the template
@@ -556,7 +570,7 @@ def DoctorDashboard(request):
 
     return render(request, 'hmis/doctordashboard.html', {'doctors': doctors, 'uid': uid})
 
-def HeadNurseDashboard(request):
+def ChargeNurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 
 
@@ -579,11 +593,11 @@ def HeadNurseDashboard(request):
                 db.child('rooms').child(room_id).update(data)
 
                 messages.success(request, 'Room Assignments saved successfully!')
-            return redirect('HeadNurseDashboard')
+            return redirect('ChargeNurseDashboard')
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
     
-    return render(request, 'hmis/HeadNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})
+    return render(request, 'hmis/ChargeNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})
 
 # def roomAssignments(request):
 #     nurses = db.child("nurses").get().val()

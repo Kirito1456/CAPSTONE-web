@@ -80,7 +80,7 @@ class StaffRegistrationForm(forms.ModelForm):
         ('General Practitioner', 'General Practitioner'),
         ('Dermatologist', 'Dermatologist'),
         ('Pediatrician', 'Pediatrician'),
-        ('Head Nurse', 'Head Nurse'),
+        ('Charge Nurse', 'Charge Nurse'),
         ('Bedside Nurse', 'Bedside Nurse'),
     )
 

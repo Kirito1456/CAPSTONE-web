@@ -21,7 +21,7 @@ urlpatterns = [
 
     # Nurses
     path('nursdashboard.html', views.NurseDashboard, name='NurseDashboard'),
-    path('HeadNurseDashboard.html', views.HeadNurseDashboard, name='HeadNurseDashboard'),
+    path('ChargeNurseDashboard.html', views.ChargeNurseDashboard, name='ChargeNurseDashboard'),
     #path('roomAssignments/', views.roomAssignments, name='roomAssignments'),
     
     path('doctordashboard.html', views.DoctorDashboard, name='DoctorDashboard'),
