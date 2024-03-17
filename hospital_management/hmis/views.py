@@ -3,6 +3,7 @@ from django.contrib import messages
 from hmis.models import Medications
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database
+from hospital_management.settings import collection 
 from hmis.forms import StaffRegistrationForm, MedicationsListForm
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
@@ -18,7 +19,7 @@ from pytesseract import pytesseract
 
 import uuid
 import json
-from .database import connect_to_mongodb
+
 
 # Use the firebase_database object directly
 db = firebase_database
@@ -271,7 +272,7 @@ def perform_ocr(request):
     return HttpResponse('No image uploaded or invalid request.')
 
 def pharmacy_drugs(request):
-    collection = connect_to_mongodb()
+    #collection = connect_to_mongodb()
     cursor = collection.find().limit(10)
 
     # Convert the cursor to a list of dictionaries
@@ -286,7 +287,7 @@ def generate_unique_id():
 
 def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
-    collection = connect_to_mongodb()
+
     medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
     medicines_list = [medication['Generic Name'] for medication in medications_cursor]
 

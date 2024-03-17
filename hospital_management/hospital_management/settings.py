@@ -16,6 +16,7 @@ import firebase_admin
 from firebase_admin import credentials
 import pyrebase
 import pytesseract
+from hmis.database import connect_to_mongodb
 
 
 
@@ -124,6 +125,7 @@ DATABASES = {
     }
 }
 
+collection = connect_to_mongodb()
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
