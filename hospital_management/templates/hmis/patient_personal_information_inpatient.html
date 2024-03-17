@@ -1,182 +1,470 @@
 {%load static%}
-<html>
-    <title>Patient Data</title>
+<title>{% block title %}Patient Data{% endblock %}</title>
 
-<link rel="stylesheet" href="{% static 'css/patient_personal_information_inpatient_style.css' %}">
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/patient_personal_information.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock styles%}
 
-    <body> 
-        <div id = "whole-screen">
-            <div id = "side-menu">
-                <div id = "all-info">
-                    <div id = "user-info"> 
-                        <div id = "image">
-                            <img src="{% static 'hannie.jpg' %}" id = "display-photo">
-                        </div>
-                        <div id = "information">
-                            <div id = "name"> Jeonghan </div>
-                            <div id = "role"> General Practitioner</div>
-                        </div>
-                    </div>
-                    <div id = "menu"> 
-                        <div id = "a1"><a href="">Dashboard</a></div>
-                        <div id = "a2"><a href="">Appointments</a></div>
-                        <div id = "a3" style="font-weight: bold;"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                        <div id = "a4"><a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
-                        <div id = "a5"><a href="">Message</a></div>
-                        <div id = "a6"><a href="">Profile</a></div>
-                        <div id = "a7"><a href="">Settings</a></div>
-                    </div>
+{% block content %}
+<div id = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
+                </div>
+                <div id = "information">
+                    <div id = "name"> Jeonghan </div>
+                    <div id = "role"> General Practitioner</div>
                 </div>
             </div>
-            <div id = "other-side">
-                <div id = "back-button">
-                    <a href="{% url 'patient_data_doctor_view' %}"> << Back </a>
-                </div>
-                <div id = "patient-info">
-                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <div id = "personal-information">
-                        <div id = "head">Personal Information</div>
-                        <div id = "row-1">
-                            <div id = "first">
-                                <div id = "fname">{{ chosenPatientData_data.fname }}</div>
-                                <div id = "fname-label">First Name</div>
-                            </div>
-                            <div id = "last">
-                                <div id = "lname">{{ chosenPatientData_data.lname }}</div>
-                                <div id = "lname-label">Last Name</div>
-                            </div>
-                        </div>
-                        <div id = "row-2">
-                            <div id = "gender">
-                                <div id = "gender-view">{{ chosenPatientData_data.gender }}</div>
-                                <div id = "gender-label">Gender</div>
-                            </div>
-                            <div id = "bday">
-                                <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
-                                <div id = "bday-label">Date of Birth</div>
-                            </div>
-                            <div id = "age">
-                                <div id = "age-view">{{ chosenPatientAge }}</div>
-                                <div id = "age-label">Age</div>
-                            </div>
-                        </div>
-                        {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
-                        <div id = "row-3">
-                            <div id = "blood-type">
-                                <div id = "blood-type-view">{{ chosenPatientDatas_data.bloodtype }}</div>
-                                <div id = "blood-type-label">Blood Type</div>
-                            </div>
-                            <div id = "height">
-                                <div id = "height-view">{{ chosenPatientDatas_data.height }} cm</div>
-                                <div id = "height-label">Height</div>
-                            </div><div id = "weight">
-                                <div id = "weight-view">{{ chosenPatientDatas_data.weight }} kg</div>
-                                <div id = "weight-label">Weight</div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        <div id = "row-4">
-                            <div id = "address">
-                                <div id = "address-view">{{ chosenPatientData_data.address }}</div>
-                                <div id = "address-label">Address</div>
-                            </div>
-                        </div>
-                        <div id = "row-5">
-                            <div id = "phone">
-                                <div id = "phone-number">{{ chosenPatientData_data.cnumber }}</div>
-                                <div id = "phone-number-label">Phone Number</div>
-                            </div>
-                            <div id = "email">
-                                <div id = "e-mail">{{ chosenPatientData_data.email }}</div>
-                                <div id = "email-label">E-mail Address</div>
-                            </div>
-                        </div>
-                        <div id = "view-medical-history">
-                            <a href = "{% url 'patient_medical_history' %}" id = "view-medical-history-button">View Medical History</a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <div id = "medical-information">
-                        <div id = "progress-notes">
-                            <div id = "head">Progress Notes</div>
-                            <div id = "progress-note">
-                                <div id = "notes">
-                                    <div id = "note">
-                                        - Stable vital signs <br>
-                                        - Medication administered 9:00AM <br>
-                                        - Pain intensity decreased
-                                    </div>
-                                    <div id = "update">
-                                        <div id = "date">Last Update: 01/17/23 11:32AM</div>
-                                        <div id = "updated-by">Updated by: Nurse Jane Doe</div>
-                                    </div>
-                                </div>
-                                <div id = "edit-note-button">
-                                    <a href = "" id = "edit-note"><!--add icon-->Edit Progress Notes</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div id = "vital-signs">
-                            <div id = "head-corner">Vital Signs Sheet</div>
-                            <div id = "vital-signs-table">
-                                <table id = "vital-signs">
-                                    <tr id = "label">
-                                        <th>Date</th>
-                                        <th>Weight</th>
-                                        <th>Temperature</th>
-                                        <th>Blood Pressure</th>
-                                        <th>Pulse</th>
-                                        <th>Respiration</th>
-                                        <th>Pain Index</th>
-                                    </tr>
-                                    {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
-                                    <tr>
-                                        <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
-                                        {% if chosenPatientVitalEntryData_data.weight == "-" %}
-                                            <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
-                                        {% else %}
-                                            <td>{{ chosenPatientVitalEntryData_data.weight }} kgs</td>
-                                        {% endif %}
-                                        <td>{{ chosenPatientVitalEntryData_data.temperature }} °C</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
-                                    </tr>
-                                    {% endfor %}
-                                </table>
-                                <div id = "below-table">
-                                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                    <div id = "new-entry-button">
-                                        <a href="{% url 'new_vital_sign_entry' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "new-entry">+ New Entry</a>
-                                    </div>
-                                    <div id = "view-vs-history-button" class="pagination">
-                                        <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "view-vs-history">View History</a>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        <div id = "laboratory-tests">
-                            <div id = "head-corner">Diagnostic Tests</div>
-                            <div id = "tests">
-                                <div id = "blood-test">
-                                    <a href = "" id = "blood-test-button"><!--add icon-->View Lab Reports</a>
-                                </div>
-                                <div id = "chest-xray">
-                                    <a href = "" id = "chest-xray-button"><!--add icon-->View Imagery Results</a>
-                                </div>
-                                <div id = "request-lab-test">
-                                    <a href = "" id = "request-lab-test-button"><!--add icon-->Request New Lab Test</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div id = "view-treatment-plan-button">
-                            <a href = "{% url 'view_treatment_plan_all' %}" id = "view-treatment-plan">View Treatment Plan</a>
-                        </div>
-                    </div>
-                </div>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
+                <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+    <div id = "other-side">
+        <div id = "title">
+            <div id = "left">
+                <button id="backButton">Back</button>
+            </div>
+        </div>
+        <div id = "patient-info">
+            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+            <div id = "personal-information">
+                <div id = "head">Personal Information</div>
+                    <div id = "patientnumber">
+                        <div id = "pnumber-label">Patient Number:</div>
+                        <div id = "pnumber"> </div>
+                    </div>
+                    <div id = "first">
+                        <div id = "fname-label">Name:</div>
+                        <div id = "fname">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
+                    </div>
+                    
+                    <div id = "gender">
+                        <div id = "gender-label">Sex:</div>
+                        <div id = "gender-view">{{ chosenPatientData_data.gender }}</div>
+                    </div>
+
+                    <div id = "bday">
+                        <div id = "bday-label">Birthday:</div>
+                        <div id = "birthday">{{ chosenPatientData_data.bday }} ({{ chosenPatientAge }} years old)</div>
+                    </div>
+                    {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="patientTypeToggle" onclick="togglePatientType()">
+                        <label for="patientTypeToggle">{{ chosenPatientDatas_data.status }}</label>
+                        <button id="endtransaction">Appointment Finished</button>
+                    </div>
+                    
+                    {% endfor %}
+                    <button onclick="toggleBiometricInfo()">Biometric Information</button>
+                    <div id="biometric-info" style="display: none;">
+                        {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                        <div id = "blood-type">
+                            <div id = "blood-type-label">Blood Type:</div>
+                            <div id = "blood-type-view">{{ chosenPatientDatas_data.bloodtype }}</div>
+                        </div>
+                        <div id = "height">
+                            <div id = "height-label">Height: </div>
+                            <div id = "height-view">{{ chosenPatientDatas_data.height }} cm</div>
+                        </div><div id = "weight">
+                            <div id = "weight-label">Weight:</div>
+                            <div id = "weight-view">{{ chosenPatientDatas_data.weight }} kg</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button onclick="toggleContactInfo()">Contact Information</button>
+                    <div id="contact-details" style="display: none;">
+                        <div id="address">
+                            <div id="address-label">Address:</div>
+                            <div id="address-view">{{ chosenPatientData_data.address }}</div>
+                        </div>
+                        <div id="phone">
+                            <div id="phone-number-label">Phone Number:</div>
+                            <div id="phone-number">{{ chosenPatientData_data.cnumber }}</div>
+                        </div>
+                        <div id="email">
+                            <div id="email-label">E-mail Address:</div>
+                            <div id="e-mail">{{ chosenPatientData_data.email }}</div>
+                        </div>
+                    </div>
+                    <button><a href = "{% url 'patient_medical_history' %}">Medical History</a></button>
+                    <button><a href = "{% url 'view_treatment_plan_all' %}">Treatment Plan</a></button>
+                </div>
+            {% endfor %}
+        </div>
+        <div id = "progress-notes-container">
+            <div id = "personal-information">
+                <div id = "head">Progress Notes</div>
+                    <div id = "progress-notes">
+                        <div id = "progress-note">
+                            <div id = "notes">
+                                <div id = "note">
+                                    - Stable vital signs <br>
+                                    - Medication administered 9:00AM <br>
+                                    - Pain intensity decreased
+                                </div>
+                                <div id = "update">
+                                    <div id = "date">Last Update: 01/17/23 11:32AM</div>
+                                </div>
+                            </div>
+                            <div id = "edit-note-button">
+                                <a href = "" id = "edit-note"><!--add icon-->Edit Progress Notes</a>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div id="consultation-notes-container">
+            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+            <div id="consultation-notes">
+                <div id="head">Consultation Notes</div>
+                <button id="chiefComplaintButton">Chief Complaint</button>
+                <div id="chiefComplaintArea" style="display: none;">
+                    <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..."></textarea>
+                    <button id="saveChiefComplaintButton">Save</button>
+                    <button id="cancelChiefComplaintButton">Cancel</button>
+                </div>
+                <div id="ros">
+                    <button id="reviewOfSystemsButton">Review of Systems</button>
+                    <div id="reviewOfSystemsModal" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <h2>Review of Systems</h2>
+                            <form id="reviewOfSystemsForm">
+                                <div class="column">
+                                    <p>Skin</p>
+                                    <input type="checkbox"><label>Rashes</label><br>
+                                    <input type="checkbox"><label>Itching</label><br>
+                                    <input type="checkbox"><label>Change in Hair or Nails</label><br>
+                                    <p>Head</p>
+                                    <input type="checkbox"><label>Headaches</label><br>
+                                    <input type="checkbox"><label>Head Injury</label><br>
+                                    <p>Eyes</p>
+                                    <input type="checkbox"><label>Glasses or Contacts</label><br>
+                                    <input type="checkbox"><label>Change in Vision</label><br>
+                                    <input type="checkbox"><label>Eye Pain</label><br>
+                                    <input type="checkbox"><label>Double Vision</label><br>
+                                    <input type="checkbox"><label>Flashing Lights</label><br>
+                                    <input type="checkbox"><label>Glaucoma/Cataracts</label><br>
+                                    <p>Ears</p>
+                                    <input type="checkbox"><label>Change in Hearing</label><br>
+                                    <input type="checkbox"><label>Ear Pain</label><br>
+                                    <input type="checkbox"><label>Ear Discharge</label><br>
+                                    <input type="checkbox"><label>Ringing</label><br>
+                                    <input type="checkbox"><label>Dizziness</label><br>
+                                    <p>Nose/Sinuses</p>
+                                    <input type="checkbox"><label>Nose Bleeds</label><br>
+                                    <input type="checkbox"><label>Nasal Stuffiness</label><br>
+                                    <input type="checkbox"><label>Frequent Colds</label><br>
+                                    <p>Allergies</p>
+                                    <input type="checkbox"><label>Hives</label><br>
+                                    <input type="checkbox"><label>Swelling of Lips or Tongues</label><br>
+                                    <input type="checkbox"><label>Hay Fever</label><br>
+                                    <input type="checkbox"><label>Asthma</label><br>
+                                    <input type="checkbox"><label>Eczema/Sensitive</label><br>
+                                    <p>Mouth/Throat</p>
+                                    <input type="checkbox"><label>Bleeding Gums</label><br>
+                                    <input type="checkbox"><label>Sore Tongue</label><br>
+                                    <input type="checkbox"><label>Sore Throat</label><br>
+                                    <input type="checkbox"><label>Hoarseness</label><br>
+                                    <p>Neck</p>
+                                    <input type="checkbox"><label>Lumps</label><br>
+                                    <input type="checkbox"><label>Swollen Glands</label><br>
+                                    <input type="checkbox"><label>Goiter</label><br>
+                                    <input type="checkbox"><label>Stiffness</label><br>
+                                    <p>Breast</p>
+                                    <input type="checkbox"><label>Lumps</label><br>
+                                    <input type="checkbox"><label>Pain</label><br>
+                                    <input type="checkbox"><label>Nipple Discharge</label><br>
+                                    <input type="checkbox"><label>BSE</label><br>
+                                    <p>Respiratory/Cardiac</p>
+                                    <input type="checkbox"><label>Shortness of Breath</label><br>
+                                    <input type="checkbox"><label>Cough</label><br>
+                                    <input type="checkbox"><label>Production of Phlegm</label><br>
+                                    <input type="checkbox"><label>Wheezing</label><br>
+                                    <input type="checkbox"><label>Coughing up Blood</label><br>
+                                    <input type="checkbox"><label>Chest Pain</label><br>
+                                    <input type="checkbox"><label>Fever</label><br>
+                                    <input type="checkbox"><label>Night Sweats</label><br>
+                                    <input type="checkbox"><label>Swelling in Hands/Feet</label><br>
+                                    <input type="checkbox"><label>Blue Fingers/Toes</label><br>
+                                    <input type="checkbox"><label>High Blood Pressure</label><br>
+                                    <input type="checkbox"><label>Heart Murmur</label><br>
+                                    <input type="checkbox"><label>HX of Heart Medication</label><br>
+                                    <input type="checkbox"><label>Bronchities/Emphysema</label><br>
+                                    <input type="checkbox"><label>Rheumatic Heart Disease</label><br>
+                                </div>
+                                <div class="column">
+                                    <p>Gastrointestinal</p>
+                                    <input type="checkbox"><label>Change in Appetite/Weight</label><br>
+                                    <input type="checkbox"><label>Problems Swallowing</label><br>
+                                    <input type="checkbox"><label>Nausea</label><br>
+                                    <input type="checkbox"><label>Heartburn</label><br>
+                                    <input type="checkbox"><label>Vomiting</label><br>
+                                    <input type="checkbox"><label>Vomiting Blood</label><br>
+                                    <input type="checkbox"><label>Constipation</label><br>
+                                    <input type="checkbox"><label>Diarrhea</label><br>
+                                    <input type="checkbox"><label>Change in Bowel Habits</label><br>
+                                    <input type="checkbox"><label>Abdominal Pain</label><br>
+                                    <input type="checkbox"><label>Excessive Belching</label><br>
+                                    <input type="checkbox"><label>Excessive Flatus</label><br>
+                                    <input type="checkbox"><label>Yellow color of Skin</label><br>
+                                    <input type="checkbox"><label>Food Intolerance</label><br>
+                                    <input type="checkbox"><label>Rectal Bleeding/Hemorrhoids</label><br>
+                                    <p>Urinary</p>
+                                    <input type="checkbox"><label>Difficulty in Urinaition</label><br>
+                                    <input type="checkbox"><label>Pain or buring on urination</label><br>
+                                    <input type="checkbox"><label>Frequent urination at night</label><br>
+                                    <input type="checkbox"><label>Urgent need to urinate</label><br>
+                                    <input type="checkbox"><label>Incontinence of urine</label><br>
+                                    <input type="checkbox"><label>Dribbling</label><br>
+                                    <input type="checkbox"><label>Decreased urine stream</label><br>
+                                    <input type="checkbox"><label>Blood in urine</label><br>
+                                    <input type="checkbox"><label>UTI/Stones/Prostate Infection</label><br>
+                                </div>
+                                <div class="column">
+                                    <p>Peripheral Vascular</p>
+                                    <input type="checkbox"><label>Leg cramps</label><br>
+                                    <input type="checkbox"><label>Varicose veins</label><br>
+                                    <input type="checkbox"><label>Clots in veins</label><br>
+                                    <p>Muscoskeletal</p>
+                                    <input type="checkbox"><label>Pain</label><br>
+                                    <input type="checkbox"><label>Swelling</label><br>
+                                    <input type="checkbox"><label>Stiffness</label><br>
+                                    <input type="checkbox"><label>Decrease joint motion</label><br>
+                                    <input type="checkbox"><label>Broken bone</label><br>
+                                    <input type="checkbox"><label>Serious sprains</label><br>
+                                    <input type="checkbox"><label>Arthritis</label><br>
+                                    <input type="checkbox"><label>Gout</label><br>
+                                    <p>Neurologic</p>
+                                    <input type="checkbox"><label>Headaches</label><br>
+                                    <input type="checkbox"><label>Seizures</label><br>
+                                    <input type="checkbox"><label>Loss of consciousness/Fainting</label><br>
+                                    <input type="checkbox"><label>Paralysis</label><br>
+                                    <input type="checkbox"><label>Weakness</label><br>
+                                    <input type="checkbox"><label>Loss of muscle size</label><br>
+                                    <input type="checkbox"><label>Muscle spasm</label><br>
+                                    <input type="checkbox"><label>Tremor</label><br>
+                                    <input type="checkbox"><label>Involuntary movement</label><br>
+                                    <input type="checkbox"><label>Incoordination</label><br>
+                                    <input type="checkbox"><label>Numbness</label><br>
+                                    <input type="checkbox"><label>Feeling of "pins and needles"</label><br>
+                                    <p>Hematologic</p>
+                                    <input type="checkbox"><label>Anemia</label><br>
+                                    <input type="checkbox"><label>Easy bruising/bleeding</label><br>
+                                    <input type="checkbox"><label>Past tranfusions</label><br>
+                                    <p>Endocrine</p>
+                                    <input type="checkbox"><label>Abonrmal Growth</label><br>
+                                    <input type="checkbox"><label>Increased appetite</label><br>
+                                    <input type="checkbox"><label>Increased thirst</label><br>
+                                    <input type="checkbox"><label>Increase urine production</label><br>
+                                    <input type="checkbox"><label>Thyroid trouble</label><br>
+                                    <input type="checkbox"><label>Heat/cold Intolerance</label><br>
+                                    <input type="checkbox"><label>Excessive Sweating</label><br>
+                                    <input type="checkbox"><label>Diabetes</label><br>
+                                </div>
+                            </form>
+                            <button id="closeModalButton">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="diagnosisButton">
+                    <button onclick="toggleDropdown()">Diagnosis</button>
+                    <div id="diagnosisDropdown" class="dropdown-content" style="display: none;">
+                        <select id="health-conditions">
+                            <option value="">Select a condition...</option>
+                            <option value="Hypertension">Hypertension</option>
+                            <option value="Urinary Tract Infection">Urinary Tract Infection</option>
+                            <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
+                            <option value="Lower Respiratory Tract Infection">Lower Respiratory Tract Infection</option>
+                            <option value="Community Acquired Pneumonia">Community Acquired Pneumonia</option>
+                            <option value="Pulmonary Tuberculosis">Pulmonary Tuberculosis</option>
+                            <option value="Musculoskeletal Disease">Musculoskeletal Disease</option>
+                            <option value="Ischemic Heart Disease">Ischemic Heart Disease</option>
+                            <option value="Upper Respiratory Tract Infection">Upper Respiratory Tract Infection</option>
+                            <option value="Cerebrovascular Disease">Cerebrovascular Disease</option>
+                        </select>
+                    </div>
+        
+
+
+
+                
+            </div>
+            {% endfor %}
+        </div>
+        
+
+        <div id = "diagnostic-tests-container">
+            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+            <div id = "diagnostic-tests">
+                <div id = "head">Dianostic Tests</div>
+                    <button><a href = "{% url 'diagnostic_lab_reports' %}">View Lab Reports</a></button>
+                    <div id="biometric-info" style="display: none;">
+                    </div>
+                    <button><a href = "{% url 'diagnostic_imagery_reports' %}">View Imagery Results</a></button>
+                    <div id="contact-details" style="display: none;">
+                    </div>
+                    <button id="requestLabTestButton">Request New Lab Test</button>
+
+                    <div id="newLabTestModal" class="modal1" style="display: none;">
+                        <div class="modal-content">
+                            <h2>Request New Lab Test</h2>
+                            <form id="newLabTestForm">
+                                <input type="checkbox" id="bloodTestCheckbox">
+                                <label for="bloodTestCheckbox">Blood Test</label><br>
+                                <input type="checkbox" id="chestXrayCheckbox">
+                                <label for="chestXrayCheckbox">Chest X-ray</label><br>
+                                <input type="checkbox" id="urineTestCheckbox">
+                                <label for="urineTestCheckbox">Urine Test</label><br>
+                                <button id="submitLabTestRequest">Submit</button>
+                                <button id="cancelLabTestRequest">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id = "vital-signs-container">
+            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+            <div id = "vital-signs-box">
+                <div id = "head">Vital Signs</div>
+                <div id = "vital-signs-table">
+                    <table id = "vital-signs">
+                        <tr id = "label">
+                            <th>Date</th>
+                            <th>Weight</th>
+                            <th>Temperature</th>
+                            <th>Blood Pressure</th>
+                            <th>Pulse</th>
+                            <th>Respiration</th>
+                            <th>Pain Index</th>
+                            <th>Stool</th>
+                            <th>Fluid Output</th>
+                            <th>Fluid Intake</th>
+                        </tr>
+                        {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
+                        <tr>
+                            <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
+                            {% if chosenPatientVitalEntryData_data.weight == "-" %}
+                                <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
+                            {% else %}
+                                <td>{{ chosenPatientVitalEntryData_data.weight }} kgs</td>
+                            {% endif %}
+                            <td>{{ chosenPatientVitalEntryData_data.temperature }} °C</td>
+                            <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
+                            <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
+                            <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
+                            <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
+                            
+                            <td><input type="checkbox" disabled></td>
+                            <td><input type="checkbox" disabled></td>
+                            <td> ml</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    <div id = "below-table">
+                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                        {% comment %} <div id = "new-entry-button">
+                            <a href="{% url 'new_vital_sign_entry' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "new-entry">+ New Entry</a>
+                        </div> {% endcomment %}
+                        <div id = "view-vs-history-button" class="pagination">
+                            <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "view-vs-history">View History</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+        </div>
+
+           
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/patient_data.js' %}"></script>
+<script>
+    // Get the button and modal
+    var reviewOfSystemsButton = document.getElementById("reviewOfSystemsButton");
+    var reviewOfSystemsModal = document.getElementById("reviewOfSystemsModal");
+    var closeModalButton = document.getElementById("closeModalButton");
+
+    // When the user clicks the button, open the modal and position it
+    reviewOfSystemsButton.onclick = function() {
+        reviewOfSystemsModal.style.display = "block";
+        reviewOfSystemsModal.style.position = "fixed"; // Set modal position to fixed
+        reviewOfSystemsModal.style.top = "50%"; // Center vertically
+        reviewOfSystemsModal.style.left = "50%"; // Center horizontally
+        reviewOfSystemsModal.style.transform = "translate(-50%, -50%)"; // Center the modal
+    }
+
+    // When the user clicks on the close button, close the modal
+    closeModalButton.onclick = function() {
+        reviewOfSystemsModal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == reviewOfSystemsModal) {
+            reviewOfSystemsModal.style.display = "none";
+        }
+    }
+    function toggleDropdown() {
+        var dropdown = document.getElementById("diagnosisDropdown");
+        if (dropdown.style.display === "none") {
+            dropdown.style.display = "block";
+        } else {
+            dropdown.style.display = "none";
+        }
+    }
+
+    // Get the button and modal for lab test request
+    var requestLabTestButton = document.getElementById("requestLabTestButton");
+    var newLabTestModal = document.getElementById("newLabTestModal");
+    var submitLabTestButton = document.getElementById("submitLabTestRequest");
+    var cancelLabTestButton = document.getElementById("cancelLabTestRequest");
+
+    requestLabTestButton.onclick = function() {
+        newLabTestModal.style.display = "block";
+        newLabTestModal.style.position = "fixed"; 
+        newLabTestModal.style.top = "50%";
+        newLabTestModal.style.left = "50%";
+        newLabTestModal.style.transform = "translate(-50%, -50%)";
+    }
+
+    // When the user clicks on the submit button, handle the form submission
+    submitLabTestButton.onclick = function() {
+        newLabTestModal.style.display = "none";
+    }
+
+    // When the user clicks on the cancel button, close the modal
+    cancelLabTestButton.onclick = function() {
+        newLabTestModal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == newLabTestModal) {
+            newLabTestModal.style.display = "none";
+        }
+    }
+
+</script>
+
+
+
+{% endblock %}

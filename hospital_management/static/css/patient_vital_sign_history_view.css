@@ -3,6 +3,8 @@
     height: 100%;
 
     font-family: Arial, Helvetica, sans-serif;
+
+    flex-direction: column;
 }
 
 #side-menu{
@@ -14,20 +16,7 @@
     left: 0;
     color: white;
     
-    background-color: #242424;
-}
-
-#other-information{
-    width: 80%;
-    height: 95%;
-    position: absolute;
-    top: 50%;
-    left: 46%;
-    transform: translate(-35%, -50%);
-}
-
-#all-info{
-    padding-top: -10%;
+    background-color: #5c7c89;
 }
 
 #user-info{
@@ -76,43 +65,17 @@
 }
 
 #title{
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
-#headerName{
+#header{
+    margin-left: 2%;
+    float: left;
+
     font-size: 18;
+
     font-weight: bold;
-}
-
-#searchInput {
-    padding: 8px;
-    border-radius: 30px;
-    border: 1px solid #ccc;
-    margin-right: 5px;
-}
-
-#searchButton {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 30px;
-    background-color: #799c8d;
-    color: #fff;
-    cursor: pointer;
-}
-
-#searchButton:hover {
-    background-color: #698a7c;
-}
-
-.headers{
-    display: flex;
-    justify-content: space-between;
-}
-
-.header-left {
-    display: flex;
-    justify-content: flex-start;
 }
 
 #a1, #a2, #a3, #a4, #a5, #a6, #a7{
@@ -143,6 +106,15 @@ a:hover{
     font-weight: bold;
 }
 
+#other-information{
+    width: 81%;
+    height: 100%;
+    
+    position: absolute;
+    left: 18%;
+    top : 0%;
+}
+
 #information-table{
     width: 96%;
     
@@ -155,52 +127,28 @@ a:hover{
 #user-information{
     text-align: center;
     
-    margin-left: 1%;
     width: 100%;
 }
+
+#user-information td{
+    padding: 10px;
+}
+
 
 #head{
     font-weight: bold;
 
-    background-color: #85AA9B;
-    border-color: #85AA9B;
+    background-color: #5c7c89;
+    border-color: #5c7c89;
     border-width: 0%;
 }
 
-#uname, #gender, #birthday, #disease, #last-visit, #room, #status{
+.tableheader{
     text-align: center;
 
-    font-size: 14px;
+    font-size: 16px;
     padding-top: 10px;
     padding-bottom: 10px;
-}
-
-#uname{
-    width: 35%;
-}
-
-#gender{
-    width: 7%;
-}
-
-#birthday{
-    width: 10%;
-}
-
-#disease{
-    width: 13%;
-}
-
-#last-visit{
-    width: 10%;
-}
-
-#room{
-    width: 7%;
-}
-
-#status{
-    width: 15%;
 }
 
 #photo-icon, #photo{
@@ -256,7 +204,7 @@ a:hover{
 }
 
 .pagination a.active {
-    background-color: #85AA9B;
+    background-color: #5c7c89;
     color: white;
-    border: 1px solid #85AA9B;
+    border: 1px solid #5c7c89;
 }

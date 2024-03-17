@@ -18,7 +18,6 @@ urlpatterns = [
     path('patient_medication_doctor/', views.patient_medication_doctor, name='patient_medication_doctor'),
     path('patient_medication_nurse/', views.patient_medication_nurse, name='patient_medication_nurse'),
     path('patient_medication_table/', views.patient_medication_table, name = 'patient_medication_table'),
-    path('patient_medication_table/<str:fname>/<str:lname>/<str:gender>/<str:bday>/', views.patient_medication_table, name='patient_medication_table'),
     path('outpatient_medication_order/', views.outpatient_medication_order, name = 'outpatient_medication_order'),
     path('save_prescriptions/', views.save_prescriptions, name = 'save_prescriptions'),
     path('inpatient_medication_order/', views.inpatient_medication_order, name = 'inpatient_medication_order'),

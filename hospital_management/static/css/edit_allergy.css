@@ -1,5 +1,10 @@
 #whole-screen{
+    width: 100%;
+    height: 100%;
+
     font-family: Arial, Helvetica, sans-serif;
+
+    flex-direction: column;
 }
 
 #side-menu{
@@ -9,37 +14,9 @@
     position: fixed;
     top: 0;
     left: 0;
+    color: white;
     
-    background-color: #85AA9B;
-}
-
-#other-side{
-    width: 84%;
-
-    right: 0%;
-    top: 0%;
-    position: absolute;
-}
-
-#other-information{
-    width: 77%;
-    height: 90%;
-    
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-40%, -50%);
-    
-    border-radius: 2%;
-    
-    background-color: #E9E9E9;
-
-    margin: 0 auto;
-    justify-content: center;
-}
-
-#all-info{
-    padding-top: -10%;
+    background-color: #5c7c89;
 }
 
 #user-info{
@@ -77,23 +54,65 @@
     font-size: 12;
 }
 
-#menu{
-    justify-content: center;
-    text-align: center;
-    
+#menu div {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+#menu div a {
+    margin-left: 10px;
 }
 
 #title{
-    padding-top: 20px;
-    padding-bottom: 10px;
+    margin-top: 20px;
     margin-bottom: 10px;
+}
 
-    margin-left: 10px;
+#header{
+    margin-left: 2%;
+    float: left;
 
-    display: flex;
-    flex-direction: row;
+    font-size: 18;
 
-    justify-content: space-between;
+    font-weight: bold;
+}
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 20px;
+    padding: 5px;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border: 10px;
+    border-radius: 5px;
+    border-color: black;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    font-weight: bold;
+}
+
+#other-side{
+    width: 81%;
+    height: 100%;
+    
+    position: absolute;
+    left: 18%;
+    top : 0%;
 }
 
 #head-corner, #head, #medical-surgical-history-title{
@@ -114,63 +133,6 @@
     padding-bottom: 5;
 }
 
-#side{
-    justify-content: flex-end;
-
-    display: flex;
-    flex-direction: row;
-
-    width: 50%;
-
-}
-
-#search{
-    width: 250px;
-
-    margin-right: 2%;
-
-    float: right;
-}
-
-#search-bar{
-    border-radius: 25px;
-
-    width: 100%;
-    
-    padding: 5px;
-    padding-left: 10px;
-    border: 0ch;
-    background-color: #D9D9D9;
-}
-
-#a1, #a2, #a3, #a4, #a5, #a6, #a7{
-    margin: 20;
-    padding: 10;
-
-    background-color: #E9E9E9;
-
-    color: black;
-    font-style: normal;
-    text-decoration: none;
-
-
-    border: 10px;
-    border-radius: 10px;
-    border-color: black;
-}
-
-#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
-    font-weight: bold;
-}
-
-a{
-    text-decoration: none;
-    color: black;
-}
-
-a:hover{
-    font-weight: bold;
-}
 
 #back, #back-button{
     margin: 20px;
@@ -302,35 +264,18 @@ a:hover{
     font-size: 12;
 }
 
-#medical-history{
-    margin: 0 40 20 50;
+#drug-history{
+    margin: 0 40 40 50;
 
     display: flex;
     flex-direction: column;
     
     width: 92.2%;
+
+    background-color: #E9E9E9
 }
 
-#past-medical-surgical-history, #drug-history, #allergy, #immunization, #family-history, #social-history{
-    margin: 0 0 20 0;
-
-    display: flex;
-    flex-direction: column;
-
-    background-color: #E9E9E9;
-}
-
-#social-history-info{
-    display: flex;
-
-    width: 100%;
-
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-}
-
-#family-history-table, #immunization-table, #allergy-table, #drug-table, #medical-surgical-history-table{
+#allergy-table{
     width: 100%;
 
     display: flex;
@@ -343,7 +288,7 @@ a:hover{
     
 }
 
-#medical-or-surgical-history-table, #drug-history-table, #allergies-table, #immunization-history-table, #table-family-history{
+#allergies-table{
     background-color: #D9D9D9;
 
     width: 95%;
@@ -356,31 +301,6 @@ a:hover{
     table-layout:fixed;
 }
 
-#social-info{
-    width: 95%;
-
-    display: flex;
-    flex-direction: row;
-
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-
-    margin-top: 10;
-    margin-bottom: 10;
-}
-
-#smoking, #alcohol{
-    width: 50%;
-
-    display: flex;
-    flex-direction: row;
-
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-}
-
 th{
     background-color: #85AA9B;
     color: #E9E9E9;
@@ -388,60 +308,12 @@ th{
     font-size: 16;
 }
 
-th.diagnosis-date{
-    width: 15%;
-}
-
-th.illness{
-    width: 25%;
-}
-
-th.treatment, th.remark{
-    width: 30%;
-}
-
-th.start, th.end{
-    width: 15%;
-}
-
-th.medication{
-    width: 20%;
-}
-
-th.purpose, th.dosage{
-    width: 25%;
-}
-
 th.allergen, th.severity{
-    width: 50%;
+    width: 45%;
 }
 
-th.given-date{
-    width: 15%;
-}
-
-th.vaccine{
-    width: 30%
-}
-
-th.administer{
-    width: 30%;
-}
-
-th.dosage-number{
-    width: 25%;
-}
-
-th.member{
-    width: 35%;
-}
-
-th.Illness{
-    width: 50%;
-}
-
-th.age{
-    width: 15%;
+th.illness, th.edit{
+    width: 10%;
 }
 
 td{
@@ -451,14 +323,16 @@ td{
     font-size: 14;
 }
 
-#edit-medical-surgical-history, #edit-drug-history, #edit-allergy, #edit-immunization, #edit-family-history, #edit-social-history{
+#add-allergen{
     display: flex;
     justify-content: flex-end;
+
+
 }
 
-#edit-medical-surgical-history-button, #edit-drug-history-button, #edit-allergy-button, #edit-immunization-button, #edit-family-history-button, #edit-social-history-button, #save-social-history{
+#add-allergen-button{
     padding: 3 5;
-    background-color: #D9D9D9;
+    background-color: #85AA9B;
 
     width: 3.5%;
 
@@ -469,22 +343,26 @@ td{
     border-radius: 5px;
 
     margin-bottom: 10;
+
+    color: #E9E9E9;
 }
 
-#edit-medical-history{
+#allergen-input, #severity-input{
     display: flex;
     justify-content: center;
-}
-
-#edit-medical-history-button{
-    background-color: #85AA9B;
-
-    padding: 8;
-
-    width: 5%;
 
     text-align: center;
 
-    border-radius: 5px;
+    width: 95%;
+
+    height: max-content;
+
+    white-space: normal; /* Allow text to wrap */
+    word-wrap: break-word; /* Break words that exceed the width */
 }
 
+#save, #edit{
+    background-color: #E9E9E9;
+    padding: 3 5;
+    border-radius: 5px;
+}

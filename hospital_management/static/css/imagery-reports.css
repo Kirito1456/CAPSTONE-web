@@ -1,5 +1,10 @@
 #whole-screen{
+    width: 100%;
+    height: 100%;
+
     font-family: Arial, Helvetica, sans-serif;
+
+    flex-direction: column;
 }
 
 #side-menu{
@@ -9,37 +14,9 @@
     position: fixed;
     top: 0;
     left: 0;
+    color: white;
     
-    background-color: #85AA9B;
-}
-
-#other-side{
-    width: 84%;
-
-    right: 0%;
-    top: 0%;
-    position: absolute;
-}
-
-#other-information{
-    width: 77%;
-    height: 90%;
-    
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-40%, -50%);
-    
-    border-radius: 2%;
-    
-    background-color: #E9E9E9;
-
-    margin: 0 auto;
-    justify-content: center;
-}
-
-#all-info{
-    padding-top: -10%;
+    background-color: #5c7c89;
 }
 
 #user-info{
@@ -77,23 +54,65 @@
     font-size: 12;
 }
 
-#menu{
-    justify-content: center;
-    text-align: center;
-    
+#menu div {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+#menu div a {
+    margin-left: 10px;
 }
 
 #title{
-    padding-top: 20px;
-    padding-bottom: 10px;
+    margin-top: 20px;
     margin-bottom: 10px;
+}
 
-    margin-left: 10px;
+#header{
+    margin-left: 2%;
+    float: left;
 
-    display: flex;
-    flex-direction: row;
+    font-size: 18;
 
-    justify-content: space-between;
+    font-weight: bold;
+}
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 20px;
+    padding: 5px;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border: 10px;
+    border-radius: 5px;
+    border-color: black;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    font-weight: bold;
+}
+
+#other-side{
+    width: 81%;
+    height: 100%;
+    
+    position: absolute;
+    left: 18%;
+    top : 0%;
 }
 
 #head-corner, #head{
@@ -131,22 +150,6 @@
 
 }
 
-#create-medication{
-    width: 35%;
-
-    align-self: center;
-    text-align: center;
-
-    background-color: #85AA9B;
-    border-radius: 10px;
-    padding: 5px;
-    padding-left: 10;
-    padding-right: 10;
-    
-    margin-right: 10px;
-    font-size: 14;
-}
-
 #search{
     width: 250px;
 
@@ -166,34 +169,6 @@
     background-color: #D9D9D9;
 }
 
-#a1, #a2, #a3, #a4, #a5, #a6, #a7{
-    margin: 20;
-    padding: 10;
-
-    background-color: #E9E9E9;
-
-    color: black;
-    font-style: normal;
-    text-decoration: none;
-
-
-    border: 10px;
-    border-radius: 10px;
-    border-color: black;
-}
-
-#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
-    font-weight: bold;
-}
-
-a{
-    text-decoration: none;
-    color: black;
-}
-
-a:hover{
-    font-weight: bold;
-}
 
 #information-table{
     width: 96%;
@@ -296,7 +271,7 @@ a:hover{
     justify-content: center;
     align-items: flex-end;
 
-    margin-bottom: 10;
+    margin-bottom: 10px;
 }
 
 .pagination a {
@@ -447,17 +422,22 @@ th{
     top: -1%;
 }
 
-#lab-reports{
+#imagery-reports{
     margin-left: 50;
     margin-right: 50;
-    margin-top: 10;
+    margin-top: 25;
 }
 
-#lab-tests{
+#info, #image-report{
+    display: flex;
+    flex-direction: column;
+}
+
+#imagery-tests{
     background-color: #E9E9E9;
 }
 
-#lab-reports-list{
+#imagery-reports-list{
     display: flex;
 
     justify-content: center;
@@ -469,7 +449,7 @@ th{
 
 #reports-table{
     margin-top: 10;
-    margin-bottom: 15;
+    margin-bottom: 10;
 
     width: 95%;
 
@@ -491,20 +471,45 @@ th.type{
 }
 
 th.report{
-    width: 18%;
+    width: 30%;
 }
 
 th.note{
     width: 52%;
 }
 
-#download-reports{
-    background-color: #85AA9B;
-    padding: 5;
-    padding-left: 10;
-    padding-right: 10;
+#download{
+    display: flex;
+    flex-direction: column;
 
-    border-radius: 5%;   
+    align-content: center;
+    align-items: center;
+
+    padding-bottom: 10;
+
+    font-size: 14;
+}
+
+#download-imagery{
+    background-color: #85AA9B;
+
+    border-radius: 5%;
+
+    margin-top: 5;
+
+    width: 50%;
+    padding: 5;
+}
+
+#download-disposition{
+    background-color: #85AA9B;
+
+    border-radius: 5%;
+
+    margin-top: 5;
+
+    width: 85%;
+    padding: 5;
 }
 
 td{
@@ -544,5 +549,8 @@ td{
     padding-right: 10;
 
     border-radius: 5%;
+
+    width: 15%;
+    font-size: 14;
 }
 

@@ -3,7 +3,7 @@
 <title>{% block title %}Patient Data{% endblock %}</title>
 
 {% block styles%} 
-<link rel="stylesheet" href="{% static 'css/patients_list_style.css' %}">
+<link rel="stylesheet" href="{% static 'css/patients_list.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 {% endblock styles%}
@@ -14,7 +14,7 @@
         <div id = "all-info">
             <div id = "user-info"> 
                 <div id = "image">
-                    <img src="{% static 'logo-black.png' %}" id = "display-photo">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
                 </div>
                 <div id = "information">
                     <div id = "name"> Jeonghan </div>
@@ -31,12 +31,11 @@
                 <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
                 <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
                 <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                <div id="a4"><i class="fas fa-prescription-bottle-alt"></i> <a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
                 <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
                 <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
                 <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
             </div>
-            
+            {% comment %} <div class="clock" id="current-date-time"></div> {% endcomment %}
         </div>
     </div>
     <div id = "other-information">
@@ -45,7 +44,7 @@
                 <div id = "headerName">Patients List</div>
             </div>
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search...">
+                <input type="text" id="searchInput" placeholder="Search Patient Name">
                 <button id="searchButton">Search</button>
             </div>
         </div>
@@ -91,8 +90,25 @@
                     </tr>
                     {% endfor %}
                 </table>
+                <div class="pagination">
+                    <a href="#">&laquo;</a>
+                    <a href="#" class="active">1</a>
+                    <a href="#">&raquo;</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // JavaScript code to display current date and time
+    function displayDateTime() {
+        var currentDate = new Date();
+        var dateTimeString = currentDate.toLocaleString();
+        document.getElementById('current-date-time').innerText = dateTimeString;
+    }
+
+    displayDateTime();
+    setInterval(displayDateTime, 1000);
+</script>
 {% endblock %}

@@ -1,224 +1,236 @@
+
 {%load static%}
-<html>
-    <title>Patient Medical History</title>
+<title>{% block title %}Patient Medical History{% endblock %}</title>
 
-<link rel="stylesheet" href="{% static 'css/patient_medical_history_style.css' %}">
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/patient_medical_history.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <body> 
-        <div id = "whole-screen">
-            <div id = "side-menu">
-                <div id = "all-info">
-                    <div id = "user-info"> 
-                        <div id = "image">
-                            <img src="{% static 'hannie.jpg' %}" id = "display-photo">
-                        </div>
-                        <div id = "information">
-                            <div id = "name"> Jeonghan </div>
-                            <div id = "role"> General Practitioner</div>
-                        </div>
-                    </div>
-                    <div id = "menu"> 
-                        <div id = "a1"><a href="">Dashboard</a></div>
-                        <div id = "a2"><a href="">Appointments</a></div>
-                        <div id = "a3" style="font-weight: bold;"><a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                        <div id = "a4"><a href="{% url 'patient_medication_doctor' %}">Medications</a></div>
-                        <div id = "a5"><a href="">Message</a></div>
-                        <div id = "a6"><a href="">Profile</a></div>
-                        <div id = "a7"><a href="">Settings</a></div>
-                    </div>
+{% endblock styles%}
+
+{% block content %}
+
+<div id = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
+                </div>
+                <div id = "information">
+                    <div id = "name"> Jeonghan </div>
+                    <div id = "role"> General Practitioner</div>
                 </div>
             </div>
-            <div id = "other-side">
-                <div id = "back">
-                    <div id = "back-button">
-                        <a href=""> << Back </a>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
+                <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+            </div>
+        </div>
+    </div>
+    <div id = "other-side">
+        <div id = "title">
+            <div id = "left">
+                <button id="backButton">Back</button>
+            </div>
+        </div>
+        <div id = "patient-medical-info">
+            <div id = "personal-info">
+                <div id = "head">Patient Medical History</div>
+                <div id = "patient-information">
+                    <div id = "first">
+                        <div id = "fname">Juanita</div>
+                        <div id = "fname-label">First Name</div>
                     </div>
-                </div>
-                <div id = "patient-medical-info">
-                    <div id = "personal-info">
-                        <div id = "head">Patient Medical History</div>
-                        <div id = "patient-information">
-                            <div id = "first">
-                                <div id = "fname">Juanita</div>
-                                <div id = "fname-label">First Name</div>
-                            </div>
-                            <div id = "last">
-                                <div id = "lname">Dela Cruz</div>
-                                <div id = "lname-label">Last Name</div>
-                            </div>
-                            <div id = "gender">
-                                <div id = "gender-view">Female</div>
-                                <div id = "gender-label">Gender</div>
-                            </div>
-                            <div id = "bday">
-                                <div id = "birthday">01/03/2003</div>
-                                <div id = "bday-label">Date of Birth</div>
-                            </div>
-                            <div id = "age">
-                                <div id = "age-view">21</div>
-                                <div id = "age-label">Age</div>
-                            </div>
-                        </div>
+                    <div id = "last">
+                        <div id = "lname">Dela Cruz</div>
+                        <div id = "lname-label">Last Name</div>
                     </div>
-                </div>
-                <div id = "medical-history">
-                    <div id = "past-medical-surgical-history">
-                        <div id = "head">Past Medical/Surgical History</div>
-                        <div id = "medical-surgical-history-table">
-                            <table id = "medical-or-surgical-history-table">
-                                <tr>
-                                    <th class = "diagnosis-date">Diagnosis Date</th>
-                                    <th class = "illness">Illness</th>
-                                    <th class = "treatment">Treatment</th>
-                                    <th class = "remark">Remarks</th>
-                                </tr>
-                                <tr>
-                                    <td>9/10/2024</td>
-                                    <td>Asthma</td>
-                                    <td>medication</td>
-                                    <td>weekly visit is required iuehoiwe ijwdo wjediowhnsekdj ihwdiown wjdiowklnd ,efef kfd</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div id = "edit-medical-surgical-history">
-                            <a href = "{% url 'edit_medical_surgical_history' %}" id = "edit-medical-surgical-history-button">Edit</a>
-                        </div>
+                    <div id = "gender">
+                        <div id = "gender-view">Female</div>
+                        <div id = "gender-label">Gender</div>
                     </div>
-                    <div id = "drug-history">
-                        <div id = "head">Drug History</div>
-                        <div id = "drug-table">
-                            <table id = "drug-history-table">
-                                <tr>
-                                    <th class = "medication">Medication Name</th>
-                                    <th class="purpose">Purpose</th>
-                                    <th class="dosage">Dosage/Dosage Times</th>
-                                    <th class="start">Start Date</th>
-                                    <th class="end">End Date</th>
-                                </tr>
-                                <tr>
-                                    <td>paracetamol</td>
-                                    <td>flu</td>
-                                    <td>1/day</td>
-                                    <td>3/9/2024</td>
-                                    <td>3/11/2024</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div id = "edit-drug-history">
-                                <a href = "{% url 'edit_drug_history' %}" id = "edit-drug-history-button">Edit</a>
-                        </div>
+                    <div id = "bday">
+                        <div id = "birthday">01/03/2003</div>
+                        <div id = "bday-label">Date of Birth</div>
                     </div>
-                    <div id = "allergy">
-                        <div id = "head">Allergies</div>
-                        <div id = "allergy-table">
-                            <table id = "allergies-table">
-                                <tr>
-                                    <th class = "allergen">Allergen</th>
-                                    <th class="severity">Reaction/Severity</th>
-                                </tr>
-                                <tr>
-                                    <td>peanuts</td>
-                                    <td>???</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div id = "edit-allergy">
-                            <a href = "{% url 'edit_allergy' %}" id = "edit-allergy-button">Edit</a>
-                        </div>
-                    </div>
-                    <div id = "immunization">
-                        <div id = "head">Immunization</div>
-                        <div id = "immunization-table">
-                            <table id = "immunization-history-table">
-                                <tr>
-                                    <th class="vaccine">Vaccine</th>
-                                    <th class="given-date">Date Given</th>
-                                    <th class="dosage-number">Dosage Number</th>
-                                    <th class="administer">Administered By</th>
-                                </tr>
-                                <tr>
-                                    <td>HPV</td>
-                                    <Td></Td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div id = "edit-immunization">
-                            <a href = "{% url 'edit_immunization_history' %}" id = "edit-immunization-button">Edit</a>
-                        </div>
-                    </div>
-                    <div id = "family-history">
-                        <div id = "head">Family History</div>
-                        <div id = "family-history-table">
-                            <table id = "table-family-history">
-                                <tr>
-                                    <th class="member">Member</th>
-                                    <th class="Illness">Illness/es</th>
-                                    <th class="age">Age of Diagnosis</th>
-                                </tr>
-                                <tr>
-                                    <td>Mother</td>
-                                    <td>High Blood</td>
-                                    <td>45</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div id = "edit-family-history">
-                            <a href = "{% url 'edit_family_history' %}" id = "edit-family-history-button">Edit</a>
-                        </div>
-                    </div>
-                    <div id = "social-history"> 
-                        <div id = "head">Social History</div>
-                        <div id = "social-history-info">
-                            <script>
-                                document.getElementById("social-history-info").style.pointerEvents = "none";
-                            </script>
-                            <div id = "social-info">
-                                <div id = "smoking">
-                                    Smoking?
-                                    <input type="radio" id="yes" name="smoking-answer" value="yes">
-                                    <label for="yes">Yes</label>
-                                    <input type="radio" id="no" name="smoking-answer" value="no">
-                                    <label for="no">No</label>
-                                </div>
-                                <div id = "alcohol">
-                                    Alcohol?
-                                    <input type="radio" id="yes" name="alcohol-answer" value="yes">
-                                    <label for="yes">Yes</label>
-                                    <input type="radio" id="no" name="alcohol-answer" value="no">
-                                    <label for="no">No</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div id = "edit-social-history">
-                            <a id = "edit-social-history-button" onclick = "edit()">Edit</a>
-                            <a id = "save-social-history" onclick = "save()" style = "display: none;">Save</a>
-                        </div>
+                    <div id = "age">
+                        <div id = "age-view">21</div>
+                        <div id = "age-label">Age</div>
                     </div>
                 </div>
             </div>
         </div>
-    </body>
+        <div id = "medical-history">
+            <div id = "past-medical-surgical-history">
+                <div id = "head">Past Medical/Surgical History</div>
+                <div id = "medical-surgical-history-table">
+                    <table id = "medical-or-surgical-history-table">
+                        <tr>
+                            <th class = "diagnosis-date">Diagnosis Date</th>
+                            <th class = "illness">Illness</th>
+                            <th class = "treatment">Treatment</th>
+                            <th class = "remark">Remarks</th>
+                        </tr>
+                        <tr>
+                            <td>9/10/2024</td>
+                            <td>Asthma</td>
+                            <td>medication</td>
+                            <td>weekly visit is required iuehoiwe ijwdo wjediowhnsekdj ihwdiown wjdiowklnd ,efef kfd</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id = "edit-medical-surgical-history">
+                    <a href = "{% url 'edit_medical_surgical_history' %}" id = "edit-medical-surgical-history-button">Edit</a>
+                </div>
+            </div>
+            {% comment %} <div id = "drug-history">
+                <div id = "head">Drug History</div>
+                <div id = "drug-table">
+                    <table id = "drug-history-table">
+                        <tr>
+                            <th class = "medication">Medication Name</th>
+                            <th class="purpose">Purpose</th>
+                            <th class="dosage">Dosage/Dosage Times</th>
+                            <th class="start">Start Date</th>
+                            <th class="end">End Date</th>
+                        </tr>
+                        <tr>
+                            <td>paracetamol</td>
+                            <td>flu</td>
+                            <td>1/day</td>
+                            <td>3/9/2024</td>
+                            <td>3/11/2024</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id = "edit-drug-history">
+                        <a href = "{% url 'edit_drug_history' %}" id = "edit-drug-history-button">Edit</a>
+                </div>
+            </div> {% endcomment %}
+            <div id = "allergy">
+                <div id = "head">Allergies</div>
+                <div id = "allergy-table">
+                    <table id = "allergies-table">
+                        <tr>
+                            <th class = "allergen">Allergen</th>
+                            <th class="severity">Reaction/Severity</th>
+                        </tr>
+                        <tr>
+                            <td>peanuts</td>
+                            <td>???</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id = "edit-allergy">
+                    <a href = "{% url 'edit_allergy' %}" id = "edit-allergy-button">Edit</a>
+                </div>
+            </div>
+            <div id = "immunization">
+                <div id = "head">Immunization</div>
+                <div id = "immunization-table">
+                    <table id = "immunization-history-table">
+                        <tr>
+                            <th class="vaccine">Vaccine</th>
+                            <th class="given-date">Date Given</th>
+                            <th class="dosage-number">Dosage Number</th>
+                            <th class="administer">Administered By</th>
+                        </tr>
+                        <tr>
+                            <td>HPV</td>
+                            <Td></Td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div id = "edit-immunization">
+                    <a href = "{% url 'edit_immunization_history' %}" id = "edit-immunization-button">Edit</a>
+                </div>
+            </div>
+            <div id = "family-history">
+                <div id = "head">Family History</div>
+                <div id = "family-history-table">
+                    <table id = "table-family-history">
+                        <tr>
+                            <th class="member">Member</th>
+                            <th class="Illness">Illness/es</th>
+                            <th class="age">Age of Diagnosis</th>
+                        </tr>
+                        <tr>
+                            <td>Mother</td>
+                            <td>High Blood</td>
+                            <td>45</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id = "edit-family-history">
+                    <a href = "{% url 'edit_family_history' %}" id = "edit-family-history-button">Edit</a>
+                </div>
+            </div>
+            <div id = "social-history"> 
+                <div id = "head">Social History</div>
+                <div id = "social-history-info">
+                    <script>
+                        document.getElementById("social-history-info").style.pointerEvents = "none";
+                    </script>
+                    <div id = "social-info">
+                        <div id = "smoking">
+                            Smoking?
+                            <input type="radio" id="yes" name="smoking-answer" value="yes">
+                            <label for="yes">Yes</label>
+                            <input type="radio" id="no" name="smoking-answer" value="no">
+                            <label for="no">No</label>
+                        </div>
+                        <div id = "alcohol">
+                            Alcohol?
+                            <input type="radio" id="yes" name="alcohol-answer" value="yes">
+                            <label for="yes">Yes</label>
+                            <input type="radio" id="no" name="alcohol-answer" value="no">
+                            <label for="no">No</label>
+                        </div>
+                    </div>
+                </div>
+                <div id = "edit-social-history">
+                    <a id = "edit-social-history-button" onclick = "edit()">Edit</a>
+                    <a id = "save-social-history" onclick = "save()" style = "display: none;">Save</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        function edit() {
-            // Enable radio buttons for editing
-            document.getElementById("social-history-info").style.pointerEvents = "";
-    
-            // Hide the edit button and show the save button
-            document.getElementById("edit-social-history-button").style.display = "none";
-            document.getElementById("save-social-history").style.display = "inline";
-        }
-    
-        function save() {
-            // Disable radio buttons after saving
-            document.getElementById("social-history-info").style.pointerEvents = "none";
-    
-            // Hide the save button and show the edit button
-            document.getElementById("edit-social-history-button").style.display = "inline";
-            document.getElementById("save-social-history").style.display = "none";
-        }
-    </script>
+<script>
+    function edit() {
+        // Enable radio buttons for editing
+        document.getElementById("social-history-info").style.pointerEvents = "";
 
-</html>
+        // Hide the edit button and show the save button
+        document.getElementById("edit-social-history-button").style.display = "none";
+        document.getElementById("save-social-history").style.display = "inline";
+    }
+
+    function save() {
+        // Disable radio buttons after saving
+        document.getElementById("social-history-info").style.pointerEvents = "none";
+
+        // Hide the save button and show the edit button
+        document.getElementById("edit-social-history-button").style.display = "inline";
+        document.getElementById("save-social-history").style.display = "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const backButton = document.getElementById('backButton');
+
+        backButton.addEventListener('click', function() {
+            window.history.back();
+        });
+    });
+</script>
+
+
+{% endblock %}

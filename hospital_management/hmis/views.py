@@ -238,6 +238,7 @@ def view_treatment_plan_all(request):
     return render(request, 'hmis/view_treatment_plan.html')
 
 def view_treatment_plan(request, fname, lname, gender, bday):
+    
     return render(request, 'hmis/view_treatment_plan.html', {'fname': fname, 'lname': lname, 'gender': gender, 'bday': bday})
 
 def patient_medication_doctor(request):
@@ -255,10 +256,6 @@ def patient_medication_nurse(request):
 def patient_medication_table(request):
     prescriptionsorders = db.child("prescriptionorders").get().val()
     return render(request, 'hmis/patient_medication_table.html', {'prescriptionsorders': prescriptionsorders})
-
-def patient_medication_table(request, fname, lname, gender, bday):
-    prescriptionsorders = db.child("prescriptionorders").get().val()
-    return render(request, 'hmis/patient_medication_table.html', {'fname': fname, 'lname': lname, 'gender': gender, 'bday': bday, 'prescriptionsorders': prescriptionsorders})
 
 def inpatient_medication_order(request):
     return render(request, 'hmis/inpatient_medication_order.html')

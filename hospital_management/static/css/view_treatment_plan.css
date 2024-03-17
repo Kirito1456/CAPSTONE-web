@@ -2,140 +2,25 @@ body{
     margin: 0;
 }
 
-.modal {
-    display: none;
-    position: fixed; 
-    z-index: 1; 
-    left: 0;
-    top: 0;
+.whole-screen{
     width: 100%;
-    height: fit-content;
-    overflow: auto; 
-    /* background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);  */
-}
+    height: 100%;
 
-#myModal{
-    background-color: blue;
-}
+    font-family: Arial, Helvetica, sans-serif;
 
-/* Modal content */
-.modal-content {
-    /* background-color: #fefefe; */
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: fit-content;
-    border-radius: 20px;
-    line-height: 1.5;
-}
-
-.modal-content label,
-.modal-content input,
-.modal-content select,
-.modal-content button {
-    margin-bottom: 10px; 
-}
-
-#today{
-    width: fit-content;
-    text-align: center;
-    margin: 10px;
-}
-
-#uploading-header{
-    font-size: 12;
-    font-weight: bold;
-}
-
-#uploading-photo{
-    margin-left: 10px;
-    display: flex;
-    align-items: center;
-}
-
-#today-label {
-    text-align: center;
-    font-size: 12px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-#today-view{
-    padding: 8px;
-    background-color: #D9D9D9;
-    color: black;
-    border-radius: 10px;
-    font-size: 14px;
-    border: 1px solid black;
-}
-
-#update-with-new-order {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px;
-}
-
-#remove-medication-button {
-    margin-top: 10px;
-}
-
-#remove-medication-button a {
-    background-color: red;
-    color: white;
-    padding: 3px;
-    border-radius: 5px;
-    font-size: 12px;
-}
-
-#add-medication-button a, #submit-medication-button a {
-    background-color: green;
-    color: white;
-    padding: 3px;
-    border-radius: 5px;
-    font-size: 12px;
-}
-
-#table-header{
-   display: flex; 
-   font-weight: bold; 
-   background-color: #85AA9B; 
-   color: white; 
-   padding: 5px; 
-   margin: 5px; 
-   margin-right: 10px;
-}
-
-#table-body{
-    display: flex;
-    padding: 5px; 
-    margin: 5px; 
-    margin-right: 10px;
- }
-
-#medication-list{
-    display: flex; 
     flex-direction: column;
 }
 
-.whole-screen{
-    font-family: 'Inter';
-    display: flex;
-    width: 100%;
-    height: 100vh;
-}
-
 #side-menu{
-    background-color: #85AA9B;
-    flex: 0 0 16%;
-}
-
-#other-information{
-    flex: 1;
-    background-color: #E9E9E9;
-}
-
-#all-info{
-    padding-top: -10%;
+    width: 16%;
+    height: 100%;
+    
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: white;
+    
+    background-color: #5c7c89;
 }
 
 #user-info{
@@ -173,17 +58,65 @@ body{
     font-size: 12;
 }
 
-#menu{
-    justify-content: center;
-    text-align: center;
-    
+#menu div {
+    display: flex;
+    align-items: center;
+    padding: 5px;
 }
 
-#title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
+#menu div a {
+    margin-left: 10px;
+}
+
+#title{
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#header{
+    margin-left: 2%;
+    float: left;
+
+    font-size: 18;
+
+    font-weight: bold;
+}
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 20px;
+    padding: 5px;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border: 10px;
+    border-radius: 5px;
+    border-color: black;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    font-weight: bold;
+}
+
+#other-information{
+    width: 81%;
+    height: 100%;
+    
+    position: absolute;
+    left: 18%;
+    top : 0%;
 }
 
 #left {
@@ -246,37 +179,6 @@ body{
 
     width: 50%;
 
-}
-
-
-
-#a1, #a2, #a3, #a4, #a5, #a6, #a7{
-    margin: 20;
-    padding: 10;
-
-    background-color: #E9E9E9;
-
-    color: black;
-    font-style: normal;
-    text-decoration: none;
-
-
-    border: 10px;
-    border-radius: 10px;
-    border-color: black;
-}
-
-#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
-    font-weight: bold;
-}
-
-a{
-    text-decoration: none;
-    color: black;
-}
-
-a:hover{
-    font-weight: bold;
 }
 
 .table{
@@ -489,4 +391,119 @@ td{
 
 #upload-form{
     margin: 0;
+}
+
+.modal {
+    display: none;
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: fit-content;
+    overflow: auto; 
+    /* background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);  */
+}
+
+#myModal{
+    background-color: blue;
+}
+
+/* Modal content */
+.modal-content {
+    /* background-color: #fefefe; */
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: fit-content;
+    border-radius: 20px;
+    line-height: 1.5;
+}
+
+.modal-content label,
+.modal-content input,
+.modal-content select,
+.modal-content button {
+    margin-bottom: 10px; 
+}
+
+#today{
+    width: fit-content;
+    text-align: center;
+    margin: 10px;
+}
+
+#uploading-header{
+    font-size: 12;
+    font-weight: bold;
+}
+
+#uploading-photo{
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#today-label {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+#today-view{
+    padding: 8px;
+    background-color: #D9D9D9;
+    color: black;
+    border-radius: 10px;
+    font-size: 14px;
+    border: 1px solid black;
+}
+
+#update-with-new-order {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px;
+}
+
+#remove-medication-button {
+    margin-top: 10px;
+}
+
+#remove-medication-button a {
+    background-color: red;
+    color: white;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+#add-medication-button a, #submit-medication-button a {
+    background-color: green;
+    color: white;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+#table-header{
+   display: flex; 
+   font-weight: bold; 
+   background-color: #85AA9B; 
+   color: white; 
+   padding: 5px; 
+   margin: 5px; 
+   margin-right: 10px;
+}
+
+#table-body{
+    display: flex;
+    padding: 5px; 
+    margin: 5px; 
+    margin-right: 10px;
+ }
+
+#medication-list{
+    display: flex; 
+    flex-direction: column;
 }
