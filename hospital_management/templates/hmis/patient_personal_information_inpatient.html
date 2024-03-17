@@ -59,12 +59,12 @@
                     </div>
                     {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
                     <div class="toggle-switch">
-                        <input type="checkbox" id="patientTypeToggle" onclick="togglePatientType()">
+                        <input type="checkbox" id="patientTypeToggle" {% if chosenPatientDatas_data.status == 'Inpatient' %} checked {% endif %}>
                         <label for="patientTypeToggle">{{ chosenPatientDatas_data.status }}</label>
                         <button id="endtransaction">Appointment Finished</button>
                     </div>
-                    
                     {% endfor %}
+
                     <button onclick="toggleBiometricInfo()">Biometric Information</button>
                     <div id="biometric-info" style="display: none;">
                         {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
@@ -273,6 +273,7 @@
                                     <input type="checkbox"><label>Diabetes</label><br>
                                 </div>
                             </form>
+                            <button>Save</button>
                             <button id="closeModalButton">Close</button>
                         </div>
                     </div>
