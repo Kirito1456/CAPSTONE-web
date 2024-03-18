@@ -368,7 +368,23 @@ def patient_vital_signs_history(request):
 
 def patient_medical_history(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
+    
     if request.method == 'POST':
+        if 'saveMedicalHistoryButton' in request.POST:
+            diagnosis = request.POST.getlist('diagnosis')
+            date_illness = request.POST.getlist('date_illness')
+            treatment = request.POST.getlist('treatment')
+            remarks = request.POST.getlist('remarks')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'diagnosis': diagnosis,
+                'date_illness': date_illness,
+                'treatment': treatment,
+                'remarks': remarks
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('pastHistory').set(data)
+
         if 'saveAllergyButton' in request.POST:
             allergen = request.POST.getlist('allergen')
             severity = request.POST.getlist('severity')
@@ -379,6 +395,41 @@ def patient_medical_history(request):
                 'severity': severity
             }
             db.child('patientmedicalhistory').child(chosen_patient_uid).child('allergyhistory').set(data)
+
+        if 'saveImmunizationButton' in request.POST:
+            vaccine = request.POST.getlist('vaccine')
+            date = request.POST.getlist('date')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'vaccine': vaccine,
+                'date': date
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('immunizationHistory').set(data)
+
+        if 'saveFamilyHistoryButton' in request.POST:
+            family_member = request.POST.getlist('family_member')
+            diagnosis = request.POST.getlist('diagnosis')
+            age = request.POST.getlist('age')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'family_member': family_member,
+                'diagnosis': diagnosis,
+                'age': age
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('familyHistory').set(data)
+
+        if 'saveSocialHistoryButton' in request.POST:
+            smoking = request.POST.get('smoking')
+            alcohol = request.POST.get('alcohol')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'smoking': smoking,
+                'alcohol': alcohol
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').set(data)
 
     return render(request, 'hmis/patient_medical_history.html')
 
