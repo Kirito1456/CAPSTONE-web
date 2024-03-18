@@ -13,7 +13,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.files.storage import FileSystemStorage
 
- 
+from datetime import datetime
 from PIL import Image 
 from pytesseract import pytesseract 
 
@@ -160,6 +160,8 @@ def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
     vitalsigns = db.child("vitalsigns").get().val()
+    consulnotes = db.child("consultationNotes").get().val()
+    date = datetime.today().strftime('%Y-%m-%d')
 
     chosenPatient = request.GET.get('chosenPatient', '')
 
@@ -183,15 +185,28 @@ def patient_personal_information_inpatient(request):
     for vitalsigns_id, vitalsigns_data in vitalsigns.items():
         if chosenPatient == vitalsigns_data["patientid"]:
             chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
-    
-    # if request.method == 'POST':
-    #     save_chiefComplaint(request)
-    #     save_review_of_systems(request)
+
+    chosenPatientConsulNotes = {}
+    # for consulnotes_id, consulnotes_data in consulnotes.items():
+    #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
+    #         chosenPatientConsulNotes[consulnotes_id] = consulnotes_data
+
+    consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
+    # Retrieve the data for the specified patient ID and date
+    consulnotes_data = consultation_notes_ref.child(date).get().val()
+    if consulnotes_data:
+        chosenPatientConsulNotes[chosenPatient] = consulnotes_data
 
     if request.method == 'POST':
 
         if 'complaintButton' in request.POST:
             save_chiefComplaint(request)
+
+        if 'rosButton' in request.POST:
+            save_review_of_systems(request)
+
+        if 'diagnosisButton' in request.POST:
+            save_diagnosis(request)
         
         if 'submitLabTestRequest' in request.POST:
             print(chosenPatient)
@@ -210,103 +225,103 @@ def patient_personal_information_inpatient(request):
             }
             db.child('testrequest').child(id).set(data)
 
-    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData})
+    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
+                                                                                'chosenPatientDatas': chosenPatientDatas, 
+                                                                                'chosenPatientVitalEntryData': chosenPatientVitalEntryData,
+                                                                                'chosenPatientConsulNotes': chosenPatientConsulNotes})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
         
     #if request.method == 'POST':
+        #uid = str(uuid.uuid1())
+        date = datetime.today().strftime('%Y-%m-%d')
         chiefComplaint = request.POST.get('chiefComplaint')
         id = request.POST.get('complaintButton') 
         
         # Save Chief Compliant into Firebase Database
-        appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+        appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
 
         # Update appointment data in Firebase
         if chiefComplaint:
             db.child(appointment_path).update({
                 'patientID': id,
-                'chiefComplaint': chiefComplaint
+                'chiefComplaint': chiefComplaint,
             })
     
-
 def save_review_of_systems(request):
-    if request.method == 'POST':
-        skin_conditions = request.POST.getlist('skin_conditions')
-        head_conditions = request.POST.getlist('head_conditions')
-        eye_conditions = request.POST.getlist('eye_conditions')
-        ear_conditions = request.POST.getlist('ear_conditions')
-        nose_conditions = request.POST.getlist('nose_conditions')
-        allergy_conditions = request.POST.getlist('allergy_conditions')
-        mouth_conditions = request.POST.getlist('mouth_conditions')
-        neck_conditions = request.POST.getlist('neck_conditions')
-        breast_conditions = request.POST.getlist('breast_conditions')
-        cardiac_conditions = request.POST.getlist('cardiac_conditions')
-        gastro_conditions = request.POST.getlist('gastro_conditions')
-        urinary_conditions = request.POST.getlist('urinary_conditions')
-        pv_conditions = request.POST.getlist('pv_conditions')
-        ms_conditions = request.POST.getlist('ms_conditions')
-        neuro_conditions = request.POST.getlist('neuro_conditions')
-        hema_conditions = request.POST.getlist('hema_conditions')
-        endo_conditions = request.POST.getlist('endo_conditions')
-        id = request.POST.get('rosButton')
+    date = datetime.today().strftime('%Y-%m-%d')
+    skin_conditions = request.POST.getlist('skin_conditions')
+    head_conditions = request.POST.getlist('head_conditions')
+    eye_conditions = request.POST.getlist('eye_conditions')
+    ear_conditions = request.POST.getlist('ear_conditions')
+    nose_conditions = request.POST.getlist('nose_conditions')
+    allergy_conditions = request.POST.getlist('allergy_conditions')
+    mouth_conditions = request.POST.getlist('mouth_conditions')
+    neck_conditions = request.POST.getlist('neck_conditions')
+    breast_conditions = request.POST.getlist('breast_conditions')
+    cardiac_conditions = request.POST.getlist('cardiac_conditions')
+    gastro_conditions = request.POST.getlist('gastro_conditions')
+    urinary_conditions = request.POST.getlist('urinary_conditions')
+    pv_conditions = request.POST.getlist('pv_conditions')
+    ms_conditions = request.POST.getlist('ms_conditions')
+    neuro_conditions = request.POST.getlist('neuro_conditions')
+    hema_conditions = request.POST.getlist('hema_conditions')
+    endo_conditions = request.POST.getlist('endo_conditions')
+    id = request.POST.get('rosButton')
 
-        # Save into Firebase Database
-        appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+    # Save into Firebase Database
+    appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
 
+    # if not isinstance(skin_conditions, list):
+    #     skin_conditions = [skin_conditions]
+    #  Update appointment data in Firebase
+    
 
-        if not isinstance(skin_conditions, list):
-            skin_conditions = [skin_conditions]
-        # Update appointment data in Firebase
-        
-
-        db.child(appointment_path).set({
-            'patientID': id,
-            'review_of_systems': {
-                'skin': skin_conditions,
-                'head': head_conditions,
-                'eye': eye_conditions,
-                'ear': ear_conditions,
-                'nose': nose_conditions,
-                'allergy': allergy_conditions,
-                'mouth': mouth_conditions,
-                'neck': neck_conditions,
-                'breast': breast_conditions,
-                'cardiac': cardiac_conditions,
-                'gastro': gastro_conditions,
-                'urinary': urinary_conditions,
-                'pv': pv_conditions,
-                'ms': ms_conditions,
-                'neuro': neuro_conditions,
-                'hema': hema_conditions,
-                'endo': endo_conditions,
-            }
-        })
-        return redirect('patient_data_doctor_view')
+    db.child(appointment_path).update({
+        'patientID': id,
+        'review_of_systems': {
+            'skin': skin_conditions,
+            'head': head_conditions,
+            'eyes': eye_conditions,
+            'ear': ear_conditions,
+            'nose': nose_conditions,
+            'allergy': allergy_conditions,
+            'mouth': mouth_conditions,
+            'neck': neck_conditions,
+            'breast': breast_conditions,
+            'cardiac': cardiac_conditions,
+            'gastro': gastro_conditions,
+            'urinary': urinary_conditions,
+            'pv': pv_conditions,
+            'ms': ms_conditions,
+            'neuro': neuro_conditions,
+            'hema': hema_conditions,
+            'endo': endo_conditions,
+        }
+    })
 
 def save_diagnosis(request):
-    if request.method == 'POST':
-        diagnosis = request.POST.get('diagnosis')
-        id = request.POST.get('diagnosisButton') 
+    date = datetime.today().strftime('%Y-%m-%d')
+    diagnosis = request.POST.get('diagnosis')
+    id = request.POST.get('diagnosisButton') 
 
-        if diagnosis == 'Others':
-            diagnosis = request.POST.get('otherDiagnosis')
-        
-        # Save Chief Compliant into Firebase Database
-        appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
-
-        # Update appointment data in Firebase
-        if diagnosis:
-            db.child(appointment_path).update({
-                'patientID': id,
-                'diagnosis': diagnosis
-            })
+    if diagnosis == 'Others':
+        diagnosis = request.POST.get('otherDiagnosis')
     
-        # Return an HttpResponse to indicate successful processing
-        return redirect('patient_data_doctor_view')
+    # Save Chief Compliant into Firebase Database
+    appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
+
+    # Update appointment data in Firebase
+    if diagnosis:
+        db.child(appointment_path).update({
+            'patientID': id,
+            'diagnosis': diagnosis
+        })
+
 
 #Calculate age function for retrieving patient data
-from datetime import datetime
+
 def calculate_age(birthday):
     today = datetime.today()
     print(today)
