@@ -68,11 +68,6 @@
     margin-left: 10px;
 }
 
-#title{
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
 #header{
     margin-left: 2%;
     float: left;
@@ -109,6 +104,8 @@ a{
 a:hover{
     font-weight: bold;
 }
+
+
 
 
 #head-corner, #head, #medical-surgical-history-title{
@@ -443,7 +440,7 @@ td{
     justify-content: flex-end;
 }
 
-#edit-medical-surgical-history-button, #edit-drug-history-button, #edit-allergy-button, #edit-immunization-button, #edit-family-history-button, #edit-social-history-button, #save-social-history{
+#edit-medical-surgical-history-button, #edit-drug-history-button, #edit-immunization-button, #edit-family-history-button, #edit-social-history-button, #save-social-history{
     padding: 3 5;
     background-color: #D9D9D9;
 

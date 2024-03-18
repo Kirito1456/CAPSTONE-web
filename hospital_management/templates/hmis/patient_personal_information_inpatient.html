@@ -59,6 +59,10 @@
 
                         {% comment %} <div id = "birthday">{{ chosenPatientData_data.bday }} ({{ chosenPatientAge }} years old)</div> {% endcomment %}
                     </div>
+                    <div id = "last">
+                        <div id = "lname-label">Status:</div>
+                        <div id = "lname"></div>
+                    </div>
                     {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
                     <div class="toggle-switch">
                         <input type="checkbox" id="patientTypeToggle" {% if chosenPatientDatas_data.status == 'Inpatient' %} checked {% endif %}>

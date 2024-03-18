@@ -1,11 +1,14 @@
-
-{%load static%}
+{% load static %}
 <title>{% block title %}Patient Medical History{% endblock %}</title>
 
 {% block styles%} 
 <link rel="stylesheet" href="{% static 'css/patient_medical_history_style.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-{% comment %} <style>
+<style>
+    #title{
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
     #other-side{
         width: 81%;
         height: 100%;
@@ -14,75 +17,133 @@
         left: 18%;
         top : 0%;
         display: flex;
+        flex-direction: column; /* Ensure child elements stack vertically */
     }
     #menu-history-bar {
         background-color: #f4f4f4;
         padding: 5px;
         border-radius: 5px;
-        width: 200px;
-        height: 90vh;
-        margin-right: 10px; /* Add margin to create space between elements */
-    }
-    
-    #medical-history {
-        flex-grow: 1; /* Allow the element to grow and fill remaining space */
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        width: fit-content;
     }
     
     #menu-history-bar ul {
         list-style-type: none;
         padding: 0;
         margin: 0;
+        display: flex; /* Make the menu items display horizontally */
     }
     
     #menu-history-bar ul li {
-        margin-bottom: 3px; /* Reduced margin */
+        margin-right: 10px; /* Add space between menu items */
     }
     
     #menu-history-bar ul li a {
         display: block;
-        padding: 6px 15px; /* Reduced padding */
+        padding: 6px 15px;
         text-decoration: none;
         color: #333;
-        border-left: 3px solid transparent;
-        transition: border-left 0.3s ease;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
     }
     
     #menu-history-bar ul li a:hover {
-        border-left: 3px solid #007bff; /* Change color to your preference */
         background-color: #e5e5e5;
     }
     
     #menu-history-bar ul li.active a {
-        border-left: 3px solid #007bff; /* Change color to your preference */
-        background-color: #e5e5e5;
         font-weight: bold;
     }
     
-</style> {% endcomment %}
-<style>
-    #other-side{
-        width: 81%;
-        height: 100%;
-        
-        position: absolute;
-        left: 18%;
-        top : 0%;
+    #content-container {
+        margin-top: 10px;
+        background-color: #fff; 
+        border-radius: 5px; 
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-right: 10px;
+        height: 83%;
+        border: 1px solid #ccc;
     }
+    
+    #allergy-table {
+        width: 100%;
+        border-radius: 5px; 
+    }
+    
+    .row {
+        display: flex;
+        width: 100%;
+    }
+    
+    .row.header {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    .cell {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        text-align: left;
+    }
+    
+    .cell.allergen {
+        flex-basis: 50%;
+    }
+    
+    .cell.severity {
+        flex-basis: 50%;
+    }
+    
+    .row:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    .row:hover {
+        background-color: #eaeaea;
+    }
+        
+    
+    #edit-allergy {
+        margin: 10px;
+    }
+    
+    #edit-allergy-button, #save-allergy-button, #add-new-button, #cancel-allergy-button {
+        color: black;
+        cursor: pointer;
+
+        padding: 5px;
+        background-color: #D9D9D9;
+    
+        width: fit-content;
+        height: max-content;
+    
+        text-align: center;
+    
+        margin-right: 20px;
+    
+        border-radius: 5px;
+    }
+    
+    #edit-allergy-button:hover, #save-allergy-button:hover, #add-new-button:hover, #cancel-allergy-button:hover {
+        font-weight: bold;
+    }
+    
 </style>
 {% endblock styles%}
 
 {% block content %}
 
-<div id = "whole-screen">
-    <div id = "side-menu">
-        <div id = "all-info">
-            <div id = "user-info"> 
-                <div id = "image">
-                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="all-info">
+            <div id="user-info"> 
+                <div id="image">
+                    <img src="{% static 'logo-color.png' %}" id="display-photo">
                 </div>
-                <div id = "information">
-                    <div id = "name"> Jeonghan </div>
-                    <div id = "role"> General Practitioner</div>
+                <div id="information">
+                    <div id="name"> Jeonghan </div>
+                    <div id="role"> General Practitioner</div>
                 </div>
             </div>
             <div id="menu"> 
@@ -96,162 +157,127 @@
         </div>
     </div>
 
-    <div id = "other-side">
-        <div id = "title">
+    <div id="other-side">
+        <div id="title">
             <button id="backButton">Back</button>
         </div>
-        {% comment %} <div id="menu-history-bar">
+        <div id="menu-history-bar">
             <ul>
-                <li><a href="">Past Medical/Surgical History</a></li>
-                <li><a href="">Allergies</a></li>
-                <li><a href="">Immunization</a></li>
-                <li><a href="">Family History</a></li>
-                <li><a href="">Social History</a></li>
+                <li><a id="medical-history-link" href="#">Past Medical/Surgical History</a></li>
+                <li><a id="allergies-link" href="#">Allergies</a></li>
+                <li><a id="immunization-link" href="#">Immunization</a></li>
+                <li><a id="family-history-link" href="#">Family History</a></li>
+                <li><a id="social-history-link" href="#">Social History</a></li>
             </ul>
-        </div> {% endcomment %}
-        <div id = "medical-history">
-            <div id = "past-medical-surgical-history">
-                <div id = "head">Past Medical/Surgical History</div>
-                <div id = "medical-surgical-history-table">
-                    <table id = "medical-or-surgical-history-table">
-                        <tr>
-                            <th class = "diagnosis-date">Diagnosis Date</th>
-                            <th class = "illness">Illness</th>
-                            <th class = "treatment">Treatment</th>
-                            <th class = "remark">Remarks</th>
-                        </tr>
-                        <tr>
-                            <td>9/10/2024</td>
-                            <td>Asthma</td>
-                            <td>medication</td>
-                            <td>weekly visit is required iuehoiwe ijwdo wjediowhnsekdj ihwdiown wjdiowklnd ,efef kfd</td>
-                        </tr>
-                    </table>
-                </div>
-                <div id = "edit-medical-surgical-history">
-                    <a href = "{% url 'edit_medical_surgical_history' %}" id = "edit-medical-surgical-history-button">Edit</a>
-                </div>
-            </div>
+        </div>
+        <div id="content-container">
             
-            <div id = "allergy">
-                <div id = "head">Allergies</div>
-                <div id = "allergy-table">
-                    <table id = "allergies-table">
-                        <tr>
-                            <th class = "allergen">Allergen</th>
-                            <th class="severity">Reaction/Severity</th>
-                        </tr>
-                        <tr>
-                            <td>peanuts</td>
-                            <td>???</td>
-                        </tr>
-                    </table>
-                </div>
-                <div id = "edit-allergy">
-                    <a href = "{% url 'edit_allergy' %}" id = "edit-allergy-button">Edit</a>
-                </div>
-            </div>
-            <div id = "immunization">
-                <div id = "head">Immunization</div>
-                <div id = "immunization-table">
-                    <table id = "immunization-history-table">
-                        <tr>
-                            <th class="vaccine">Vaccine</th>
-                            <th class="given-date">Date Given</th>
-                            <th class="dosage-number">Dosage Number</th>
-                            <th class="administer">Administered By</th>
-                        </tr>
-                        <tr>
-                            <td>HPV</td>
-                            <Td></Td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </table>
-                </div>
-                <div id = "edit-immunization">
-                    <a href = "{% url 'edit_immunization_history' %}" id = "edit-immunization-button">Edit</a>
-                </div>
-            </div>
-            <div id = "family-history">
-                <div id = "head">Family History</div>
-                <div id = "family-history-table">
-                    <table id = "table-family-history">
-                        <tr>
-                            <th class="member">Member</th>
-                            <th class="Illness">Illness/es</th>
-                            <th class="age">Age of Diagnosis</th>
-                        </tr>
-                        <tr>
-                            <td>Mother</td>
-                            <td>High Blood</td>
-                            <td>45</td>
-                        </tr>
-                    </table>
-                </div>
-                <div id = "edit-family-history">
-                    <a href = "{% url 'edit_family_history' %}" id = "edit-family-history-button">Edit</a>
-                </div>
-            </div>
-            <div id = "social-history"> 
-                <div id = "head">Social History</div>
-                <div id = "social-history-info">
-                    <script>
-                        document.getElementById("social-history-info").style.pointerEvents = "none";
-                    </script>
-                    <div id = "social-info">
-                        <div id = "smoking">
-                            Smoking?
-                            <input type="radio" id="yes" name="smoking-answer" value="yes">
-                            <label for="yes">Yes</label>
-                            <input type="radio" id="no" name="smoking-answer" value="no">
-                            <label for="no">No</label>
-                        </div>
-                        <div id = "alcohol">
-                            Alcohol?
-                            <input type="radio" id="yes" name="alcohol-answer" value="yes">
-                            <label for="yes">Yes</label>
-                            <input type="radio" id="no" name="alcohol-answer" value="no">
-                            <label for="no">No</label>
-                        </div>
-                    </div>
-                </div>
-                <div id = "edit-social-history">
-                    <a id = "edit-social-history-button" onclick = "edit()">Edit</a>
-                    <a id = "save-social-history" onclick = "save()" style = "display: none;">Save</a>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
 <script>
-    function edit() {
-        // Enable radio buttons for editing
-        document.getElementById("social-history-info").style.pointerEvents = "";
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get references to menu items
+        const medicalHistoryLink = document.getElementById('medical-history-link');
+        const allergiesLink = document.getElementById('allergies-link');
+        const immunizationLink = document.getElementById('immunization-link');
+        const familyHistoryLink = document.getElementById('family-history-link');
+        const socialHistoryLink = document.getElementById('social-history-link');
 
-        // Hide the edit button and show the save button
-        document.getElementById("edit-social-history-button").style.display = "none";
-        document.getElementById("save-social-history").style.display = "inline";
-    }
+        // Get reference to content container
+        const contentContainer = document.getElementById('content-container');
 
-    function save() {
-        // Disable radio buttons after saving
-        document.getElementById("social-history-info").style.pointerEvents = "none";
-
-        // Hide the save button and show the edit button
-        document.getElementById("edit-social-history-button").style.display = "inline";
-        document.getElementById("save-social-history").style.display = "none";
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
         const backButton = document.getElementById('backButton');
 
         backButton.addEventListener('click', function() {
             window.history.back();
         });
+
+        // Event listeners for menu items
+        medicalHistoryLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = 'Content for Medical History';
+        });
+
+        allergiesLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = `
+            <div id="allergy-table">
+                <div class="row header">
+                    <div class="cell allergen">Allergen</div>
+                    <div class="cell severity">Reaction/Severity</div>
+                </div>
+                <div class="row">
+                    <div class="cell allergen"></div>
+                    <div class="cell severity"></div>
+                </div>
+            </div>
+            <div id="edit-allergy">
+                <button id="edit-allergy-button">Edit</button>
+                <button id="save-allergy-button">Save</button>
+                <button id="cancel-allergy-button" style="display: none;">Cancel</button>
+                <button id="add-new-button">Add New Row</button>
+            </div>`;
+
+            // Add event listeners
+            const editAllergyButton = document.getElementById('edit-allergy-button');
+            const cancelAllergyButton = document.getElementById('cancel-allergy-button');
+            const addNewButton = document.getElementById('add-new-button');
+
+            editAllergyButton.addEventListener('click', function() {
+                // Show the Cancel button
+                cancelAllergyButton.style.display = 'inline-block';
+
+                // Get the allergen and severity cells of the row (excluding header row)
+                const allergenCell = document.querySelector('.row:not(.header) .cell.allergen');
+                const severityCell = document.querySelector('.row:not(.header) .cell.severity');
+
+                // Replace text content with input fields
+                allergenCell.innerHTML = `<input type="text" value="${allergenCell.textContent.trim()}">`;
+                severityCell.innerHTML = `<input type="text" value="${severityCell.textContent.trim()}">`;
+            });
+
+            cancelAllergyButton.addEventListener('click', function() {
+                // Hide the Cancel button
+                cancelAllergyButton.style.display = 'none';
+
+                // Revert changes made during edit
+                const allergenCell = document.querySelector('.row:not(.header) .cell.allergen');
+                const severityCell = document.querySelector('.row:not(.header) .cell.severity');
+
+                // Replace input fields with original text content
+                allergenCell.innerHTML = allergenCell.querySelector('input').value;
+                severityCell.innerHTML = severityCell.querySelector('input').value;
+            });
+
+            addNewButton.addEventListener('click', function() {
+                const newRow = document.createElement('div');
+                newRow.classList.add('row');
+
+                newRow.innerHTML = `
+                    <div class="cell allergen"></div>
+                    <div class="cell severity"></div>`;
+
+                const allergyTable = document.getElementById('allergy-table');
+                allergyTable.appendChild(newRow);
+            });
+        });
+
+        immunizationLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = 'Content for Immunization';
+        });
+
+        familyHistoryLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = 'Content for Family History';
+        });
+
+        socialHistoryLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = 'Content for Social History';
+        });
     });
 </script>
-
-
 {% endblock %}

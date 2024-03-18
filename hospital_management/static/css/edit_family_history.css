@@ -115,7 +115,7 @@ a:hover{
     top : 0%;
 }
 
-#head-corner, #head, #medical-surgical-history-title{
+#head-corner, #medical-surgical-history-title{
     float: left;
 
     font-size: 18;
@@ -386,3 +386,4 @@ td{
     padding: 3 5;
     border-radius: 5px;
 }
+

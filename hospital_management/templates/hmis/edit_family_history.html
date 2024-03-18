@@ -1,294 +1,144 @@
 
 {%load static%}
-<title>{% block title %}Patient Data{% endblock %}</title>
+<title>{% block title %}Family History{% endblock %}</title>
 
 {% block styles%} 
 <link rel="stylesheet" href="{% static 'css/edit_family_history.css' %}">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    #drug-history-table {
+        width: 80%;
+        margin: auto;
+    }
+    
+    #head {
+        font-size: 20px;
+        margin-bottom: 20px;
+        text-align: center; /* Align the text to the center */
+    }
+    
+    #table-header {
+        display: flex;
+        justify-content: space-around;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+    
+    #table-header div {
+        flex: 1;
+        text-align: center;
+    }
+    
+    #table-body {
+        display: flex;
+        justify-content: space-around;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+    
+    #table-body input {
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+    }
+    
+    #update-with-new-order {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    #buttons-container {
+        margin-bottom: 10px;
+    }
+    
+    #add-row-link {
+        text-decoration: none;
+        color: blue;
+    }
+    
+    #save-history-button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    #save-history-button:hover {
+        background-color: #0056b3;
+    }
+    
+</style>
 {% endblock styles%}
 
 {% block content %} 
-        <div id = "whole-screen">
-            <div id = "side-menu">
-                <div id = "all-info">
-                    <div id = "user-info"> 
-                        <div id = "image">
-                            <img src="{% static 'logo-color.png' %}" id = "display-photo">
-                        </div>
-                        <div id = "information">
-                            <div id = "name"> Jeonghan </div>
-                            <div id = "role"> General Practitioner</div>
-                        </div>
-                    </div>
-                    <div id="menu"> 
-                        <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
-                        <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
-                        <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                        <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
-                        <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
-                        <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
-                    </div>
+<div id = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
+                </div>
+                <div id = "information">
+                    <div id = "name"> Jeonghan </div>
+                    <div id = "role"> General Practitioner</div>
                 </div>
             </div>
-            <div id = "other-side">
-                <div id = "title">
-                    <div id = "left">
-                        <button id="backButton">Back</button>
-                    </div>
-                </div>
-                
-                <div id = "drug-history">
-                    <div id = "drug-table">
-                        <table id = "drug-history-table">
-                            <tr>
-                                <th class="member">Member</th>
-                                <th class="illnesses">Illness/es</th>
-                                <th class="age">Age of Diagnosis</th>
-                                <th class = "edit">Edit</th>
-                            </tr>
-                            {% comment %} <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}"> {% endcomment %}
-                            <form id="family-history-form" method="post">
-
-                                {% csrf_token %}
-                            
-                                <div id="medications-container">
-                                    <div id="head">Family History</div>
-                                    <div id="medication-list-container">
-                                        <div id="table-header">
-                                            <div style="flex: 1; text-align: center;">Member</div>
-                                            <div style="flex: 1; text-align: center;">Illness/es</div>
-                                            <div style="flex: 1; text-align: center;">Age of Diagnosis</div>
-                                        </div>
-                                        <div id="table-body">
-                                            
-                
-                                            <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
-                                            <div style="flex: 1; text-align: center;">
-                                                <select class="route-dropdown" name="route">
-                                                    <option value="" selected disabled>Select Route</option>
-                                                    <option value="Oral">Oral</option>
-                                                    <option value="Injection">Injection</option>
-                                                    <option value="Topical">Topical</option>
-                                                </select>
-                                            </div>
-                                            <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div id="update-with-new-order">
-                                        <div id="buttons-container">
-                                            <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
-                                        </div>
-                                        <button id="submit-medication-button" type="submit">Create Order/Prescription</button>
-                                    </div>
-                                </div>
-                                
-                            </form>
-                            {% comment %} <form method="post" id="family-history-form">
-                                {% csrf_token %}
-                                <tr id = "row-1">
-                                    <td>
-                                        <div id = "member-1"></div>
-                                        <input id="member-input-1" type="text" style="display: none;">
-                                    </td>
-                                    <td>
-                                        <div id = "illness-1"></div>
-                                        <input id="illness-input-1" type="text" style="display: none;">
-                                    </td>
-                                    <td>
-                                        <div id = "age-data-1"></div>
-                                        <input id="age-data-input-1" type="number" style="display: none;">
-                                    </td>
-                                    <td>
-                                        <a id = "edit-1" onclick = "edit(this)">Edit</a>
-                                        <button id = "save-1" onclick = "save(this)" style = "display: none;" name="saveFamilyHistory">Save</button>
-                                    </td>
-                                </tr>
-                            </form> {% endcomment %}
-                        </table>
-                    </div>
-                    <div id = "add-drug-history">
-                        <a id = "add-drug-history-button" onclick = "add()">Add</a>
-                    </div>
-                </div>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
+                <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
             </div>
         </div>
-    </body>
+    </div>
+    <div id = "other-side">
+        <div id = "title">
+            <div id = "left">
+                <button id="backButton">Back</button>
+            </div>
+        </div>
+        {% comment %} <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}"> {% endcomment %}
+        <form id="family-history-form" method="post">
+            {% csrf_token %}
+            <div id="drug-history-table">
+                <div id="head">Family History</div>
+                <div id="drug-history-container">
+                    <div id="table-header">
+                        <div style="flex: 1; text-align: center;">Member</div>
+                        <div style="flex: 1; text-align: center;">Illness/es</div>
+                        <div style="flex: 1; text-align: center;">Age of Diagnosis</div>
+                    </div>
+                    <div id="table-body">
+                        <div style="flex: 1; text-align: center;"><input type="text" class="member" placeholder="Enter Family Member" name="familymember"></div>
+                        <div style="flex: 1; text-align: center;"><input type="text" class="illnesses" placeholder="Enter Illness" name="illness"></div>
+                        <div style="flex: 1; text-align: center;"><input type="text" class="age" placeholder="Enter Age" name="age"></div>
+                    </div>
+                </div>
+                
+                <div id="update-with-new-order">
+                    <div id="buttons-container">
+                        <div id="add-row"><a href="#" id="add-row-link">Add New Row</a></div>
+                    </div>
+                    <button id="save-history-button" type="submit">Save</button>
+                </div>
+            </div>
+        </form> 
+    </div>
+</div>
 
-    <script>
-        function edit(button) {
-            // Find the parent row of the clicked button
-            var rowIndex = button.parentNode.parentNode.rowIndex;
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const backButton = document.getElementById('backButton');
 
-            // Get the elements for member, illness, and age data
-            var memberElement = document.getElementById("member-" + rowIndex);
-            var illnessElement = document.getElementById("illness-" + rowIndex);
-            var ageDataElement = document.getElementById("age-data-" + rowIndex);
-    
-            // Get the input elements for member, illness, and age data
-            var memberInput = document.getElementById("member-input-" + rowIndex);
-            var illnessInput = document.getElementById("illness-input-" + rowIndex);
-            var ageDataInput = document.getElementById("age-data-input-" + rowIndex);
-    
-            // Set the input values to the current data values
-            memberInput.value = memberElement.textContent;
-            illnessInput.value = illnessElement.textContent;
-            ageDataInput.value = ageDataElement.textContent;
-    
-            // Show input elements and hide div elements
-            memberInput.style.display = "block";
-            memberElement.style.display = "none";
-            illnessInput.style.display = "block";
-            illnessElement.style.display = "none";
-            ageDataInput.style.display = "block";
-            ageDataElement.style.display = "none";
-    
-            // Show the Save link and hide the Edit link
-            document.getElementById("edit-" + rowIndex).style.display = "none";
-            document.getElementById("save-" + rowIndex).style.display = "inline";
-        }
-    
-        function save(button) {
-            // Find the parent row of the clicked button
-            var rowIndex = button.parentNode.parentNode.rowIndex;
-
-            // Get the elements for member, illness, and age data
-            var memberElement = document.getElementById("member-" + rowIndex);
-            var illnessElement = document.getElementById("illness-" + rowIndex);
-            var ageDataElement = document.getElementById("age-data-" + rowIndex);
-    
-            // Get the input elements for member, illness, and age data
-            var memberInput = document.getElementById("member-input-" + rowIndex);
-            var illnessInput = document.getElementById("illness-input-" + rowIndex);
-            var ageDataInput = document.getElementById("age-data-input-" + rowIndex);
-    
-            // Update the div elements with the input values
-            memberElement.textContent = memberInput.value;
-            illnessElement.textContent = illnessInput.value;
-            ageDataElement.textContent = ageDataInput.value;
-    
-            // Show div elements and hide input elements
-            memberInput.style.display = "none";
-            memberElement.style.display = "block";
-            illnessInput.style.display = "none";
-            illnessElement.style.display = "block";
-            ageDataInput.style.display = "none";
-            ageDataElement.style.display = "block";
-    
-            // Show the Edit link and hide the Save link
-            document.getElementById("edit-" + rowIndex).style.display = "inline";
-            document.getElementById("save-" + rowIndex).style.display = "none";
-        }
-
-
-        function add() {
-            // Retrieve reference to the table
-            var table = document.getElementById("drug-history-table");
-
-            // Create a new row element
-            var newRow = document.createElement("tr");
-
-            // Create cells for member, illness, and age
-            var memberCell = document.createElement("td");
-            var illnessCell = document.createElement("td");
-            var ageCell = document.createElement("td");
-
-            // Set content for member cell
-            var memberContent = document.createElement("div");
-            var memberInput = document.createElement("input");
-            memberInput.value = "";
-            memberInput.type = "text";
-            memberInput.id = "member-input-" + (table.rows.length);
-            memberContent.style.display = "none";
-            memberContent.id = "member-" + (table.rows.length);
-            memberCell.appendChild(memberContent);
-            memberCell.appendChild(memberInput);
-
-            // Set content for illness cell
-            var illnessContent = document.createElement("div");
-            var illnessInput = document.createElement("input");
-            illnessInput.value = "";
-            illnessInput.type = "text";
-            illnessInput.id = "illness-input-" + (table.rows.length);
-            illnessContent.style.display = "none";
-            illnessContent.id = "illness-" + (table.rows.length);
-            illnessCell.appendChild(illnessContent);
-            illnessCell.appendChild(illnessInput);
-
-            // Set content for age cell
-            var ageContent = document.createElement("div");
-            var ageInput = document.createElement("input");
-            ageInput.value = "";
-            ageInput.type = "text";
-            ageInput.id = "age-data-input-" + (table.rows.length);
-            ageContent.style.display = "none";
-            ageContent.id = "age-data-" + (table.rows.length);
-            ageCell.appendChild(ageContent);
-            ageCell.appendChild(ageInput);
-
-            // Create cell for buttons
-            var buttonCell = document.createElement("td");
-
-            // Create Edit and Save buttons
-            var editButton = document.createElement("a");
-            editButton.textContent = "Edit";
-            editButton.id = "edit-" + (table.rows.length);
-            editButton.style.display = "none";
-
-            var saveButton = document.createElement("a");
-            saveButton.textContent = "Save";
-            saveButton.id = "save-" + (table.rows.length);
-
-            // Append buttons to cell
-            buttonCell.appendChild(editButton);
-            buttonCell.appendChild(saveButton);
-
-            // Append cells to row
-            newRow.appendChild(memberCell);
-            newRow.appendChild(illnessCell);
-            newRow.appendChild(ageCell);
-            newRow.appendChild(buttonCell);
-
-            // Append row to table
-            table.appendChild(newRow);
-
-            // Set event listeners for buttons
-            saveButton.onclick = function() { save_new_row(this); };
-            editButton.onclick = function() { edit(this); };
-        }
-
-        function save_new_row(button) {
-            var rowIndex = button.parentNode.parentNode.rowIndex;
-            var memberInput = document.getElementById("member-input-" + rowIndex);
-            var illnessInput = document.getElementById("illness-input-" + rowIndex);
-            var ageInput = document.getElementById("age-data-input-" + rowIndex);
-            var memberContent = document.getElementById("member-" + rowIndex);
-            var illnessContent = document.getElementById("illness-" + rowIndex);
-            var ageContent = document.getElementById("age-data-" + rowIndex);
-
-            memberContent.textContent = memberInput.value;
-            illnessContent.textContent = illnessInput.value;
-            ageContent.textContent = ageInput.value;
-
-            memberInput.style.display = "none";
-            memberContent.style.display = "block";
-            illnessInput.style.display = "none";
-            illnessContent.style.display = "block";
-            ageInput.style.display = "none";
-            ageContent.style.display = "block";
-
-            document.getElementById("edit-" + rowIndex).style.display = "inline";
-            document.getElementById("save-" + rowIndex).style.display = "none";
-
-            document.getElementById("save-" + rowIndex).onclick = function() { save(this); };
-        }
-        document.addEventListener("DOMContentLoaded", function() {
-            const backButton = document.getElementById('backButton');
-    
-            backButton.addEventListener('click', function() {
-                window.history.back();
-            });
+        backButton.addEventListener('click', function() {
+            window.history.back();
         });
-    </script>
-    {% endblock %}
+    });
+</script>
+{% endblock %}
