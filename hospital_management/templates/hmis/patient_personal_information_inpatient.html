@@ -181,7 +181,7 @@
             <div id="consultation-notes">
                 <div id="head">Consultation Notes</div >
                 <button id="chiefComplaintButton">Chief Complaint</button>
-                <form method='post' action="{%url 'save_chiefComplaint'%}">
+                <form method='post' action="{%url 'patient_personal_information_inpatient'%}">
                     {% csrf_token %}
                 <div id="chiefComplaintArea" style="display: none;">
                     <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." name="chiefComplaint"></textarea>
@@ -212,125 +212,124 @@
                                     <input type="checkbox" name="eye_conditions" value="Flashing Lights"><label>Flashing Lights</label><br>
                                     <input type="checkbox" name="eye_conditions" value="Glaucoma/Cataracts"><label>Glaucoma/Cataracts</label><br>
                                     <p>Ears</p>
-                                    <input type="checkbox"><label>Change in Hearing</label><br>
-                                    <input type="checkbox"><label>Ear Pain</label><br>
-                                    <input type="checkbox"><label>Ear Discharge</label><br>
-                                    <input type="checkbox"><label>Ringing</label><br>
-                                    <input type="checkbox"><label>Dizziness</label><br>
+                                    <input type="checkbox" name="ear_conditions" value="Change in Hearing"><label>Change in Hearing</label><br>
+                                    <input type="checkbox" name="ear_conditions" value="Ear Pain"><label>Ear Pain</label><br>
+                                    <input type="checkbox" name="ear_conditions" value="Ear Discharge"><label>Ear Discharge</label><br>
+                                    <input type="checkbox" name="ear_conditions" value="Ringing"><label>Ringing</label><br>
+                                    <input type="checkbox" name="ear_conditions" value="Dizziness"><label>Dizziness</label><br>
                                     <p>Nose/Sinuses</p>
-                                    <input type="checkbox"><label>Nose Bleeds</label><br>
-                                    <input type="checkbox"><label>Nasal Stuffiness</label><br>
-                                    <input type="checkbox"><label>Frequent Colds</label><br>
+                                    <input type="checkbox" name="nose_conditions" value="Nose Bleeds"><label>Nose Bleeds</label><br>
+                                    <input type="checkbox" name="nose_conditions" value="Nasal Stuffiness"><label>Nasal Stuffiness</label><br>
+                                    <input type="checkbox" name="nose_conditions" value="Frequent Colds"><label>Frequent Colds</label><br>
                                     <p>Allergies</p>
-                                    <input type="checkbox"><label>Hives</label><br>
-                                    <input type="checkbox"><label>Swelling of Lips or Tongues</label><br>
-                                    <input type="checkbox"><label>Hay Fever</label><br>
-                                    <input type="checkbox"><label>Asthma</label><br>
-                                    <input type="checkbox"><label>Eczema/Sensitive</label><br>
+                                    <input type="checkbox" name="allergy_conditions" value="Frequent Colds"><label>Hives</label><br>
+                                    <input type="checkbox" name="allergy_conditions" value="Swelling of Lips or Tongues"><label>Swelling of Lips or Tongues</label><br>
+                                    <input type="checkbox" name="allergy_conditions" value="Hay Fever"><label>Hay Fever</label><br>
+                                    <input type="checkbox" name="allergy_conditions" value="Asthma"><label>Asthma</label><br>
+                                    <input type="checkbox" name="allergy_conditions" value="Eczema/Sensitive"><label>Eczema/Sensitive</label><br>
                                     <p>Mouth/Throat</p>
-                                    <input type="checkbox"><label>Bleeding Gums</label><br>
-                                    <input type="checkbox"><label>Sore Tongue</label><br>
-                                    <input type="checkbox"><label>Sore Throat</label><br>
-                                    <input type="checkbox"><label>Hoarseness</label><br>
+                                    <input type="checkbox" name="mouth_conditions" value="Bleeding Gums"><label>Bleeding Gums</label><br>
+                                    <input type="checkbox" name="mouth_conditions" value="Sore Tongue"><label>Sore Tongue</label><br>
+                                    <input type="checkbox" name="mouth_conditions" value="Sore Throat"><label>Sore Throat</label><br>
+                                    <input type="checkbox" name="mouth_conditions" value="Hoarseness"><label>Hoarseness</label><br>
                                     <p>Neck</p>
-                                    <input type="checkbox"><label>Lumps</label><br>
-                                    <input type="checkbox"><label>Swollen Glands</label><br>
-                                    <input type="checkbox"><label>Goiter</label><br>
-                                    <input type="checkbox"><label>Stiffness</label><br>
+                                    <input type="checkbox" name="neck_conditions" value="Lumps"><label>Lumps</label><br>
+                                    <input type="checkbox" name="neck_conditions" value="Swollen Glands"><label>Swollen Glands</label><br>
+                                    <input type="checkbox" name="neck_conditions" value="Goiter"><label>Goiter</label><br>
+                                    <input type="checkbox" name="neck_conditions" value="Stiffness"><label>Stiffness</label><br>
                                     <p>Breast</p>
-                                    <input type="checkbox"><label>Lumps</label><br>
-                                    <input type="checkbox"><label>Pain</label><br>
-                                    <input type="checkbox"><label>Nipple Discharge</label><br>
-                                    <input type="checkbox"><label>BSE</label><br>
+                                    <input type="checkbox" name="breast_conditions" value="Lumps"><label>Lumps</label><br>
+                                    <input type="checkbox" name="breast_conditions" value="Pain"><label>Pain</label><br>
+                                    <input type="checkbox" name="breast_conditions" value="Nipple Discharge"><label>Nipple Discharge</label><br>
+                                    <input type="checkbox" name="breast_conditions" value="BSE"><label>BSE</label><br>
                                     <p>Respiratory/Cardiac</p>
-                                    <input type="checkbox"><label>Shortness of Breath</label><br>
-                                    <input type="checkbox"><label>Cough</label><br>
-                                    <input type="checkbox"><label>Production of Phlegm</label><br>
-                                    <input type="checkbox"><label>Wheezing</label><br>
-                                    <input type="checkbox"><label>Coughing up Blood</label><br>
-                                    <input type="checkbox"><label>Chest Pain</label><br>
-                                    <input type="checkbox"><label>Fever</label><br>
-                                    <input type="checkbox"><label>Night Sweats</label><br>
-                                    <input type="checkbox"><label>Swelling in Hands/Feet</label><br>
-                                    <input type="checkbox"><label>Blue Fingers/Toes</label><br>
-                                    <input type="checkbox"><label>High Blood Pressure</label><br>
-                                    <input type="checkbox"><label>Heart Murmur</label><br>
-                                    <input type="checkbox"><label>HX of Heart Medication</label><br>
-                                    <input type="checkbox"><label>Bronchities/Emphysema</label><br>
-                                    <input type="checkbox"><label>Rheumatic Heart Disease</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Shortness of Breath"><label>Shortness of Breath</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Cough"><label>Cough</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Production of Phlegm"><label>Production of Phlegm</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Wheezing"><label>Wheezing</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Coughing up Blood"><label>Coughing up Blood</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Chest Pain"><label>Chest Pain</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Fever"><label>Fever</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Night Sweats"><label>Night Sweats</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="BSE"><label>Swelling in Hands/Feet</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Swelling in Hands/Feet"><label>Blue Fingers/Toes</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="High Blood Pressure"><label>High Blood Pressure</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Heart Murmur"><label>Heart Murmur</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="HX of Heart Medication"><label>HX of Heart Medication</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Bronchities/Emphysema"><label>Bronchities/Emphysema</label><br>
+                                    <input type="checkbox" name="cardiac_conditions" value="Rheumatic Heart Disease"><label>Rheumatic Heart Disease</label><br>
                                 </div>
                                 <div class="column">
                                     <p>Gastrointestinal</p>
-                                    <input type="checkbox"><label>Change in Appetite/Weight</label><br>
-                                    <input type="checkbox"><label>Problems Swallowing</label><br>
-                                    <input type="checkbox"><label>Nausea</label><br>
-                                    <input type="checkbox"><label>Heartburn</label><br>
-                                    <input type="checkbox"><label>Vomiting</label><br>
-                                    <input type="checkbox"><label>Vomiting Blood</label><br>
-                                    <input type="checkbox"><label>Constipation</label><br>
-                                    <input type="checkbox"><label>Diarrhea</label><br>
-                                    <input type="checkbox"><label>Change in Bowel Habits</label><br>
-                                    <input type="checkbox"><label>Abdominal Pain</label><br>
-                                    <input type="checkbox"><label>Excessive Belching</label><br>
-                                    <input type="checkbox"><label>Excessive Flatus</label><br>
-                                    <input type="checkbox"><label>Yellow color of Skin</label><br>
-                                    <input type="checkbox"><label>Food Intolerance</label><br>
-                                    <input type="checkbox"><label>Rectal Bleeding/Hemorrhoids</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Change in Appetite/Weight"><label>Change in Appetite/Weight</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Problems Swallowing"><label>Problems Swallowing</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Nausea"><label>Nausea</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Heartburn"><label>Heartburn</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Vomiting"><label>Vomiting</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Vomiting Blood"><label>Vomiting Blood</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Constipation"><label>Constipation</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Diarrhea"><label>Diarrhea</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Change in Bowel Habits"><label>Change in Bowel Habits</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Abdominal Pain"><label>Abdominal Pain</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Excessive Belching"><label>Excessive Belching</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Excessive Flatus"><label>Excessive Flatus</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Yellow color of Skin"><label>Yellow color of Skin</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Food Intolerance"><label>Food Intolerance</label><br>
+                                    <input type="checkbox" name="gastro_conditions" value="Rectal Bleeding/Hemorrhoids"><label>Rectal Bleeding/Hemorrhoids</label><br>
                                     <p>Urinary</p>
-                                    <input type="checkbox"><label>Difficulty in Urinaition</label><br>
-                                    <input type="checkbox"><label>Pain or buring on urination</label><br>
-                                    <input type="checkbox"><label>Frequent urination at night</label><br>
-                                    <input type="checkbox"><label>Urgent need to urinate</label><br>
-                                    <input type="checkbox"><label>Incontinence of urine</label><br>
-                                    <input type="checkbox"><label>Dribbling</label><br>
-                                    <input type="checkbox"><label>Decreased urine stream</label><br>
-                                    <input type="checkbox"><label>Blood in urine</label><br>
-                                    <input type="checkbox"><label>UTI/Stones/Prostate Infection</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Difficulty in Urinaition"><label>Difficulty in Urinaition</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Pain or buring on urination"><label>Pain or buring on urination</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Frequent urination at night"><label>Frequent urination at night</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Urgent need to urinate"><label>Urgent need to urinate</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Incontinence of urine"><label>Incontinence of urine</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Dribbling"><label>Dribbling</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Decreased urine stream"><label>Decreased urine stream</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="Blood in urine"><label>Blood in urine</label><br>
+                                    <input type="checkbox" name="urinary_conditions" value="UTI/Stones/Prostate Infection"><label>UTI/Stones/Prostate Infection</label><br>
                                 </div>
                                 <div class="column">
                                     <p>Peripheral Vascular</p>
-                                    <input type="checkbox"><label>Leg cramps</label><br>
-                                    <input type="checkbox"><label>Varicose veins</label><br>
-                                    <input type="checkbox"><label>Clots in veins</label><br>
+                                    <input type="checkbox" name="pv_conditions" value="Leg cramps"><label>Leg cramps</label><br>
+                                    <input type="checkbox" name="pv_conditions" value="Varicose veins"><label>Varicose veins</label><br>
+                                    <input type="checkbox" name="pv_conditions" value="Clots in veins"><label>Clots in veins</label><br>
                                     <p>Muscoskeletal</p>
-                                    <input type="checkbox"><label>Pain</label><br>
-                                    <input type="checkbox"><label>Swelling</label><br>
-                                    <input type="checkbox"><label>Stiffness</label><br>
-                                    <input type="checkbox"><label>Decrease joint motion</label><br>
-                                    <input type="checkbox"><label>Broken bone</label><br>
-                                    <input type="checkbox"><label>Serious sprains</label><br>
-                                    <input type="checkbox"><label>Arthritis</label><br>
-                                    <input type="checkbox"><label>Gout</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Pain"><label>Pain</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Swelling"><label>Swelling</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Stiffness"><label>Stiffness</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Decrease joint motion"><label>Decrease joint motion</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Broken bone"><label>Broken bone</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Serious sprains"><label>Serious sprains</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Arthritis"><label>Arthritis</label><br>
+                                    <input type="checkbox" name="ms_conditions" value="Gout"><label>Gout</label><br>
                                     <p>Neurologic</p>
-                                    <input type="checkbox"><label>Headaches</label><br>
-                                    <input type="checkbox"><label>Seizures</label><br>
-                                    <input type="checkbox"><label>Loss of consciousness/Fainting</label><br>
-                                    <input type="checkbox"><label>Paralysis</label><br>
-                                    <input type="checkbox"><label>Weakness</label><br>
-                                    <input type="checkbox"><label>Loss of muscle size</label><br>
-                                    <input type="checkbox"><label>Muscle spasm</label><br>
-                                    <input type="checkbox"><label>Tremor</label><br>
-                                    <input type="checkbox"><label>Involuntary movement</label><br>
-                                    <input type="checkbox"><label>Incoordination</label><br>
-                                    <input type="checkbox"><label>Numbness</label><br>
-                                    <input type="checkbox"><label>Feeling of "pins and needles"</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Headaches"><label>Headaches</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Seizures"><label>Seizures</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Loss of consciousness/Fainting"><label>Loss of consciousness/Fainting</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Paralysis"><label>Paralysis</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Weakness"><label>Weakness</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Loss of muscle size"><label>Loss of muscle size</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Muscle spasm"><label>Muscle spasm</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Tremor"><label>Tremor</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Involuntary movement"><label>Involuntary movement</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Incoordination"><label>Incoordination</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Numbness"><label>Numbness</label><br>
+                                    <input type="checkbox" name="neuro_conditions" value="Feeling of pins and needles"><label>Feeling of pins and needles</label><br>
                                     <p>Hematologic</p>
-                                    <input type="checkbox"><label>Anemia</label><br>
-                                    <input type="checkbox"><label>Easy bruising/bleeding</label><br>
-                                    <input type="checkbox"><label>Past tranfusions</label><br>
+                                    <input type="checkbox" name="hema_conditions" value="Anemia"><label>Anemia</label><br>
+                                    <input type="checkbox" name="hema_conditions" value="Easy bruising/bleeding"><label>Easy bruising/bleeding</label><br>
+                                    <input type="checkbox" name="hema_conditions" value="Past tranfusions"><label>Past tranfusions</label><br>
                                     <p>Endocrine</p>
-                                    <input type="checkbox"><label>Abnormal Growth</label><br>
-                                    <input type="checkbox"><label>Increased appetite</label><br>
-                                    <input type="checkbox"><label>Increased thirst</label><br>
-                                    <input type="checkbox"><label>Increase urine production</label><br>
-                                    <input type="checkbox"><label>Thyroid trouble</label><br>
-                                    <input type="checkbox"><label>Heat/cold Intolerance</label><br>
-                                    <input type="checkbox"><label>Excessive Sweating</label><br>
-                                    <input type="checkbox"><label>Diabetes</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Abnormal Growth"><label>Abnormal Growth</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Increased appetite"><label>Increased appetite</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Increased thirst"><label>Increased thirst</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Increase urine production"><label>Increase urine production</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Thyroid trouble"><label>Thyroid trouble</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Heat/cold Intolerance"><label>Heat/cold Intolerance</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Excessive Sweating"><label>Excessive Sweating</label><br>
+                                    <input type="checkbox" name="endo_conditions" value="Diabetes"><label>Diabetes</label><br>
                                 </div>
                                 <button type="submit" name="rosButton" value={{ chosenPatientData_id }}>Save</button>
                             </form>
-                            <button>Save</button>
                             <button id="closeModalButton">Close</button>
                         </div>
                     </div>
@@ -338,7 +337,7 @@
 
                 <div id="diagnosisButton">
                     <button onclick="toggleDropdown()">Diagnosis</button>
-                    <form id="diagnosis" method='post' >
+                    <form id="diagnosis" method='post' action="{%url 'save_diagnosis'%}">
                         {% csrf_token %}
                     <div id="diagnosisDropdown" class="dropdown-content" style="display: none;">
                         <select id="health-conditions" name="diagnosis">
@@ -358,6 +357,7 @@
                         <div id="otherDiagnosis" style="display: none;">
                             <input type="text" name="otherDiagnosis"></input>
                         </div>
+                        <button type="submit" name="diagnosisButton" value={{ chosenPatientData_id }}>Save</button>
                     </div>
                     </form>
         
