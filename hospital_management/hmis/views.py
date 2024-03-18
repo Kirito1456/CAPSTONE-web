@@ -171,7 +171,7 @@ def patient_personal_information_inpatient(request):
             #retrieve patient birthdate
             chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
             #calculate patient age function
-            chosenPatientAge = calculate_age(chosenPatientBirthday)
+            # chosenPatientAge = calculate_age(chosenPatientBirthday)
 
     chosenPatientDatas = {}
     for patientsdata_id, patientsdata_data in patientsdata.items():
@@ -184,7 +184,26 @@ def patient_personal_information_inpatient(request):
         if chosenPatient == vitalsigns_data["patientid"]:
             chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
 
-    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
+    if request.method == 'POST':
+        if 'submitLabTestRequest' in request.POST:
+            # Retrieve the selected lab test options from the form
+            id = str(uuid.uuid1())
+            request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            blood_test = request.POST.get('bloodTestCheckbox', False)
+            chest_xray = request.POST.get('chestXrayCheckbox', False)
+            urine_test = request.POST.get('urineTestCheckbox', False)
+            
+            data = {
+                'patient_id': chosenPatient,
+                'datetime': request_time,
+                'blood_test': blood_test,
+                'chest_xray': chest_xray,
+                'urine_test': urine_test
+            }
+            db.child('testrequest').child(id).set(data)
+
+    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData})
+    # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 #Calculate age function for retrieving patient data
 from datetime import datetime
@@ -342,4 +361,20 @@ def edit_immunization_history(request):
     return render(request, 'hmis/edit_immunization_history.html')
 
 def edit_family_history(request):
+    if request.method == 'POST':
+        if 'saveFamilyHistory' in request.POST:
+            id = str(uuid.uuid1())
+            member = request.POST.get('member-input-1')
+            illness = request.POST.get('illness-input-1')
+            age = request.POST.get('age-data-input-1')
+
+            # Format the data as needed
+            data = {
+                'member': member,
+                'illness': illness,
+                'age': age
+            }
+            
+            db.child('patientmedicalhistory').child(id).child('familyhistory').set(data)
+
     return render(request, 'hmis/edit_family_history.html')

@@ -37,35 +37,8 @@
                         <button id="backButton">Back</button>
                     </div>
                 </div>
-                <div id = "patient-medical-info">
-                    <div id = "personal-info">
-                        <div id = "head">Patient Medical History</div>
-                        <div id = "patient-information">
-                            <div id = "first">
-                                <div id = "fname">Juanita</div>
-                                <div id = "fname-label">First Name</div>
-                            </div>
-                            <div id = "last">
-                                <div id = "lname">Dela Cruz</div>
-                                <div id = "lname-label">Last Name</div>
-                            </div>
-                            <div id = "gender">
-                                <div id = "gender-view">Female</div>
-                                <div id = "gender-label">Gender</div>
-                            </div>
-                            <div id = "bday">
-                                <div id = "birthday">01/03/2003</div>
-                                <div id = "bday-label">Date of Birth</div>
-                            </div>
-                            <div id = "age">
-                                <div id = "age-view">21</div>
-                                <div id = "age-label">Age</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
                 <div id = "drug-history">
-                    <div id = "head">Family History</div>
                     <div id = "drug-table">
                         <table id = "drug-history-table">
                             <tr>
@@ -74,24 +47,65 @@
                                 <th class="age">Age of Diagnosis</th>
                                 <th class = "edit">Edit</th>
                             </tr>
-                            <tr id = "row-1">
-                                <td>
-                                    <div id = "member-1">Mother</div>
-                                    <input id="member-input-1" type="text" style="display: none;">
-                                </td>
-                                <td>
-                                    <div id = "illness-1">High Blood Pressure</div>
-                                    <input id="illness-input-1" type="text" style="display: none;">
-                                </td>
-                                <td>
-                                    <div id = "age-data-1">45</div>
-                                    <input id="age-data-input-1" type="number" style="display: none;">
-                                </td>
-                                <td>
-                                    <a id = "edit-1" onclick = "edit(this)">Edit</a>
-                                    <a id = "save-1" onclick = "save(this)" style = "display: none;">Save</a>
-                                </td>
-                            </tr>
+                            {% comment %} <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}"> {% endcomment %}
+                            <form id="family-history-form" method="post">
+
+                                {% csrf_token %}
+                            
+                                <div id="medications-container">
+                                    <div id="head">Family History</div>
+                                    <div id="medication-list-container">
+                                        <div id="table-header">
+                                            <div style="flex: 1; text-align: center;">Member</div>
+                                            <div style="flex: 1; text-align: center;">Illness/es</div>
+                                            <div style="flex: 1; text-align: center;">Age of Diagnosis</div>
+                                        </div>
+                                        <div id="table-body">
+                                            
+                
+                                            <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
+                                            <div style="flex: 1; text-align: center;">
+                                                <select class="route-dropdown" name="route">
+                                                    <option value="" selected disabled>Select Route</option>
+                                                    <option value="Oral">Oral</option>
+                                                    <option value="Injection">Injection</option>
+                                                    <option value="Topical">Topical</option>
+                                                </select>
+                                            </div>
+                                            <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="update-with-new-order">
+                                        <div id="buttons-container">
+                                            <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
+                                        </div>
+                                        <button id="submit-medication-button" type="submit">Create Order/Prescription</button>
+                                    </div>
+                                </div>
+                                
+                            </form>
+                            {% comment %} <form method="post" id="family-history-form">
+                                {% csrf_token %}
+                                <tr id = "row-1">
+                                    <td>
+                                        <div id = "member-1"></div>
+                                        <input id="member-input-1" type="text" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "illness-1"></div>
+                                        <input id="illness-input-1" type="text" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "age-data-1"></div>
+                                        <input id="age-data-input-1" type="number" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <a id = "edit-1" onclick = "edit(this)">Edit</a>
+                                        <button id = "save-1" onclick = "save(this)" style = "display: none;" name="saveFamilyHistory">Save</button>
+                                    </td>
+                                </tr>
+                            </form> {% endcomment %}
                         </table>
                     </div>
                     <div id = "add-drug-history">

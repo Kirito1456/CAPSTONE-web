@@ -192,14 +192,14 @@ a:hover{
     top: -1%;
 }
 
-#other-side{
+/* #other-side{
     width: 81%;
     height: 100%;
     
     position: absolute;
     left: 18%;
     top : 0%;
-}
+} */
 
 #patient-medical-info{
     margin: 10 40 10 40;
@@ -293,12 +293,9 @@ a:hover{
 }
 
 #medical-history{
-    margin: 0 40 20 50;
-
     display: flex;
     flex-direction: column;
-    
-    width: 92.2%;
+    width: 100%;
 }
 
 #past-medical-surgical-history, #drug-history, #allergy, #immunization, #family-history, #social-history{
@@ -477,4 +474,5 @@ td{
 
     border-radius: 5px;
 }
+
 

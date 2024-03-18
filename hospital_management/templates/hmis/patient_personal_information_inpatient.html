@@ -55,7 +55,9 @@
 
                     <div id = "bday">
                         <div id = "bday-label">Birthday:</div>
-                        <div id = "birthday">{{ chosenPatientData_data.bday }} ({{ chosenPatientAge }} years old)</div>
+                        <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
+
+                        {% comment %} <div id = "birthday">{{ chosenPatientData_data.bday }} ({{ chosenPatientAge }} years old)</div> {% endcomment %}
                     </div>
                     {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
                     <div class="toggle-switch">
@@ -107,14 +109,10 @@
                     <div id = "progress-notes">
                         <div id = "progress-note">
                             <div id = "notes">
-                                <div id = "note">
-                                    - Stable vital signs <br>
-                                    - Medication administered 9:00AM <br>
-                                    - Pain intensity decreased
-                                </div>
-                                <div id = "update">
-                                    <div id = "date">Last Update: 01/17/23 11:32AM</div>
-                                </div>
+                                - Stable vital signs <br>
+                                - Medication administered 9:00AM <br>
+                                - Pain intensity decreased<br>
+                                Last Update: 01/17/23 11:32AM
                             </div>
                             <div id = "edit-note-button">
                                 <a href = "" id = "edit-note"><!--add icon-->Edit Progress Notes</a>
@@ -122,6 +120,55 @@
                         </div>
                     </div>
             </div>
+        </div>
+
+        <div id="vital-signs-container">
+            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                <div id="vital-signs-box">
+                    <div id="head">Latest Vital Signs</div>
+                    <div id="vital-signs-table">
+                        <table id="vital-signs">
+                            <tr id="label">
+                                <th>Date and Time</th>
+                                {% comment %} <th>Weight</th> {% endcomment %}
+                                <th>Temperature</th>
+                                <th>Blood Pressure</th>
+                                <th>Pulse</th>
+                                <th>Respiration</th>
+                                <th>Pain Index</th>
+                                <th>Stool</th>
+                                <th>Fluid Output</th>
+                                <th>Fluid Intake</th>
+                            </tr>
+                            {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
+                                {% if forloop.counter == 1 %}
+                                    <tr>
+                                        <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
+                                        {% comment %} {% if chosenPatientVitalEntryData_data.weight == "-" %}
+                                            <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
+                                        {% else %}
+                                            <td>{{ chosenPatientVitalEntryData_data.weight }} kgs</td>
+                                        {% endif %} {% endcomment %}
+                                        <td>{{ chosenPatientVitalEntryData_data.temperature }} °C</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
+                                        <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
+                                        <td><input type="checkbox" disabled></td>
+                                        <td><input type="checkbox" disabled></td>
+                                        <td> ml</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </table>
+                        <div id="below-table">
+                            <div id="view-vs-history-button" class="pagination">
+                                <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id="view-vs-history">View History</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
 
         <div id="consultation-notes-container">
@@ -321,16 +368,18 @@
                     <div id="newLabTestModal" class="modal1" style="display: none;">
                         <div class="modal-content">
                             <h2>Request New Lab Test</h2>
-                            <form id="newLabTestForm">
-                                <input type="checkbox" id="bloodTestCheckbox">
+                            <form method="post" id="newLabTestForm">
+                                {% csrf_token %}
+                                <input type="checkbox" id="bloodTestCheckbox" name="bloodTestCheckbox">
                                 <label for="bloodTestCheckbox">Blood Test</label><br>
-                                <input type="checkbox" id="chestXrayCheckbox">
+                                <input type="checkbox" id="chestXrayCheckbox" name="chestXrayCheckbox">
                                 <label for="chestXrayCheckbox">Chest X-ray</label><br>
-                                <input type="checkbox" id="urineTestCheckbox">
+                                <input type="checkbox" id="urineTestCheckbox" name="urineTestCheckbox">
                                 <label for="urineTestCheckbox">Urine Test</label><br>
-                                <button id="submitLabTestRequest">Submit</button>
-                                <button id="cancelLabTestRequest">Cancel</button>
+                                <button type="submit" name="submitLabTestRequest">Submit</button>
+                                <button id="closeModal">Cancel</button>
                             </form>
+                            
                         </div>
                     </div>
                     
@@ -339,60 +388,6 @@
             {% endfor %}
         </div>
 
-        <div id = "vital-signs-container">
-            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-            <div id = "vital-signs-box">
-                <div id = "head">Vital Signs</div>
-                <div id = "vital-signs-table">
-                    <table id = "vital-signs">
-                        <tr id = "label">
-                            <th>Date</th>
-                            <th>Weight</th>
-                            <th>Temperature</th>
-                            <th>Blood Pressure</th>
-                            <th>Pulse</th>
-                            <th>Respiration</th>
-                            <th>Pain Index</th>
-                            <th>Stool</th>
-                            <th>Fluid Output</th>
-                            <th>Fluid Intake</th>
-                        </tr>
-                        {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
-                        <tr>
-                            <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
-                            {% if chosenPatientVitalEntryData_data.weight == "-" %}
-                                <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
-                            {% else %}
-                                <td>{{ chosenPatientVitalEntryData_data.weight }} kgs</td>
-                            {% endif %}
-                            <td>{{ chosenPatientVitalEntryData_data.temperature }} °C</td>
-                            <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
-                            <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
-                            <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
-                            <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
-                            
-                            <td><input type="checkbox" disabled></td>
-                            <td><input type="checkbox" disabled></td>
-                            <td> ml</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                    <div id = "below-table">
-                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                        {% comment %} <div id = "new-entry-button">
-                            <a href="{% url 'new_vital_sign_entry' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "new-entry">+ New Entry</a>
-                        </div> {% endcomment %}
-                        <div id = "view-vs-history-button" class="pagination">
-                            <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id = "view-vs-history">View History</a>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                </div>
-            {% endfor %}
-        </div>
-
-           
         </div>
     </div>
 </div>
@@ -436,8 +431,6 @@
     // Get the button and modal for lab test request
     var requestLabTestButton = document.getElementById("requestLabTestButton");
     var newLabTestModal = document.getElementById("newLabTestModal");
-    var submitLabTestButton = document.getElementById("submitLabTestRequest");
-    var cancelLabTestButton = document.getElementById("cancelLabTestRequest");
 
     requestLabTestButton.onclick = function() {
         newLabTestModal.style.display = "block";
@@ -447,22 +440,26 @@
         newLabTestModal.style.transform = "translate(-50%, -50%)";
     }
 
-    // When the user clicks on the submit button, handle the form submission
-    submitLabTestButton.onclick = function() {
-        newLabTestModal.style.display = "none";
+    // Get the close button inside the modal
+    var closeModalButton = document.getElementById("closeModal");
+
+    // When the user clicks on the close button, close the modal
+    closeModalButton.onclick = function() {
+        // Get the modal element
+        var reviewOfSystemsModal = document.getElementById("reviewOfSystemsModal");
+        // Hide the modal
+        reviewOfSystemsModal.style.display = "none";
     }
 
-    // When the user clicks on the cancel button, close the modal
-    cancelLabTestButton.onclick = function() {
-        newLabTestModal.style.display = "none";
-    }
+    var endTransactionButton = document.getElementById("endtransaction");
 
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == newLabTestModal) {
-            newLabTestModal.style.display = "none";
+    endTransactionButton.addEventListener("click", function() {
+        var confirmEnd = confirm("Are you sure you want to end the appointment?");
+        
+        if (confirmEnd) {
+            window.location.href = "{% url 'patient_data_doctor_view' %}";
         }
-    }
+    });
 
 </script>
 

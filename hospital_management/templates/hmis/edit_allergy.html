@@ -1,272 +1,111 @@
-{%load static%}
+{% load static %}
 <title>{% block title %}Edit{% endblock %}</title>
 
 {% block styles%} 
 <link rel="stylesheet" href="{% static 'css/edit_allergy.css' %}">
 
-
+<style>
+    #drug-history {
+        display: flex;
+        flex-direction: column;
+        background-color: #E9E9E9
+    }
+    #add-allergen-button{
+        padding: 5px;
+        background-color: #5c7c89;
+        font-size: 12px;
+        width: fit-content;
+        text-align: center;
+    
+        border-radius: 5px;
+        cursor: pointer;
+        color: #E9E9E9;
+    }
+</style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock styles%}
 
 {% block content %}
-        <div id = "whole-screen">
-            <div id = "side-menu">
-                <div id = "all-info">
-                    <div id = "user-info"> 
-                        <div id = "image">
-                            <img src="{% static 'logo-color.png' %}" id = "display-photo">
-                        </div>
-                        <div id = "information">
-                            <div id = "name"> Jeonghan </div>
-                            <div id = "role"> General Practitioner</div>
-                        </div>
-                    </div>
-                    <div id="menu"> 
-                        <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
-                        <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
-                        <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                        <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
-                        <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
-                        <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
-                    </div>
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="all-info">
+            <div id="user-info"> 
+                <div id="image">
+                    <img src="{% static 'logo-color.png' %}" id="display-photo">
+                </div>
+                <div id="information">
+                    <div id="name"> Jeonghan </div>
+                    <div id="role"> General Practitioner</div>
                 </div>
             </div>
-            <div id = "other-side">
-                <div id = "title">
-                    <div id = "left">
-                        <button id="backButton">Back</button>
-                    </div>
-                </div>
-                <div id = "patient-medical-info">
-                    <div id = "personal-info">
-                        <div id = "head">Patient Medical History</div>
-                        <div id = "patient-information">
-                            <div id = "first">
-                                <div id = "fname">Juanita</div>
-                                <div id = "fname-label">First Name</div>
-                            </div>
-                            <div id = "last">
-                                <div id = "lname">Dela Cruz</div>
-                                <div id = "lname-label">Last Name</div>
-                            </div>
-                            <div id = "gender">
-                                <div id = "gender-view">Female</div>
-                                <div id = "gender-label">Gender</div>
-                            </div>
-                            <div id = "bday">
-                                <div id = "birthday">01/03/2003</div>
-                                <div id = "bday-label">Date of Birth</div>
-                            </div>
-                            <div id = "age">
-                                <div id = "age-view">21</div>
-                                <div id = "age-label">Age</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id = "drug-history">
-                    <div id = "head">Allergy</div>
-                    <div id = "allergy-table">
-                        <table id = "allergies-table">
-                            <tr>
-                                <th class = "allergen">Allergen</th>
-                                <th class="severity">Reaction/Severity</th>
-                                <th> Edit </th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div id = "allergen-text-1">Peanut</div>
-                                    <input id="allergen-input-1" type="text" style="display: none;">
-                                </td>
-                                <td>
-                                    <div id = "severity-text-1">???</div>
-                                    <input id="severity-input-1" type="text" style="display: none;">
-                                </td>
-                                <td>
-                                    <a id = "edit-1" onclick = "edit(this)">Edit</a>
-                                    <a id = "save-1" onclick = "save(this)" style = "display: none;">Save</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div id = "add-allergen">
-                        <a id = "add-allergen-button" onclick = "add()">Add</a>
-                    </div>
-                </div>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
+                <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
             </div>
         </div>
-    </body>
+    </div>
+    <div id="other-side">
+        <div id="title">
+            <div id="left">
+                <button id="backButton">Back</button>
+            </div>
+        </div>
+        <div id="drug-history">
+            <div id="head">Allergy</div>
+            <div id="allergy-table">
+                <table id="allergies-table">
+                    <tr>
+                        <th class="allergen">Allergen</th>
+                        <th class="severity">Reaction/Severity</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="allergenCell">
+                                <select class="allergenSelect" onchange="updateAllergen(this)">
+                                    <option value="" disabled selected>Select Allergen</option>
+                                    <option value="Milk">Milk</option>
+                                    <option value="Eggs">Eggs</option>
+                                    <option value="Fish">Fish (e.g., bass, flounder, cod)</option>
+                                    <option value="Crustacean shellfish">Crustacean shellfish (e.g., crab, lobster, shrimp)</option>
+                                    <option value="Tree nuts">Tree nuts (e.g., almonds, walnuts, pecans)</option>
+                                    <option value="Peanuts">Peanuts</option>
+                                    <option value="Wheat">Wheat</option>
+                                    <option value="Soybeans">Soybeans</option>
+                                    <option value="Sesame">Sesame</option>
+                                    <option value="Tetracycline">Tetracycline</option>
+                                    <option value="Dilantin">Dilantin</option>
+                                    <option value="Tegretol">Tegretol (carbamazepine)</option>
+                                    <option value="Penicillin">Penicillin</option>
+                                    <option value="Cephalosporins">Cephalosporins</option>
+                                    <option value="Sulfonamides">Sulfonamides</option>
+                                    <option value="Sulfa">Sulfa</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="severityCell">
+                                <select class="severitySelect" onchange="updateSeverity(this)">
+                                    <option value="" disabled selected>Select Severity</option>
+                                    <option value="Mild">Mild</option>
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Severe">Severe</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="add-allergen">
+                <a id="add-allergen-button" onclick="add()">Add New Allergy</a>
+                <a id="add-allergen-button">Save</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const backButton = document.getElementById('backButton');
-    
-            backButton.addEventListener('click', function() {
-                window.history.back();
-            });
-        });
-        function edit(button) {
-            // Find the parent row of the clicked button
-            var rowIndex = button.parentNode.parentNode.rowIndex;
-
-            // Get the div elements
-            var allergenElement = document.getElementById("allergen-text-" + rowIndex);
-            var severityElement = document.getElementById("severity-text-" + rowIndex);
-
-            // Get the input elements
-            var allergenInput = document.getElementById("allergen-input-" + rowIndex);
-            var severityInput = document.getElementById("severity-input-" + rowIndex);
-
-            // Update the text content of the div elements with the input field values
-            allergenInput.value = allergenElement.textContent;
-            severityInput.value = severityElement.textContent;
-
-            // Display the input fields and hide the div elements
-            allergenInput.style.display = "block";
-            allergenElement.style.display = "none";
-
-            severityInput.style.display = "block";
-            severityElement.style.display = "none";
-
-            // Show the save button and hide the edit button
-            document.getElementById("edit-" + rowIndex).style.display = "none";
-            document.getElementById("save-" + rowIndex).style.display = "inline";
-        }
-
-
-        function save(button) {
-            // Find the parent row of the clicked button
-            var rowIndex = button.parentNode.parentNode.rowIndex;
-
-            // Get the div elements
-            var allergenElement = document.getElementById("allergen-text-" + rowIndex);
-            var severityElement = document.getElementById("severity-text-" + rowIndex);
-
-            // Get the input elements
-            var allergenInput = document.getElementById("allergen-input-" + rowIndex);
-            var severityInput = document.getElementById("severity-input-" + rowIndex);
-
-            // Update the text content of the div elements with the input field values
-            allergenElement.textContent = allergenInput.value;
-            severityElement.textContent = severityInput.value;
-
-            // Hide the input fields and show the div elements
-            allergenInput.style.display = "none";
-            allergenElement.style.display = "block";
-
-            severityInput.style.display = "none";
-            severityElement.style.display = "block";
-
-            // Show the edit button and hide the save button
-            document.getElementById("edit-" + rowIndex).style.display = "inline";
-            document.getElementById("save-" + rowIndex).style.display = "none";
-        }
-
-
-        function add() {
-            // Retrieve reference to the table
-            var table = document.getElementById("allergies-table");
-
-            // Create a new row element
-            var newRow = document.createElement("tr");
-
-            // Create cells for allergen and severity
-            var allergenCell = document.createElement("td");
-            var severityCell = document.createElement("td");
-
-            // Set content for allergen cell
-            var allergenContent = document.createElement("div");
-            var allergenInput = document.createElement("input");
-            allergenInput.value = ""; // Set initial value of input field
-            allergenInput.type = "text"; // Set type of input field
-            allergenInput.id = "allergen-input-" + (table.rows.length);
-            allergenContent.style.display = "none"; // Initially hidden
-            allergenContent.id = "allergen-text-" + (table.rows.length);
-            allergenCell.appendChild(allergenContent);
-            allergenCell.appendChild(allergenInput);
-
-            // Set content for severity cell
-            var severityContent = document.createElement("div");
-            var severityInput = document.createElement("input");
-            severityInput.value = ""; // Set initial value of input field
-            severityInput.type = "text"; // Set type of input field
-            severityInput.id = "severity-input-" + (table.rows.length);
-            severityContent.style.display = "none"; // Initially hidden
-            severityContent.id = "severity-text-" + (table.rows.length);
-            severityCell.appendChild(severityContent);
-            severityCell.appendChild(severityInput);
-
-            // Create cell for buttons
-            var buttonCell = document.createElement("td");
-
-            // Create Edit and Save buttons
-            var editButton = document.createElement("a");
-            editButton.textContent = "Edit";
-            editButton.id = "edit-" + (table.rows.length);
-            editButton.style.display = "none"; // Initially hidden
-
-            var saveButton = document.createElement("a");
-            saveButton.textContent = "Save";
-            saveButton.id = "save-" + (table.rows.length); // Check this line
-
-
-            // Append buttons to cell
-            buttonCell.appendChild(editButton);
-            buttonCell.appendChild(saveButton);
-
-            // Append cells to row
-            newRow.appendChild(allergenCell);
-            newRow.appendChild(severityCell);
-            newRow.appendChild(buttonCell);
-
-            // Append row to table
-            table.appendChild(newRow);
-
-            saveButton.onclick = function() { save_new_row(this); }; // Check this line
-            editButton.onclick = function() { edit(this); }; // Check this line
-        }
-
-
-        function save_new_row(button) {
-            // Find the parent row of the clicked button
-            var rowIndex = button.parentNode.parentNode.rowIndex;
-
-            console.log("Row index:", rowIndex);
-
-            // Get the div elements
-            var allergenElement = document.getElementById("allergen-text-" + rowIndex);
-            var severityElement = document.getElementById("severity-text-" + rowIndex);
-
-            console.log("Allergen element:", allergenElement);
-            console.log("Severity element:", severityElement);
-
-            // Get the input elements
-            var allergenInput = document.getElementById("allergen-input-" + rowIndex);
-            var severityInput = document.getElementById("severity-input-" + rowIndex);
-
-            console.log("Allergen input:", allergenInput);
-            console.log("Severity input:", severityInput);
-
-            // Update the text content of the div elements with the input field values
-            allergenElement.textContent = allergenInput.value;
-            severityElement.textContent = severityInput.value;
-
-            // Hide the input fields and show the div elements
-            allergenInput.style.display = "none";
-            allergenElement.style.display = "block";
-
-            severityInput.style.display = "none";
-            severityElement.style.display = "block";
-
-            // Show the edit button and hide the save button
-            document.getElementById("edit-" + rowIndex).style.display = "inline";
-            document.getElementById("save-" + rowIndex).style.display = "none";
-            document.getElementById("save-" + rowIndex).onclick = function() { save(this); }; // Check this line
-        }
-
-
-
-
-    </script>
-
-    {% endblock %}
+<script src="{% static 'js/allergy.js' %}"></script>
+{% endblock %}
