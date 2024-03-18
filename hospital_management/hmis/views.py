@@ -189,6 +189,9 @@ def patient_personal_information_inpatient(request):
     #     save_review_of_systems(request)
 
     if request.method == 'POST':
+
+        if 'complaintButton' in request.POST:
+            save_chiefComplaint(request)
         
         if 'submitLabTestRequest' in request.POST:
             id = str(uuid.uuid1())
@@ -210,50 +213,97 @@ def patient_personal_information_inpatient(request):
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
-    chiefComplaint = request.POST.get('chiefComplaint')
-    id = request.POST.get('complaintButton') 
+    #if request.method == 'POST':
+        chiefComplaint = request.POST.get('chiefComplaint')
+        id = request.POST.get('complaintButton') 
         
-    # Save Chief Compliant into Firebase Database
-    appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+        # Save Chief Compliant into Firebase Database
+        appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
 
-    # Update appointment data in Firebase
-    if chiefComplaint:
-        db.child(appointment_path).update({
-            'patientID': id,
-            'chiefComplaint': chiefComplaint
-        })
+        # Update appointment data in Firebase
+        if chiefComplaint:
+            db.child(appointment_path).update({
+                'patientID': id,
+                'chiefComplaint': chiefComplaint
+            })
     
-    # Return an HttpResponse to indicate successful processing
-    return redirect('patient_data_doctor_view')
+        # Return an HttpResponse to indicate successful processing
+
 
 def save_review_of_systems(request):
-    skin_conditions = request.POST.getlist('skin_conditions')
-    head_conditions = request.POST.getlist('head_conditions')
-    id = request.POST.get('rosButton')
-    # Process and save other categories of checkboxes similarly
-    # Example:
-    #gastrointestinal_conditions = request.POST.getlist('gastrointestinal_conditions[]')
-    #respiratory_conditions = request.POST.getlist('respiratory_conditions[]')
-    
-    # Save the checkbox data to different categories in your database
-    # Save Chief Compliant into Firebase Database
-    appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+    if request.method == 'POST':
+        skin_conditions = request.POST.getlist('skin_conditions')
+        head_conditions = request.POST.getlist('head_conditions')
+        eye_conditions = request.POST.getlist('eye_conditions')
+        ear_conditions = request.POST.getlist('ear_conditions')
+        nose_conditions = request.POST.getlist('nose_conditions')
+        allergy_conditions = request.POST.getlist('allergy_conditions')
+        mouth_conditions = request.POST.getlist('mouth_conditions')
+        neck_conditions = request.POST.getlist('neck_conditions')
+        breast_conditions = request.POST.getlist('breast_conditions')
+        cardiac_conditions = request.POST.getlist('cardiac_conditions')
+        gastro_conditions = request.POST.getlist('gastro_conditions')
+        urinary_conditions = request.POST.getlist('urinary_conditions')
+        pv_conditions = request.POST.getlist('pv_conditions')
+        ms_conditions = request.POST.getlist('ms_conditions')
+        neuro_conditions = request.POST.getlist('neuro_conditions')
+        hema_conditions = request.POST.getlist('hema_conditions')
+        endo_conditions = request.POST.getlist('endo_conditions')
+        id = request.POST.get('rosButton')
+
+        # Save into Firebase Database
+        appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
 
 
-    if not isinstance(skin_conditions, list):
-        skin_conditions = [skin_conditions]
-    # Update appointment data in Firebase
+        if not isinstance(skin_conditions, list):
+            skin_conditions = [skin_conditions]
+        # Update appointment data in Firebase
         
-    db.child(appointment_path).set({
-        'patientID': id,
-        'review_of_systems': {
-            'skin': skin_conditions,
-            #'head': head_conditions,
 
-        }
-    })
-    return redirect('patient_data_doctor_view')
+        db.child(appointment_path).set({
+            'patientID': id,
+            'review_of_systems': {
+                'skin': skin_conditions,
+                'head': head_conditions,
+                'eye': eye_conditions,
+                'ear': ear_conditions,
+                'nose': nose_conditions,
+                'allergy': allergy_conditions,
+                'mouth': mouth_conditions,
+                'neck': neck_conditions,
+                'breast': breast_conditions,
+                'cardiac': cardiac_conditions,
+                'gastro': gastro_conditions,
+                'urinary': urinary_conditions,
+                'pv': pv_conditions,
+                'ms': ms_conditions,
+                'neuro': neuro_conditions,
+                'hema': hema_conditions,
+                'endo': endo_conditions,
+            }
+        })
+        return redirect('patient_data_doctor_view')
 
+def save_diagnosis(request):
+    if request.method == 'POST':
+        diagnosis = request.POST.get('diagnosis')
+        id = request.POST.get('diagnosisButton') 
+
+        if diagnosis == 'Others':
+            diagnosis = request.POST.get('otherDiagnosis')
+        
+        # Save Chief Compliant into Firebase Database
+        appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+
+        # Update appointment data in Firebase
+        if diagnosis:
+            db.child(appointment_path).update({
+                'patientID': id,
+                'diagnosis': diagnosis
+            })
+    
+        # Return an HttpResponse to indicate successful processing
+        return redirect('patient_data_doctor_view')
 
 #Calculate age function for retrieving patient data
 from datetime import datetime

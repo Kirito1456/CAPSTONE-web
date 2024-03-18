@@ -34,4 +34,5 @@ urlpatterns = [
 
     path('save_chiefComplaint/', views.save_chiefComplaint, name="save_chiefComplaint"),
     path('save_review_of_systems/', views.save_review_of_systems, name='save_review_of_systems'),
+    path('save_diagnosis/', views.save_diagnosis, name='save_diagnosis'),
 ]
