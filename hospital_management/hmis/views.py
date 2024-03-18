@@ -183,10 +183,14 @@ def patient_personal_information_inpatient(request):
     for vitalsigns_id, vitalsigns_data in vitalsigns.items():
         if chosenPatient == vitalsigns_data["patientid"]:
             chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+    
+    # if request.method == 'POST':
+    #     save_chiefComplaint(request)
+    #     save_review_of_systems(request)
 
     if request.method == 'POST':
+        
         if 'submitLabTestRequest' in request.POST:
-            # Retrieve the selected lab test options from the form
             id = str(uuid.uuid1())
             request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             blood_test = request.POST.get('bloodTestCheckbox', False)
@@ -204,6 +208,52 @@ def patient_personal_information_inpatient(request):
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
+
+def save_chiefComplaint(request):
+    chiefComplaint = request.POST.get('chiefComplaint')
+    id = request.POST.get('complaintButton') 
+        
+    # Save Chief Compliant into Firebase Database
+    appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+
+    # Update appointment data in Firebase
+    if chiefComplaint:
+        db.child(appointment_path).update({
+            'patientID': id,
+            'chiefComplaint': chiefComplaint
+        })
+    
+    # Return an HttpResponse to indicate successful processing
+    return redirect('patient_data_doctor_view')
+
+def save_review_of_systems(request):
+    skin_conditions = request.POST.getlist('skin_conditions')
+    head_conditions = request.POST.getlist('head_conditions')
+    id = request.POST.get('rosButton')
+    # Process and save other categories of checkboxes similarly
+    # Example:
+    #gastrointestinal_conditions = request.POST.getlist('gastrointestinal_conditions[]')
+    #respiratory_conditions = request.POST.getlist('respiratory_conditions[]')
+    
+    # Save the checkbox data to different categories in your database
+    # Save Chief Compliant into Firebase Database
+    appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+
+
+    if not isinstance(skin_conditions, list):
+        skin_conditions = [skin_conditions]
+    # Update appointment data in Firebase
+        
+    db.child(appointment_path).set({
+        'patientID': id,
+        'review_of_systems': {
+            'skin': skin_conditions,
+            #'head': head_conditions,
+
+        }
+    })
+    return redirect('patient_data_doctor_view')
+
 
 #Calculate age function for retrieving patient data
 from datetime import datetime
@@ -378,3 +428,4 @@ def edit_family_history(request):
             db.child('patientmedicalhistory').child(id).child('familyhistory').set(data)
 
     return render(request, 'hmis/edit_family_history.html')
+

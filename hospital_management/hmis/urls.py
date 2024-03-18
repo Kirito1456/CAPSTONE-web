@@ -31,4 +31,7 @@ urlpatterns = [
     path('edit_allergy/', views.edit_allergy, name="edit_allergy"),
     path('edit_immunization_history/', views.edit_immunization_history, name="edit_immunization_history"),
     path('edit_family_history/', views.edit_family_history, name="edit_family_history"),
+
+    path('save_chiefComplaint/', views.save_chiefComplaint, name="save_chiefComplaint"),
+    path('save_review_of_systems/', views.save_review_of_systems, name='save_review_of_systems'),
 ]

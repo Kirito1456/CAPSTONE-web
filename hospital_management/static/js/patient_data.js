@@ -1,5 +1,27 @@
+function toggleDropdown() {
+    var dropdown = document.getElementById("diagnosisDropdown");
+    if (dropdown.style.display === "none") {
+        dropdown.style.display = "block";
+    } else {
+        dropdown.style.display = "none";
+    }
+}
+
+
+
 document.addEventListener("DOMContentLoaded", function() {
     const backButton = document.getElementById('backButton');
+    const dropdown = document.getElementById("diagnosisDropdown");
+    var healthConditions = document.getElementById("health-conditions");
+    var otherDiagnosis = document.getElementById("otherDiagnosis");
+
+    healthConditions.addEventListener("change", function() {
+        if (this.value === "Others") {
+            otherDiagnosis.style.display = "block";
+        } else {
+            otherDiagnosis.style.display = "none";
+        }
+    });
 
     backButton.addEventListener('click', function() {
         window.history.back();
@@ -23,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
     cancelButton.addEventListener('click', function() {
         toggleChiefComplaint();
     });
+
 });
 
 function toggleContactInfo() {
@@ -145,11 +168,14 @@ function updateEndTransactionButton() {
         endTransactionButton.textContent = "Appointment Finished";
     }
 }
-function toggleDropdown() {
-    var dropdown = document.getElementById("diagnosisDropdown");
-    if (dropdown.style.display === "none") {
-        dropdown.style.display = "block";
-    } else {
-        dropdown.style.display = "none";
-    }
-}
+// function toggleDropdown() {
+
+//     if (dropdown.style.display === "none") {
+//         dropdown.style.display = "block";
+//     } else {
+//         dropdown.style.display = "none";
+
+//     }
+
+// }
+
