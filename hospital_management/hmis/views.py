@@ -368,9 +368,6 @@ def patient_vital_signs_history(request):
 
 def patient_medical_history(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
-    patientmedicalhistory_ref = db.child("patientmedicalhistory").child(chosen_patient_uid).child('allergyhistory')
-    patientmedicalhistory = patientmedicalhistory_ref.get().val()
-    
     if request.method == 'POST':
         if 'saveAllergyButton' in request.POST:
             allergen = request.POST.getlist('allergen')
@@ -381,10 +378,9 @@ def patient_medical_history(request):
                 'allergen': allergen,
                 'severity': severity
             }
-            patientmedicalhistory_ref.set(data)
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('allergyhistory').set(data)
 
-    return render(request, 'hmis/patient_medical_history.html', {'patientmedicalhistory': patientmedicalhistory})
-
+    return render(request, 'hmis/patient_medical_history.html')
 
 from datetime import datetime
 
