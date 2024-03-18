@@ -259,18 +259,24 @@
             
             editAllergyButton.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent form submission
-                        
+                
                 // Show the Cancel button
                 cancelAllergyButton.style.display = 'inline-block';
-                            
+                
                 // Get all rows excluding the header row
                 const rows = document.querySelectorAll('.row:not(.header)');
-                            
+                
                 // Iterate over each row
                 rows.forEach(row => {
+                    // Get the allergen cell of the row
+                    const allergenCell = row.querySelector('.cell.allergen');
+                    
+                    // Replace text content with input box
+                    allergenCell.innerHTML = '<input type="text" name="allergen">';
+                    
                     // Get the severity cell of the row
                     const severityCell = row.querySelector('.cell.severity');
-                            
+                    
                     // Replace text content with dropdown menu
                     severityCell.innerHTML = `
                         <select name="severity">
@@ -281,6 +287,7 @@
                         </select>`;
                 });
             });
+            
             
             cancelAllergyButton.addEventListener('click', function() {
                 // Hide the Cancel button

@@ -58,10 +58,12 @@
                             <div id = "age-label">Age</div>
                             <div id = "age-view"></div>
                         </div>   
+                        {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
                         <div id="today">
-                            <div id="today-label">Date</div>
-                            <div id="today-view"></div>
+                            <div id="today-label">Date of Prescription</div>
+                            <div id="today-view">{{latest_date}}</div>
                         </div>
+                        {% endfor %}
                         <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{patients_data.uid}}">Make Order</a></button>
                         <button>
                             <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
@@ -83,15 +85,22 @@
                         </div>
                         {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
                             {% if prescriptionorders_id == chosen_patient_uid %}
-                                <div id="table-body" style="font-size: 14px;">
-                                    <div style="flex: 1; text-align: center;"></div>
-                                    <div style="flex: 1; text-align: center;">{{ prescriptionorders_data.dosage }}</div>
-                                    <div style="flex: 1; text-align: center;">{{ prescriptionorders_data.route }}</div>
-                                    <div style="flex: 1; text-align: center;">{{ prescriptionorders_data.frequency }}</div>
-                                    <div style="flex: 1; text-align: center;"></div>
+                                <div style="font-size: 14px;">
+                                    {% for date, prescription in prescriptionorders_data.items %}
+                                        {% for item in prescription %}
+                                            <div id="table-body" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                                <div style="flex: 1; text-align: center;">{{ date }}</div>
+                                                <div style="flex: 1; text-align: center;">{{ item.dosage }}</div>
+                                                <div style="flex: 1; text-align: center;">{{ item.route }}</div>
+                                                <div style="flex: 1; text-align: center;">{{ item.frequency }}</div>
+                                                <div style="flex: 1; text-align: center;">{{ item.additional_remarks }}</div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endfor %}
                                 </div>
                             {% endif %}
                         {% endfor %}
+
 
                 </div>
             </div>

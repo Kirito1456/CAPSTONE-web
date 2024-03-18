@@ -368,6 +368,9 @@ def patient_vital_signs_history(request):
 
 def patient_medical_history(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
+    patientmedicalhistory_ref = db.child("patientmedicalhistory").child(chosen_patient_uid).child('allergyhistory')
+    patientmedicalhistory = patientmedicalhistory_ref.get().val()
+    
     if request.method == 'POST':
         if 'saveAllergyButton' in request.POST:
             allergen = request.POST.getlist('allergen')
@@ -378,17 +381,43 @@ def patient_medical_history(request):
                 'allergen': allergen,
                 'severity': severity
             }
-            db.child('patientmedicalhistory').child(chosen_patient_uid).child('allergyhistory').set(data)
+            patientmedicalhistory_ref.set(data)
 
-    return render(request, 'hmis/patient_medical_history.html')
+    return render(request, 'hmis/patient_medical_history.html', {'patientmedicalhistory': patientmedicalhistory})
+
+
+from datetime import datetime
 
 def view_treatment_plan_all(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
     patients = db.child("patients").get().val()
 
-    prescriptionsorders = db.child("prescriptionsorders").get().val()
+    # Retrieve prescription orders for the chosen patient from Firebase
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
     
-    return render(request, 'hmis/view_treatment_plan.html', {'chosen_patient_uid': chosen_patient_uid, 'patients': patients, 'prescriptionsorders': prescriptionsorders})
+    prescriptionsorders_data = prescriptionsorders_ref.child('date')
+    next_node_data = prescriptionsorders_data.get().val()
+    print(next_node_data)
+    dates = []
+    if next_node_data:
+        for doc_key, doc_data in next_node_data.items():
+            datetime_str = doc_data.get('date')
+            if datetime_str:
+                # Parse datetime string to datetime object
+                date = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+                dates.append(date)
+    
+    sorted_dates = sorted(dates, reverse=True)
+    
+    # Get the latest date
+    latest_date = sorted_dates[0] if sorted_dates else None
+    
+    return render(request, 'hmis/view_treatment_plan.html', {
+        'chosen_patient_uid': chosen_patient_uid,
+        'patients': patients,
+        'prescriptionsorders': prescriptionsorders_ref,
+        'latest_date': latest_date
+    })
 
 def view_treatment_plan(request, fname, lname, gender, bday):
     
@@ -457,7 +486,7 @@ def save_prescriptions(request):
         route = request.POST.getlist('route')
         frequency = request.POST.getlist('frequency')
         additional_remarks = request.POST.getlist('additionalremarks')  
-        todaydate = request.POST['todaydate'] 
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(todaydate, patient_id, medicine_name, dosage, route, frequency, additional_remarks)
         try:
             id = str(uuid.uuid1())
