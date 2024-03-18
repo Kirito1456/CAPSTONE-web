@@ -39,58 +39,60 @@
         </div>
 
         <div id = "treatment-plan">
-            <div id = "patient-information">
-                <div id = "first">
-                    <div id = "fname-label">Name of Patient</div>
-                    <div id="fname">{{ fname }} {{ lname }}</div>
-                </div>
-                <div id = "gender">
-                    <div id = "gender-label">Gender</div>
-                    <div id = "gender-view">{{ gender }}</div>
-                </div>
-                <div id = "bday">
-                    <div id = "bday-label">Date of Birth</div>
-                    <div id = "birthday-view">{{ bday }}</div>
-                </div>
-                <div id = "age">
-                    <div id = "age-label">Age</div>
-                    <div id = "age-view"></div>
-                </div>   
-                <div id="today">
-                    <div id="today-label">Date</div>
-                    <div id="today-view">Date of Making the Order</div>
-                </div>
-                <button><a href="{% url 'outpatient_medication_order' %}">Make Order</a></button>
-                
-                
-            </div>
+            {% for patients_id, patients_data in patients.items %}
+                {% if patients_data.uid == chosen_patient_uid %}
+                    <div id = "patient-information">
+                        <div id = "first">
+                            <div id = "fname-label">Name of Patient</div>
+                            <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
+                        </div>
+                        <div id = "gender">
+                            <div id = "gender-label">Gender</div>
+                            <div id = "gender-view">{{ patients_data.gender }}</div>
+                        </div>
+                        <div id = "bday">
+                            <div id = "bday-label">Date of Birth</div>
+                            <div id = "birthday-view">{{ patients_data.bday }}</div>
+                        </div>
+                        <div id = "age">
+                            <div id = "age-label">Age</div>
+                            <div id = "age-view"></div>
+                        </div>   
+                        <div id="today">
+                            <div id="today-label">Date</div>
+                            <div id="today-view"></div>
+                        </div>
+                        <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{patients_data.uid}}">Make Order</a></button>
+                        <button>
+                            <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
+                        </button>
+                    </div>
+                {% endif %}
+            {% endfor %}
             <hr>
 
             <div id="medications-container">
                 <div id="head">Current Medication</div>
-                <button>
-                    {% comment %} {% for patients_id, patients_data in patients.items %} {% endcomment %}
-                    <a href="{% url 'patient_medication_table' %}">
+                    <div id="medication-list-container">
+                        <div id="table-header" style="font-size: 14px;">
+                            <div style="flex: 1; text-align: center;">Medication Name</div>
+                            <div style="flex: 1; text-align: center;">Dosage</div>
+                            <div style="flex: 1; text-align: center;">Route</div>
+                            <div style="flex: 1; text-align: center;">Frequency</div>
+                            <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                        </div>
+                        {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
+                            {% if prescriptionorders_id == chosen_patient_uid %}
+                                <div id="table-body" style="font-size: 14px;">
+                                    <div style="flex: 1; text-align: center;"></div>
+                                    <div style="flex: 1; text-align: center;">{{ prescriptionorders_data.dosage }}</div>
+                                    <div style="flex: 1; text-align: center;">{{ prescriptionorders_data.route }}</div>
+                                    <div style="flex: 1; text-align: center;">{{ prescriptionorders_data.frequency }}</div>
+                                    <div style="flex: 1; text-align: center;"></div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
 
-                    View Medication History
-                </a>
-                    {% comment %} {% endfor %} {% endcomment %}
-                </button>
-                <div id="medication-list-container">
-                    <div id="table-header" style="font-size: 14px;">
-                        <div style="flex: 1; text-align: center;">Medication Name</div>
-                        <div style="flex: 1; text-align: center;">Dosage</div>
-                        <div style="flex: 1; text-align: center;">Route</div>
-                        <div style="flex: 1; text-align: center;">Frequency</div>
-                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
-                    </div>
-                    <div id="table-body" style="font-size: 14px;">
-                        <div style="flex: 1; text-align: center;">Medication Name</div>
-                        <div style="flex: 1; text-align: center;">Dosage</div>
-                        <div style="flex: 1; text-align: center;">Route</div>
-                        <div style="flex: 1; text-align: center;">Frequency</div>
-                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
-                    </div>
                 </div>
             </div>
             </div>

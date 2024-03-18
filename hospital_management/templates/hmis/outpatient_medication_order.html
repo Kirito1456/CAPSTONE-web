@@ -34,53 +34,45 @@
     <div id = "other-information">
         <div id = "title">
             <div id = "left">
-                <div id = "view-medication"><a href="{% url 'patient_medication_doctor' %}">View Medication Orders/Prescriptions</a></div>
-                <div id = "create-medication" style="font-weight: bold;"><a href="{% url 'outpatient_medication_order' %}">Create Medication Order/Prescription</a></div>
+                <button id="backButton">Back</button>
             </div>
         </div>
 
         <div id = "treatment-plan">
-            <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}">
+            <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                 {% csrf_token %}
-            <div id = "patient-information">
-                <div id = "first">
-                    <div id = "fname-label">Name of Patient</div>
-                    
-                        <select id="fname" name="patient_uid">
-                        <option value="" selected disabled>Select Patient</option>
-                        {% for patients_id, patients_data in patients.items %}
-                        <option value="{{ patients_data.uid }}" 
-                                data-birthday="{{ patients_data.bday }}" 
-                                data-gender="{{ patients_data.gender }}">
-                            {{ patients_data.fname }} {{ patients_data.lname }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    
-                </div>
-                <div id = "gender">
-                    <div id = "gender-label">Gender</div>
-                    <div id = "gender-view"></div>
-                </div>
-                <div id = "bday">
-                    <div id = "bday-label">Date of Birth</div>
-                    <div id = "birthday-view"></div>
-                </div>
-                <div id = "age">
-                    <div id = "age-label">Age</div>
-                    <div id = "age-view"></div>
-                </div>   
-                <div id="today">
-                <div id="today-label">Today's Date</div>
-                <div id="today-view"></div>
-                <input type="hidden" name="todaydate" id="todayinput">
-                </div>
-                
-                <div id = "uploading-photo">
-                    <button onclick="openModal()" type="button">Upload Handwritten Image</button>           
-                </div>
-                
-            </div>
+                {% for patients_id, patients_data in patients.items %}
+                    {% if patients_data.uid == patient_uid %}
+                        <div id = "patient-information">
+                            <div id = "first">
+                                <div id = "fname-label">Name of Patient</div>
+                                <div id = "fname">{{ patients_data.fname }} {{ patients_data.lname }}</div>
+                            </div>
+                            <div id = "gender">
+                                <div id = "gender-label">Gender</div>
+                                <div id = "gender-view">{{ patients_data.gender }}</div>
+                            </div>
+                            <div id = "bday">
+                                <div id = "bday-label">Date of Birth</div>
+                                <div id = "birthday-view">{{ patients_data.bday }}</div>
+                            </div>
+                            <div id = "age">
+                                <div id = "age-label">Age</div>
+                                <div id = "age-view"></div>
+                            </div>   
+                            <div id="today">
+                            <div id="today-label">Today's Date</div>
+                            <div id="today-view"></div>
+                            <input type="hidden" name="todaydate" id="todayinput">
+                            </div>
+                            
+                            <div id = "uploading-photo">
+                                <button onclick="openModal()" type="button">Upload Handwritten Image</button>           
+                            </div>
+                            
+                        </div>
+                    {% endif %}
+                {% endfor %}
             <hr>
                 <div id="medications-container">
                     <div id="head">Medications List</div>
@@ -160,6 +152,26 @@
 <script src="{% static 'js/create-medication.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var birthdayString = document.getElementById("birthday-view").innerText;
+        var birthday = new Date(birthdayString);
+        var today = new Date();
+        var ageYear = today.getFullYear() - birthday.getFullYear();
+        var ageMonth = today.getMonth() - birthday.getMonth();
+        const backButton = document.getElementById('backButton');
+        
+        // Adjust age months if negative
+        if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
+            ageYear--;
+            ageMonth += 12;
+        }
+
+        document.getElementById("age-view").innerText = ageYear + " years and " + ageMonth + " months";
+
+        backButton.addEventListener('click', function() {
+            window.history.back();
+        });
+    });
     
 </script>
 {% endblock %}

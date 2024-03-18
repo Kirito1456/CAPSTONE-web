@@ -102,8 +102,8 @@
                             <div id="e-mail">{{ chosenPatientData_data.email }}</div>
                         </div>
                     </div>
-                    <button><a href = "{% url 'patient_medical_history' %}">Medical History</a></button>
-                    <button><a href = "{% url 'view_treatment_plan_all' %}">Treatment Plan</a></button>
+                    <button><a href="{% url 'patient_medical_history' %}?chosenPatient={{chosenPatientData_data.uid}}">Medical History</a></button>
+                    <button><a href = "{% url 'view_treatment_plan_all' %}?chosenPatient={{chosenPatientData_data.uid}}">Treatment Plan</a></button>
                 </div>
             {% endfor %}
         </div>

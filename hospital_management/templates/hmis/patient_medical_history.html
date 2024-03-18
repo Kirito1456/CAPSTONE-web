@@ -142,7 +142,7 @@
                     <img src="{% static 'logo-color.png' %}" id="display-photo">
                 </div>
                 <div id="information">
-                    <div id="name"> Jeonghan </div>
+                    <div id="name">Jeonghan</div>
                     <div id="role"> General Practitioner</div>
                 </div>
             </div>
@@ -203,65 +203,103 @@
         allergiesLink.addEventListener('click', function(event) {
             event.preventDefault();
             contentContainer.innerHTML = `
+            <form method="post">
+            {% csrf_token %}
             <div id="allergy-table">
                 <div class="row header">
                     <div class="cell allergen">Allergen</div>
-                    <div class="cell severity">Reaction/Severity</div>
+                    <div class="cell severity">Severity</div>
                 </div>
                 <div class="row">
-                    <div class="cell allergen"></div>
-                    <div class="cell severity"></div>
+                    <div class="cell allergen" name="allergen"></div>
+                    <div class="cell severity">
+                        <select name="severity">
+                            <option value="" selected disabled>Select Severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>
+                    
                 </div>
             </div>
             <div id="edit-allergy">
                 <button id="edit-allergy-button">Edit</button>
-                <button id="save-allergy-button">Save</button>
+                <button id="save-allergy-button" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
                 <button id="cancel-allergy-button" style="display: none;">Cancel</button>
                 <button id="add-new-button">Add New Row</button>
-            </div>`;
+            </div>            
+        </form>`;
 
             // Add event listeners
             const editAllergyButton = document.getElementById('edit-allergy-button');
             const cancelAllergyButton = document.getElementById('cancel-allergy-button');
             const addNewButton = document.getElementById('add-new-button');
 
-            editAllergyButton.addEventListener('click', function() {
-                // Show the Cancel button
-                cancelAllergyButton.style.display = 'inline-block';
-
-                // Get the allergen and severity cells of the row (excluding header row)
-                const allergenCell = document.querySelector('.row:not(.header) .cell.allergen');
-                const severityCell = document.querySelector('.row:not(.header) .cell.severity');
-
-                // Replace text content with input fields
-                allergenCell.innerHTML = `<input type="text" value="${allergenCell.textContent.trim()}">`;
-                severityCell.innerHTML = `<input type="text" value="${severityCell.textContent.trim()}">`;
-            });
-
-            cancelAllergyButton.addEventListener('click', function() {
-                // Hide the Cancel button
-                cancelAllergyButton.style.display = 'none';
-
-                // Revert changes made during edit
-                const allergenCell = document.querySelector('.row:not(.header) .cell.allergen');
-                const severityCell = document.querySelector('.row:not(.header) .cell.severity');
-
-                // Replace input fields with original text content
-                allergenCell.innerHTML = allergenCell.querySelector('input').value;
-                severityCell.innerHTML = severityCell.querySelector('input').value;
-            });
-
-            addNewButton.addEventListener('click', function() {
+            addNewButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                            
                 const newRow = document.createElement('div');
                 newRow.classList.add('row');
-
+                        
                 newRow.innerHTML = `
                     <div class="cell allergen"></div>
-                    <div class="cell severity"></div>`;
-
+                    <div class="cell severity">
+                        <select name="severity">
+                            <option value="" selected disabled>Select Severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>`;
+                        
                 const allergyTable = document.getElementById('allergy-table');
                 allergyTable.appendChild(newRow);
             });
+            
+            editAllergyButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                        
+                // Show the Cancel button
+                cancelAllergyButton.style.display = 'inline-block';
+                            
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('.row:not(.header)');
+                            
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Get the severity cell of the row
+                    const severityCell = row.querySelector('.cell.severity');
+                            
+                    // Replace text content with dropdown menu
+                    severityCell.innerHTML = `
+                        <select name="severity">
+                            <option value="" selected disabled>Select Severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>`;
+                });
+            });
+            
+            cancelAllergyButton.addEventListener('click', function() {
+                // Hide the Cancel button
+                cancelAllergyButton.style.display = 'none';
+                        
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('.row:not(.header)');
+                        
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Get the severity cell of the row
+                    const severityCell = row.querySelector('.cell.severity');
+                        
+                    // Restore original text content
+                    severityCell.innerHTML = severityCell.querySelector('select').value;
+                });
+            });
+            
+            
         });
 
         immunizationLink.addEventListener('click', function(event) {
