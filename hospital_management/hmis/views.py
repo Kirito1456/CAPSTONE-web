@@ -194,6 +194,7 @@ def patient_personal_information_inpatient(request):
             save_chiefComplaint(request)
         
         if 'submitLabTestRequest' in request.POST:
+            print(chosenPatient)
             id = str(uuid.uuid1())
             request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             blood_test = request.POST.get('bloodTestCheckbox', False)
@@ -213,6 +214,7 @@ def patient_personal_information_inpatient(request):
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
+        
     #if request.method == 'POST':
         chiefComplaint = request.POST.get('chiefComplaint')
         id = request.POST.get('complaintButton') 
@@ -227,8 +229,6 @@ def save_chiefComplaint(request):
                 'chiefComplaint': chiefComplaint
             })
     
-        # Return an HttpResponse to indicate successful processing
-
 
 def save_review_of_systems(request):
     if request.method == 'POST':

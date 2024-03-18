@@ -112,12 +112,14 @@
                 <div id = "head">Progress Notes</div>
                     <div id = "progress-notes">
                         <div id = "progress-note">
-                            <div id = "notes">
+                            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                            <div id = "notes">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}
                                 - Stable vital signs <br>
                                 - Medication administered 9:00AM <br>
                                 - Pain intensity decreased<br>
                                 Last Update: 01/17/23 11:32AM
                             </div>
+                            {% endfor %}
                             <div id = "edit-note-button">
                                 <a href = "" id = "edit-note"><!--add icon-->Edit Progress Notes</a>
                             </div>
@@ -181,13 +183,13 @@
             <div id="consultation-notes">
                 <div id="head">Consultation Notes</div >
                 <button id="chiefComplaintButton">Chief Complaint</button>
-                <form method='post' action="{%url 'patient_personal_information_inpatient'%}">
+                <form method='post'>
                     {% csrf_token %}
-                <div id="chiefComplaintArea" style="display: none;">
-                    <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." name="chiefComplaint"></textarea>
-                    <button id="saveChiefComplaintButton" type="submit" name="complaintButton" value={{ chosenPatientData_id }} >Save</button>
-                    <button id="cancelChiefComplaintButton">Cancel</button>
-                </div>
+                    <div id="chiefComplaintArea" style="display: none;">
+                        <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." name="chiefComplaint"></textarea>
+                        <button id="saveChiefComplaintButton" type="submit" name="complaintButton" value={{ chosenPatientData_id }} >Save</button>
+                        <button id="cancelChiefComplaintButton">Cancel</button>
+                    </div>
                 </form>
                 <div id="ros">
                     <button id="reviewOfSystemsButton">Review of Systems</button>
