@@ -58,12 +58,14 @@
                             <div id = "age-label">Age</div>
                             <div id = "age-view"></div>
                         </div>   
-                        {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
+                        
                         <div id="today">
                             <div id="today-label">Date of Prescription</div>
+                        
                             <div id="today-view">{{latest_date}}</div>
+                 
                         </div>
-                        {% endfor %}
+                        
                         <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{patients_data.uid}}">Make Order</a></button>
                         <button>
                             <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
@@ -84,21 +86,30 @@
                             <div style="flex: 1; text-align: center;">Additional Remarks</div>
                         </div>
                         {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
-                            {% if prescriptionorders_id == chosen_patient_uid %}
                                 <div style="font-size: 14px;">
-                                    {% for date, prescription in prescriptionorders_data.items %}
-                                        {% for item in prescription %}
-                                            <div id="table-body" style="display: flex; justify-content: center; margin-bottom: 5px;">
-                                                <div style="flex: 1; text-align: center;">{{ date }}</div>
-                                                <div style="flex: 1; text-align: center;">{{ item.dosage }}</div>
-                                                <div style="flex: 1; text-align: center;">{{ item.route }}</div>
-                                                <div style="flex: 1; text-align: center;">{{ item.frequency }}</div>
-                                                <div style="flex: 1; text-align: center;">{{ item.additional_remarks }}</div>
-                                            </div>
-                                        {% endfor %}
+                                    
+                                    {% for item_key, item_value in prescriptionorders_data.items %}
+                                    <div style="flex: 1; text-align: center;">{{ item_key.medicine_name }}</div>
+                                        <div id="table-body" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                            {% for medicine_name in item_value.medicine_name %}
+                                                <div style="flex: 1; text-align: center;">{{ medicine_name }}</div>
+                                            {% endfor %}
+                                            {% for dosage in item_value.dosage %}
+                                            <div style="flex: 1; text-align: center;">{{ dosage }}</div>
+                                            {% endfor %}
+                                            {% for route in item_value.route  %}
+                                                <div style="flex: 1; text-align: center;">{{ route }}</div>
+                                            {% endfor %}
+                                            {% for frequency in item_value.frequency %}
+                                                <div style="flex: 1; text-align: center;">{{ frequency }}</div>
+                                            {% endfor %}
+                                            {% for additional_remarks in item_value.additional_remarks %}
+                                                <div style="flex: 1; text-align: center;">{{ additional_remarks }}</div>
+                                            {% endfor %}
+                                        </div>
                                     {% endfor %}
                                 </div>
-                            {% endif %}
+
                         {% endfor %}
 
 

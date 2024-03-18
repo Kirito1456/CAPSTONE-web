@@ -395,27 +395,32 @@ def view_treatment_plan_all(request):
     # Retrieve prescription orders for the chosen patient from Firebase
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
     
-    prescriptionsorders_data = prescriptionsorders_ref.child('date')
-    next_node_data = prescriptionsorders_data.get().val()
-    print(next_node_data)
     dates = []
-    if next_node_data:
-        for doc_key, doc_data in next_node_data.items():
-            datetime_str = doc_data.get('date')
-            if datetime_str:
-                # Parse datetime string to datetime object
-                date = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
-                dates.append(date)
+    if prescriptionsorders_ref:
+        for order_date, order_data in prescriptionsorders_ref.items():
+            # Convert date string to datetime object
+            #date = datetime.strptime(order_date, '%Y-%m-%d')
+            dates.append(order_date)
     
     sorted_dates = sorted(dates, reverse=True)
+    print(sorted_dates)
     
     # Get the latest date
     latest_date = sorted_dates[0] if sorted_dates else None
+    print(latest_date)
+
+    chosenPatientTreatmentPlan = {}
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid)
+    # Retrieve the data for the specified patient ID and date
+    consulnotes_data = prescriptionsorders_ref.child(latest_date).get().val()
+    if consulnotes_data:
+        chosenPatientTreatmentPlan[chosen_patient_uid] = consulnotes_data
     
+    print(chosenPatientTreatmentPlan)
     return render(request, 'hmis/view_treatment_plan.html', {
         'chosen_patient_uid': chosen_patient_uid,
         'patients': patients,
-        'prescriptionsorders': prescriptionsorders_ref,
+        'prescriptionsorders': chosenPatientTreatmentPlan,
         'latest_date': latest_date
     })
 
