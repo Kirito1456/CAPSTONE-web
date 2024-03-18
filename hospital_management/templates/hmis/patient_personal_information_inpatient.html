@@ -123,38 +123,43 @@
                     </div>
             </div>
         </div>
-
+        
         <div id="consultation-notes-container">
+            
             {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
             <div id="consultation-notes">
-                <div id="head">Consultation Notes</div>
+                <div id="head">Consultation Notes</div >
                 <button id="chiefComplaintButton">Chief Complaint</button>
+                <form method='post' action="{%url 'patient_personal_information_inpatient'%}">
+                    {% csrf_token %}
                 <div id="chiefComplaintArea" style="display: none;">
-                    <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..."></textarea>
-                    <button id="saveChiefComplaintButton">Save</button>
+                    <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." name="chiefComplaint"></textarea>
+                    <button id="saveChiefComplaintButton" type="submit" name="complaintButton" value={{ chosenPatientData_id }} >Save</button>
                     <button id="cancelChiefComplaintButton">Cancel</button>
                 </div>
+                </form>
                 <div id="ros">
                     <button id="reviewOfSystemsButton">Review of Systems</button>
                     <div id="reviewOfSystemsModal" class="modal" style="display: none;">
                         <div class="modal-content">
                             <h2>Review of Systems</h2>
-                            <form id="reviewOfSystemsForm">
+                            <form id="reviewOfSystemsForm" method='post' action="{%url 'patient_personal_information_inpatient'%}">
+                                {% csrf_token %}
                                 <div class="column">
                                     <p>Skin</p>
-                                    <input type="checkbox"><label>Rashes</label><br>
-                                    <input type="checkbox"><label>Itching</label><br>
-                                    <input type="checkbox"><label>Change in Hair or Nails</label><br>
+                                    <input type="checkbox" name="skin_conditions" value="Rashes"><label>Rashes</label><br>
+                                    <input type="checkbox" name="skin_conditions" value="Itching"><label>Itching</label><br>
+                                    <input type="checkbox" name="skin_conditions" value="Change in Hair or Nails"><label>Change in Hair or Nails</label><br>
                                     <p>Head</p>
-                                    <input type="checkbox"><label>Headaches</label><br>
-                                    <input type="checkbox"><label>Head Injury</label><br>
+                                    <input type="checkbox" name="head_conditions" value="Headaches"><label>Headaches</label><br>
+                                    <input type="checkbox" name="head_conditions" value="Head Injury"><label>Head Injury</label><br>
                                     <p>Eyes</p>
-                                    <input type="checkbox"><label>Glasses or Contacts</label><br>
-                                    <input type="checkbox"><label>Change in Vision</label><br>
-                                    <input type="checkbox"><label>Eye Pain</label><br>
-                                    <input type="checkbox"><label>Double Vision</label><br>
-                                    <input type="checkbox"><label>Flashing Lights</label><br>
-                                    <input type="checkbox"><label>Glaucoma/Cataracts</label><br>
+                                    <input type="checkbox" name="eye_conditions" value="Glasses or Contacts"><label>Glasses or Contacts</label><br>
+                                    <input type="checkbox" name="eye_conditions" value="Change in Vision"><label>Change in Vision</label><br>
+                                    <input type="checkbox" name="eye_conditions" value="Eye Pain"><label>Eye Pain</label><br>
+                                    <input type="checkbox" name="eye_conditions" value="Double Vision"><label>Double Vision</label><br>
+                                    <input type="checkbox" name="eye_conditions" value="Flashing Lights"><label>Flashing Lights</label><br>
+                                    <input type="checkbox" name="eye_conditions" value="Glaucoma/Cataracts"><label>Glaucoma/Cataracts</label><br>
                                     <p>Ears</p>
                                     <input type="checkbox"><label>Change in Hearing</label><br>
                                     <input type="checkbox"><label>Ear Pain</label><br>
@@ -263,7 +268,7 @@
                                     <input type="checkbox"><label>Easy bruising/bleeding</label><br>
                                     <input type="checkbox"><label>Past tranfusions</label><br>
                                     <p>Endocrine</p>
-                                    <input type="checkbox"><label>Abonrmal Growth</label><br>
+                                    <input type="checkbox"><label>Abnormal Growth</label><br>
                                     <input type="checkbox"><label>Increased appetite</label><br>
                                     <input type="checkbox"><label>Increased thirst</label><br>
                                     <input type="checkbox"><label>Increase urine production</label><br>
@@ -272,6 +277,7 @@
                                     <input type="checkbox"><label>Excessive Sweating</label><br>
                                     <input type="checkbox"><label>Diabetes</label><br>
                                 </div>
+                                <button type="submit" name="rosButton" value={{ chosenPatientData_id }}>Save</button>
                             </form>
                             <button id="closeModalButton">Close</button>
                         </div>
@@ -280,8 +286,10 @@
 
                 <div id="diagnosisButton">
                     <button onclick="toggleDropdown()">Diagnosis</button>
+                    <form id="diagnosis" method='post' >
+                        {% csrf_token %}
                     <div id="diagnosisDropdown" class="dropdown-content" style="display: none;">
-                        <select id="health-conditions">
+                        <select id="health-conditions" name="diagnosis">
                             <option value="">Select a condition...</option>
                             <option value="Hypertension">Hypertension</option>
                             <option value="Urinary Tract Infection">Urinary Tract Infection</option>
@@ -293,18 +301,18 @@
                             <option value="Ischemic Heart Disease">Ischemic Heart Disease</option>
                             <option value="Upper Respiratory Tract Infection">Upper Respiratory Tract Infection</option>
                             <option value="Cerebrovascular Disease">Cerebrovascular Disease</option>
+                            <option value="Others">Others</option>
                         </select>
+                        <div id="otherDiagnosis" style="display: none;">
+                            <input type="text" name="otherDiagnosis"> </input>
+                        </div>
                     </div>
+                    </form>
         
-
-
-
-                
             </div>
             {% endfor %}
         </div>
         
-
         <div id = "diagnostic-tests-container">
             {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
             <div id = "diagnostic-tests">

@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     const backButton = document.getElementById('backButton');
+    const dropdown = document.getElementById("diagnosisDropdown");
+    const conditions = document.getElementById("health-conditions");
+    const otherDiagnosis = document.getElementById("otherDiagnosis");
 
     backButton.addEventListener('click', function() {
         window.history.back();
@@ -22,6 +25,14 @@ document.addEventListener("DOMContentLoaded", function() {
     var cancelButton = document.getElementById("cancelButton");
     cancelButton.addEventListener('click', function() {
         toggleChiefComplaint();
+    });
+
+    conditions.addEventListener("change", function() {
+        if (this.value === "Others") {
+            otherDiagnosis.style.display = "block";
+        } else {
+            otherDiagnosis.style.display = "none";
+        }
     });
 });
 
@@ -146,10 +157,13 @@ function updateEndTransactionButton() {
     }
 }
 function toggleDropdown() {
-    var dropdown = document.getElementById("diagnosisDropdown");
+
     if (dropdown.style.display === "none") {
         dropdown.style.display = "block";
     } else {
         dropdown.style.display = "none";
+
     }
+
 }
+

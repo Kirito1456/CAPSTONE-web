@@ -183,8 +183,54 @@ def patient_personal_information_inpatient(request):
     for vitalsigns_id, vitalsigns_data in vitalsigns.items():
         if chosenPatient == vitalsigns_data["patientid"]:
             chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+    
+    if request.method == 'POST':
+        save_chiefComplaint(request)
+        save_review_of_systems(request)
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
+
+def save_chiefComplaint(request):
+    
+    chiefComplaint = request.POST.get('chiefComplaint')
+    id = request.POST.get('complaintButton') 
+        
+    # Save Chief Compliant into Firebase Database
+    appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+
+    # Update appointment data in Firebase
+    if chiefComplaint:
+        db.child(appointment_path).update({
+            'patientID': id,
+            'chiefComplaint': chiefComplaint
+        })
+
+def save_review_of_systems(request):
+        skin_conditions = request.POST.getlist('skin_conditions')
+        head_conditions = request.POST.getlist('head_conditions')
+        # Process and save other categories of checkboxes similarly
+        # Example:
+        #gastrointestinal_conditions = request.POST.getlist('gastrointestinal_conditions[]')
+        #respiratory_conditions = request.POST.getlist('respiratory_conditions[]')
+        
+        # Save the checkbox data to different categories in your database
+        # Save Chief Compliant into Firebase Database
+        appointment_path = f"/consultationNotes/{id}"  # Adjust the path as per your Firebase structure
+
+
+        if not isinstance(skin_conditions, list):
+            skin_conditions = [skin_conditions]
+    # Update appointment data in Firebase
+            
+        db.child(appointment_path).set({
+            'patientID': id,
+            'review_of_systems': {
+                'skin': skin_conditions,
+                #'head': head_conditions,
+
+            }
+        })
+
 
 #Calculate age function for retrieving patient data
 from datetime import datetime
@@ -343,3 +389,4 @@ def edit_immunization_history(request):
 
 def edit_family_history(request):
     return render(request, 'hmis/edit_family_history.html')
+
