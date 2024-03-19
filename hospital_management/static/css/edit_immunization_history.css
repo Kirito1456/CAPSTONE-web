@@ -1,0 +1,365 @@
+#whole-screen{
+    width: 100%;
+    height: 100%;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    flex-direction: column;
+}
+
+#side-menu{
+    width: 16%;
+    height: 100%;
+    
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: white;
+    
+    background-color: #5c7c89;
+}
+
+#user-info{
+    padding-bottom: 2%;
+}
+
+#image{
+    padding-top: 10%;
+    padding-bottom: 5%;
+}
+
+#image, #display-photo{
+    border-radius: 50%;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#information{
+    text-align: center;
+    
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#name{
+    font-size: 24;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+#role{
+    font-size: 12;
+}
+
+#menu div {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+#menu div a {
+    margin-left: 10px;
+}
+
+#title{
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#header{
+    margin-left: 2%;
+    float: left;
+
+    font-size: 18;
+
+    font-weight: bold;
+}
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 20px;
+    padding: 5px;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border: 10px;
+    border-radius: 5px;
+    border-color: black;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    font-weight: bold;
+}
+
+#other-side{
+    width: 81%;
+    height: 100%;
+    
+    position: absolute;
+    left: 18%;
+    top : 0%;
+}
+
+#head-corner, #head, #medical-surgical-history-title{
+    float: left;
+
+    font-size: 18;
+
+    font-weight: bold;
+
+    padding-top: 5;
+
+    background-color: #85AA9B;
+
+    text-align: center;
+
+    color: #E9E9E9;
+
+    padding-bottom: 5;
+}
+
+#back, #back-button{
+    margin: 20px;
+
+    margin-top: 30;
+    margin-bottom: 10;
+}
+
+#back-button{
+    padding: 5px;
+    padding-left: 10;
+    padding-right: 10;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    text-align: center;
+
+    border: 10px;
+    border-radius: 10px;
+    border-color: black;
+
+    width: 5%;
+
+    font-size: 14;
+
+    left: 0;
+
+    position: absolute;
+    top: -1%;
+}
+
+#other-side{
+    display: flex;
+    flex-direction: column;
+}
+
+#patient-medical-info{
+    margin: 10 40 10 40;
+}
+
+#personal-info{
+    display: flex;
+    flex-direction: column;
+
+    padding: 10;
+}
+
+#patient-information{
+    display: flex;
+    flex-direction: row;
+
+    background-color: #E9E9E9;
+
+    padding-bottom: 10;  
+}
+
+#first, #last{
+    width: 24%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#bday{
+    width: 20%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#gender{
+    width: 18%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+
+    padding: 0;
+}
+
+
+#age{
+    width: 13%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#fname, #lname, #gender-view, #birthday, #age-view{
+    padding: 5 10 5 10;
+
+    margin-bottom: -8;
+
+    background-color: #D9D9D9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border-radius: 10px;
+    border-color: black;
+
+    margin: 10 20 10 20;
+
+    font-size: 14;
+    word-wrap: break-word;
+}
+
+#birthday{
+    width: 70%;
+}
+
+#fname-label, #lname-label, #gender-label, #bday-label, #age-label{
+    text-align: center;
+
+    margin-top: -8px;
+
+    font-size: 12;
+}
+
+#drug-history{
+
+    display: flex;
+    flex-direction: column;
+    
+
+    background-color: #E9E9E9
+}
+
+#family-history-table, #immunization-table, #allergy-table, #drug-table, #medical-surgical-history-table{
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    flex-direction: column;
+    
+}
+
+#medical-or-surgical-history-table, #drug-history-table, #allergies-table, #immunization-history-table, #table-family-history, #social-history-info{
+    background-color: #D9D9D9;
+
+    width: 95%;
+
+    margin-top: 10;
+    margin-bottom: 10;
+
+    text-align: center;
+
+    table-layout:fixed;
+}
+
+th{
+    background-color: #85AA9B;
+    color: #E9E9E9;
+
+    font-size: 16;
+}
+
+th.member, th.illnesses{
+    width: 45%;
+}
+
+th.age, th.edit{
+    width: 5%;
+}
+
+td{
+    padding: 5;
+    word-wrap: break-word;
+
+    font-size: 14;
+}
+
+#add-immunization-history{
+    display: flex;
+    justify-content: flex-end;
+
+
+}
+
+#add-immunization-history-button{
+    padding: 3 5;
+    background-color: #85AA9B;
+
+    width: 3.5%;
+
+    text-align: center;
+
+    margin-right: 30;
+
+    border-radius: 5px;
+
+    margin-bottom: 10;
+
+    color: #E9E9E9;
+}
+
+#member-input, #illness-input, #age-data-input{
+    margin: 0 auto;
+    display: block; /* Ensures the input element is a block-level element */
+
+    text-align: center;
+
+    width: 95%;
+
+    height: max-content;
+
+    white-space: normal; /* Allow text to wrap */
+    word-wrap: break-word; /* Break words that exceed the width */
+}
+
+#save, #edit{
+    background-color: #E9E9E9;
+    padding: 3 5;
+    border-radius: 5px;
+}

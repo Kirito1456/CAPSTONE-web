@@ -1,0 +1,161 @@
+
+{%load static%}
+<title>{% block title %}Edit{% endblock %}</title>
+
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/edit_immunization_history.css' %}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock styles%}
+
+{% block content %}
+        <div id = "whole-screen">
+            <div id = "side-menu">
+                <div id = "all-info">
+                    <div id = "user-info"> 
+                        <div id = "image">
+                            <img src="{% static 'logo-color.png' %}" id = "display-photo">
+                        </div>
+                        <div id = "information">
+                            <div id = "name"> Jeonghan </div>
+                            <div id = "role"> General Practitioner</div>
+                        </div>
+                    </div>
+                    <div id="menu"> 
+                        <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
+                        <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                        <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                        <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                        <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                        <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                    </div>
+                </div>
+            </div>
+            <div id = "other-side">
+                <div id = "title">
+                    <div id = "left">
+                        <button id="backButton">Back</button>
+                    </div>
+                </div>
+                
+                <div id = "drug-history">
+                    <div id = "head">Immunization History</div>
+                    <div id = "drug-table">
+                        <table id = "drug-history-table">
+                            <tr>
+                                <th class="vaccine">Vaccine</th>
+                                <th class="given-date">Date Given</th>
+                                <th class="dosage-number">Dosage Number</th>
+                                <th class="administer">Administered By</th>
+                                <th>Edit</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id = "vaccine">HPV</div>
+                                    <input id="vaccine-input" type="text" style="display: none;">
+                                </td>
+                                <Td>
+                                    <div id = "date">2002-08-30</div>
+                                    <input id="date-input" type="text" style="display: none;">
+                                </Td>
+                                <td>
+                                    <div id = "dosage-number">1</div>
+                                    <input id="dosage-number-input" type="number" style="display: none;">
+                                </td>
+                                <td>
+                                    <div id = "administered-by">blah blah blah</div>
+                                    <input id="administered-by-input" type="text" style="display: none;">
+                                </td>
+                                <td>
+                                    <a id = "edit" onclick = "edit()">Edit</a>
+                                    <a id = "save" onclick = "save()" style = "display: none;">Save</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id = "add-immunization-history">
+                        <a id = "add-immunization-history-button">Add</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+        function edit() {
+            // Get the elements for vaccine, date, dosage number, and administered by
+            var vaccineElement = document.getElementById("vaccine");
+            var dateElement = document.getElementById("date");
+            var dosageNumberElement = document.getElementById("dosage-number");
+            var administeredByElement = document.getElementById("administered-by");
+    
+            // Get the input elements for vaccine, date, dosage number, and administered by
+            var vaccineInput = document.getElementById("vaccine-input");
+            var dateInput = document.getElementById("date-input");
+            var dosageNumberInput = document.getElementById("dosage-number-input");
+            var administeredByInput = document.getElementById("administered-by-input");
+    
+            // Set the input values to the current data values
+            vaccineInput.value = vaccineElement.textContent;
+            dateInput.value = dateElement.textContent;
+            dosageNumberInput.value = dosageNumberElement.textContent;
+            administeredByInput.value = administeredByElement.textContent;
+    
+            // Show input elements and hide div elements
+            vaccineInput.style.display = "block";
+            vaccineElement.style.display = "none";
+            dateInput.style.display = "block";
+            dateElement.style.display = "none";
+            dosageNumberInput.style.display = "block";
+            dosageNumberElement.style.display = "none";
+            administeredByInput.style.display = "block";
+            administeredByElement.style.display = "none";
+    
+            // Show the Save link and hide the Edit link
+            document.getElementById("edit").style.display = "none";
+            document.getElementById("save").style.display = "inline";
+        }
+    
+        function save() {
+            // Get the elements for vaccine, date, dosage number, and administered by
+            var vaccineElement = document.getElementById("vaccine");
+            var dateElement = document.getElementById("date");
+            var dosageNumberElement = document.getElementById("dosage-number");
+            var administeredByElement = document.getElementById("administered-by");
+    
+            // Get the input elements for vaccine, date, dosage number, and administered by
+            var vaccineInput = document.getElementById("vaccine-input");
+            var dateInput = document.getElementById("date-input");
+            var dosageNumberInput = document.getElementById("dosage-number-input");
+            var administeredByInput = document.getElementById("administered-by-input");
+    
+            // Update the div elements with the input values
+            vaccineElement.textContent = vaccineInput.value;
+            dateElement.textContent = dateInput.value;
+            dosageNumberElement.textContent = dosageNumberInput.value;
+            administeredByElement.textContent = administeredByInput.value;
+    
+            // Show div elements and hide input elements
+            vaccineInput.style.display = "none";
+            vaccineElement.style.display = "block";
+            dateInput.style.display = "none";
+            dateElement.style.display = "block";
+            dosageNumberInput.style.display = "none";
+            dosageNumberElement.style.display = "block";
+            administeredByInput.style.display = "none";
+            administeredByElement.style.display = "block";
+    
+            // Show the Edit link and hide the Save link
+            document.getElementById("edit").style.display = "inline";
+            document.getElementById("save").style.display = "none";
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            const backButton = document.getElementById('backButton');
+    
+            backButton.addEventListener('click', function() {
+                window.history.back();
+            });
+        });
+    </script>
+
+    {% endblock %}

@@ -89,3 +89,32 @@ class AppointmentSchedule(models.Model):
 
     def __str__(self):
          return f"Appointment Schedule for {', '.join(self.get_selected_days_display())}"
+    
+class Prescription(models.Model):
+    patient_id = models.CharField(max_length=100)
+    medicine_name = models.CharField(max_length=100)
+    dosage = models.CharField(max_length=100)
+    route = models.CharField(max_length=100)
+    frequency = models.CharField(max_length=100)
+    additional_remarks = models.CharField(max_length=100)
+
+class Medications(models.Model):
+    uid = models.CharField(max_length=255, blank=True, null=True)
+    medicationname = models.CharField(max_length=255)
+    dosage = models.CharField(max_length=255)
+    ROUTE_CHOICES = (
+        ('Oral', 'Oral'),
+        ('Injection', 'Injection'),
+        ('Topical', 'Topical'),
+    )
+    route = models.CharField(max_length=20, choices=ROUTE_CHOICES , null=True)
+    FREQUENCY_CHOICES = (
+        ('Once Daily', 'Once Daily'),
+        ('Twice Daily', 'Twice Daily'),
+        ('Thrice Daily', 'Thrice Daily'),
+    )
+    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES , null=True)
+    additionalremarks = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name

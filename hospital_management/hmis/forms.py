@@ -1,7 +1,7 @@
 # forms.py
 from django.forms import ModelForm
 from django import forms
-from hmis.models import Patient, Staff, AppointmentSchedule
+from hmis.models import Patient, Staff, AppointmentSchedule, Medications
 
 class AppointmentScheduleForm(forms.ModelForm):
     DAYS_CHOICES = [
@@ -103,4 +103,29 @@ class StaffRegistrationForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'placeholder': 'Enter your email'}),
             #'clinic': forms.TextInput(attrs={'placeholder': 'Enter your clinic name'}),
             #'clinicaddress': forms.TextInput(attrs={'placeholder': 'Enter your clinic address'}),
+        }
+
+class MedicationsListForm(forms.ModelForm):
+    
+    ROUTE_CHOICES = (
+        ('Oral', 'Oral'),
+        ('Injection', 'Injection'),
+        ('Topical', 'Topical'),
+    )
+
+    FREQUENCY_CHOICES = (
+        ('Once Daily', 'Once Daily'),
+        ('Twice Daily', 'Twice Daily'),
+        ('Thrice Daily', 'Thrice Daily'),
+    )
+
+    route = forms.ChoiceField(choices=ROUTE_CHOICES)
+    frequency = forms.ChoiceField(choices=FREQUENCY_CHOICES)
+
+    class Meta:
+        model = Medications
+        fields = ('medicationname', 'dosage', 'route', 'frequency', 'additionalremarks')
+        widgets = {
+            'dosage': forms.TextInput(attrs={'placeholder': 'Enter Dosage'}),
+            'additionalremarks': forms.EmailInput(attrs={'placeholder': 'Enter Remarks'}),
         }

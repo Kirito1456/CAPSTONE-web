@@ -1,0 +1,113 @@
+
+{%load static%}
+<title>{% block title %}Patient Data{% endblock %}</title>
+
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/patients_list.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+{% endblock styles%}
+
+{% block content %}
+<div id = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
+                </div>
+                <div id="information">
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role"> {{ doctor_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
+                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
+            </div>
+            {% comment %} <div class="clock" id="current-date-time"></div> {% endcomment %}
+        </div>
+    </div>
+    <div id = "other-information">
+        <div class="headers">
+            <div class="header-left">
+                <div id = "headerName">Patients List</div>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search Patient Name">
+                <button id="searchButton">Search</button>
+            </div>
+        </div>
+
+        <div class = "table">
+            <div id = "information-table">
+                <table id = "user-information" style="border-bottom: 1px #85AA9B solid;">
+                    <tr id = "head" style="border-bottom: 1px #85AA9B solid;">
+                        <th id = "uname">Name</th>
+                        <th id = "gender">Sex</th>
+                        <th id = "disease">Disease</th>
+                        <th id = "last-visit">Last Visited</th>
+                        <th id = "room">Room</th>
+                        <th id = "status">Status</th>
+                    </tr>
+                    <!--add if statement for inpatient or outpatient-->
+                    {% for patients_id, patients_data in patients.items %}
+                    <tr id = "patient-info">
+                        <td>
+                            <a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patients_data.uid}}"> <!--patient information-->
+                                <div id = "patient-name"> 
+                                    <div id = "photo-icon"><img src="{% static 'logo-black.png' %}" id = "photo"></div>
+                                    <div id = "user-name">{{ patients_data.fname }} {{ patients_data.lname }}</div>
+                                </div>
+                            </a>
+                        </td>
+                        <td>{{ patients_data.gender }}</td>
+                        {% for patientsdata_id, patientsdata_data in patientsdata.items %}
+                            {% if patients_data.uid == patientsdata_data.patientid %}
+                                {% if patientsdata_data.status == "Inpatient" %}
+                                    <td>{{ patientsdata_data.disease }}</td>
+                                    <td>{{ patientsdata_data.lastVisited }}</td>
+                                    <td>{{ patientsdata_data.room }}</td>
+                                    <td>{{ patientsdata_data.status }}</td>
+                                {% elif patientsdata_data.status == "Outpatient" %}
+                                    <td>{{ patientsdata_data.disease }}</td>
+                                    <td>{{ patientsdata_data.lastVisited }}</td>
+                                    <td>-</td>
+                                    <td>{{ patientsdata_data.status }}</td>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div class="pagination">
+                    <a href="#">&laquo;</a>
+                    <a href="#" class="active">1</a>
+                    <a href="#">&raquo;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript code to display current date and time
+    function displayDateTime() {
+        var currentDate = new Date();
+        var dateTimeString = currentDate.toLocaleString();
+        document.getElementById('current-date-time').innerText = dateTimeString;
+    }
+
+    displayDateTime();
+    setInterval(displayDateTime, 1000);
+</script>
+{% endblock %}

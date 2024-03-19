@@ -4,7 +4,9 @@
 
 {% block styles%} 
 <!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-appointment.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 {% endblock styles%}
 
 {% block content %}
@@ -13,7 +15,7 @@
         <div id = "all-info">
             <div id = "user-info"> 
                 <div id = "image">
-                    <img src="\static\doctorjohn.jpg" id = "display-photo">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
                 </div>
                 <div id = "information">
                     {% for doctor_id, doctor_data in doctors.items %}
@@ -24,13 +26,14 @@
                     {% endfor %}
                 </div>
             </div>
-            <div id = "menu"> 
-                <div id = "a1"><a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
-                <div id = "a3" style="font-weight: bold;"><a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
-                <div id = "a1"><a href="">Patients</a></div>
-                <div id = "a4"><a href="">Medications</a></div>
-                <div id = "a5"><a href="Message.html">Message</a></div>
-                <div id = "a7"><a href="{% url 'logout' %}">Logout</a></div>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                <div id="a2" style="font-weight: bold;"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
+                <div id="a3"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
             </div>
         </div>
     </div>

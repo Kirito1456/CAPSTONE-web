@@ -1,0 +1,951 @@
+{% load static %}
+<title>{% block title %}Patient Medical History{% endblock %}</title>
+
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/patient_medical_history_style.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    #title{
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    #other-side{
+        width: 81%;
+        height: 100%;
+        
+        position: absolute;
+        left: 18%;
+        top : 0%;
+        display: flex;
+        flex-direction: column; /* Ensure child elements stack vertically */
+    }
+    #menu-history-bar {
+        background-color: #f4f4f4;
+        padding: 5px;
+        border-radius: 5px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        width: fit-content;
+    }
+    
+    #menu-history-bar ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        display: flex; /* Make the menu items display horizontally */
+    }
+    
+    #menu-history-bar ul li {
+        margin-right: 10px; /* Add space between menu items */
+    }
+    
+    #menu-history-bar ul li a {
+        display: block;
+        padding: 6px 15px;
+        text-decoration: none;
+        color: #333;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    
+    #menu-history-bar ul li a:hover {
+        background-color: #e5e5e5;
+    }
+    
+    #menu-history-bar ul li.active a {
+        font-weight: bold;
+    }
+    
+    #content-container {
+        margin-top: 10px;
+        background-color: #fff; 
+        border-radius: 5px; 
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-right: 10px;
+        height: 83%;
+        border: 1px solid #ccc;
+    }
+    
+    #allergy-table {
+        width: 100%;
+        border-radius: 5px; 
+    }
+    
+    .row {
+        display: flex;
+        width: 100%;
+    }
+    
+    .row.header {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    .cell {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        text-align: left;
+    }
+    
+    .cell.allergen {
+        flex-basis: 50%;
+    }
+    
+    .cell.severity {
+        flex-basis: 50%;
+    }
+    
+    .row:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    .row:hover {
+        background-color: #eaeaea;
+    }
+        
+    
+    #edit-allergy {
+        margin: 10px;
+    }
+    
+    #edit-allergy-button, #save-allergy-button, #add-new-button, #cancel-allergy-button {
+        color: black;
+        cursor: pointer;
+
+        padding: 5px;
+        background-color: #D9D9D9;
+    
+        width: fit-content;
+        height: max-content;
+    
+        text-align: center;
+    
+        margin-right: 20px;
+    
+        border-radius: 5px;
+    }
+    
+    #edit-allergy-button:hover, #save-allergy-button:hover, #add-new-button:hover, #cancel-allergy-button:hover {
+        font-weight: bold;
+    }
+    #immunization-table {
+        width: 100%;
+        border-radius: 5px;
+    }
+    
+    #immunization-table .row {
+        display: flex;
+        width: 100%;
+    }
+    
+    #immunization-table .row.header {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    #immunization-table .cell {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        text-align: left;
+    }
+    
+    #immunization-table .cell.vaccine {
+        flex-basis: 50%;
+    }
+    
+    #immunization-table .cell.date {
+        flex-basis: 50%;
+    }
+    
+    #immunization-table .row:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    #immunization-table .row:hover {
+        background-color: #eaeaea;
+    }
+    
+    #edit-immunization {
+        margin: 10px;
+    }
+    
+    #edit-immunization-button, #save-immunization-button, #add-new-immunization-button, #cancel-immunization-button {
+        color: black;
+        cursor: pointer;
+        padding: 5px;
+        background-color: #D9D9D9;
+        width: fit-content;
+        height: max-content;
+        text-align: center;
+        margin-right: 20px;
+        border-radius: 5px;
+    }
+    
+    #edit-immunization-button:hover, #save-immunization-button:hover, #add-new-immunization-button:hover, #cancel-immunization-button:hover {
+        font-weight: bold;
+    }
+    #family-history-table {
+        width: 100%;
+        border-radius: 5px;
+    }
+    
+    #family-history-table .row {
+        display: flex;
+        width: 100%;
+    }
+    
+    #family-history-table .row.header {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    #family-history-table .cell {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        text-align: left;
+    }
+    
+    #family-history-table .cell.family-member {
+        flex-basis: 33.33%;
+    }
+    
+    #family-history-table .cell.diagnosis {
+        flex-basis: 33.33%;
+    }
+    
+    #family-history-table .cell.age {
+        flex-basis: 33.33%;
+    }
+    
+    #family-history-table .row:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    #family-history-table .row:hover {
+        background-color: #eaeaea;
+    }
+    
+    #edit-family-history {
+        margin: 10px;
+    }
+    
+    #edit-family-history-button, #save-family-history-button, #add-new-family-history-button, #cancel-family-history-button {
+        color: black;
+        cursor: pointer;
+        padding: 5px;
+        background-color: #D9D9D9;
+        width: fit-content;
+        height: max-content;
+        text-align: center;
+        margin-right: 20px;
+        border-radius: 5px;
+    }
+    
+    #edit-family-history-button:hover, #save-family-history-button:hover, #add-new-family-history-button:hover, #cancel-family-history-button:hover {
+        font-weight: bold;
+    }
+    #medical-history-table {
+        width: 100%;
+        border-radius: 5px;
+    }
+    
+    #medical-history-table .row {
+        display: flex;
+        width: 100%;
+    }
+    
+    #medical-history-table .row.header {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    
+    #medical-history-table .cell {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        text-align: left;
+    }
+    
+    #medical-history-table .cell.diagnosis {
+        flex-basis: 20%;
+    }
+    
+    #medical-history-table .cell.date-illness {
+        flex-basis: 20%;
+    }
+    
+    #medical-history-table .cell.treatment {
+        flex-basis: 20%;
+    }
+    
+    #medical-history-table .cell.remarks {
+        flex-basis: 20%;
+    }
+    
+    #medical-history-table .row:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    #medical-history-table .row:hover {
+        background-color: #eaeaea;
+    }
+    
+    #edit-medical-history {
+        margin: 10px;
+    }
+    
+    #edit-medical-history-button,
+    #save-medical-history-button,
+    #add-new-medical-history-button,
+    #cancel-medical-history-button {
+        color: black;
+        cursor: pointer;
+        padding: 5px;
+        background-color: #D9D9D9;
+        width: fit-content;
+        height: max-content;
+        text-align: center;
+        margin-right: 20px;
+        border-radius: 5px;
+    }
+    
+    #edit-medical-history-button:hover,
+    #save-medical-history-button:hover,
+    #add-new-medical-history-button:hover,
+    #cancel-medical-history-button:hover {
+        font-weight: bold;
+    }
+    
+</style>
+{% endblock styles%}
+
+{% block content %}
+
+<div id="whole-screen">
+    <div id="side-menu">
+        <div id="all-info">
+            <div id="user-info"> 
+                <div id="image">
+                    <img src="{% static 'logo-color.png' %}" id="display-photo">
+                </div>
+                <div id="information">
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role"> {{ doctor_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
+                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="other-side">
+        <div id="title">
+            <button id="backButton">Back</button>
+        </div>
+        <div id="menu-history-bar">
+            <ul>
+                <li><a id="medical-history-link" href="#">Past Medical/Surgical History</a></li>
+                <li><a id="allergies-link" href="#">Allergies</a></li>
+                <li><a id="immunization-link" href="#">Immunization</a></li>
+                <li><a id="family-history-link" href="#">Family History</a></li>
+                <li><a id="social-history-link" href="#">Social History</a></li>
+            </ul>
+        </div>
+        <div id="content-container">
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get references to menu items
+        const medicalHistoryLink = document.getElementById('medical-history-link');
+        const allergiesLink = document.getElementById('allergies-link');
+        const immunizationLink = document.getElementById('immunization-link');
+        const familyHistoryLink = document.getElementById('family-history-link');
+        const socialHistoryLink = document.getElementById('social-history-link');
+
+        // Get reference to content container
+        const contentContainer = document.getElementById('content-container');
+
+        const backButton = document.getElementById('backButton');
+
+        backButton.addEventListener('click', function() {
+            window.history.back();
+        });
+
+        medicalHistoryLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = `
+            <form method="post">
+            {% csrf_token %}
+            <div id="medical-history-table">
+                <div class="row header">
+                    <div class="cell diagnosis">Diagnosis</div>
+                    <div class="cell date-illness">Date of Illness</div>
+                    <div class="cell treatment">Treatment</div>
+                    <div class="cell remarks">Remarks</div>
+                </div>
+                {% for patientmedicalhistory_id, patientmedicalhistory_data in patientmedicalhistory.items %}
+                    <div class="row" >
+                        <div class="cell diagnosis">
+                            <input type="text" name="diagnosis" value="{{ patientmedicalhistory_data }}">
+                        </div>
+                        <div class="cell date-illness">
+                            <input type="date" name="date_illness" value="{{ patientmedicalhistory_data.date_illness }}">
+                        </div>
+                        <div class="cell treatment">
+                            <input type="text" name="treatment" value="{{ patientmedicalhistory_data.treatment }}">
+                        </div>
+                        <div class="cell remarks">
+                            <input type="text" name="remarks" value="{{ patientmedicalhistory_data.remarks }}">
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+            <div id="edit-medical-history">
+                <button id="edit-medical-history-button">Edit</button>
+                <button id="save-medical-history-button" name="saveMedicalHistoryButton" value={{ chosenPatientData_id }}>Save</button>
+                <button id="cancel-medical-history-button" style="display: none;">Cancel</button>
+                <button id="add-new-medical-history-button">Add New Row</button>
+            </div>            
+            </form>`;
+        
+            // Add event listeners
+            const editMedicalHistoryButton = document.getElementById('edit-medical-history-button');
+            const cancelMedicalHistoryButton = document.getElementById('cancel-medical-history-button');
+            const addNewMedicalHistoryButton = document.getElementById('add-new-medical-history-button');
+        
+            addNewMedicalHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                            
+                const newRow = document.createElement('div');
+                newRow.classList.add('row');
+                        
+                newRow.innerHTML = `
+                    <div class="cell diagnosis"></div>
+                    <div class="cell date-illness">
+                        <input type="date" name="date_illness">
+                    </div>
+                    <div class="cell treatment">
+                        <input type="text" name="treatment">
+                    </div>
+                    <div class="cell remarks">
+                        <input type="text" name="remarks">
+                    </div>`;
+                        
+                const medicalHistoryTable = document.getElementById('medical-history-table');
+                medicalHistoryTable.appendChild(newRow);
+            });
+            
+            editMedicalHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                // Show the Cancel button
+                cancelMedicalHistoryButton.style.display = 'inline-block';
+                
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('#medical-history-table .row:not(.header)');
+                
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Get the diagnosis cell of the row
+                    const diagnosisCell = row.querySelector('.cell.diagnosis');
+                    
+                    // Replace text content with input box
+                    diagnosisCell.innerHTML = '<input type="text" name="diagnosis">';
+                    
+                    // Get the date of illness cell of the row
+                    const dateIllnessCell = row.querySelector('.cell.date-illness');
+                    
+                    // Replace text content with date input
+                    dateIllnessCell.innerHTML = '<input type="date" name="date_illness">';
+                    
+                    // Get the treatment cell of the row
+                    const treatmentCell = row.querySelector('.cell.treatment');
+                    
+                    // Replace text content with input box
+                    treatmentCell.innerHTML = '<input type="text" name="treatment">';
+                    
+                    // Get the remarks cell of the row
+                    const remarksCell = row.querySelector('.cell.remarks');
+                    
+                    // Replace text content with input box
+                    remarksCell.innerHTML = '<input type="text" name="remarks">';
+                });
+            });
+            
+            
+            cancelMedicalHistoryButton.addEventListener('click', function() {
+                // Hide the Cancel button
+                cancelMedicalHistoryButton.style.display = 'none';
+                        
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('#medical-history-table .row:not(.header)');
+                        
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Restore original content
+                    row.querySelector('.cell.diagnosis').innerHTML = '';
+                    row.querySelector('.cell.date-illness').innerHTML = '';
+                    row.querySelector('.cell.treatment').innerHTML = '';
+                    row.querySelector('.cell.remarks').innerHTML = '';
+                });
+            });
+        });
+        
+
+        allergiesLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = `
+            <form method="post">
+            {% csrf_token %}
+            <div id="allergy-table">
+                
+                <div class="row header">
+                    <div class="cell allergen">Allergen</div>
+                    <div class="cell severity">Severity</div>
+                </div>
+                {% for patientAllergyHistory_id, patientAllergyHistory_data in patientAllergyHistory.items %}
+                    <div class="row" >
+                        <div class="cell allergen">
+                            <input type="text" name="allergen" value="{{ patientAllergyHistory_data }}">
+                        </div>
+                        <div class="cell severity">
+                            <input type="text" name="severity" value="{{ patientAllergyHistory_id }}">
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% comment %} <div class="row">
+                    <div class="cell allergen" name="allergen"></div>
+                    <div class="cell severity">
+                        <select name="severity">
+                            <option value="" selected disabled>Select Severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>
+                    
+                </div> {% endcomment %}
+            </div>
+            <div id="edit-allergy">
+                <button id="edit-allergy-button">Edit</button>
+                <button id="save-allergy-button" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
+                <button id="cancel-allergy-button" style="display: none;">Cancel</button>
+                <button id="add-new-button">Add New Row</button>
+            </div>            
+        </form>`;
+
+            // Add event listeners
+            const editAllergyButton = document.getElementById('edit-allergy-button');
+            const cancelAllergyButton = document.getElementById('cancel-allergy-button');
+            const addNewButton = document.getElementById('add-new-button');
+
+            addNewButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                            
+                const newRow = document.createElement('div');
+                newRow.classList.add('row');
+                        
+                newRow.innerHTML = `
+                    <div class="cell allergen"></div>
+                    <div class="cell severity">
+                        <select name="severity">
+                            <option value="" selected disabled>Select Severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
+                    </div>`;
+                        
+                const allergyTable = document.getElementById('allergy-table');
+                allergyTable.appendChild(newRow);
+            });
+            
+            editAllergyButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                // Show the Cancel button
+                cancelAllergyButton.style.display = 'inline-block';
+                
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('.row:not(.header)');
+                
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Get the allergen cell of the row
+                    const allergenCell = row.querySelector('.cell.allergen');
+                    
+                    // Replace text content with input box
+                    allergenCell.innerHTML = '<input type="text" name="allergen">';
+                    
+                    // Get the severity cell of the row
+                    const severityCell = row.querySelector('.cell.severity');
+                    
+                    // Replace text content with dropdown menu
+                    severityCell.innerHTML = `
+                        <select name="severity">
+                            <option value="" selected disabled>Select Severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>`;
+                });
+            });
+            
+            
+            cancelAllergyButton.addEventListener('click', function() {
+                // Hide the Cancel button
+                cancelAllergyButton.style.display = 'none';
+                        
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('.row:not(.header)');
+                        
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Get the severity cell of the row
+                    const severityCell = row.querySelector('.cell.severity');
+                        
+                    // Restore original text content
+                    severityCell.innerHTML = severityCell.querySelector('select').value;
+                });
+            });
+            
+            
+        });
+
+        
+        immunizationLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = `
+            <form method="post">
+            {% csrf_token %}
+            <div id="immunization-table">
+                <div class="row header">
+                    <div class="cell vaccine">Vaccine Name</div>
+                    <div class="cell date">Date Administered</div>
+                </div>
+                {% for patientImmunizationHistory_id, patientImmunizationHistory_data in patientImmunizationHistory.items %}
+                    <div class="row" >
+                        <div class="cell vaccine">
+                            <input type="text" name="vaccine" value="{{ patientImmunizationHistory_data }}">
+                        </div>
+                        <div class="cell date">
+                            <input type="date" name="date" value="{{ patientImmunizationHistory_data.date }}">
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+            <div id="edit-immunization">
+                <button id="edit-immunization-button">Edit</button>
+                <button id="save-immunization-button" name="saveImmunizationButton" value={{ chosenPatientData_id }}>Save</button>
+                <button id="cancel-immunization-button" style="display: none;">Cancel</button>
+                <button id="add-new-immunization-button">Add New Row</button>
+            </div>            
+        </form>`;
+
+            // Add event listeners
+            const editImmunizationButton = document.getElementById('edit-immunization-button');
+            const cancelImmunizationButton = document.getElementById('cancel-immunization-button');
+            const addNewImmunizationButton = document.getElementById('add-new-immunization-button');
+
+            addNewImmunizationButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                            
+                const newRow = document.createElement('div');
+                newRow.classList.add('row');
+                        
+                newRow.innerHTML = `
+                    <div class="cell vaccine"></div>
+                    <div class="cell date">
+                        <input type="date" name="date">
+                    </div>`;
+                        
+                const immunizationTable = document.getElementById('immunization-table');
+                immunizationTable.appendChild(newRow);
+            });
+            
+            editImmunizationButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                // Show the Cancel button
+                cancelImmunizationButton.style.display = 'inline-block';
+                
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('.row:not(.header)');
+                
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Get the vaccine cell of the row
+                    const vaccineCell = row.querySelector('.cell.vaccine');
+                    
+                    // Replace text content with input box
+                    vaccineCell.innerHTML = '<input type="text" name="vaccine">';
+                    
+                    // Get the date cell of the row
+                    const dateCell = row.querySelector('.cell.date');
+                    
+                    // Replace text content with date input
+                    dateCell.innerHTML = '<input type="date" name="date">';
+                });
+            });
+            
+            
+            cancelImmunizationButton.addEventListener('click', function() {
+                // Hide the Cancel button
+                cancelImmunizationButton.style.display = 'none';
+                        
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('.row:not(.header)');
+                        
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Restore original content
+                    row.querySelector('.cell.vaccine').innerHTML = '';
+                    row.querySelector('.cell.date').innerHTML = '';
+                });
+            });
+        });
+
+
+        familyHistoryLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = `
+            <form method="post">
+            {% csrf_token %}
+            <div id="family-history-table">
+                <div class="row header">
+                    <div class="cell family-member">Family Member</div>
+                    <div class="cell diagnosis">Diagnosis</div>
+                    <div class="cell age">Age</div>
+                </div>
+                {% for patientFamilyhistory_id, patientFamilyhistory_data in patientFamilyhistory.items %}
+                    <div class="row" >
+                        <div class="cell family-member">
+                            <input type="text" name="family-member" value="{{ patientFamilyhistory_data }}">
+                        </div>
+                        <div class="cell diagnosis">
+                            <input type="text" name="diagnosis" value="{{ patientFamilyhistory_data.date }}">
+                        </div>
+                        <div class="cell age">
+                            <input type="number" name="age" value="{{ patientFamilyhistory_data.date }}">
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% comment %} <div class="row">
+                    <div class="cell family-member">
+                        <select name="family_member">
+                            <option value="" selected disabled>Select Family Member</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Sibling">Sibling</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div class="cell diagnosis">
+                        <input type="text" name="diagnosis">
+                    </div>
+                    <div class="cell age">
+                        <input type="number" name="age">
+                    </div>
+                </div> {% endcomment %}
+            </div>
+            <div id="edit-family-history">
+                <button id="edit-family-history-button">Edit</button>
+                <button id="save-family-history-button" name="saveFamilyHistoryButton" value={{ chosenPatientData_id }}>Save</button>
+                <button id="cancel-family-history-button" style="display: none;">Cancel</button>
+                <button id="add-new-family-history-button">Add New Row</button>
+            </div>            
+            </form>`;
+        
+            // Add event listeners
+            const editFamilyHistoryButton = document.getElementById('edit-family-history-button');
+            const saveFamilyHistoryButton = document.getElementById('save-family-history-button');
+            const cancelFamilyHistoryButton = document.getElementById('cancel-family-history-button');
+            const addNewFamilyHistoryButton = document.getElementById('add-new-family-history-button');
+        
+            // Event listener for editing family history
+            editFamilyHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                // Show the Cancel button
+                cancelFamilyHistoryButton.style.display = 'inline-block';
+                
+                // Get all rows excluding the header row
+                const rows = document.querySelectorAll('#family-history-table .row:not(.header)');
+                
+                // Iterate over each row
+                rows.forEach(row => {
+                    // Get the family member cell of the row
+                    const familyMemberCell = row.querySelector('.cell.family-member');
+                    
+                    // Replace text content with dropdown menu
+                    familyMemberCell.innerHTML = `
+                        <select name="family_member">
+                            <option value="" selected disabled>Select Family Member</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Sibling">Sibling</option>
+                        </select>`;
+                    
+                    // Get the diagnosis cell of the row
+                    const diagnosisCell = row.querySelector('.cell.diagnosis');
+                    
+                    // Replace text content with input box
+                    diagnosisCell.innerHTML = '<input type="text" name="diagnosis">';
+                    
+                    // Get the age cell of the row
+                    const ageCell = row.querySelector('.cell.age');
+                    
+                    // Replace text content with input box
+                    ageCell.innerHTML = '<input type="number" name="age">';
+                });
+            });
+        
+            // Event listener for canceling family history edit
+            cancelFamilyHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                // Hide the Cancel button
+                cancelFamilyHistoryButton.style.display = 'none';
+                
+                // Restore original content of each row
+                const rows = document.querySelectorAll('#family-history-table .row:not(.header)');
+                rows.forEach(row => {
+                    row.querySelector('.cell.family-member').innerHTML = row.querySelector('.cell.family-member select').value;
+                    row.querySelector('.cell.diagnosis').innerHTML = row.querySelector('.cell.diagnosis input').value;
+                    row.querySelector('.cell.age').innerHTML = row.querySelector('.cell.age input').value;
+                });
+            });
+        
+            // Event listener for adding a new row in family history
+            addNewFamilyHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                const newRow = document.createElement('div');
+                newRow.classList.add('row');
+                newRow.innerHTML = `
+                    <div class="cell family-member">
+                        <select name="family_member">
+                            <option value="" selected disabled>Select Family Member</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Sibling">Sibling</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+                    <div class="cell diagnosis"><input type="text" name="diagnosis"></div>
+                    <div class="cell age"><input type="number" name="age"></div>`;
+                
+                const familyHistoryTable = document.getElementById('family-history-table');
+                familyHistoryTable.appendChild(newRow);
+            });
+        });
+        
+
+        function displaySocialHistoryForm() {
+            contentContainer.innerHTML = `
+            <form method="post">
+            {% csrf_token %}
+            <div id="social-history-table">
+                <div class="row header">
+                    <div class="cell">Smoking</div>
+                    <div class="cell">Alcohol</div>
+                </div>
+
+                <div class="row">
+                    <div class="cell">
+                        <input type="radio" id="smoking-yes" name="smoking" value="Yes">
+                        <label for="smoking-yes">Yes</label>
+                        <input type="radio" id="smoking-no" name="smoking" value="No">
+                        <label for="smoking-no">No</label>
+                    </div>
+                    <div class="cell">
+                        <input type="radio" id="alcohol-yes" name="alcohol" value="Yes">
+                        <label for="alcohol-yes">Yes</label>
+                        <input type="radio" id="alcohol-no" name="alcohol" value="No">
+                        <label for="alcohol-no">No</label>
+                    </div>
+                </div>
+            </div>
+            <div id="edit-social-history">
+                <button id="edit-social-history-button">Edit</button>
+                <button id="save-social-history-button" name="saveSocialHistoryButton" value={{ chosenPatientData_id }}>Save</button>
+                <button id="cancel-social-history-button" style="display: none;">Cancel</button>
+                <button id="add-new-social-history-button">Add New Row</button>
+            </div>            
+            </form>`;
+
+            // Add event listeners
+            const editSocialHistoryButton = document.getElementById('edit-social-history-button');
+            const cancelSocialHistoryButton = document.getElementById('cancel-social-history-button');
+
+            // Event listener for editing social history
+            editSocialHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                // Show the Cancel button
+                cancelSocialHistoryButton.style.display = 'inline-block';
+                
+                // Get all radio buttons
+                const smokingYes = document.getElementById('smoking-yes');
+                const smokingNo = document.getElementById('smoking-no');
+                const alcoholYes = document.getElementById('alcohol-yes');
+                const alcoholNo = document.getElementById('alcohol-no');
+                
+                // Enable radio buttons for editing
+                smokingYes.disabled = false;
+                smokingNo.disabled = false;
+                alcoholYes.disabled = false;
+                alcoholNo.disabled = false;
+            });
+            
+            // Event listener for canceling social history edit
+            cancelSocialHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                // Hide the Cancel button
+                cancelSocialHistoryButton.style.display = 'none';
+                
+                // Get all radio buttons
+                const smokingYes = document.getElementById('smoking-yes');
+                const smokingNo = document.getElementById('smoking-no');
+                const alcoholYes = document.getElementById('alcohol-yes');
+                const alcoholNo = document.getElementById('alcohol-no');
+                
+                // Disable radio buttons
+                smokingYes.disabled = true;
+                smokingNo.disabled = true;
+                alcoholYes.disabled = true;
+                alcoholNo.disabled = true;
+            });
+        }
+        
+        socialHistoryLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            displaySocialHistoryForm();
+        });
+        
+        
+    });
+    
+</script>
+<script src="{% static 'js/immunization.js' %}"></script>
+{% endblock %}

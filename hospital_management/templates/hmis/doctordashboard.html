@@ -5,7 +5,7 @@
 
 {% block styles %} 
 <!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-appointment.css' %}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 {% endblock styles %}
 
@@ -14,8 +14,8 @@
     <div id="side-menu">
         <div id="all-info">
             <div id="user-info"> 
-                <div id="image">
-                    <img src="\static\doctorjohn.jpg" id="display-photo">
+                <div id = "image">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
                 </div>
                 <div id="information">
                     {% for doctor_id, doctor_data in doctors.items %}
@@ -27,12 +27,13 @@
                 </div>
             </div>
             <div id="menu"> 
-                <div id="a1" style="font-weight: bold;"><a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
-                <div id="a3"><a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
-                <div id="a1"><a href="">Patients</a></div>
-                <div id="a4"><a href="">Medications</a></div>
-                <div id="a5"><a href="">Message</a></div>
-                <div id="a7"><a href="{% url 'logout' %}">Logout</a></div>
+                <div id="a1" style="font-weight: bold;"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
+                <div id="a3"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                <div id="a4"><a href="{% url 'logout' %}">Logout</a></div>
             </div>
         </div>
     </div>
@@ -46,6 +47,31 @@
                 <!-- Notification items will be populated here dynamically -->
             </ul>
         </div>
+        {% if appointments %}
+            <table class="clients_table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment_id, appointment_data in appointments.items %}
+                    <tr>
+                        <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
+                        {% for patient_id, patient_data in patients.items %}
+                            {% if patient_data.uid == appointment_data.patientName %}
+                                <td><label class="accountT_lbl">{{ patient_data.lname }}, {{ patient_data.fname }}</label></td>
+                            {% endif %}
+                        {% endfor %}
+                        </td>  
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No Upcoming Appointments for Today</p>
+        {% endif %}
     </div>
 </div>
 

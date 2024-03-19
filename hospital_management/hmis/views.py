@@ -1,9 +1,10 @@
-import datetime
+from datetime import datetime
+import datetime as date
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database
-from hmis.forms import StaffRegistrationForm, AppointmentScheduleForm
+from hmis.forms import StaffRegistrationForm, AppointmentScheduleForm, MedicationsListForm
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -11,6 +12,18 @@ from django.contrib.auth import logout as auth_logout
 from django.core.mail import send_mail
 import json
 import uuid
+
+from hmis.models import Medications
+from hospital_management.settings import collection 
+from django.conf import settings
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.core.files.storage import FileSystemStorage
+
+from PIL import Image 
+from pytesseract import pytesseract 
+
+import uuid
+import json
 
 # Use the firebase_database object directly
 db = firebase_database
@@ -364,14 +377,14 @@ def AppointmentUpcoming(request):
         
             if appointment_date_str and appointment_time_str:
                 # Convert appointment date string to datetime object
-                appointment_datetime = datetime.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
             
                 # Check if appointment date is in the future
-                if appointment_datetime >= datetime.datetime.now():
+                if appointment_datetime >= date.datetime.now():
                     upcoming_appointments[appointment_id] = appointment_data
 
     # Sort appointments by date
-    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: datetime.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
@@ -408,7 +421,7 @@ def update_appointment(request):
             print(new_time)
 
             # Format time and date objects to desired format
-            new_time_formatted = datetime.datetime.strptime(new_time, "%H:%M")
+            new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
             #new_date_formatted = new_time_formatted.strftime("%I:%M %p")            
             print(new_time_formatted)
 
@@ -452,14 +465,14 @@ def AppointmentPast(request):
         
             if appointment_date_str and appointment_time_str:
             # Convert appointment date string to datetime object
-                appointment_datetime = datetime.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
             
             # Check if appointment date is in the future
-                if appointment_datetime < datetime.datetime.now():
+                if appointment_datetime < date.datetime.now():
                     past_appointments[appointment_id] = appointment_data
 
     # Sort appointments by date
-    sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: datetime.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
@@ -568,7 +581,37 @@ def DoctorDashboard(request):
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
 
-    return render(request, 'hmis/doctordashboard.html', {'doctors': doctors, 'uid': uid})
+    if request.session.get('uid') is None:
+        return redirect('home')
+    
+    # Get data from Firebase
+    upcomings = db.child("appointments").get().val()
+    patients = db.child("patients").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid']    
+
+    # Filter and sort upcoming appointments
+    upcoming_appointments = {}
+    for appointment_id, appointment_data in upcomings.items():
+        if appointment_data["doctorUID"] == uid:
+            appointment_date_str = appointment_data.get("appointmentDate", "")
+            appointment_time_str = appointment_data.get("appointmentTime", "")
+        
+            if appointment_date_str and appointment_time_str:
+                # Convert appointment date string to datetime object
+                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+            
+                # Check if appointment date is in the future
+                if appointment_datetime >= date.datetime.now():
+                    upcoming_appointments[appointment_id] = appointment_data
+
+    # Sort appointments by date
+    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    print(appointment_datetime)
+    print(date.datetime.now())
+    # Pass the combined data to the template
+    return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
+                                                             'patients': patients, 'uid': uid, 'doctors': doctors})
 
 def ChargeNurseDashboard(request):
     nurses = db.child("nurses").get().val()
@@ -628,3 +671,503 @@ def ChargeNurseDashboard(request):
 #             messages.error(request, f'Error: {str(e)}')
  
 #     return render(request, 'hmis/HeadNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})
+
+def patient_data_doctor_view(request):
+    # Fetch patients from Firebase
+    patients = db.child("patients").get().val()
+    patientsdata = db.child("patientdata").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+
+    # Pass the patients data to the template
+    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata, 'doctors': doctors, 'uid': uid})
+
+def patient_personal_information_inpatient(request):
+    patients = db.child("patients").get().val()
+    patientsdata = db.child("patientdata").get().val()
+    vitalsigns = db.child("vitalsigns").get().val()
+    consulnotes = db.child("consultationNotes").get().val()
+    date = datetime.today().strftime('%Y-%m-%d')
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+
+    chosenPatient = request.GET.get('chosenPatient', '')
+
+    chosenPatientData = {}
+    for patients_id, patients_data in patients.items():
+        if chosenPatient == patients_data["uid"]:
+            chosenPatientData[patients_id] = patients_data
+
+            #retrieve patient birthdate
+            chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
+            #calculate patient age function
+            # chosenPatientAge = calculate_age(chosenPatientBirthday)
+
+    chosenPatientDatas = {}
+    for patientsdata_id, patientsdata_data in patientsdata.items():
+        if chosenPatient == patientsdata_data["patientid"]:
+            chosenPatientDatas[patientsdata_id] = patientsdata_data
+
+    #Get Vital Signs Data of Chosen Patient
+    chosenPatientVitalEntryData = {}
+    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+        if chosenPatient == vitalsigns_data["patientid"]:
+            chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+
+    chosenPatientConsulNotes = {}
+    # for consulnotes_id, consulnotes_data in consulnotes.items():
+    #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
+    #         chosenPatientConsulNotes[consulnotes_id] = consulnotes_data
+
+    consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
+    # Retrieve the data for the specified patient ID and date
+    consulnotes_data = consultation_notes_ref.child(date).get().val()
+    if consulnotes_data:
+        chosenPatientConsulNotes[chosenPatient] = consulnotes_data
+
+    if request.method == 'POST':
+
+        if 'complaintButton' in request.POST:
+            save_chiefComplaint(request)
+
+        if 'rosButton' in request.POST:
+            save_review_of_systems(request)
+
+        if 'diagnosisButton' in request.POST:
+            save_diagnosis(request)
+        
+        if 'submitLabTestRequest' in request.POST:
+            print(chosenPatient)
+            id = str(uuid.uuid1())
+            request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            blood_test = request.POST.get('bloodTestCheckbox', False)
+            chest_xray = request.POST.get('chestXrayCheckbox', False)
+            urine_test = request.POST.get('urineTestCheckbox', False)
+            
+            data = {
+                'patient_id': chosenPatient,
+                'datetime': request_time,
+                'blood_test': blood_test,
+                'chest_xray': chest_xray,
+                'urine_test': urine_test
+            }
+            db.child('testrequest').child(id).set(data)
+
+    return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
+                                                                                'chosenPatientDatas': chosenPatientDatas, 
+                                                                                'chosenPatientVitalEntryData': chosenPatientVitalEntryData,
+                                                                                'chosenPatientConsulNotes': chosenPatientConsulNotes,
+                                                                                'doctors': doctors,
+                                                                                'uid': uid})
+    # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
+
+def save_chiefComplaint(request):
+        
+    #if request.method == 'POST':
+        #uid = str(uuid.uuid1())
+        date = datetime.today().strftime('%Y-%m-%d')
+        chiefComplaint = request.POST.get('chiefComplaint')
+        id = request.POST.get('complaintButton') 
+        
+        # Save Chief Compliant into Firebase Database
+        appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
+
+        # Update appointment data in Firebase
+        if chiefComplaint:
+            db.child(appointment_path).update({
+                'patientID': id,
+                'chiefComplaint': chiefComplaint,
+            })
+    
+def save_review_of_systems(request):
+    date = datetime.today().strftime('%Y-%m-%d')
+    skin_conditions = request.POST.getlist('skin_conditions')
+    head_conditions = request.POST.getlist('head_conditions')
+    eye_conditions = request.POST.getlist('eye_conditions')
+    ear_conditions = request.POST.getlist('ear_conditions')
+    nose_conditions = request.POST.getlist('nose_conditions')
+    allergy_conditions = request.POST.getlist('allergy_conditions')
+    mouth_conditions = request.POST.getlist('mouth_conditions')
+    neck_conditions = request.POST.getlist('neck_conditions')
+    breast_conditions = request.POST.getlist('breast_conditions')
+    cardiac_conditions = request.POST.getlist('cardiac_conditions')
+    gastro_conditions = request.POST.getlist('gastro_conditions')
+    urinary_conditions = request.POST.getlist('urinary_conditions')
+    pv_conditions = request.POST.getlist('pv_conditions')
+    ms_conditions = request.POST.getlist('ms_conditions')
+    neuro_conditions = request.POST.getlist('neuro_conditions')
+    hema_conditions = request.POST.getlist('hema_conditions')
+    endo_conditions = request.POST.getlist('endo_conditions')
+    id = request.POST.get('rosButton')
+
+    # Save into Firebase Database
+    appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
+
+    # if not isinstance(skin_conditions, list):
+    #     skin_conditions = [skin_conditions]
+    #  Update appointment data in Firebase
+    
+
+    db.child(appointment_path).update({
+        'patientID': id,
+        'review_of_systems': {
+            'skin': skin_conditions,
+            'head': head_conditions,
+            'eyes': eye_conditions,
+            'ear': ear_conditions,
+            'nose': nose_conditions,
+            'allergy': allergy_conditions,
+            'mouth': mouth_conditions,
+            'neck': neck_conditions,
+            'breast': breast_conditions,
+            'cardiac': cardiac_conditions,
+            'gastro': gastro_conditions,
+            'urinary': urinary_conditions,
+            'pv': pv_conditions,
+            'ms': ms_conditions,
+            'neuro': neuro_conditions,
+            'hema': hema_conditions,
+            'endo': endo_conditions,
+        }
+    })
+
+def save_diagnosis(request):
+    date = datetime.today().strftime('%Y-%m-%d')
+    diagnosis = request.POST.get('diagnosis')
+    id = request.POST.get('diagnosisButton') 
+
+    if diagnosis == 'Others':
+        diagnosis = request.POST.get('otherDiagnosis')
+    
+    # Save Chief Compliant into Firebase Database
+    appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
+
+    # Update appointment data in Firebase
+    if diagnosis:
+        db.child(appointment_path).update({
+            'patientID': id,
+            'diagnosis': diagnosis
+        })
+
+
+#Calculate age function for retrieving patient data
+
+def calculate_age(birthday):
+    today = datetime.today()
+    print(today)
+    birthdate = datetime.strptime(birthday, '%Y-%m-%d').date()
+    return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+def new_vital_sign_entry(request):
+    patients = db.child("patients").get().val()
+
+    chosenPatient = request.GET.get('chosenPatient', '')
+
+    chosenPatientData = {}
+    for patients_id, patients_data in patients.items():
+        if chosenPatient == patients_data["uid"]:
+            chosenPatientData[patients_id] = patients_data
+
+            #retrieve patient birthdate
+            chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
+            #calculate patient age function
+            chosenPatientAge = calculate_age(chosenPatientBirthday)
+
+    return render(request, 'hmis/new_vital_sign_entry.html', {'chosenPatientData': chosenPatientData, 'chosenPatientAge' : chosenPatientAge})
+
+def add_vitalsign_entry(request):
+    return render(request, 'hmis/add_vitalsign_entry.html')
+
+def patient_vital_signs_history(request):
+    patients = db.child("patients").get().val()
+    vitalsigns = db.child("vitalsigns").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+
+    chosenPatient = request.GET.get('chosenPatient', '')
+
+    chosenPatientData = {}
+    for patients_id, patients_data in patients.items():
+        if chosenPatient == patients_data["uid"]:
+            chosenPatientData[patients_id] = patients_data
+
+    #Get Vital Signs Data of Chosen Patient
+    chosenPatientVitalEntryData = {}
+    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+        if chosenPatient == vitalsigns_data["patientid"]:
+            chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+    return render(request, 'hmis/patient_vital_signs_history.html', {'chosenPatientData': chosenPatientData, 
+                                                                     'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 
+                                                                     'doctors': doctors,
+                                                                     'uid': uid})
+
+def patient_medical_history(request):
+    doctors = db.child("doctors").get().val()
+    chosen_patient_uid = request.GET.get('chosenPatient', None)
+    patientmedicalhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('pastHistory').get().val()
+    patientAllergyHistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('allergyhistory').get().val()
+    patientImmunizationHistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('immunizationHistory').get().val()
+    patientFamilyhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('familyHistory').get().val()
+    patientSocialhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('socialHistory').get().val()
+    uid = request.session['uid'] 
+
+    if request.method == 'POST':
+        if 'saveMedicalHistoryButton' in request.POST:
+            diagnosis = request.POST.getlist('diagnosis')
+            date_illness = request.POST.getlist('date_illness')
+            treatment = request.POST.getlist('treatment')
+            remarks = request.POST.getlist('remarks')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'diagnosis': diagnosis,
+                'date_illness': date_illness,
+                'treatment': treatment,
+                'remarks': remarks
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('pastHistory').set(data)
+
+        if 'saveAllergyButton' in request.POST:
+            allergen = request.POST.getlist('allergen')
+            severity = request.POST.getlist('severity')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'allergen': allergen,
+                'severity': severity
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('allergyhistory').set(data)
+
+        if 'saveImmunizationButton' in request.POST:
+            vaccine = request.POST.getlist('vaccine')
+            date = request.POST.getlist('date')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'vaccine': vaccine,
+                'date': date
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('immunizationHistory').set(data)
+
+        if 'saveFamilyHistoryButton' in request.POST:
+            family_member = request.POST.getlist('family_member')
+            diagnosis = request.POST.getlist('diagnosis')
+            age = request.POST.getlist('age')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'family_member': family_member,
+                'diagnosis': diagnosis,
+                'age': age
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('familyHistory').set(data)
+
+        if 'saveSocialHistoryButton' in request.POST:
+            smoking = request.POST.get('smoking')
+            alcohol = request.POST.get('alcohol')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'smoking': smoking,
+                'alcohol': alcohol
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').set(data)
+
+    return render(request, 'hmis/patient_medical_history.html', {'patientmedicalhistory': patientmedicalhistory,
+                                                                 'patientAllergyHistory': patientAllergyHistory,
+                                                                 'patientImmunizationHistory': patientImmunizationHistory,
+                                                                 'patientFamilyhistory': patientFamilyhistory,
+                                                                 'patientSocialhistory': patientSocialhistory,
+                                                                 'doctors': doctors,
+                                                                 'uid': uid})
+
+from datetime import datetime
+
+def view_treatment_plan_all(request):
+    chosen_patient_uid = request.GET.get('chosenPatient', None)
+    patients = db.child("patients").get().val()
+    selected_items = ['medicine_name', 'dosage', 'route', 'frequency', 'additional_remarks']
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+
+    # Retrieve prescription orders for the chosen patient from Firebase
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
+    
+    dates = []
+    if prescriptionsorders_ref:
+        for order_date, order_data in prescriptionsorders_ref.items():
+            # Convert date string to datetime object
+            #date = datetime.strptime(order_date, '%Y-%m-%d')
+            dates.append(order_date)
+    
+    sorted_dates = sorted(dates, reverse=True)
+    print(sorted_dates)
+    
+    # Get the latest date
+    latest_date = sorted_dates[0] if sorted_dates else None
+    print(latest_date)
+
+    chosenPatientTreatmentPlan = {}
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid)
+    # Retrieve the data for the specified patient ID and date
+    consulnotes_data = prescriptionsorders_ref.child(latest_date).get().val()
+    if consulnotes_data:
+        chosenPatientTreatmentPlan[chosen_patient_uid] = consulnotes_data
+    
+    print(chosenPatientTreatmentPlan)
+    return render(request, 'hmis/view_treatment_plan.html', {
+        'chosen_patient_uid': chosen_patient_uid,
+        'patients': patients,
+        'prescriptionsorders': chosenPatientTreatmentPlan,
+        'latest_date': latest_date,
+        'doctors': doctors,
+        'uid': uid
+    })
+
+def view_treatment_plan(request, fname, lname, gender, bday):
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+
+    return render(request, 'hmis/view_treatment_plan.html', {'fname': fname, 
+                                                             'lname': lname, 
+                                                             'gender': gender, 
+                                                             'bday': bday, 
+                                                             'doctors': doctors,
+                                                             'uid': uid})
+
+def patient_medication_doctor(request):
+    # Fetch patients data from Firebase
+    patients = db.child("patients").get().val()
+    patientsdata = db.child("patientdata").get().val()
+
+    # Pass the combined data to the template
+    return render(request, 'hmis/patient_medication_doctor.html', {'patients': patients, 'patientsdata': patientsdata})
+
+
+def patient_medication_nurse(request):
+    return render(request, 'hmis/patient_medication_nurse.html')
+
+def patient_medication_table(request):
+    chosen_patient_uid = request.GET.get('chosenPatient', None)
+    prescriptionsorders = db.child("prescriptionorders").get().val()
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
+    patients = db.child("patients").get().val()
+    doctors = db.child('doctors').get().val()
+    uid = request.session['uid'] 
+    return render(request, 'hmis/patient_medication_table.html', {'prescriptionsorders': prescriptionsorders, 
+                                                                  'prescriptionsorders_ref': prescriptionsorders_ref,
+                                                                  'patients': patients, 
+                                                                  'chosen_patient_uid': chosen_patient_uid,
+                                                                  'doctors': doctors,
+                                                                  'uid': uid})
+
+def inpatient_medication_order(request):
+    return render(request, 'hmis/inpatient_medication_order.html')
+
+def perform_ocr(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        uploaded_image = request.FILES['image']
+        img = Image.open(uploaded_image)
+        text = pytesseract.image_to_string(img)
+        return HttpResponse(text)
+    
+    # Return a bad request response if no image is uploaded or if request method is not POST
+    return HttpResponse('No image uploaded or invalid request.')
+
+def pharmacy_drugs(request):
+    #collection = connect_to_mongodb()
+    cursor = collection.find().limit(10)
+
+    # Convert the cursor to a list of dictionaries
+    data = list(cursor)
+    print(data)
+
+    # Pass the data to the template for rendering
+    return render(request, 'hmis/test.html', {'data': data})
+
+def generate_unique_id():
+    return str(uuid.uuid4())
+
+def outpatient_medication_order(request):
+    patients = db.child("patients").get().val()
+    patient_uid = request.GET.get('chosenPatient')
+    medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
+    medicines_list = [medication['Generic Name'] for medication in medications_cursor]
+    doctors = db.child('doctors').get().val()
+    uid = request.session['uid'] 
+
+    return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients, 
+                                                                     'medicines_list': medicines_list, 
+                                                                     'patient_uid': patient_uid,
+                                                                     'doctors': doctors,
+                                                                     'uid': uid})
+
+def save_prescriptions(request):
+    patient_uid = request.GET.get('chosenPatient')
+    print(patient_uid)
+    if request.method == 'POST':
+        
+        patient_id = patient_uid 
+        medicine_name = request.POST.getlist('medicine_name')
+        dosage = request.POST.getlist('dosage')
+        route = request.POST.getlist('route')
+        frequency = request.POST.getlist('frequency')
+        additional_remarks = request.POST.getlist('additionalremarks')  
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(todaydate, patient_id, medicine_name, dosage, route, frequency, additional_remarks)
+        try:
+            id = str(uuid.uuid1())
+            data = {
+                'prescriptionsoderUID': id,
+                'medicine_name': medicine_name,
+                'dosage': dosage,
+                'route': route,
+                'frequency': frequency,
+                'additional_remarks': additional_remarks,
+                'patient_id': patient_id,
+                'todaydate': todaydate
+            }
+            db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
+
+            messages.success(request, 'Prescription saved successfully!')
+            return redirect('view_treatment_plan_all')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+    return render(request, 'hmis/view_treatment_plan.html', {'patient_uid': patient_uid})
+
+def diagnostic_lab_reports(request):
+    return render(request, 'hmis/diagnostic_lab_reports.html')
+
+def diagnostic_imagery_reports(request):
+    return render(request, 'hmis/diagnostic_imagery_reports.html')
+
+def edit_medical_surgical_history(request):
+    return render(request, 'hmis/edit_medical_surgical_history.html')
+
+def edit_drug_history(request):
+    return render(request, 'hmis/edit_drug_history.html')
+
+def edit_allergy(request):
+    return render(request, 'hmis/edit_allergy.html')
+
+def edit_immunization_history(request):
+    return render(request, 'hmis/edit_immunization_history.html')
+
+def edit_family_history(request):
+    if request.method == 'POST':
+        if 'saveFamilyHistory' in request.POST:
+            id = str(uuid.uuid1())
+            member = request.POST.get('member-input-1')
+            illness = request.POST.get('illness-input-1')
+            age = request.POST.get('age-data-input-1')
+
+            # Format the data as needed
+            data = {
+                'member': member,
+                'illness': illness,
+                'age': age
+            }
+            
+            db.child('patientmedicalhistory').child(id).child('familyhistory').set(data)
+
+    return render(request, 'hmis/edit_family_history.html')

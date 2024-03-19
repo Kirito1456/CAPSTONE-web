@@ -1,0 +1,177 @@
+{%load static%}
+<title>{% block title %}Patient Data{% endblock %}</title>
+
+{% block styles%} 
+<!-- <link rel="stylesheet" href="{% static 'css/patient_medication_style.css' %}"> -->
+<link rel="stylesheet" href="{% static 'css/view_treatment_plan.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
+
+{% endblock styles%}
+
+{% block content %}
+<div class = "whole-screen">
+    <div id = "side-menu">
+        <div id = "all-info">
+            <div id = "user-info"> 
+                <div id = "image">
+                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
+                </div>
+                <div id="information">
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role"> {{ doctor_data.specialization}}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="menu"> 
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
+                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
+
+            </div>
+        </div>
+    </div>
+    <div id = "other-information">
+        <div id = "title">
+            <div id = "left">
+                <button id="backButton">Back</button>
+            </div>
+        </div>
+
+        <div id = "treatment-plan">
+            {% for patients_id, patients_data in patients.items %}
+                {% if patients_data.uid == chosen_patient_uid %}
+                    <div id = "patient-information">
+                        <div id = "first">
+                            <div id = "fname-label">Name of Patient</div>
+                            <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
+                        </div>
+                        <div id = "gender">
+                            <div id = "gender-label">Gender</div>
+                            <div id = "gender-view">{{ patients_data.gender }}</div>
+                        </div>
+                        <div id = "bday">
+                            <div id = "bday-label">Date of Birth</div>
+                            <div id = "birthday-view">{{ patients_data.bday }}</div>
+                        </div>
+                        <div id = "age">
+                            <div id = "age-label">Age</div>
+                            <div id = "age-view"></div>
+                        </div>   
+                        
+                        <div id="today">
+                            <div id="today-label">Date of Prescription</div>
+                        
+                            <div id="today-view">{{latest_date}}</div>
+                 
+                        </div>
+                        
+                        <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{patients_data.uid}}">Make Order</a></button>
+                        <button>
+                            <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
+                        </button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <hr>
+
+            <div id="medications-container">
+                <div id="head">Current Medication</div>
+                    <div id="medication-list-container">
+                        <div id="table-header" style="font-size: 14px;">
+                            <div style="flex: 1; text-align: center;">Medication Name</div>
+                            <div style="flex: 1; text-align: center;">Dosage</div>
+                            <div style="flex: 1; text-align: center;">Route</div>
+                            <div style="flex: 1; text-align: center;">Frequency</div>
+                            <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                        </div>
+                        {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
+                            <div style="font-size: 14px;">
+                                <div id="table-body" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in prescriptionorders_data.items %}
+                                            {% if item_key == 'medicine_name' %}
+                                                {% for medicine_name_item in item_value %}
+                                                    {{ medicine_name_item }}<br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in prescriptionorders_data.items %}
+                                            {% if item_key == 'dosage' %}
+                                                {% for dosage_item in item_value %}
+                                                    {{ dosage_item }}<br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in prescriptionorders_data.items %}
+                                            {% if item_key == 'route' %}
+                                                {% for route_item in item_value %}
+                                                    {{ route_item }}<br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in prescriptionorders_data.items %}
+                                            {% if item_key == 'frequency' %}
+                                                {% for frequency_item in item_value %}
+                                                    {{ frequency_item }}<br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in prescriptionorders_data.items %}
+                                            {% if item_key == 'additional_remarks' %}
+                                                {% for additional_remarks_item in item_value %}
+                                                    {{ additional_remarks_item }}<br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+
+                </div>
+            </div>
+            </div>
+        </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var birthdayString = document.getElementById("birthday-view").innerText;
+        var birthday = new Date(birthdayString);
+        var today = new Date();
+        var ageYear = today.getFullYear() - birthday.getFullYear();
+        var ageMonth = today.getMonth() - birthday.getMonth();
+        const backButton = document.getElementById('backButton');
+        
+        // Adjust age months if negative
+        if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
+            ageYear--;
+            ageMonth += 12;
+        }
+
+        document.getElementById("age-view").innerText = ageYear + " years and " + ageMonth + " months";
+
+        backButton.addEventListener('click', function() {
+            window.history.back();
+        });
+    });
+    
+</script>
+
+{% endblock %}

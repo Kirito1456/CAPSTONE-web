@@ -1,0 +1,320 @@
+{%load static%}
+<title>{% block title %}Edit{% endblock %}</title>
+
+{% block styles%} 
+<link rel="stylesheet" href="{% static 'css/edit_medical_surgical_history.css' %}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock styles%}
+
+{% block content %} 
+        <div id = "whole-screen">
+            <div id = "side-menu">
+                <div id = "all-info">
+                    <div id = "user-info"> 
+                        <div id = "image">
+                            <img src="{% static 'logo-color.png' %}" id = "display-photo">
+                        </div>
+                        <div id = "information">
+                            <div id = "name"> Jeonghan </div>
+                            <div id = "role"> General Practitioner</div>
+                        </div>
+                    </div>
+                    <div id="menu"> 
+                        <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
+                        <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                        <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
+                        <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
+                        <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
+                        <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                    </div>
+                </div>
+            </div>
+            <div id = "other-side">
+                <div id = "title">
+                    <div id = "left">
+                        <button id="backButton">Back</button>
+                    </div>
+                </div>
+                <div id = "patient-medical-info">
+                    <div id = "personal-info">
+                        <div id = "head">Patient Medical History</div>
+                        <div id = "patient-information">
+                            <div id = "first">
+                                <div id = "fname">Juanita</div>
+                                <div id = "fname-label">First Name</div>
+                            </div>
+                            <div id = "last">
+                                <div id = "lname">Dela Cruz</div>
+                                <div id = "lname-label">Last Name</div>
+                            </div>
+                            <div id = "gender">
+                                <div id = "gender-view">Female</div>
+                                <div id = "gender-label">Gender</div>
+                            </div>
+                            <div id = "bday">
+                                <div id = "birthday">01/03/2003</div>
+                                <div id = "bday-label">Date of Birth</div>
+                            </div>
+                            <div id = "age">
+                                <div id = "age-view">21</div>
+                                <div id = "age-label">Age</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id = "medical-history">
+                    <div id = "past-medical-surgical-history">
+                        <div id = "head">Past Medical/Surgical History</div>
+                        <div id = "medical-surgical-history-table">
+                            <table id = "medical-or-surgical-history-table">
+                                <tr>
+                                    <th class = "diagnosis-date">Diagnosis Date</th>
+                                    <th class = "illness">Illness</th>
+                                    <th class = "treatment">Treatment</th>
+                                    <th class = "remark">Remarks</th>
+                                    <th class = "edit">Edit</th>
+                                </tr>
+                                <tr id = "row-1">
+                                    <td>
+                                        <div id = "date-diagnosis-1">2014-02-09</div>
+                                        <input id="date-diagnosis-input-1" type="date" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "illness-1">Asthma</div>
+                                        <input id="illness-input-1" type="text" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "treatment-1">Medication</div>
+                                        <input id="treatment-input-1" type="text" style="display: none;">
+                                    </td>
+                                    <td>
+                                        <div id = "remark-1">Weekly visit is required iuehoiwe ijwdo wjediowhnsekdj ihwdiown wjdiowklnd ,efef kfdn</div>
+                                        <input id="remark-input-1" type="text" style="display: none;">
+                                        
+                                    </td>
+                                    <td>
+                                        <a id = "edit-1" onclick = "edit(this)">Edit</a>
+                                        <a id = "save-1" onclick = "save(this)" style = "display: none;">Save</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id = "add-medical-surgical-history">
+                            <a id = "add-medical-surgical-history-button" onclick = "add()">Add</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const backButton = document.getElementById('backButton');
+    
+            backButton.addEventListener('click', function() {
+                window.history.back();
+            });
+        });
+        function edit(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
+            var illnessElement = document.getElementById("illness-" + rowIndex);
+            var illnessInput = document.getElementById("illness-input-" + rowIndex);
+
+            var treatmentElement = document.getElementById("treatment-" + rowIndex);
+            var treatmentInput = document.getElementById("treatment-input-" + rowIndex);
+
+            var remarkElement = document.getElementById("remark-" + rowIndex);
+            var remarkInput = document.getElementById("remark-input-" + rowIndex);
+
+            // Populate input fields with current values from div elements
+            dateInput.value = dateElement.textContent;
+            illnessInput.value = illnessElement.textContent;
+            treatmentInput.value = treatmentElement.textContent;
+            remarkInput.value = remarkElement.textContent;
+
+            // Hide the divs and show the input fields
+            dateElement.style.display = "none";
+            dateInput.style.display = "block";
+
+            illnessElement.style.display = "none";
+            illnessInput.style.display = "block";
+
+            treatmentElement.style.display = "none";
+            treatmentInput.style.display = "block";
+
+            remarkElement.style.display = "none";
+            remarkInput.style.display = "block";
+
+            // Show the save button and hide the edit button
+            document.getElementById("edit-" + rowIndex).style.display = "none";
+            document.getElementById("save-" + rowIndex).style.display = "inline";
+        }
+
+        function save(button) {
+            // Find the parent row of the clicked button
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
+            var illnessElement = document.getElementById("illness-" + rowIndex);
+            var illnessInput = document.getElementById("illness-input-" + rowIndex);
+
+            var treatmentElement = document.getElementById("treatment-" + rowIndex);
+            var treatmentInput = document.getElementById("treatment-input-" + rowIndex);
+
+            var remarkElement = document.getElementById("remark-" + rowIndex);
+            var remarkInput = document.getElementById("remark-input-" + rowIndex);
+
+            // Update the div content with the input field value
+            dateElement.textContent = dateInput.value;
+            illnessElement.textContent = illnessInput.value;
+            treatmentElement.textContent = treatmentInput.value;
+            remarkElement.textContent = remarkInput.value;
+
+            // Hide the input fields and show the divs
+            dateInput.style.display = "none";
+            dateElement.style.display = "block";
+            
+            illnessInput.style.display = "none";
+            illnessElement.style.display = "block";
+
+            treatmentInput.style.display = "none";
+            treatmentElement.style.display = "block";
+
+            remarkInput.style.display = "none";
+            remarkElement.style.display = "block";
+
+            // Show the edit button and hide the save button
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
+        }
+
+        function add(){
+            // Retrieve reference to the table
+            var table = document.getElementById("medical-or-surgical-history-table");
+
+            // Create a new row element
+            var newRow = document.createElement("tr");
+
+            // Create cells for date diagnosis, illness, treatment and remark
+            var dateDiagnosisCell = document.createElement("td");
+            var illnessCell = document.createElement("td");
+            var treatmentCell = document.createElement("td");
+            var remarkCell = document.createElement("td");
+
+            // Set content for dateDiagnosis cell
+            var dateDiagnosisContent = document.createElement("div");
+            var dateDiagnosisInput = document.createElement("input");
+            dateDiagnosisInput.value = ""; // Set initial value of input field
+            dateDiagnosisInput.type = "date"; // Set type of input field
+            dateDiagnosisInput.id = "date-diagnosis-input-" + (table.rows.length);
+            dateDiagnosisContent.style.display = "none"; // Initially hidden
+            dateDiagnosisContent.id = "date-diagnosis-" + (table.rows.length);
+            dateDiagnosisCell.appendChild(dateDiagnosisContent);
+            dateDiagnosisCell.appendChild(dateDiagnosisInput);
+
+            // Set content for illness cell
+            var illnessContent = document.createElement("div");
+            var illnessInput = document.createElement("input");
+            illnessInput.value = ""; // Set initial value of input field
+            illnessInput.type = "text"; // Set type of input field
+            illnessInput.id = "illness-input-" + (table.rows.length);
+            illnessContent.style.display = "none"; // Initially hidden
+            illnessContent.id = "illness-" + (table.rows.length);
+            illnessCell.appendChild(illnessContent);
+            illnessCell.appendChild(illnessInput);
+
+            // Set content for treatment cell
+            var treatmentContent = document.createElement("div");
+            var treatmentInput = document.createElement("input");
+            treatmentInput.value = ""; // Set initial value of input field
+            treatmentInput.type = "text"; // Set type of input field
+            treatmentInput.id = "treatment-input-" + (table.rows.length);
+            treatmentContent.style.display = "none"; // Initially hidden
+            treatmentContent.id = "treatment-" + (table.rows.length);
+            treatmentCell.appendChild(treatmentContent);
+            treatmentCell.appendChild(treatmentInput);
+
+            // Set content for remark cell
+            var remarkContent = document.createElement("div");
+            var remarkInput = document.createElement("input");
+            remarkInput.value = ""; // Set initial value of input field
+            remarkInput.type = "text"; // Set type of input field
+            remarkInput.id = "remark-input-" + (table.rows.length);
+            remarkContent.style.display = "none"; // Initially hidden
+            remarkContent.id = "remark-" + (table.rows.length);
+            remarkCell.appendChild(remarkContent);
+            remarkCell.appendChild(remarkInput);
+
+            // Create cell for buttons
+            var buttonCell = document.createElement("td");
+
+            // Create Edit and Save buttons
+            var editButton = document.createElement("a");
+            editButton.textContent = "Edit";
+            editButton.id = "edit-" + (table.rows.length);
+            editButton.style.display = "none";
+
+            var saveButton = document.createElement("a");
+            saveButton.textContent = "Save";
+            saveButton.id = "save-" + (table.rows.length);
+
+            // Append buttons to cell
+            buttonCell.appendChild(editButton);
+            buttonCell.appendChild(saveButton);
+
+            // Append cells to row
+            newRow.appendChild(dateDiagnosisCell);
+            newRow.appendChild(illnessCell);
+            newRow.appendChild(treatmentCell);
+            newRow.appendChild(remarkCell);
+            newRow.appendChild(buttonCell);
+
+            // Append row to table
+            table.appendChild(newRow);
+
+            // Set event listeners for buttons
+            saveButton.onclick = function() { save_new_row(this); };
+            editButton.onclick = function() { edit(this); };
+        }
+
+        function save_new_row(button){
+            var rowIndex = button.parentNode.parentNode.rowIndex;
+
+            var dateDiagnosisInput = document.getElementById("date-diagnosis-input-" + rowIndex);
+            var illnessInput = document.getElementById("illness-input-" + rowIndex);
+            var treatmentInput = document.getElementById("treatment-input-" + rowIndex);
+            var remarkInput = document.getElementById("remark-input-" + rowIndex);
+
+            var dateDiagnosisContent = document.getElementById("date-diagnosis-" + rowIndex);
+            var illnessContent = document.getElementById("illness-" + rowIndex);
+            var treatmentContent = document.getElementById("treatment-" + rowIndex);
+            var remarkContent = document.getElementById("remark-" + rowIndex);
+
+            dateDiagnosisContent.textContent = dateDiagnosisInput.value
+            illnessContent.textContent = illnessInput.value;
+            treatmentContent.textContent = treatmentInput.value;
+            remarkContent.textContent = remarkInput.value;
+
+            dateDiagnosisContent.style.display = "block";
+            dateDiagnosisInput.style.display = "none";
+
+            illnessInput.style.display = "none";
+            illnessContent.style.display = "block";
+
+            treatmentInput.style.display = "none";
+            treatmentContent.style.display = "block";
+
+            remarkInput.style.display = "none";
+            remarkContent.style.display = "block";
+
+            document.getElementById("edit-" + rowIndex).style.display = "inline";
+            document.getElementById("save-" + rowIndex).style.display = "none";
+
+            document.getElementById("save-" + rowIndex).onclick = function() { save(this); };
+        }
+    </script>
+    
+    {% endblock %}
