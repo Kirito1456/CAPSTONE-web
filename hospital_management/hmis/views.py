@@ -768,6 +768,7 @@ def save_chiefComplaint(request):
         date = datetime.today().strftime('%Y-%m-%d')
         chiefComplaint = request.POST.get('chiefComplaint')
         id = request.POST.get('complaintButton') 
+        uid = request.session['uid'] 
         
         # Save Chief Compliant into Firebase Database
         appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
@@ -776,6 +777,7 @@ def save_chiefComplaint(request):
         if chiefComplaint:
             db.child(appointment_path).update({
                 'patientID': id,
+                'doctorID': uid,
                 'chiefComplaint': chiefComplaint,
             })
     
@@ -799,6 +801,7 @@ def save_review_of_systems(request):
     hema_conditions = request.POST.getlist('hema_conditions')
     endo_conditions = request.POST.getlist('endo_conditions')
     id = request.POST.get('rosButton')
+    uid = request.session['uid'] 
 
     # Save into Firebase Database
     appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
@@ -810,6 +813,7 @@ def save_review_of_systems(request):
 
     db.child(appointment_path).update({
         'patientID': id,
+        'doctorID': uid,
         'review_of_systems': {
             'skin': skin_conditions,
             'head': head_conditions,
@@ -835,6 +839,7 @@ def save_diagnosis(request):
     date = datetime.today().strftime('%Y-%m-%d')
     diagnosis = request.POST.get('diagnosis')
     id = request.POST.get('diagnosisButton') 
+    uid = request.session['uid']
 
     if diagnosis == 'Others':
         diagnosis = request.POST.get('otherDiagnosis')
@@ -846,6 +851,7 @@ def save_diagnosis(request):
     if diagnosis:
         db.child(appointment_path).update({
             'patientID': id,
+            'doctorID': uid,
             'diagnosis': diagnosis
         })
 
@@ -1130,7 +1136,7 @@ def save_prescriptions(request):
             db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
 
             messages.success(request, 'Prescription saved successfully!')
-            return redirect('view_treatment_plan_all')
+            return redirect(request.META.get('HTTP_REFERER', ''))
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
     return render(request, 'hmis/view_treatment_plan.html', {'patient_uid': patient_uid})
