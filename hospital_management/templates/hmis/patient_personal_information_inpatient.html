@@ -634,11 +634,16 @@
     var endTransactionButton = document.getElementById("endtransaction");
 
     endTransactionButton.addEventListener("click", function() {
-        var confirmEnd = confirm("Are you sure you want to end the appointment?");
+        var status = document.getElementById("patientTypeToggle");
+
+        if(status == 'Outpatient'){
+            var confirmEnd = confirm("Are you sure you want to end the appointment?");
         
-        if (confirmEnd) {
-            window.location.href = "{% url 'patient_data_doctor_view' %}";
+            if (confirmEnd) {
+                window.location.href = "{% url 'patient_data_doctor_view' %}";
+            }
         }
+        
     });
 
 </script>
