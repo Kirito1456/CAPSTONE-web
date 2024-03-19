@@ -47,6 +47,7 @@
                 <!-- Notification items will be populated here dynamically -->
             </ul>
         </div>
+        <p>Appointments for Today</p>
         {% if appointments %}
             <table class="clients_table">
                 <thead>
@@ -61,7 +62,8 @@
                         <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
                         {% for patient_id, patient_data in patients.items %}
                             {% if patient_data.uid == appointment_data.patientName %}
-                                <td><label class="accountT_lbl">{{ patient_data.lname }}, {{ patient_data.fname }}</label></td>
+                                <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}"
+                                    >{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
                             {% endif %}
                         {% endfor %}
                         </td>  
@@ -72,6 +74,9 @@
         {% else %}
             <p>No Upcoming Appointments for Today</p>
         {% endif %}
+
+        <br>
+        <p>Inpatients</p>
     </div>
 </div>
 

@@ -63,67 +63,69 @@
             </thead>
             <tbody>
                 {% if appointments %}
-                {% for appointment_id, appointment_data in appointments.items %}
-                <tr>
-                    <td><label class="accountT_lbl">{{ appointment_data.appointmentDate }}</label></td>
-                    <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
-                    {% for patient_id, patient_data in patients.items %}
-                        {% if patient_data.uid == appointment_data.patientName %}
-                            <td><label class="accountT_lbl">{{ patient_data.lname }}, {{ patient_data.fname }}</label></td>
-                        {% endif %}
-                    {% endfor %}
-                    <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
-                    <td><label class="accountT_lbl"><a href="#" class="details-link" >Click for More Details</a></label>
-                    {% for patient_id, patient_data in patients.items %}
-                        {% if appointment_data.patientName == patient_data.uid  %}
-                                <div class="details-container" style="display: none;">
-                                    <div class="detail-wrapper">
-                                        <div class="detailname" style="font-weight: bold;">E-mail: </div>
-                                        <div class="detailvalue">{{ patient_data.email }}</div>
-                                    </div>
-                                    <div class="detail-wrapper">
-                                        <div class="detailname" style="font-weight: bold;">Phone Number: </div>
-                                        <div class="detailvalue">{{ patient_data.cnumber }}</div>
-                                    </div>
-                                    <div class="detail-wrapper">
-                                        <div class="detailname" style="font-weight: bold;">Location: </div>
-                                        <div class="detailvalue">{{ patient_data.address}}</div>
-                                    </div>
-                                    <div class="button-container">
-                                        <button class="reschedule-button" onclick="openModal()">Reschedule</button>
-                                        <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
-                                        <form action="{% url 'delete_appointment' %}" method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="cancel-button" onclick="cancelAppointment()" name='cancel' value={{ appointment_id }}>Cancel Appointment</button>
-                                        </form>
-                                    </div>
+                    {% for appointment_id, appointment_data in appointments.items %}
+                        <tr>
+                            <td><label class="accountT_lbl">{{ appointment_data.appointmentDate }}</label></td>
+                            <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
+                            {% for patient_id, patient_data in patients.items %}
+                                {% if patient_data.uid == appointment_data.patientName %}
+                                    <td><label class="accountT_lbl">{{ patient_data.lname }}, {{ patient_data.fname }}</label></td>
+                                {% endif %}
+                            {% endfor %}
+                            <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
+                            <td><label class="accountT_lbl"><a href="#" class="details-link" >Click for More Details</a></label>
+                            {% for patient_id, patient_data in patients.items %}
+                                {% if appointment_data.patientName == patient_data.uid  %}
+                                        <div class="details-container" style="display: none;">
+                                            <div class="detail-wrapper">
+                                                <div class="detailname" style="font-weight: bold;">E-mail: </div>
+                                                <div class="detailvalue">{{ patient_data.email }}</div>
+                                            </div>
+                                            <div class="detail-wrapper">
+                                                <div class="detailname" style="font-weight: bold;">Phone Number: </div>
+                                                <div class="detailvalue">{{ patient_data.cnumber }}</div>
+                                            </div>
+                                            <div class="detail-wrapper">
+                                                <div class="detailname" style="font-weight: bold;">Location: </div>
+                                                <div class="detailvalue">{{ patient_data.address}}</div>
+                                            </div>
+                                            {{ appointment_id }}
+                                            <div class="button-container">
+                                                <button class="reschedule-button" onclick="openModal()">Reschedule</button>
+                                                <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
+                                                <form action="{% url 'delete_appointment' %}" method="post">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="cancel-button" onclick="cancelAppointment()" name='cancel' value={{ appointment_id }}>Cancel Appointment</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                {% endif %}
+                            {% endfor %}
+                            </td>    
+                            
+                            <div id="myModal" class="modal">
+                                <div class="modal-content">
+                                    <span class="close">&times;</span>
+                                    <h2>Reschedule Appointment</h2>
+                                    <form id="reschedule-form" method="post" action="{% url 'update_appointment' %}">
+                                        {% csrf_token %}
+                                        <label for="new-appointment-date">New Date:</label>
+                                        <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
+                                        <label for="new-appointment-time">New Time:</label>
+                                        <select id="new-appointment-time" name="new-appointment-time"></select><br>
+                                        {{ appointment_id }}
+                                        <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
+                                    </form>
                                 </div>
-                        {% endif %}
+                            </div>
+                            
+                        </tr>
                     {% endfor %}
-                    </td>    
-                       
-                    <div id="myModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close">&times;</span>
-                            <h2>Reschedule Appointment</h2>
-                            <form id="reschedule-form" method="post" action="{% url 'update_appointment' %}">
-                                {% csrf_token %}
-                                <label for="new-appointment-date">New Date:</label>
-                                <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
-                                <label for="new-appointment-time">New Time:</label>
-                                <select id="new-appointment-time" name="new-appointment-time"></select><br>
-                                <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
-                            </form>
-                        </div>
-                    </div>
-                       
-                </tr>
-                {% endfor %}
                 {% endif %}
             </tbody>
         </table>
     </div>
 </div>
 
-<script src="{% static 'js/appointment.js' %}"></script>
+<script src="{% static 'js/app.js' %}"></script>
 {% endblock %}

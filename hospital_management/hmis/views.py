@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime , timedelta
 import datetime as date
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -602,7 +602,7 @@ def DoctorDashboard(request):
                 appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
             
                 # Check if appointment date is in the future
-                if appointment_datetime >= date.datetime.now():
+                if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)):
                     upcoming_appointments[appointment_id] = appointment_data
 
     # Sort appointments by date
@@ -676,11 +676,24 @@ def patient_data_doctor_view(request):
     # Fetch patients from Firebase
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
+    appointments = db.child("appointments").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
 
+    chosenPatients= {}
+    for patients_id, patients_data in patients.items():
+        for appointment_id, appointment_data in appointments.items():
+            if appointment_data['doctorUID'] == uid and patients_id == appointment_data['patientName']:
+                chosenPatients[patients_id] = patients_data
+
+    chosenPatientData= {}
+    for patientsdata_id, patientsdata_data in patientsdata.items():
+        for appointment_id, appointment_data in appointments.items():
+            if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
+                chosenPatientData[patientsdata_id] = patientsdata_data
+
     # Pass the patients data to the template
-    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': patients, 'patientsdata': patientsdata, 'doctors': doctors, 'uid': uid})
+    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': chosenPatients, 'chosenPatientData': patientsdata, 'doctors': doctors, 'uid': uid})
 
 def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
