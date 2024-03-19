@@ -392,18 +392,23 @@
                     <div class="cell treatment">Treatment</div>
                     <div class="cell remarks">Remarks</div>
                 </div>
-                <div class="row">
-                    <div class="cell diagnosis" name="diagnosis"></div>
-                    <div class="cell date-illness">
-                        <input type="date" name="date_illness">
+                {% for patientmedicalhistory_id, patientmedicalhistory_data in patientmedicalhistory.items %}
+                    <div class="row" >
+                        <div class="cell diagnosis">
+                            <input type="text" name="diagnosis" value="{{ patientmedicalhistory_data }}">
+                        </div>
+                        <div class="cell date-illness">
+                            <input type="date" name="date_illness" value="{{ patientmedicalhistory_data.date_illness }}">
+                        </div>
+                        <div class="cell treatment">
+                            <input type="text" name="treatment" value="{{ patientmedicalhistory_data.treatment }}">
+                        </div>
+                        <div class="cell remarks">
+                            <input type="text" name="remarks" value="{{ patientmedicalhistory_data.remarks }}">
+                        </div>
                     </div>
-                    <div class="cell treatment">
-                        <input type="text" name="treatment">
-                    </div>
-                    <div class="cell remarks">
-                        <input type="text" name="remarks">
-                    </div>
-                </div>
+                {% endfor %}
+
             </div>
             <div id="edit-medical-history">
                 <button id="edit-medical-history-button">Edit</button>
@@ -503,11 +508,23 @@
             <form method="post">
             {% csrf_token %}
             <div id="allergy-table">
+                
                 <div class="row header">
                     <div class="cell allergen">Allergen</div>
                     <div class="cell severity">Severity</div>
                 </div>
-                <div class="row">
+                {% for patientAllergyHistory_id, patientAllergyHistory_data in patientAllergyHistory.items %}
+                    <div class="row" >
+                        <div class="cell allergen">
+                            <input type="text" name="allergen" value="{{ patientAllergyHistory_data }}">
+                        </div>
+                        <div class="cell severity">
+                            <input type="text" name="severity" value="{{ patientAllergyHistory_id }}">
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% comment %} <div class="row">
                     <div class="cell allergen" name="allergen"></div>
                     <div class="cell severity">
                         <select name="severity">
@@ -518,7 +535,7 @@
                         </select>
                     </div>
                     
-                </div>
+                </div> {% endcomment %}
             </div>
             <div id="edit-allergy">
                 <button id="edit-allergy-button">Edit</button>
@@ -617,13 +634,17 @@
                     <div class="cell vaccine">Vaccine Name</div>
                     <div class="cell date">Date Administered</div>
                 </div>
-                <div class="row">
-                    <div class="cell vaccine" name="vaccine"></div>
-                    <div class="cell date">
-                        <input type="date" name="date">
+                {% for patientImmunizationHistory_id, patientImmunizationHistory_data in patientImmunizationHistory.items %}
+                    <div class="row" >
+                        <div class="cell vaccine">
+                            <input type="text" name="vaccine" value="{{ patientImmunizationHistory_data }}">
+                        </div>
+                        <div class="cell date">
+                            <input type="date" name="date" value="{{ patientImmunizationHistory_data.date }}">
+                        </div>
                     </div>
-                    
-                </div>
+                {% endfor %}
+
             </div>
             <div id="edit-immunization">
                 <button id="edit-immunization-button">Edit</button>
@@ -708,7 +729,21 @@
                     <div class="cell diagnosis">Diagnosis</div>
                     <div class="cell age">Age</div>
                 </div>
-                <div class="row">
+                {% for patientFamilyhistory_id, patientFamilyhistory_data in patientFamilyhistory.items %}
+                    <div class="row" >
+                        <div class="cell family-member">
+                            <input type="text" name="family-member" value="{{ patientFamilyhistory_data }}">
+                        </div>
+                        <div class="cell diagnosis">
+                            <input type="text" name="diagnosis" value="{{ patientFamilyhistory_data.date }}">
+                        </div>
+                        <div class="cell age">
+                            <input type="number" name="age" value="{{ patientFamilyhistory_data.date }}">
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% comment %} <div class="row">
                     <div class="cell family-member">
                         <select name="family_member">
                             <option value="" selected disabled>Select Family Member</option>
@@ -724,7 +759,7 @@
                     <div class="cell age">
                         <input type="number" name="age">
                     </div>
-                </div>
+                </div> {% endcomment %}
             </div>
             <div id="edit-family-history">
                 <button id="edit-family-history-button">Edit</button>
@@ -762,7 +797,6 @@
                             <option value="Father">Father</option>
                             <option value="Mother">Mother</option>
                             <option value="Sibling">Sibling</option>
-                            <!-- Add more options as needed -->
                         </select>`;
                     
                     // Get the diagnosis cell of the row
@@ -829,6 +863,7 @@
                     <div class="cell">Smoking</div>
                     <div class="cell">Alcohol</div>
                 </div>
+
                 <div class="row">
                     <div class="cell">
                         <input type="radio" id="smoking-yes" name="smoking" value="Yes">

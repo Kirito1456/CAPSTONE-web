@@ -5,6 +5,34 @@
 <!-- <link rel="stylesheet" href="{% static 'css/patient_medication_style.css' %}"> -->
 <link rel="stylesheet" href="{% static 'css/view_treatment_plan.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
+<style>
+    .modal-content {
+        width: fit-content;
+        background-color: #ffffff; /* Solid white background color */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Add this to style the close button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .po-date:hover {
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
 
 {% endblock styles%}
 
@@ -36,54 +64,132 @@
             <button id="backButton">Back</button>
         </div>
         <div id = "treatment-plan">
-            <div id = "patient-information">
-                <div id = "first">
-                    <div id = "fname-label">Name of Patient</div>
-                    <div id="fname">{{ fname }} {{ lname }}</div>
-                </div>
-                <div id = "gender">
-                    <div id = "gender-label">Gender</div>
-                    <div id = "gender-view">{{ gender }}</div>
-                </div>
-                <div id = "bday">
-                    <div id = "bday-label">Date of Birth</div>
-                    <div id = "birthday-view">{{ bday }}</div>
-                </div>
-                <div id = "age">
-                    <div id = "age-label">Age</div>
-                    <div id = "age-view"></div>
-                </div>   
-            </div>
+            {% for patients_id, patients_data in patients.items %}
+                {% if patients_data.uid == chosen_patient_uid %}
+                    <div id = "patient-information">
+                        <div id = "first">
+                            <div id = "fname-label">Name of Patient</div>
+                            <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
+                        </div>
+                        <div id = "gender">
+                            <div id = "gender-label">Gender</div>
+                            <div id = "gender-view">{{ patients_data.gender }}</div>
+                        </div>
+                        <div id = "bday">
+                            <div id = "bday-label">Date of Birth</div>
+                            <div id = "birthday-view">{{ patients_data.bday }}</div>
+                        </div>
+                        <div id = "age">
+                            <div id = "age-label">Age</div>
+                            <div id = "age-view"></div>
+                        </div> 
+                    </div>
+                {% endif %}
+            {% endfor %}
             <hr>
             <div id="medications-container">
                 <div id="head">Medications List</div>
-                
                 <div id="medication-list-container">
                     <div id="table-header" style="font-size: 14px;">
                         <div style="flex: 1; text-align: center;">Date</div>
-                        <div style="flex: 1; text-align: center;">Prescripted Medication</div>
-                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                        <div style="flex: 1; text-align: center;">Prescribed Medication</div>
                     </div>
-                    <div id="table-body" style="font-size: 14px;">
-                        {% for po_data in prescriptionsorders.items %}
-                        <div style="flex: 1; text-align: center;"><a href="{% url 'view_treatment_plan' fname=fname lname=lname gender=gender bday=bday %}">{{po_data.todaydate}}</a></div>
-                        <div style="flex: 1; text-align: center;">Medicine Name</div>
-                        <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                    <div id="table-body" style="font-size: 14px; display: flex; flex-direction: column;">
+                        {% for po_date, po_data in prescriptionsorders_ref.items %}
+                            <div style="display: flex; flex-direction: row;" id="table-row">
+                                <div style="flex: 1; text-align: center;">
+                                    <span class="po-date"
+                                        data-medication="{{ po_data.medicine_name|join:' ' }}"
+                                        data-dosage="{{ po_data.dosage|join:' ' }}"
+                                        data-route="{{ po_data.route|join:' ' }}"
+                                        data-frequency="{{ po_data.frequency|join:' ' }}">
+                                        {{ po_date }}
+                                    </span>
+                                </div>
+                                <div style="flex: 1; text-align: center;">
+                                    {% if po_data.medicine_name|length > 1 %}
+                                        {{ po_data.medicine_name|join:', ' }}
+                                    {% else %}
+                                        {{ po_data.medicine_name|join:' ' }}
+                                    {% endif %}
+                                </div>
+                            </div>
                         {% endfor %}
+
+
                     </div>
                 </div>
                 
+                
             </div>
 
-            <div class="pagination">
-                <a href="#">&laquo;</a>
-                <a href="#" class="active">1</a>
-                <a href="#">&raquo;</a>
-            </div>
         </div>
     </div>
 </div>
+<div id="medicationModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="medicationDetails"></p>
+    </div>
+</div>
 
+<script>
+    // Get the modal
+    var modal = document.getElementById("medicationModal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on a po_date, open the modal
+    // When the user clicks on a po_date, open the modal
+    var poDates = document.getElementsByClassName("po-date");
+    Array.from(poDates).forEach(function(date) {
+        date.addEventListener('click', function() {
+            var medication = this.dataset.medication;
+            var dosage = this.dataset.dosage;
+            var route = this.dataset.route;
+            var frequency = this.dataset.frequency;
+            
+            // Construct HTML for the medication details table
+            var tableHTML = "<table>" +
+                "<tr>" +
+                    "<th>Medicine Name</th>" +
+                    "<th>Dosage</th>" +
+                    "<th>Route</th>" +
+                    "<th>Frequency</th>" +
+                "</tr>" +
+                "<tr>" +
+                    "<td>" + medication + "</td>" +
+                    "<td>" + dosage + "</td>" +
+                    "<td>" + route + "</td>" +
+                    "<td>" + frequency + "</td>" +
+                "</tr>" +
+            "</table>";
+
+
+
+
+            // Display medication details in the modal
+            document.getElementById("medicationDetails").innerHTML = tableHTML;
+
+            modal.style.display = "block"; // Show modal
+        });
+    });
+
+
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var birthdayString = document.getElementById("birthday-view").innerText;

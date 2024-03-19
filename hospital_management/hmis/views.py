@@ -368,7 +368,12 @@ def patient_vital_signs_history(request):
 
 def patient_medical_history(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
-    
+    patientmedicalhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('pastHistory').get().val()
+    patientAllergyHistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('allergyhistory').get().val()
+    patientImmunizationHistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('immunizationHistory').get().val()
+    patientFamilyhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('familyHistory').get().val()
+    patientSocialhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('socialHistory').get().val()
+    # patientmedicalhistory = db.child("patientmedicalhistory").get().val()
     if request.method == 'POST':
         if 'saveMedicalHistoryButton' in request.POST:
             diagnosis = request.POST.getlist('diagnosis')
@@ -431,13 +436,18 @@ def patient_medical_history(request):
             }
             db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').set(data)
 
-    return render(request, 'hmis/patient_medical_history.html')
+    return render(request, 'hmis/patient_medical_history.html', {'patientmedicalhistory': patientmedicalhistory,
+                                                                 'patientAllergyHistory': patientAllergyHistory,
+                                                                 'patientImmunizationHistory': patientImmunizationHistory,
+                                                                 'patientFamilyhistory': patientFamilyhistory,
+                                                                 'patientSocialhistory': patientSocialhistory})
 
 from datetime import datetime
 
 def view_treatment_plan_all(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
     patients = db.child("patients").get().val()
+    selected_items = ['medicine_name', 'dosage', 'route', 'frequency', 'additional_remarks']
 
     # Retrieve prescription orders for the chosen patient from Firebase
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
@@ -488,8 +498,14 @@ def patient_medication_nurse(request):
     return render(request, 'hmis/patient_medication_nurse.html')
 
 def patient_medication_table(request):
+    chosen_patient_uid = request.GET.get('chosenPatient', None)
     prescriptionsorders = db.child("prescriptionorders").get().val()
-    return render(request, 'hmis/patient_medication_table.html', {'prescriptionsorders': prescriptionsorders})
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
+    patients = db.child("patients").get().val()
+    return render(request, 'hmis/patient_medication_table.html', {'prescriptionsorders': prescriptionsorders, 
+                                                                  'prescriptionsorders_ref': prescriptionsorders_ref,
+                                                                  'patients': patients, 
+                                                                  'chosen_patient_uid': chosen_patient_uid})
 
 def inpatient_medication_order(request):
     return render(request, 'hmis/inpatient_medication_order.html')
