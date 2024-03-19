@@ -380,7 +380,7 @@ def AppointmentUpcoming(request):
                 appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
             
                 # Check if appointment date is in the future
-                if appointment_datetime >= date.datetime.now():
+                if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Ongoing":
                     upcoming_appointments[appointment_id] = appointment_data
 
     # Sort appointments by date
@@ -418,7 +418,7 @@ def update_appointment(request):
             appID = request.POST.get('appID')
             new_date = request.POST.get('new-appointment-date')
             new_time = request.POST.get('new-appointment-time')
-            print(new_time)
+            print(appID)
 
             # Format time and date objects to desired format
             new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
@@ -434,7 +434,8 @@ def update_appointment(request):
             # Update appointment data in Firebase
             db.child(appointment_path).update({
                 'appointmentDate': new_date,
-                'appointmentTime': new_time_str
+                'appointmentTime': new_time_str,
+                'status': 'Ongoing',
             }) 
 
         except Exception as e:
@@ -454,10 +455,12 @@ def AppointmentPast(request):
     pasts = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
     doctors = db.child("doctors").get().val()
+    consulNotes = db.child("consultationNotes").get().val()
     uid = request.session['uid']
 
     # Filter and sort upcoming appointments
     past_appointments = {}
+    notes = {}
     for appointment_id, appointment_data in pasts.items():
         if appointment_data["doctorUID"] == uid:
             appointment_date_str = appointment_data.get("appointmentDate", "")
@@ -468,15 +471,24 @@ def AppointmentPast(request):
                 appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
             
             # Check if appointment date is in the future
-                if appointment_datetime < date.datetime.now():
+                if appointment_datetime < date.datetime.now() or appointment_data["status"] == "Finished":
                     past_appointments[appointment_id] = appointment_data
+
+                 # Get consultation notes for each patient
+                    patient_id = appointment_data.get("patientName")
+                    if patient_id:
+                        consul_notes = db.child("consultationNotes").child(patient_id).get().val()
+                        notes[patient_id] = consul_notes
+
+                        print(notes)
+     
 
     # Sort appointments by date
     sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
-                                                         'uid': uid, 'doctors': doctors})
+                                                         'uid': uid, 'doctors': doctors, 'notes':notes})
     
 def AppointmentCalendar(request):
     
@@ -587,11 +599,13 @@ def DoctorDashboard(request):
     # Get data from Firebase
     upcomings = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
+    patientdatas = db.child("patientdata").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']    
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
+    inpatients = {}
     for appointment_id, appointment_data in upcomings.items():
         if appointment_data["doctorUID"] == uid:
             appointment_date_str = appointment_data.get("appointmentDate", "")
@@ -602,16 +616,25 @@ def DoctorDashboard(request):
                 appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
             
                 # Check if appointment date is in the future
-                if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)):
+                if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)) and appointment_data["status"] == "Ongoing":
                     upcoming_appointments[appointment_id] = appointment_data
+
+            for patient_id, patient_data in patients.items():
+                if appointment_data["patientName"] == patient_id:
+                    for patientdata_id, patientdata_data in patientdatas.items():
+                        if patientdata_data["status"] == 'Inpatient':
+                            inpatients[patientdata_id] = patientdata_data       
 
     # Sort appointments by date
     sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
-    print(appointment_datetime)
-    print(date.datetime.now())
+
+    
+
+
     # Pass the combined data to the template
     return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
-                                                             'patients': patients, 'uid': uid, 'doctors': doctors})
+                                                             'patients': patients, 'uid': uid, 'doctors': doctors,
+                                                             'inpatients':inpatients})
 
 def ChargeNurseDashboard(request):
     nurses = db.child("nurses").get().val()
@@ -718,8 +741,9 @@ def patient_personal_information_inpatient(request):
 
     chosenPatientDatas = {}
     for patientsdata_id, patientsdata_data in patientsdata.items():
-        if chosenPatient == patientsdata_data["patientid"]:
-            chosenPatientDatas[patientsdata_id] = patientsdata_data
+        if "patientid" in patientsdata_data:
+            if chosenPatient == patientsdata_data["patientid"]:
+                chosenPatientDatas[patientsdata_id] = patientsdata_data
 
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
