@@ -71,18 +71,22 @@
                             </a>
                         </td>
                         <td>{{ patients_data.gender }}</td>
-                        {% for patientsdata_id, patientsdata_data in patientsdata.items %}
-                            {% if patients_data.uid == patientsdata_data.patientid %}
-                                {% if patientsdata_data.status == "Inpatient" %}
-                                    <td>{{ patientsdata_data.disease }}</td>
-                                    <td>{{ patientsdata_data.lastVisited }}</td>
-                                    <td>{{ patientsdata_data.room }}</td>
-                                    <td>{{ patientsdata_data.status }}</td>
-                                {% elif patientsdata_data.status == "Outpatient" %}
-                                    <td>{{ patientsdata_data.disease }}</td>
-                                    <td>{{ patientsdata_data.lastVisited }}</td>
+                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                            {% if patients_id == chosenPatientData_data.patientid %}
+                                {% if chosenPatientData_data.status == "Inpatient" %}
+                                    <td>{{ chosenPatientData_data.disease }}</td>
                                     <td>-</td>
-                                    <td>{{ patientsdata_data.status }}</td>
+                                    {% for room_id, room_data in rooms.items %}
+                                        {% if chosenPatientData_data.room == room_id %}
+                                            <td>{{ room_data.rnumber }}</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <td>{{ chosenPatientData_data.status }}</td>
+                                {% elif chosenPatientData_data.status == "Outpatient" %}
+                                    <td>-</td>
+                                    <td>{{ chosenPatientData_data.lastVisited }}</td>
+                                    <td>-</td>
+                                    <td>{{ chosenPatientData_data.status }}</td>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}

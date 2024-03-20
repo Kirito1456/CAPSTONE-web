@@ -232,7 +232,7 @@
                     <div id="myModal" class="modalFinish1">
                         <div class="modal-content">
                             <span id="closeModalButton1">&times;</span>
-                            <h2>Reschedule Appointment</h2>
+                            <h2>Follow Up Appointment</h2>
                             <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
                                 {% csrf_token %}
                                 {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
@@ -694,7 +694,7 @@
                     {% if chosenPatientConsulNotes %}
                         {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                             {% if chosenPatientConsulNotes_data.diagnosis %}
-                                <p>Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</p>
+                                <p >Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</p>
                             {% else %} 
                                 <p>Diagnosis: No Current Diagnosis</p>
                             {% endif %} 

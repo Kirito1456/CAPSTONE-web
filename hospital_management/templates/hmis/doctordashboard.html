@@ -95,8 +95,12 @@
                                     {{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
                                     <td><label class="accountT_lbl">
                                         {{ inpatient_data.disease }}</label></td>
-                                    <td><label class="accountT_lbl">
-                                        {{ inpatient_data.room }}</label></td>
+                                    {% for room_id, room_data in rooms.items %}
+                                        {% if inpatient_data.room == room_id %}
+                                            <td><label class="accountT_lbl">
+                                                {{ room_data.rnumber }}</label></td>
+                                        {% endif %}
+                                    {% endfor %}
                             {% endif %}
                             
                         {% endfor %}
