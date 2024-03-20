@@ -77,6 +77,37 @@
 
         <br>
         <p>Inpatients</p>
+        {% if inpatients %}
+            <table class="clients_table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Disease</th>
+                        <th>Room Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient_id, patient_data in patients.items %}
+                    <tr>
+                        {% for inpatient_id, inpatient_data in inpatients.items %}
+                            {% if patient_data.uid == inpatient_data.patientid %}
+                                <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}">
+                                    {{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
+                                    <td><label class="accountT_lbl">
+                                        {{ inpatient_data.disease }}</label></td>
+                                    <td><label class="accountT_lbl">
+                                        {{ inpatient_data.room }}</label></td>
+                            {% endif %}
+                            
+                        {% endfor %}
+                        </td>  
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No Inpatients Assigned</p>
+        {% endif %}
     </div>
 </div>
 

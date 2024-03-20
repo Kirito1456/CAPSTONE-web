@@ -49,8 +49,13 @@ detailsLinks.forEach(function(detailsLink) {
 var modal = document.getElementById("myModal");
 var span = document.getElementsByClassName("close")[0];
 
-function openModal() {
+function openModal(appointmentId) {
+    
     modal.style.display = "block";
+
+    // Set the value of appID input in the modal
+    var appIDInput = document.getElementById('appID');
+    appIDInput.value = appointmentId;
 }
 
 // When the user clicks on <span> (x), close the modal
