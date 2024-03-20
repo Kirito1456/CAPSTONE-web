@@ -360,6 +360,7 @@
                 <li><a id="immunization-link" href="#">Immunization</a></li>
                 <li><a id="family-history-link" href="#">Family History</a></li>
                 <li><a id="social-history-link" href="#">Social History</a></li>
+                <li><a id="consultation-history-link" href="#">Past Consultation Notes</a></li>
             </ul>
         </div>
         <div id="content-container">
@@ -376,10 +377,10 @@
         const immunizationLink = document.getElementById('immunization-link');
         const familyHistoryLink = document.getElementById('family-history-link');
         const socialHistoryLink = document.getElementById('social-history-link');
+        const consultationHistoryLink = document.getElementById('consultation-history-link');
 
         // Get reference to content container
         const contentContainer = document.getElementById('content-container');
-
         const backButton = document.getElementById('backButton');
 
         backButton.addEventListener('click', function() {
@@ -941,6 +942,11 @@
         socialHistoryLink.addEventListener('click', function(event) {
             event.preventDefault();
             displaySocialHistoryForm();
+        });
+
+        consultationHistoryLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            contentContainer.innerHTML = 'Consultation History Content TBA';
         });
         
         
