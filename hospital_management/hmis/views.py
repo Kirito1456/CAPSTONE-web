@@ -822,9 +822,8 @@ def patient_personal_information_inpatient(request):
     time_slots = []
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
     
-
     if appointmentschedule_data:
-    # Define time slots for morning
+        # Define time slots for morning
         morning_start_str = appointmentschedule_data.get("morning_start")
         morning_end_str = appointmentschedule_data.get("morning_end")
 
@@ -854,7 +853,25 @@ def patient_personal_information_inpatient(request):
             time_slots.append(current_time.strftime('%H:%M'))
             current_time += interval
 
+    # Fetch appointments from the database
+    appointments = db.child("appointments").get().val()
+    booked_times = set()
 
+    # Exclude booked times from the available time slots
+    for appointment_id, appointment_data in appointments.items():
+        # if appointment_data["doctorUID"] == uid:
+            if appointment_data["status"] == "Finished":
+                appointment_date = appointment_data["appointmentDate"]
+                appointment_time = appointment_data["appointmentTime"]
+                appointment_datetime_str = f"{appointment_date} {appointment_time}"
+                appointment_datetime = datetime.strptime(appointment_datetime_str, '%Y-%m-%d %I:%M %p')
+                booked_times.add(appointment_datetime.strftime('%H:%M'))
+
+    # Remove booked times from the available time slots
+    time_slots = [time_slot for time_slot in time_slots if time_slot not in booked_times]
+
+
+    print(booked_times)
     print(time_slots)
     chosenPatientData = {}
     for patients_id, patients_data in patients.items():
@@ -1323,7 +1340,15 @@ def save_prescriptions(request):
     patient_uid = request.GET.get('chosenPatient')
     print(patient_uid)
     if request.method == 'POST':
-        
+        numOfDays = int(request.POST.get('numOfDays'))  # Convert to integer
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Calculate endDate
+        todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
+        endDate = todaydate_datetime + timedelta(days=numOfDays)
+
+        endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+
         patient_id = patient_uid 
         medicine_name = request.POST.getlist('medicine_name')
         dosage = request.POST.getlist('dosage')
@@ -1334,6 +1359,12 @@ def save_prescriptions(request):
         print(todaydate, patient_id, medicine_name, dosage, route, frequency, additional_remarks)
         try:
             id = str(uuid.uuid1())
+            status = 'Ongoing'  # Default status
+
+            # Check if endDate is reached
+            if datetime.now() > endDate:
+                status = 'Finished'
+
             data = {
                 'prescriptionsoderUID': id,
                 'medicine_name': medicine_name,
@@ -1342,7 +1373,9 @@ def save_prescriptions(request):
                 'frequency': frequency,
                 'additional_remarks': additional_remarks,
                 'patient_id': patient_id,
-                'todaydate': todaydate
+                'todaydate': todaydate,
+                'endDate': endDate_str,
+                'status': status
             }
             db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
 

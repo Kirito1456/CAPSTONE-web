@@ -238,7 +238,7 @@
                                 {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
                                     {% if appointmentsched_data.uid == uid %}
                                         <label for="new-appointment-date">New Date: </label>
-                                        <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;"><br>
+                                        <input type="date" id="new-appointment-date" name="new-appointment-date" min="" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;"><br>
                                         
                                         <label for="new-appointment-time">New Time:</label>
                                         <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
@@ -250,6 +250,7 @@
                                 {% endfor %}
                                 <button type="submit" id="appID" name="appID" value={{ chosenPatientData_id }}>Appointment Finished</button>
                                 {% comment %} <button id="closeModalButton1">Close</button> {% endcomment %}
+
                             </form>
                         </div>
                     </div>
