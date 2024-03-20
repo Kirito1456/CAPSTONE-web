@@ -4,6 +4,119 @@
 {% block styles%} 
 <link rel="stylesheet" href="{% static 'css/patient_personal_information.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    .modal1 {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content1 {
+        background-color: white;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        border-radius: 5px;
+        max-width: 600px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 70%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .modal-content1 h2 {
+        margin-top: 0;
+    }
+    
+    .modal-content1 label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .modal-content1 textarea,
+    .modal-content1 input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    
+    .modal-content1 table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+    }
+    
+    .modal-content1 table th,
+    .modal-content1 table td {
+        padding: 8px;
+        border: 1px solid #ccc;
+    }
+    
+    .modal-content1 button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    
+    .modal-content1 button:last-child {
+        margin-right: 0;
+        background-color: #ccc;
+    }
+    
+    .close1 {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    
+    .close1:hover,
+    .close1:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .prescriptions-container {
+        display: grid;
+        display: flex; 
+        flex-direction: column;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        grid-auto-flow: row; /* Ensure rows are stacked */
+    }
+    
+    .prescription-row1 {
+        display: grid;
+        
+        grid-template-columns: repeat(6, 1fr);
+        border: 1px solid #ccc;
+    }
+    
+    .cell {
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+    
+    .header {
+        font-weight: bold;
+        background-color: #f0f0f0;
+    }
+    
+    
+    
+</style>
 {% endblock styles%}
 
 {% block content %}
@@ -569,6 +682,61 @@
     </div>
 </div>
 
+<div id="inpatientModal1" class="modal1" style="display: none;">
+    <div class="modal-content1">
+        <h2>Discharge Instruction Form</h2>
+        <form id="dischargeForm1" method="post">
+            {% csrf_token %}
+            {% comment %} <label for="instructions1">Instructions:</label><br>
+            <textarea id="instructions1" name="instructions1" rows="4" cols="50"></textarea><br> {% endcomment %}
+            
+            <div id="prescriptionsContainer1" class="prescriptions-container">
+                <div class="prescription-row1 header">
+                    <div class="cell">Select</div>
+                    <div class="cell">Medicine Name</div>
+                    <div class="cell">Dosage</div>
+                    <div class="cell">Route</div>
+                    <div class="cell">Frequency</div>
+                    <div class="cell">Remarks</div>
+                </div>
+                <div class="prescription-row1">
+                    
+                    <div class="cell"><input type="checkbox" name="selectMedicine[]" class="selectMedicine" /></div>
+                    <div class="cell">
+                        <input type="text" name="medicineName1" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                        <datalist id="medicine_name_suggestions">
+                            {% for medicine in medicines_list %}
+                                <option value="{{ medicine }}">
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                    <div class="cell"><input type="text" name="dosage1" /></div>
+                    <div class="cell"><select class="route-dropdown" name="route1">
+                        <option value="" selected disabled>Select Route</option>
+                        <option value="Oral">Oral</option>
+                        <option value="Injection">Injection</option>
+                        <option value="Topical">Topical</option>
+                    </select></div>
+                    <div class="cell"><select class="frequency-dropdown" name="frequency1">
+                        <option value="" selected disabled>Select Frequency</option>
+                        <option value="Once Daily">Once Daily</option>
+                        <option value="Twice Daily">Twice Daily</option>
+                        <option value="Thrice Daily">Thrice Daily</option>
+                    </select></div>
+                    <div class="cell"><input type="text" name="remarks1" /></div>
+                </div>
+            </div>
+            
+            <button type="button" id="addMedicine1">Add Medicine</button><br>
+            
+            <button type="button" id="removeSelectedRows">Remove Selected Rows</button><br>
+            
+            <button type="submit" id="addDischargePrescription" name="addDischargePrescription">Submit</button>
+            <button type="button" id="closeInpatientModal1">Close</button>
+        </form>
+    </div>
+</div>
+
 <script src="{% static 'js/patient_data.js' %}"></script>
 <script>
     var healthConditions = document.getElementById("health-conditions");
@@ -632,14 +800,108 @@
     }
 
     var endTransactionButton = document.getElementById("endtransaction");
+    var toggleSwitch = document.getElementById("patientTypeToggle");
 
     endTransactionButton.addEventListener("click", function() {
-        var confirmEnd = confirm("Are you sure you want to end the appointment?");
-        
-        if (confirmEnd) {
-            window.location.href = "{% url 'patient_data_doctor_view' %}";
+        var confirmEnd;
+        var patientStatus = toggleSwitch.checked ? "Inpatient" : "Outpatient";
+
+        if (patientStatus === "Inpatient") {
+            // Display a modal for Inpatient
+            var modal = document.getElementById("inpatientModal1");
+            modal.style.display = "block";
+        } else {
+            // Show an alert for Outpatient
+            confirmEnd = confirm("Are you sure you want to end the appointment?");
+            if (confirmEnd) {
+                window.location.href = "{% url 'patient_data_doctor_view' %}";
+            }
         }
     });
+    var closeInpatientModalButton = document.getElementById("closeInpatientModal1");
+    var inpatientModal = document.getElementById("inpatientModal1");
+
+    closeInpatientModalButton.addEventListener("click", function() {
+        inpatientModal.style.display = "none";
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        const addMedicineButton = document.getElementById("addMedicine1");
+        const removeSelectedRowsButton = document.getElementById("removeSelectedRows");
+        const closeInpatientModalButton = document.getElementById("closeInpatientModal1");
+        
+        addMedicineButton.addEventListener('click', function() {
+            addMedicineRow();
+        });
+        
+        removeSelectedRowsButton.addEventListener('click', function() {
+            removeSelectedRows();
+        });
+        
+        closeInpatientModalButton.addEventListener('click', function() {
+            document.getElementById("inpatientModal1").style.display = "none";
+        });
+    });
+    
+
+    function addMedicineRow() {
+        const prescriptionsContainer = document.getElementById("prescriptionsContainer1");
+        const newRow = document.createElement("div");
+        newRow.classList.add("prescription-row1");
+    
+        newRow.innerHTML = `
+            <div class="cell"><input type="checkbox" name="selectMedicine[]" class="selectMedicine" /></div>
+            <div class="cell"><input type="text" name="medicineName1" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                <datalist id="medicine_name_suggestions">
+                    {% for medicine in medicines_list %}
+                        <option value="{{ medicine }}">
+                    {% endfor %}
+                </datalist></div>
+            <div class="cell"><input type="text" name="dosage1" /></div>
+            <div class="cell"><select class="route-dropdown" name="route1">
+                <option value="" selected disabled>Select Route</option>
+                <option value="Oral">Oral</option>
+                <option value="Injection">Injection</option>
+                <option value="Topical">Topical</option>
+            </select></div>
+            <div class="cell"><select class="frequency-dropdown" name="frequency1">
+                <option value="" selected disabled>Select Frequency</option>
+                <option value="Once Daily">Once Daily</option>
+                <option value="Twice Daily">Twice Daily</option>
+                <option value="Thrice Daily">Thrice Daily</option>
+            </select></div>
+            <div class="cell"><input type="text" name="remarks1" /></div>
+        `;
+    
+        prescriptionsContainer.appendChild(newRow);
+    }
+    
+    function removeSelectedRows() {
+        const selectedCheckboxes = document.querySelectorAll('.selectMedicine:checked');
+        selectedCheckboxes.forEach(function(checkbox) {
+            checkbox.closest('.prescription-row1').remove();
+        });
+    }
+
+    document.getElementById('medicineName1').addEventListener('input', function() {
+        var query = this.value;
+        var suggestions = Array.from(document.getElementById('medicine_name_suggestions').options)
+            .map(option => option.value)
+            .filter(medicine => medicine.toLowerCase().includes(query.toLowerCase()));
+    
+        displayAutocompleteSuggestions(suggestions);
+    });
+    
+    // Function to display autocomplete suggestions
+    function displayAutocompleteSuggestions(suggestions) {
+        var dropdown = document.getElementById('medicine_name_suggestions');
+        dropdown.innerHTML = ''; // Clear previous suggestions
+    
+        suggestions.forEach(function(suggestion) {
+            var option = document.createElement('option');
+            option.value = suggestion;
+            dropdown.appendChild(option);
+        });
+    }
 
 </script>
 

@@ -7,8 +7,6 @@ function toggleDropdown() {
     }
 }
 
-
-
 document.addEventListener("DOMContentLoaded", function() {
     const backButton = document.getElementById('backButton');
     const dropdown = document.getElementById("diagnosisDropdown");

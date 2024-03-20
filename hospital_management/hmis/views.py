@@ -726,6 +726,8 @@ def patient_personal_information_inpatient(request):
     date = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
+    medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
+    medicines_list = [medication['Generic Name'] for medication in medications_cursor]
 
     chosenPatient = request.GET.get('chosenPatient', '')
 
@@ -790,12 +792,37 @@ def patient_personal_information_inpatient(request):
             }
             db.child('testrequest').child(id).set(data)
 
+        if 'addDischargePrescription' in request.POST:
+            medicine_name = request.POST.getlist('medicineName1')
+            dosage = request.POST.getlist('dosage1')
+            route = request.POST.getlist('route1')
+            frequency = request.POST.getlist('frequency1')
+            additional_remarks = request.POST.getlist('remarks1')  
+            todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(todaydate, chosenPatient, medicine_name, dosage, route, frequency, additional_remarks)
+
+            data = {
+                'patient_id': chosenPatient,
+                'medicine_name': medicine_name,
+                'dosage': dosage,
+                'route': route,
+                'frequency': frequency,
+                'additional_remarks': additional_remarks,
+                'todaydate': todaydate
+            }
+            db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
+            db.child("patientdata").child(chosenPatient).update({"status": "Outpatient"})
+            return redirect('patient_data_doctor_view')
+
+
+
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
                                                                                 'chosenPatientDatas': chosenPatientDatas, 
                                                                                 'chosenPatientVitalEntryData': chosenPatientVitalEntryData,
                                                                                 'chosenPatientConsulNotes': chosenPatientConsulNotes,
                                                                                 'doctors': doctors,
-                                                                                'uid': uid})
+                                                                                'uid': uid,
+                                                                                'medicines_list': medicines_list})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
@@ -1177,6 +1204,8 @@ def save_prescriptions(request):
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
     return render(request, 'hmis/view_treatment_plan.html', {'patient_uid': patient_uid})
+
+
 
 def diagnostic_lab_reports(request):
     return render(request, 'hmis/diagnostic_lab_reports.html')
