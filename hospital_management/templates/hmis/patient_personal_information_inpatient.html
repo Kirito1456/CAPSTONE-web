@@ -186,9 +186,25 @@
                     <div class="toggle-switch">
                         <input type="checkbox" id="patientTypeToggle" {% if chosenPatientDatas_data.status == 'Inpatient' %} checked {% endif %}>
                         <label for="patientTypeToggle">{{ chosenPatientDatas_data.status }}</label>
+                        <button id="followup" onclick="openModal('{{ chosenPatientData_id }}')">Follow - Up Checkup</button>
                         <button id="endtransaction">Appointment Finished</button>
                     </div>
                     {% endfor %}
+
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2>Reschedule Appointment</h2>
+                            <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
+                                {% csrf_token %}
+                                <label for="new-appointment-date">New Date:</label>
+                                <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
+                                <label for="new-appointment-time">New Time:</label>
+                                <select id="new-appointment-time" name="new-appointment-time"></select><br>
+                                <button type="submit" id="appID" name="appID" value={{ chosenPatientData_id }}>Appointment Finished</button>
+                            </form>
+                        </div>
+                    </div>
 
                     <button onclick="toggleBiometricInfo()">Biometric Information</button>
                     <div id="biometric-info" style="display: none;">
@@ -737,6 +753,33 @@
     </div>
 </div>
 
+<script>
+    var reschedmodal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    function openModal(appointmentId) {
+    
+        reschedmodal.style.display = "block";
+
+        // Set the value of appID input in the modal
+        var appIDInput = document.getElementById('appID');
+        appIDInput.value = appointmentId;
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == reschedmodal) {
+        modal.style.display = "none";
+        }
+    }
+    
+
+</script>
 <script src="{% static 'js/patient_data.js' %}"></script>
 <script>
     var healthConditions = document.getElementById("health-conditions");
@@ -903,6 +946,7 @@
         });
     }
 
+    
 </script>
 
 
