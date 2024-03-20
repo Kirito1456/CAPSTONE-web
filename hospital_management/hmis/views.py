@@ -12,6 +12,7 @@ from django.contrib.auth import logout as auth_logout
 from django.core.mail import send_mail
 import json
 import uuid
+import random
 
 from hmis.models import Medications
 from hospital_management.settings import collection 
@@ -686,7 +687,8 @@ def DoctorDashboard(request):
     patients = db.child("patients").get().val()
     patientdatas = db.child("patientdata").get().val()
     doctors = db.child("doctors").get().val()
-    uid = request.session['uid']    
+    uid = request.session['uid'] 
+    rooms = db.child("rooms").get().val()
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -707,7 +709,7 @@ def DoctorDashboard(request):
             for patient_id, patient_data in patients.items():
                 if appointment_data["patientName"] == patient_id:
                     for patientdata_id, patientdata_data in patientdatas.items():
-                        if patientdata_data["status"] == 'Inpatient':
+                        if patientdata_data["status"] == 'Inpatient' and patientdata_data['patientid'] == appointment_data["patientName"]:
                             inpatients[patientdata_id] = patientdata_data       
 
     # Sort appointments by date
@@ -719,7 +721,7 @@ def DoctorDashboard(request):
     # Pass the combined data to the template
     return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors,
-                                                             'inpatients':inpatients})
+                                                             'inpatients':inpatients, 'rooms': rooms})
 
 def ChargeNurseDashboard(request):
     nurses = db.child("nurses").get().val()
@@ -787,6 +789,7 @@ def patient_data_doctor_view(request):
     appointments = db.child("appointments").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
+    rooms = db.child("rooms").get().val()
 
     chosenPatients= {}
     for patients_id, patients_data in patients.items():
@@ -801,13 +804,20 @@ def patient_data_doctor_view(request):
                 chosenPatientData[patientsdata_id] = patientsdata_data
 
     # Pass the patients data to the template
-    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': chosenPatients, 'chosenPatientData': patientsdata, 'doctors': doctors, 'uid': uid})
+    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': chosenPatients, 
+                                                                  'chosenPatientData': chosenPatientData, 
+                                                                  'doctors': doctors, 
+                                                                  'uid': uid,
+                                                                  'rooms': rooms})
 
 def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
     vitalsigns = db.child("vitalsigns").get().val()
     consulnotes = db.child("consultationNotes").get().val()
+    # today = datetime.now()
+    # tomorrow = today + timedelta(days=1)
+    # date = tomorrow.strftime('%Y-%m-%d')
     date = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
@@ -905,6 +915,7 @@ def patient_personal_information_inpatient(request):
     consulnotes_data = consultation_notes_ref.child(date).get().val()
     if consulnotes_data:
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
+        currdiagnosis = consulnotes_data['diagnosis']
 
     if request.method == 'POST':
 
@@ -955,27 +966,166 @@ def patient_personal_information_inpatient(request):
             
             appID = str(uuid.uuid1())
             appointment_date = request.POST.get('new-appointment-date')
-            appointment_time = request.POST.get('new-appointment-time')
-            # Convert to datetime object
-            time_obj = datetime.strptime(appointment_time, "%H:%M")
+            if appointment_date:
+                appointment_time = request.POST.get('new-appointment-time')
+                # Convert to datetime object
+                time_obj = datetime.strptime(appointment_time, "%H:%M")
 
-            # Convert to 12-hour format with AM/PM
-            time_12h = time_obj.strftime("%I:%M %p")
-            data1 = {
-                'appointmentDate': appointment_date,
-                'appointmentTime': time_12h,
-                'appointmentVisitType': 'Follow-Up Visit',
-                'doctorUID': uid,
-                'patientName': chosenPatient,
-                'status': 'Ongoing'
-            }
-            
+                # Convert to 12-hour format with AM/PM
+                time_12h = time_obj.strftime("%I:%M %p")
+                data1 = {
+                    'appointmentDate': appointment_date,
+                    'appointmentTime': time_12h,
+                    'appointmentVisitType': 'Follow-Up Visit',
+                    'doctorUID': uid,
+                    'patientName': chosenPatient,
+                    'status': 'Ongoing'
+                }
+                db.child('appointments').child(appID).set(data1)
+
             db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
-            db.child('appointments').child(appID).set(data1)
-            db.child("patientdata").child(chosenPatient).update({"status": "Outpatient"})
-        
+            patientData = db.child("patientdata").child(chosenPatient).get().val()
+            
+            rooms = db.child("rooms").get().val()
+            for room_id, room_data in rooms.items():
+                if patientData['room'] == room_id:
+                    room_patients = room_data.get('patients', [])
+
+                    for patient in room_patients:
+                        if chosenPatient == patient:
+                            room_patients.remove(patient)
+                            db.child("rooms").child(room_id).update({'patients': room_patients})
+                            break
+
+
+            db.child("patientdata").child(chosenPatient).update({
+                        'status': 'Outpatient',
+                        'disease': None,
+                        'room': None,
+                        'lastVisited': date
+                    })
+ 
         if 'admitButton' in request.POST:
-            db.child("patientdata").child(chosenPatient).update({"status": "Inpatient"})
+
+            #currdiagnosis = request.POST.get("currdiagnosis")
+            print(currdiagnosis)
+             # Check if the patient is already an inpatient
+            patient_data = db.child("patientdata").child(chosenPatient).get().val()
+            if patient_data and patient_data.get('status') == 'Outpatient':
+            # Get room occupancy data
+                #room_occupancy = {}
+                rooms = db.child("rooms").get().val()
+                # Filter rooms that are not full and on the specified floor
+                available_rooms = [room_id for room_id, room_data in rooms.items() if room_data.get('max_occupants', 0) > 0 
+                               and room_data.get('fnumber') == 2
+                               and len(room_data.get('patients', [])) < room_data.get('max_occupants', 0)]
+
+            # If there are available rooms, assign the patient to a random available room
+                if available_rooms:
+                    chosen_room_id = random.choice(available_rooms)
+                    print(chosen_room_id)
+                    room_data = rooms[chosen_room_id]
+                    room_patients = room_data.get('patients', [])
+                    room_patients.append(chosenPatient)
+                    db.child("rooms").child(chosen_room_id).update({'patients': room_patients})
+
+
+                    db.child("patientdata").child(chosenPatient).update({
+                        'status': 'Inpatient',
+                        'disease': currdiagnosis,
+                        'room': chosen_room_id
+                    })
+
+            #db.child("patientdata").child(chosenPatient).update({"status": "Inpatient",
+                                                                 #'diagnosis': currdiagnosis,
+        patients = db.child("patients").get().val()
+        patientsdata = db.child("patientdata").get().val()
+        vitalsigns = db.child("vitalsigns").get().val()
+        consulnotes = db.child("consultationNotes").get().val()
+        # today = datetime.now()
+        # tomorrow = today + timedelta(days=1)
+        # date = tomorrow.strftime('%Y-%m-%d')
+        date = datetime.today().strftime('%Y-%m-%d')
+        doctors = db.child("doctors").get().val()
+        uid = request.session['uid'] 
+        medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
+        medicines_list = [medication['Generic Name'] for medication in medications_cursor]
+
+        chosenPatient = request.GET.get('chosenPatient', '')
+
+        appointmentschedule = db.child("appointmentschedule").get().val()
+        doctorSched = db.child("appointmentschedule").child(uid).get().val()
+
+        time_slots = []
+        appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+        
+
+        if appointmentschedule_data:
+        # Define time slots for morning
+            morning_start_str = appointmentschedule_data.get("morning_start")
+            morning_end_str = appointmentschedule_data.get("morning_end")
+
+            # Convert strings to datetime objects for morning
+            morning_start = datetime.strptime(morning_start_str, '%H:%M')
+            morning_end = datetime.strptime(morning_end_str, '%H:%M')
+
+            # Define time slots for afternoon
+            afternoon_start_str = appointmentschedule_data.get("afternoon_start")
+            afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+
+            # Convert strings to datetime objects for afternoon
+            afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+            afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+
+            interval = timedelta(minutes=30)
+
+            # Calculate time slots for morning
+            current_time = morning_start
+            while current_time <= morning_end:
+                time_slots.append(current_time.strftime('%H:%M'))
+                current_time += interval
+
+            # Calculate time slots for afternoon
+            current_time = afternoon_start
+            while current_time <= afternoon_end:
+                time_slots.append(current_time.strftime('%H:%M'))
+                current_time += interval
+
+
+        print(time_slots)
+        chosenPatientData = {}
+        for patients_id, patients_data in patients.items():
+            if chosenPatient == patients_data["uid"]:
+                chosenPatientData[patients_id] = patients_data
+
+                #retrieve patient birthdate
+                chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
+                #calculate patient age function
+                # chosenPatientAge = calculate_age(chosenPatientBirthday)
+
+        chosenPatientDatas = {}
+        for patientsdata_id, patientsdata_data in patientsdata.items():
+            if "patientid" in patientsdata_data:
+                if chosenPatient == patientsdata_data["patientid"]:
+                    chosenPatientDatas[patientsdata_id] = patientsdata_data
+
+        #Get Vital Signs Data of Chosen Patient
+        chosenPatientVitalEntryData = {}
+        for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+            if chosenPatient == vitalsigns_data["patientid"]:
+                chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+
+        chosenPatientConsulNotes = {}
+        # for consulnotes_id, consulnotes_data in consulnotes.items():
+        #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
+        #         chosenPatientConsulNotes[consulnotes_id] = consulnotes_data
+
+        consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
+        # Retrieve the data for the specified patient ID and date
+        consulnotes_data = consultation_notes_ref.child(date).get().val()
+        if consulnotes_data:
+            chosenPatientConsulNotes[chosenPatient] = consulnotes_data
+            currdiagnosis = consulnotes_data['diagnosis']                                                         #'room': 201,})
 
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
