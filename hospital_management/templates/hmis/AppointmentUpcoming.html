@@ -69,7 +69,7 @@
                     <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
                     {% for patient_id, patient_data in patients.items %}
                         {% if patient_data.uid == appointment_data.patientName %}
-                            <td><label class="accountT_lbl">{{ patient_data.lname }}, {{ patient_data.fname }}</label></td>
+                            <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
                         {% endif %}
                     {% endfor %}
                     <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
@@ -102,7 +102,7 @@
                     {% endfor %}
                     </td>    
                        
-                    <div id="myModal" class="modal">
+                    <div id="myModal" class="modalFinish">
                         <div class="modal-content">
                             <span class="close">&times;</span>
                             <h2>Reschedule Appointment</h2>

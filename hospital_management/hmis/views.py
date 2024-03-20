@@ -447,17 +447,65 @@ def update_appointment(request):
     return redirect('AppointmentUpcoming')
 
 def followup_appointment(request):
+    uid = request.session['uid'] 
+    chosenPatient = request.GET.get('chosenPatient', '')
+
+    appointmentschedule = db.child("appointmentschedule").get().val()
+
+    time_slots = []
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+
+    if appointmentschedule_data:
+    # Define time slots for morning
+        morning_start_str = appointmentschedule_data.get("morning_start")
+        morning_end_str = appointmentschedule_data.get("morning_end")
+
+        # Convert strings to datetime objects for morning
+        morning_start = datetime.strptime(morning_start_str, '%H:%M')
+        morning_end = datetime.strptime(morning_end_str, '%H:%M')
+
+        # Define time slots for afternoon
+        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
+        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+
+        # Convert strings to datetime objects for afternoon
+        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+
+        interval = timedelta(minutes=30)
+
+        # Calculate time slots for morning
+        current_time = morning_start
+        while current_time <= morning_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+
+        # Calculate time slots for afternoon
+        current_time = afternoon_start
+        while current_time <= afternoon_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+
+
+    print(time_slots)
+
     if request.method == 'POST':
         try:
             id=str(uuid.uuid1())
             appID = request.POST.get('appID')
             new_date = request.POST.get('new-appointment-date')
-            #new_time = request.POST.get('new-appointment-time')
+            new_time = request.POST.get('new-appointment-time')
             doctor = request.session['uid']
             print(appID)
             print(id)
             print(doctor)
             print(new_date)
+
+            # Convert to datetime object
+            time_obj = datetime.strptime(new_time, "%H:%M")
+
+            # Convert to 12-hour format with AM/PM
+            time_12h = time_obj.strftime("%I:%M %p")
 
             # Format time and date objects to desired format
             #new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
@@ -475,7 +523,7 @@ def followup_appointment(request):
                 'doctorUID': doctor,
                 'appointmentVisitType': "Follow-Up Visit",
                 'appointmentDate': new_date,
-                #'appointmentTime': new_time_str,
+                'appointmentTime': time_12h,
                 'status': 'Ongoing',
                 'patientName': appID
             }) 
@@ -485,8 +533,10 @@ def followup_appointment(request):
 
         return redirect('DoctorDashboard')  # Redirect to the appointments list page
 
-    # Handle GET request or invalid form submission
-    return redirect('AppointmentUpcoming')
+    return render(request, 'hmis/AppointmentUpcoming.html', {'uid': uid,
+                                                            'appointmentschedule': appointmentschedule,
+                                                            'time_slots': time_slots})
+        
 
 def AppointmentPast(request):
 
@@ -766,6 +816,46 @@ def patient_personal_information_inpatient(request):
 
     chosenPatient = request.GET.get('chosenPatient', '')
 
+    appointmentschedule = db.child("appointmentschedule").get().val()
+    doctorSched = db.child("appointmentschedule").child(uid).get().val()
+
+    time_slots = []
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+    
+
+    if appointmentschedule_data:
+    # Define time slots for morning
+        morning_start_str = appointmentschedule_data.get("morning_start")
+        morning_end_str = appointmentschedule_data.get("morning_end")
+
+        # Convert strings to datetime objects for morning
+        morning_start = datetime.strptime(morning_start_str, '%H:%M')
+        morning_end = datetime.strptime(morning_end_str, '%H:%M')
+
+        # Define time slots for afternoon
+        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
+        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+
+        # Convert strings to datetime objects for afternoon
+        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+
+        interval = timedelta(minutes=30)
+
+        # Calculate time slots for morning
+        current_time = morning_start
+        while current_time <= morning_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+
+        # Calculate time slots for afternoon
+        current_time = afternoon_start
+        while current_time <= afternoon_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+
+
+    print(time_slots)
     chosenPatientData = {}
     for patients_id, patients_data in patients.items():
         if chosenPatient == patients_data["uid"]:
@@ -845,10 +935,30 @@ def patient_personal_information_inpatient(request):
                 'additional_remarks': additional_remarks,
                 'todaydate': todaydate
             }
-            db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
-            db.child("patientdata").child(chosenPatient).update({"status": "Outpatient"})
-            return redirect('patient_data_doctor_view')
+            
+            appID = str(uuid.uuid1())
+            appointment_date = request.POST.get('new-appointment-date')
+            appointment_time = request.POST.get('new-appointment-time')
+            # Convert to datetime object
+            time_obj = datetime.strptime(appointment_time, "%H:%M")
 
+            # Convert to 12-hour format with AM/PM
+            time_12h = time_obj.strftime("%I:%M %p")
+            data1 = {
+                'appointmentDate': appointment_date,
+                'appointmentTime': time_12h,
+                'appointmentVisitType': 'Follow-Up Visit',
+                'doctorUID': uid,
+                'patientName': chosenPatient,
+                'status': 'Ongoing'
+            }
+            
+            db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
+            db.child('appointments').child(appID).set(data1)
+            db.child("patientdata").child(chosenPatient).update({"status": "Outpatient"})
+        
+        if 'admitButton' in request.POST:
+            db.child("patientdata").child(chosenPatient).update({"status": "Inpatient"})
 
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
@@ -857,7 +967,9 @@ def patient_personal_information_inpatient(request):
                                                                                 'chosenPatientConsulNotes': chosenPatientConsulNotes,
                                                                                 'doctors': doctors,
                                                                                 'uid': uid,
-                                                                                'medicines_list': medicines_list})
+                                                                                'medicines_list': medicines_list,
+                                                                                'appointmentschedule': appointmentschedule,
+                                                                                'time_slots': time_slots})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
