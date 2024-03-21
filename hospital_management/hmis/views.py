@@ -450,9 +450,8 @@ def update_appointment(request):
 def followup_appointment(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
-    endAppointment = request.GET.get('appointment_id', '')
     appointmentschedule = db.child("appointmentschedule").get().val()
-    print(endAppointment)
+    
     time_slots = []
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
 
@@ -488,19 +487,21 @@ def followup_appointment(request):
             current_time += interval
 
 
-    print(time_slots)
+    #print(time_slots)
 
     if request.method == 'POST':
         try:
             id=str(uuid.uuid1())
+            endAppointment = request.POST.get('past-appointment-id')
+            print(endAppointment)
             appID = request.POST.get('appID')
             new_date = request.POST.get('new-appointment-date')
             new_time = request.POST.get('new-appointment-time')
             doctor = request.session['uid']
-            print(appID)
-            print(id)
-            print(doctor)
-            print(new_date)
+            # print(appID)
+            # print(id)
+            # print(doctor)
+            # print(new_date)
 
             # Convert to datetime object
             time_obj = datetime.strptime(new_time, "%H:%M")
@@ -829,7 +830,7 @@ def patient_personal_information_inpatient(request):
     medicines_list = [medication['Generic Name'] for medication in medications_cursor]
 
     chosenPatient = request.GET.get('chosenPatient', '')
-    endAppointment = request.GET.get('appointment_id', '')
+    endAppointment = request.GET.get('appointmentID', '')
 
     appointmentschedule = db.child("appointmentschedule").get().val()
     doctorSched = db.child("appointmentschedule").child(uid).get().val()
@@ -1171,7 +1172,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'uid': uid,
                                                                                 'medicines_list': medicines_list,
                                                                                 'appointmentschedule': appointmentschedule,
-                                                                                'time_slots': time_slots})
+                                                                                'time_slots': time_slots,
+                                                                                'endAppointment': endAppointment})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
