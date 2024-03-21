@@ -450,9 +450,9 @@ def update_appointment(request):
 def followup_appointment(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
-
+    endAppointment = request.GET.get('appointment_id', '')
     appointmentschedule = db.child("appointmentschedule").get().val()
-
+    print(endAppointment)
     time_slots = []
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
 
@@ -527,6 +527,10 @@ def followup_appointment(request):
                 'appointmentTime': time_12h,
                 'status': 'Ongoing',
                 'patientName': appID
+            }) 
+            appointment_path1 = f"/appointments/{endAppointment}"
+            db.child(appointment_path1).update({
+                'status': 'Finished'
             }) 
 
         except Exception as e:
@@ -825,6 +829,7 @@ def patient_personal_information_inpatient(request):
     medicines_list = [medication['Generic Name'] for medication in medications_cursor]
 
     chosenPatient = request.GET.get('chosenPatient', '')
+    endAppointment = request.GET.get('appointment_id', '')
 
     appointmentschedule = db.child("appointmentschedule").get().val()
     doctorSched = db.child("appointmentschedule").child(uid).get().val()
@@ -929,21 +934,49 @@ def patient_personal_information_inpatient(request):
             save_diagnosis(request)
         
         if 'submitLabTestRequest' in request.POST:
-            print(chosenPatient)
             id = str(uuid.uuid1())
             request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            blood_test = request.POST.get('bloodTestCheckbox', False)
-            chest_xray = request.POST.get('chestXrayCheckbox', False)
-            urine_test = request.POST.get('urineTestCheckbox', False)
             
+            # Retrieve the values of the checkboxes for each test
+            blood_test = request.POST.get('bloodTestCheckbox', False)
+            urine_test = request.POST.get('urineTestCheckbox', False)
+            stool_test = request.POST.get('stoolTestCheckbox', False)
+            tissue_biopsy = request.POST.get('tissueBiopsyCheckbox', False)
+            xray = request.POST.get('xrayCheckbox', False)
+            ct_scan = request.POST.get('ctScanCheckbox', False)
+            mri = request.POST.get('mriCheckbox', False)
+            ultrasound = request.POST.get('ultrasoundCheckbox', False)
+            ecg = request.POST.get('ecgCheckbox', False)
+            colonoscopy = request.POST.get('colonoscopyCheckbox', False)
+            bronchoscopy = request.POST.get('bronchoscopyCheckbox', False)
+            pet_scan = request.POST.get('petScanCheckbox', False)
+            
+            # Construct the data dictionary
             data = {
                 'patient_id': chosenPatient,
                 'datetime': request_time,
+                'status': 'Ongoing',
                 'blood_test': blood_test,
-                'chest_xray': chest_xray,
-                'urine_test': urine_test
+                'urine_test': urine_test,
+                'stool_test': stool_test,
+                'tissue_biopsy': tissue_biopsy,
+                'xray': xray,
+                'ct_scan': ct_scan,
+                'mri': mri,
+                'ultrasound': ultrasound,
+                'ecg': ecg,
+                'colonoscopy': colonoscopy,
+                'bronchoscopy': bronchoscopy,
+                'pet_scan': pet_scan
             }
-            db.child('testrequest').child(id).set(data)
+            
+            # Save the data to the database
+            db.child('testrequest').child(chosenPatient).child(id).set(data)
+
+
+        if 'endAppointment' in request.POST:
+            db.child("appointments").child(endAppointment).update({'status': 'Finished'})
+            return redirect('DoctorDashboard')
 
         if 'addDischargePrescription' in request.POST:
             medicine_name = request.POST.getlist('medicineName1')
@@ -983,7 +1016,9 @@ def patient_personal_information_inpatient(request):
                 }
                 db.child('appointments').child(appID).set(data1)
 
-            db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
+            if medicine_name:
+                db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
+            
             patientData = db.child("patientdata").child(chosenPatient).get().val()
             
             rooms = db.child("rooms").get().val()
@@ -1531,6 +1566,7 @@ def save_prescriptions(request):
 
             messages.success(request, 'Prescription saved successfully!')
             return redirect(request.META.get('HTTP_REFERER', ''))
+        #add alerts
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
     return render(request, 'hmis/view_treatment_plan.html', {'patient_uid': patient_uid})

@@ -21,23 +21,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    backButton.addEventListener('click', function() {
-        window.history.back();
-    });
-
-    var toggleSwitch = document.getElementById("patientTypeToggle");
-    var patientStatus = toggleSwitch.checked ? "Inpatient" : "Outpatient";
-    toggleSections(patientStatus);
-
-    // Add event listener to toggle patient type
-    toggleSwitch.addEventListener('change', function() {
-        togglePatientType();
-        updateEndTransactionButton();
-    });
-
-    // Update the "End Transaction" button initially
-    updateEndTransactionButton();
-
     // Add event listener to Cancel button
     var cancelButton = document.getElementById("cancelButton");
     cancelButton.addEventListener('click', function() {
@@ -118,54 +101,41 @@ function toggleDiagnosis() {
     }
 }
 
-function toggleSections(status) {
-    var consultationNotesContainer = document.getElementById("consultation-notes-container");
-    var diagnosticsContainer = document.getElementById("diagnostic-tests-container");
-    var progressNotesContainer = document.getElementById("progress-notes-container");
-    var vitalSignContainer = document.getElementById("vital-signs-container");
-    var patientInfo = document.getElementById("patient-info");
+// function toggleSections(status) {
+//     var consultationNotesContainer = document.getElementById("consultation-notes-container");
+//     var diagnosticsContainer = document.getElementById("diagnostic-tests-container");
+//     var progressNotesContainer = document.getElementById("progress-notes-container");
+//     var vitalSignContainer = document.getElementById("vital-signs-container");
+//     var patientInfo = document.getElementById("patient-info");
 
-    if (status === "Inpatient") {
-        patientInfo.style.display = "block";
-        consultationNotesContainer.style.display = "block";
-        diagnosticsContainer.style.display = "block";
-        vitalSignContainer.style.display = "block";
-        progressNotesContainer.style.display = "block";
-    } else {
-        consultationNotesContainer.style.display = "block";
-        diagnosticsContainer.style.display = "block";
-        patientInfo.style.display = "block";
-        vitalSignContainer.style.display = "none";
-        progressNotesContainer.style.display = "none";
-    }
-}
+//     if (status === "Inpatient") {
+//         patientInfo.style.display = "block";
+//         consultationNotesContainer.style.display = "block";
+//         diagnosticsContainer.style.display = "block";
+//         vitalSignContainer.style.display = "block";
+//         progressNotesContainer.style.display = "block";
+//     } else {
+//         consultationNotesContainer.style.display = "block";
+//         diagnosticsContainer.style.display = "block";
+//         patientInfo.style.display = "block";
+//         vitalSignContainer.style.display = "none";
+//         progressNotesContainer.style.display = "none";
+//     }
+// }
 
-function togglePatientType() {
-    var toggleSwitch = document.getElementById("patientTypeToggle");
-    var label = document.querySelector('.toggle-switch label');
+// function togglePatientType() {
+//     var toggleSwitch = document.getElementById("lname");
 
-    // Toggle the status between "Inpatient" and "Outpatient"
-    label.textContent = (label.textContent === "Inpatient") ? "Outpatient" : "Inpatient";
+//     // Toggle the status between "Inpatient" and "Outpatient"
+//     label.textContent = (label.textContent === "Inpatient") ? "Outpatient" : "Inpatient";
     
-    // Get the updated patient status
-    var patientStatus = toggleSwitch.checked ? "Inpatient" : "Outpatient";
+//     // Get the updated patient status
+//     var patientStatus = toggleSwitch.checked ? "Inpatient" : "Outpatient";
     
-    // Toggle the visibility of sections based on the updated status
-    toggleSections(patientStatus);
-}
+//     // Toggle the visibility of sections based on the updated status
+//     toggleSections(patientStatus);
+// }
 
-function updateEndTransactionButton() {
-    var endTransactionButton = document.getElementById("endtransaction");
-    var toggleSwitch = document.getElementById("patientTypeToggle");
-    var patientStatus = toggleSwitch.checked ? "Inpatient" : "Outpatient";
-
-    // Update button text based on patient status
-    if (patientStatus === "Inpatient") {
-        endTransactionButton.textContent = "Discharge";
-    } else {
-        endTransactionButton.textContent = "Appointment Finished";
-    }
-}
 // function toggleDropdown() {
 
 //     if (dropdown.style.display === "none") {

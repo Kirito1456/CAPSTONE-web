@@ -44,6 +44,37 @@
         overflow: auto;
         background-color: rgba(0, 0, 0, 0.5);
     }
+    /* CSS for the modal */
+.modal2 {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal content */
+.modal-content2 {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 600px; /* Set max width to prevent stretching */
+    border-radius: 5px;
+}
+
+#closeModal:hover,
+#closeModal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
     
     .modal-content1 {
         background-color: white;
@@ -227,33 +258,39 @@
                     <div id="appModal" class="modalFinish" style="display: none;">
                         <h2>Finish Appointment</h2>
                             <button id="followup" onclick="openModal('{{ chosenPatientData_id }}')">Follow - Up Checkup</button>
-                    </div>
-
-                    <div id="myModal" class="modalFinish1">
-                        <div class="modal-content">
-                            <span id="closeModalButton1">&times;</span>
-                            <h2>Follow Up Appointment</h2>
-                            <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
+                            <div id="myModal" class="modalFinish1">
+                                <div class="modal-content">
+                                    <span id="closeModalButton1">&times;</span>
+                                    <h2>Follow Up Appointment</h2>
+                                    <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
+                                        {% csrf_token %}
+                                        {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
+                                            {% if appointmentsched_data.uid == uid %}
+                                                <label for="new-appointment-date">New Date: </label>
+                                                <input type="date" id="new-appointment-date" name="new-appointment-date" min="" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;"><br>
+                                                
+                                                <label for="new-appointment-time">New Time:</label>
+                                                <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                                    {% for time_slot in time_slots %}
+                                                        <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
+                                                    {% endfor %}
+                                                </select><br>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <button type="submit" id="appID" name="appID" value={{ chosenPatientData_id }}>Appointment Finished</button>
+                                        {% comment %} <button id="closeModalButton1">Close</button> {% endcomment %}
+        
+                                    </form>
+                                </div>
+                            </div>
+                            <form method="post">
                                 {% csrf_token %}
-                                {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
-                                    {% if appointmentsched_data.uid == uid %}
-                                        <label for="new-appointment-date">New Date: </label>
-                                        <input type="date" id="new-appointment-date" name="new-appointment-date" min="" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;"><br>
-                                        
-                                        <label for="new-appointment-time">New Time:</label>
-                                        <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                            {% for time_slot in time_slots %}
-                                                <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
-                                            {% endfor %}
-                                        </select><br>
-                                    {% endif %}
-                                {% endfor %}
-                                <button type="submit" id="appID" name="appID" value={{ chosenPatientData_id }}>Appointment Finished</button>
-                                {% comment %} <button id="closeModalButton1">Close</button> {% endcomment %}
-
+                                <button id="endAppointment" name="endAppointment">End Appointment</button>
                             </form>
-                        </div>
+
                     </div>
+
+                    
 
                     <button onclick="toggleBiometricInfo()">Biometric Information</button>
                     <div id="biometric-info" style="display: none;">
@@ -710,29 +747,47 @@
         <div id = "diagnostic-tests-container">
             {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
             <div id = "diagnostic-tests">
-                <div id = "head">Dianostic Tests</div>
-                    <button><a href = "{% url 'diagnostic_lab_reports' %}">View Lab Reports</a></button>
+                <div id = "head">Diagnostic Tests</div>
+                    <button><a href = "{% url 'diagnostic_lab_reports' %}">View Results</a></button>
                     <div id="biometric-info" style="display: none;">
                     </div>
                     <button><a href = "{% url 'diagnostic_imagery_reports' %}">View Imagery Results</a></button>
                     <div id="contact-details" style="display: none;">
                     </div>
-                    <button id="requestLabTestButton">Request New Lab Test</button>
+                    <button id="requestLabTestButton">Request New Test</button>
 
-                    <div id="newLabTestModal" class="modal1" style="display: none;">
-                        <div class="modal-content">
-                            <h2>Request New Lab Test</h2>
+                    <div id="newLabTestModal" class="modal2" style="display: none;">
+                        <div class="modal-content2">
+                            <h2>Request New Test</h2>
                             <form method="post" id="newLabTestForm">
                                 {% csrf_token %}
                                 <input type="checkbox" id="bloodTestCheckbox" name="bloodTestCheckbox">
                                 <label for="bloodTestCheckbox">Blood Test</label><br>
-                                <input type="checkbox" id="chestXrayCheckbox" name="chestXrayCheckbox">
-                                <label for="chestXrayCheckbox">Chest X-ray</label><br>
                                 <input type="checkbox" id="urineTestCheckbox" name="urineTestCheckbox">
                                 <label for="urineTestCheckbox">Urine Test</label><br>
+                                <input type="checkbox" id="stoolTestCheckbox" name="stoolTestCheckbox">
+                                <label for="stoolTestCheckbox">Stool Test</label><br>
+                                <input type="checkbox" id="tissueBiopsyCheckbox" name="tissueBiopsyCheckbox">
+                                <label for="tissueBiopsyCheckbox">Tissue Biopsy</label><br>
+                                <input type="checkbox" id="xrayCheckbox" name="xrayCheckbox">
+                                <label for="xrayCheckbox">X-rays</label><br>
+                                <input type="checkbox" id="ctScanCheckbox" name="ctScanCheckbox">
+                                <label for="ctScanCheckbox">Computed Tomography/CT Scan</label><br>
+                                <input type="checkbox" id="mriCheckbox" name="mriCheckbox">
+                                <label for="mriCheckbox">Magnetic Resonance Imaging/MRI</label><br>
+                                <input type="checkbox" id="ultrasoundCheckbox" name="ultrasoundCheckbox">
+                                <label for="ultrasoundCheckbox">Ultrasound</label><br>
+                                <input type="checkbox" id="ecgCheckbox" name="ecgCheckbox">
+                                <label for="ecgCheckbox">Electrocardiogram/ECG/EKG</label><br>
+                                <input type="checkbox" id="colonoscopyCheckbox" name="colonoscopyCheckbox">
+                                <label for="colonoscopyCheckbox">Colonoscopy</label><br>
+                                <input type="checkbox" id="bronchoscopyCheckbox" name="bronchoscopyCheckbox">
+                                <label for="bronchoscopyCheckbox">Bronchoscopy</label><br>
+                                <input type="checkbox" id="petScanCheckbox" name="petScanCheckbox">
+                                <label for="petScanCheckbox">Positron Emission Tomography (PET) Scan</label><br>
                                 <button type="submit" name="submitLabTestRequest">Submit</button>
                                 <button id="closeModal">Cancel</button>
-                            </form>
+                            </form>                            
                             
                         </div>
                     </div>
@@ -896,6 +951,18 @@
         newLabTestModal.style.transform = "translate(-50%, -50%)";
     }
 
+
+    document.getElementById("closeModal").addEventListener("click", function() {
+        closeModal(); // Call the closeModal function when the cancel button is clicked
+    });
+    
+    function closeModal() {
+        // Close the modal or perform any other desired action
+        var modal = document.getElementById("newLabTestModal");
+        modal.style.display = "none"; // Assuming the modal is a div with id "newLabTestModal"
+    }
+
+    
     // Get the close button inside the modal
     var closeModalButton = document.getElementById("closeModal");
 
@@ -940,6 +1007,28 @@
         closeInpatientModalButton.addEventListener('click', function() {
             document.getElementById("inpatientModal1").style.display = "none";
         });
+        // Get the status of the patient
+        var statusElement = document.getElementById("lname");
+        var status = statusElement.textContent.trim();
+    
+        // Get the containers for progress notes, vital signs, consultation notes, and diagnostic tests
+        var progressNotesContainer = document.getElementById("progress-notes-container");
+        var vitalSignsContainer = document.getElementById("vital-signs-container");
+        var consultationNotesContainer = document.getElementById("consultation-notes-container");
+        var diagnosticTestsContainer = document.getElementById("diagnostic-tests-container");
+    
+        // Show/hide containers based on patient status
+        if (status === "Inpatient") {
+            progressNotesContainer.style.display = "block";
+            vitalSignsContainer.style.display = "block";
+            consultationNotesContainer.style.display = "none";
+            diagnosticTestsContainer.style.display = "block";
+        } else if (status === "Outpatient") {
+            progressNotesContainer.style.display = "none";
+            vitalSignsContainer.style.display = "none";
+            consultationNotesContainer.style.display = "block";
+            diagnosticTestsContainer.style.display = "block";
+        }
     });
     
     function addMedicineRow() {
@@ -1000,5 +1089,6 @@
             dropdown.appendChild(option);
         });
     }
+    
 </script>
 {% endblock %}
