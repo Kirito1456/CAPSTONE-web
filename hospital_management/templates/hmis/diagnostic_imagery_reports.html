@@ -132,6 +132,50 @@
         width: 15%;
         font-size: 14;
     }
+    #reports-container {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ccc;
+    }
+    
+    .report-item {
+        display: flex;
+        border-bottom: 1px solid #ccc;
+    }
+    
+    .report-item.label {
+        font-weight: bold;
+    }
+    
+    .date, .type, .report, .note {
+        padding: 8px;
+    }
+    
+    .date, .type, .report {
+        flex: 1;
+    }
+    
+    .note {
+        flex: 2;
+    }
+    
+    #download {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    #download a {
+        text-decoration: none;
+        color: blue;
+    }
+    
+    #download a:hover {
+        text-decoration: underline;
+    }
+    
+    .add-notes {
+        margin-left: auto;
+    }
     
     
 </style>
@@ -168,93 +212,39 @@
                 </div>
                 <div id = "imagery-reports">
                     <div id = "image-report">
-                        <div id = "head-corner">Imagery Reports</div>
+                        <div id = "head-corner">Results</div>
                         <div id = "imagery-tests">
-                            <div id = "imagery-reports-list">
-                                <table id = "reports-table">
-                                    <tr id = "label">
-                                        <th class="date">Date</th>
-                                        <th class="type">Imagery Type</th>
-                                        <th class="report">Report</th>
-                                        <th class="note">Doctor's Notes</th>
-                                    </tr>
-                                    <tr>
-                                        <td>January 10, 2020</td>
-                                        <td>Blood Test</td>
-                                        <td>
-                                            <div id = "download">
-                                                <a href = "" id = "download-imagery">Download Imagery</a>
-                                                <a href = "" id = "download-disposition">Download Radiologist Disposition</a>
-                                            </div>
-                                        </td>
-                                        <td id = "notes">
-                                            <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
-                                            <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>January 10, 2020</td>
-                                        <td>Blood Test</td>
-                                        <td>
-                                            <div id = "download">
-                                                <a href = "" id = "download-imagery">Download Imagery</a>
-                                                <a href = "" id = "download-disposition">Download Radiologist Disposition</a>
-                                            </div>
-                                        </td>
-                                        <td id = "notes">
-                                            <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
-                                            <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>January 10, 2020</td>
-                                        <td>Blood Test</td>
-                                        <td>
-                                            <div id = "download">
-                                                <a href = "" id = "download-imagery">Download Imagery</a>
-                                                <a href = "" id = "download-disposition">Download Radiologist Disposition</a>
-                                            </div>
-                                        </td>
-                                        <td id = "notes">
-                                            <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
-                                            <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>January 10, 2020</td>
-                                        <td>Blood Test</td>
-                                        <td>
-                                            <div id = "download">
-                                                <a href = "" id = "download-imagery">Download Imagery</a>
-                                                <a href = "" id = "download-disposition">Download Radiologist Disposition</a>
-                                            </div>
-                                        </td>
-                                        <td id = "notes">
-                                            <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
-                                            <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>January 10, 2020</td>
-                                        <td>Blood Test</td>
-                                        <td>
-                                            <div id = "download">
-                                                <a href = "" id = "download-imagery">Download Imagery</a>
-                                                <a href = "" id = "download-disposition">Download Radiologist Disposition</a>
-                                            </div>
-                                        </td>
-                                        <td id = "notes">
-                                            <div id = "doctor-notes">notes blah blnhwejkf iwjdhwne ijopwj ojefnw ah blah</div>
-                                            <div id = "add-notes"><a href = "" id = "add-doctor-notes">Add Notes</a></div>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <div class="pagination">
-                                    <a href="#">&laquo;</a>
-                                    <a href="#" class="active">1</a>
-                                    <a href="#">&raquo;</a>
+    
+                            <div id="reports-container">
+                                <div class="report-item label">
+                                    <div class="date">Date</div>
+                                    <div class="type">Imagery Type</div>
+                                    <div class="report">Report</div>
+                                    <div class="note">Doctor's Notes</div>
                                 </div>
+                                {% for submittedTest_id, submittedTest_data in submittedTest.items %}
+                                    {% if submittedTest_id == chosenPatient %}
+                                        {% for submitted_id, submitted_data in submittedTest_data.items %}
+                                            <div class="report-item">
+                                                <div class="date">{{ submitted_data.date }}</div>
+                                                <div class="type">{{ submitted_data.type }}</div>
+                                                <div class="report">
+                                                    <div id="download">
+                                                        <a href="" id="download-imagery">View Image</a>
+                                                        {% comment %} Note: Disposition and Findings (in Db) same {% endcomment %}
+                                                        <a href="" id="download-disposition">View Disposition</a>
+                                                    </div>
+                                                </div>
+                                                <div class="note">
+                                                    <div id="doctor-notes"></div>
+                                                    <div class="add-notes"><a href="" id="add-doctor-notes">Add Notes</a></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -268,5 +258,25 @@
             window.history.back();
         });
     });
+    // Get the Add Notes link and Doctor's Notes div
+var addNotesLink = document.getElementById("add-doctor-notes");
+var doctorNotesDiv = document.getElementById("doctor-notes");
+
+// Add an event listener to the Add Notes link
+addNotesLink.addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent the default link behavior
+    
+    // Replace the Doctor's Notes div with an input field
+    var inputField = document.createElement("input");
+    inputField.setAttribute("type", "text");
+    inputField.setAttribute("id", "input-doctor-notes");
+    inputField.setAttribute("placeholder", "Type doctor's notes here");
+    
+    // Replace the Doctor's Notes div with the input field
+    doctorNotesDiv.parentNode.replaceChild(inputField, doctorNotesDiv);
+    
+    // Focus on the input field for immediate typing
+    inputField.focus();
+});
 </script>
 {% endblock %}

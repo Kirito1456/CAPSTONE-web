@@ -8,7 +8,6 @@ function toggleDropdown() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const backButton = document.getElementById('backButton');
     const dropdown = document.getElementById("diagnosisDropdown");
     var healthConditions = document.getElementById("health-conditions");
     var otherDiagnosis = document.getElementById("otherDiagnosis");

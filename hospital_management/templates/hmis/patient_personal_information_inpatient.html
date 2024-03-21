@@ -748,12 +748,8 @@
             {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
             <div id = "diagnostic-tests">
                 <div id = "head">Diagnostic Tests</div>
-                    <button><a href = "{% url 'diagnostic_lab_reports' %}">View Results</a></button>
-                    <div id="biometric-info" style="display: none;">
-                    </div>
-                    <button><a href = "{% url 'diagnostic_imagery_reports' %}">View Imagery Results</a></button>
-                    <div id="contact-details" style="display: none;">
-                    </div>
+                    <button><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
+                    
                     <button id="requestLabTestButton">Request New Test</button>
 
                     <div id="newLabTestModal" class="modal2" style="display: none;">
@@ -868,7 +864,11 @@
     var reschedmodal = document.getElementById("myModal");
     var span = document.getElementById("closeModalButton1");
     
-
+    const backButton = document.getElementById('backButton');
+        
+    backButton.addEventListener('click', function() {
+        window.history.back();
+    });
     function openModal(appointmentId) {
     
         reschedmodal.style.display = "block";

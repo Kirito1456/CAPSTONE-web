@@ -1577,7 +1577,9 @@ def diagnostic_lab_reports(request):
     return render(request, 'hmis/diagnostic_lab_reports.html')
 
 def diagnostic_imagery_reports(request):
-    return render(request, 'hmis/diagnostic_imagery_reports.html')
+    submittedTest = db.child("submittedTest").get().val()
+    chosenPatient = request.GET.get('chosenPatient', '')
+    return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient})
 
 def edit_medical_surgical_history(request):
     return render(request, 'hmis/edit_medical_surgical_history.html')
