@@ -399,21 +399,52 @@
                     <div class="cell treatment">Treatment</div>
                     <div class="cell remarks">Remarks</div>
                 </div>
-                {% for patientmedicalhistory_id, patientmedicalhistory_data in patientmedicalhistory.items %}
-                    <div class="row" >
-                        <div class="cell diagnosis">
-                            <input type="text" name="diagnosis" value="{{ patientmedicalhistory_data }}">
-                        </div>
-                        <div class="cell date-illness">
-                            <input type="date" name="date_illness" value="{{ patientmedicalhistory_data.date_illness }}">
-                        </div>
-                        <div class="cell treatment">
-                            <input type="text" name="treatment" value="{{ patientmedicalhistory_data.treatment }}">
-                        </div>
-                        <div class="cell remarks">
-                            <input type="text" name="remarks" value="{{ patientmedicalhistory_data.remarks }}">
-                        </div>
-                    </div>
+
+                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
+                    {% if patientMedical_id == chosenPatient %}
+                        {% for surgical_id, surgical_data in patientMedical_data.items %}
+                            <div style="font-size: 14px;">
+                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in surgical_data.items %}
+                                            {% if item_key == 'diagnosis_surgical' %}
+                                                {% for diagnosis_surgical_item in item_value %}
+                                                    <input type="text" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in surgical_data.items %}
+                                            {% if item_key == 'date_illness' %}
+                                                {% for date_illness_item in item_value %}
+                                                    <input type="date" name="date_illness" value="{{ date_illness_item }}"><br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in surgical_data.items %}
+                                            {% if item_key == 'treatment' %}
+                                                {% for treatment_item in item_value %}
+                                                    <input type="text" name="treatment" value="{{ treatment_item }}"><br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in surgical_data.items %}
+                                            {% if item_key == 'remarks' %}
+                                                {% for remarks_item in item_value %}
+                                                    <input type="text" name="remarks" value="{{ remarks_item }}"><br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endfor %}
 
             </div>
@@ -437,7 +468,9 @@
                 newRow.classList.add('row');
                         
                 newRow.innerHTML = `
-                    <div class="cell diagnosis"></div>
+                    <div class="cell diagnosis">
+                        <input type="text" name="diagnosis_surgical">
+                    </div>
                     <div class="cell date-illness">
                         <input type="date" name="date_illness">
                     </div>
@@ -537,12 +570,12 @@
                                         {% for item_key, item_value in allergy_data.items %}
                                             {% if item_key == 'severity' %}
                                                 {% for severity_item in item_value %}
-                                                <select name="severity">
-                                                    <option value="" disabled>Select Severity</option>
-                                                    <option value="Mild" {% if severity_item == 'Mild' %} selected {% endif %}>Mild</option>
-                                                    <option value="Moderate" {% if severity_item == 'Moderate' %} selected {% endif %}>Moderate</option>
-                                                    <option value="Severe" {% if severity_item == 'Severe' %} selected {% endif %}>Severe</option>
-                                                </select><br>
+                                                    <select name="severity">
+                                                        <option value="" disabled>Select Severity</option>
+                                                        <option value="Mild" {% if severity_item == 'Mild' %} selected {% endif %}>Mild</option>
+                                                        <option value="Moderate" {% if severity_item == 'Moderate' %} selected {% endif %}>Moderate</option>
+                                                        <option value="Severe" {% if severity_item == 'Severe' %} selected {% endif %}>Severe</option>
+                                                    </select><br>
                                                 
                                                 {% endfor %}
                                             {% endif %}
@@ -554,13 +587,13 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            <div id="edit-allergy">
-                {% comment %} <button id="edit-allergy-button">Edit</button> {% endcomment %}
-                <button id="save-allergy-button" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
-                <button id="cancel-allergy-button" style="display: none;">Cancel</button>
-                <button id="add-new-button">Add New Row</button>
-            </div>            
-        </form>`;
+                <div id="edit-allergy">
+                    <button id="edit-allergy-button">Edit</button>
+                    <button id="save-allergy-button" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
+                    <button id="cancel-allergy-button" style="display: none;">Cancel</button>
+                    <button id="add-new-button">Add New Row</button>
+                </div>            
+            </form>`;
         
             // Add event listeners
             const editAllergyButton = document.getElementById('edit-allergy-button');
@@ -652,7 +685,7 @@
                     <div class="cell vaccine">Vaccine Name</div>
                     <div class="cell date">Date Administered</div>
                 </div>
-                {% for patientImmunizationHistory_id, patientImmunizationHistory_data in patientImmunizationHistory.items %}
+                {% comment %} {% for patientImmunizationHistory_id, patientImmunizationHistory_data in patientImmunizationHistory.items %}
                     <div class="row" >
                         <div class="cell vaccine">
                             <input type="text" name="vaccine" value="{{ patientImmunizationHistory_data }}">
@@ -661,16 +694,45 @@
                             <input type="date" name="date" value="{{ patientImmunizationHistory_data.date }}">
                         </div>
                     </div>
+                {% endfor %} {% endcomment %}
+
+                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
+                    {% if patientMedical_id == chosenPatient %}
+                        {% for immunization_id, immunization_data in patientMedical_data.items %}
+                            <div style="font-size: 14px;">
+                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in immunization_data.items %}
+                                            {% if item_key == 'vaccine' %}
+                                                {% for vaccine_item in item_value %}
+                                                    <input type="text" name="vaccine" value="{{ vaccine_item }}"><br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in immunization_data.items %}
+                                            {% if item_key == 'date' %}
+                                                {% for severity_item in item_value %}
+                                                    <input type="date" name="date" value="{{ severity_item }}"><br>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endfor %}
 
-            </div>
-            <div id="edit-immunization">
-                <button id="edit-immunization-button">Edit</button>
-                <button id="save-immunization-button" name="saveImmunizationButton" value={{ chosenPatientData_id }}>Save</button>
-                <button id="cancel-immunization-button" style="display: none;">Cancel</button>
-                <button id="add-new-immunization-button">Add New Row</button>
-            </div>            
-        </form>`;
+                </div>
+                <div id="edit-immunization">
+                    <button id="edit-immunization-button">Edit</button>
+                    <button id="save-immunization-button" name="saveImmunizationButton" value={{ chosenPatientData_id }}>Save</button>
+                    <button id="cancel-immunization-button" style="display: none;">Cancel</button>
+                    <button id="add-new-immunization-button">Add New Row</button>
+                </div>            
+            </form>`;
 
             // Add event listeners
             const editImmunizationButton = document.getElementById('edit-immunization-button');
@@ -684,7 +746,9 @@
                 newRow.classList.add('row');
                         
                 newRow.innerHTML = `
-                    <div class="cell vaccine"></div>
+                    <div class="cell vaccine">
+                        <input type="text" name="vaccine">
+                    </div>
                     <div class="cell date">
                         <input type="date" name="date">
                     </div>`;
@@ -747,37 +811,50 @@
                     <div class="cell diagnosis">Diagnosis</div>
                     <div class="cell age">Age</div>
                 </div>
-                {% for patientFamilyhistory_id, patientFamilyhistory_data in patientFamilyhistory.items %}
-                    <div class="row" >
-                        <div class="cell family-member">
-                            <input type="text" name="family-member" value="{{ patientFamilyhistory_data }}">
-                        </div>
-                        <div class="cell diagnosis">
-                            <input type="text" name="diagnosis" value="{{ patientFamilyhistory_data.date }}">
-                        </div>
-                        <div class="cell age">
-                            <input type="number" name="age" value="{{ patientFamilyhistory_data.date }}">
-                        </div>
-                    </div>
-                {% endfor %}
 
-                {% comment %} <div class="row">
-                    <div class="cell family-member">
-                        <select name="family_member">
-                            <option value="" selected disabled>Select Family Member</option>
-                            <option value="Father">Father</option>
-                            <option value="Mother">Mother</option>
-                            <option value="Sibling">Sibling</option>
-                            <!-- Add more options as needed -->
-                        </select>
-                    </div>
-                    <div class="cell diagnosis">
-                        <input type="text" name="diagnosis">
-                    </div>
-                    <div class="cell age">
-                        <input type="number" name="age">
-                    </div>
-                </div> {% endcomment %}
+                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
+                    {% if patientMedical_id == chosenPatient %}
+                        {% for family_id, family_data in patientMedical_data.items %}
+                            <div style="font-size: 14px;">
+                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                    <div style="flex: 1; text-align: center;">
+
+                                        {% for item_key, item_value in family_data.items %}
+                                            {% if item_key == 'family_member' %}
+                                                {% for family_member_item in item_value %}
+                                                    <select name="family_member">
+                                                        <option value="" disabled>Select Family Member</option>
+                                                        <option value="Father" {% if family_member_item == 'Father' %} selected {% endif %}>Father</option>
+                                                        <option value="Mother" {% if family_member_item == 'Mother' %} selected {% endif %}>Mother</option>
+                                                        <option value="Sibling" {% if family_member_item == 'Sibling' %} selected {% endif %}>Sibling</option>
+                                                    </select><br>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in family_data.items %}
+                                            {% if item_key == 'diagnosis' %}
+                                                {% for diagnosis_item in item_value %}
+                                                    <input type="text" name="diagnosis" value="{{ diagnosis_item }}"><br>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in family_data.items %}
+                                            {% if item_key == 'age' %}
+                                                {% for age_item in item_value %}
+                                                    <input type="number" name="age" value="{{ age_item }}"><br>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
             </div>
             <div id="edit-family-history">
                 <button id="edit-family-history-button">Edit</button>
@@ -860,7 +937,6 @@
                             <option value="Father">Father</option>
                             <option value="Mother">Mother</option>
                             <option value="Sibling">Sibling</option>
-                            <!-- Add more options as needed -->
                         </select>
                     </div>
                     <div class="cell diagnosis"><input type="text" name="diagnosis"></div>
@@ -869,41 +945,30 @@
                 const familyHistoryTable = document.getElementById('family-history-table');
                 familyHistoryTable.appendChild(newRow);
             });
+
         });
-        
 
         function displaySocialHistoryForm() {
             contentContainer.innerHTML = `
             <form method="post">
-            {% csrf_token %}
-            <div id="social-history-table">
-                <div class="row header">
-                    <div class="cell">Smoking</div>
-                    <div class="cell">Alcohol</div>
-                </div>
+                {% csrf_token %}
+                <div id="social-history-table">
 
-                <div class="row">
-                    <div class="cell">
-                        <input type="radio" id="smoking-yes" name="smoking" value="Yes">
-                        <label for="smoking-yes">Yes</label>
-                        <input type="radio" id="smoking-no" name="smoking" value="No">
-                        <label for="smoking-no">No</label>
-                    </div>
-                    <div class="cell">
-                        <input type="radio" id="alcohol-yes" name="alcohol" value="Yes">
-                        <label for="alcohol-yes">Yes</label>
-                        <input type="radio" id="alcohol-no" name="alcohol" value="No">
-                        <label for="alcohol-no">No</label>
+                    <div class="row header">
+                        <div class="cell">
+                            <input type="checkbox" id="smoking" name="smoking" value="Yes">
+                            <label for="smoking">Smoking</label>
+                        </div>
+                        <div class="cell">
+                            <input type="checkbox" id="alcohol" name="alcohol" value="Yes">
+                            <label for="alcohol">Alcohol</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="edit-social-history">
-                <button id="edit-social-history-button">Edit</button>
-                <button id="save-social-history-button" name="saveSocialHistoryButton" value={{ chosenPatientData_id }}>Save</button>
-                <button id="cancel-social-history-button" style="display: none;">Cancel</button>
-                <button id="add-new-social-history-button">Add New Row</button>
-            </div>            
-            </form>`;
+                <button type="submit" name="saveSocialHistoryButton">Save</button>
+            </form>
+            
+            `;
 
             // Add event listeners
             const editSocialHistoryButton = document.getElementById('edit-social-history-button');
@@ -957,11 +1022,52 @@
 
         consultationHistoryLink.addEventListener('click', function(event) {
             event.preventDefault();
-            contentContainer.innerHTML = 'Consultation History Content TBA';
+            contentContainer.innerHTML = `
+            <form method="post">
+            {% csrf_token %}
+                <div id="consul-notes-table">
+                    <div class="row header" style="display: flex;">
+                        <div class="cell diagnosis" style="flex: 1; text-align: center;">Date of Consultation</div>
+                        <div class="cell date-illness" style="flex: 1; text-align: center;">Chief Complaint</div>
+                        <div class="cell treatment" style="flex: 1; text-align: center;">Review of Systems</div>
+                        <div class="cell remarks" style="flex: 1; text-align: center;">Diagnosis</div>
+                    </div>
+                    
+                    {% for consulNotes_id, consulNotes_data in consulNotes.items %}
+                        {% if consulNotes_id == chosenPatient %}
+                            <div style="font-size: 14px;">
+                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in consulNotes_data.items %}
+                                           <div>{{ item_key }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in consulNotes_data.items %}
+                                           <div>{{ item_value.chiefComplaint }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in consulNotes_data.items %}
+                                           <div>Review of Systems</div>
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in consulNotes_data.items %}
+                                           <div>{{ item_value.diagnosis }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+        
+                </div>           
+            </form>`;
         });
-        
-        
     });
+
+    
     
 </script>
 <script src="{% static 'js/immunization.js' %}"></script>

@@ -1330,6 +1330,7 @@ def patient_medical_history(request):
     patientSocialhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('socialHistory').get().val()
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
+    consulNotes = db.child("consultationNotes").get().val()
 
     patientMedical = db.child("patientmedicalhistory").get().val()
     if request.method == 'POST':
@@ -1341,12 +1342,12 @@ def patient_medical_history(request):
             
             data = {
                 'patient_id': chosen_patient_uid,
-                'diagnosis': diagnosis,
+                'diagnosis_surgical': diagnosis,
                 'date_illness': date_illness,
                 'treatment': treatment,
                 'remarks': remarks
             }
-            db.child('patientmedicalhistory').child(chosen_patient_uid).child('pastHistory').set(data)
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('pastHistory').update(data)
 
         if 'saveAllergyButton' in request.POST:
             allergen = request.POST.getlist('allergen')
@@ -1368,7 +1369,7 @@ def patient_medical_history(request):
                 'vaccine': vaccine,
                 'date': date
             }
-            db.child('patientmedicalhistory').child(chosen_patient_uid).child('immunizationHistory').set(data)
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('immunizationHistory').update(data)
 
         if 'saveFamilyHistoryButton' in request.POST:
             family_member = request.POST.getlist('family_member')
@@ -1381,7 +1382,7 @@ def patient_medical_history(request):
                 'diagnosis': diagnosis,
                 'age': age
             }
-            db.child('patientmedicalhistory').child(chosen_patient_uid).child('familyHistory').set(data)
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('familyHistory').update(data)
 
         if 'saveSocialHistoryButton' in request.POST:
             smoking = request.POST.get('smoking')
@@ -1392,7 +1393,7 @@ def patient_medical_history(request):
                 'smoking': smoking,
                 'alcohol': alcohol
             }
-            db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').set(data)
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').update(data)
 
     return render(request, 'hmis/patient_medical_history.html', {'patientmedicalhistory': patientmedicalhistory,
                                                                  'patientAllergyHistory': patientAllergyHistory,
@@ -1402,7 +1403,8 @@ def patient_medical_history(request):
                                                                  'doctors': doctors,
                                                                  'uid': uid,
                                                                  'patientMedical': patientMedical,
-                                                                 'chosenPatient': chosenPatient})
+                                                                 'chosenPatient': chosenPatient,
+                                                                 'consulNotes': consulNotes})
 
 from datetime import datetime
 
