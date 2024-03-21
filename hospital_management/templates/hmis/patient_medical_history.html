@@ -515,48 +515,58 @@
             <form method="post">
             {% csrf_token %}
             <div id="allergy-table">
-                
                 <div class="row header">
                     <div class="cell allergen">Allergen</div>
                     <div class="cell severity">Severity</div>
                 </div>
-                {% for patientAllergyHistory_id, patientAllergyHistory_data in patientAllergyHistory.items %}
-                    <div class="row" >
-                        <div class="cell allergen">
-                            <input type="text" name="allergen" value="{{ patientAllergyHistory_data }}">
-                        </div>
-                        <div class="cell severity">
-                            <input type="text" name="severity" value="{{ patientAllergyHistory_id }}">
-                        </div>
-                    </div>
+                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
+                    {% if patientMedical_id == chosenPatient %}
+                        {% for allergy_id, allergy_data in patientMedical_data.items %}
+                            <div style="font-size: 14px;">
+                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in allergy_data.items %}
+                                            {% if item_key == 'allergen' %}
+                                                {% for allergen_item in item_value %}
+                                                    <input type="text" name="allergen" value="{{ allergen_item }}"><br> 
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        {% for item_key, item_value in allergy_data.items %}
+                                            {% if item_key == 'severity' %}
+                                                {% for severity_item in item_value %}
+                                                <select name="severity">
+                                                    <option value="" disabled>Select Severity</option>
+                                                    <option value="Mild" {% if severity_item == 'Mild' %} selected {% endif %}>Mild</option>
+                                                    <option value="Moderate" {% if severity_item == 'Moderate' %} selected {% endif %}>Moderate</option>
+                                                    <option value="Severe" {% if severity_item == 'Severe' %} selected {% endif %}>Severe</option>
+                                                </select><br>
+                                                
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endfor %}
-
-                {% comment %} <div class="row">
-                    <div class="cell allergen" name="allergen"></div>
-                    <div class="cell severity">
-                        <select name="severity">
-                            <option value="" selected disabled>Select Severity</option>
-                            <option value="Mild">Mild</option>
-                            <option value="Moderate">Moderate</option>
-                            <option value="Severe">Severe</option>
-                        </select>
-                    </div>
-                    
-                </div> {% endcomment %}
             </div>
             <div id="edit-allergy">
-                <button id="edit-allergy-button">Edit</button>
+                {% comment %} <button id="edit-allergy-button">Edit</button> {% endcomment %}
                 <button id="save-allergy-button" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
                 <button id="cancel-allergy-button" style="display: none;">Cancel</button>
                 <button id="add-new-button">Add New Row</button>
             </div>            
         </form>`;
-
+        
             // Add event listeners
             const editAllergyButton = document.getElementById('edit-allergy-button');
             const cancelAllergyButton = document.getElementById('cancel-allergy-button');
             const addNewButton = document.getElementById('add-new-button');
-
+        
             addNewButton.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent form submission
                             
@@ -564,7 +574,7 @@
                 newRow.classList.add('row');
                         
                 newRow.innerHTML = `
-                    <div class="cell allergen"></div>
+                    <div class="cell allergen"><input type="text" name="allergen"></div>
                     <div class="cell severity">
                         <select name="severity">
                             <option value="" selected disabled>Select Severity</option>
@@ -629,6 +639,7 @@
             
             
         });
+        
 
         
         immunizationLink.addEventListener('click', function(event) {
