@@ -113,17 +113,48 @@ document.addEventListener("DOMContentLoaded", function() {
                     <option value="Topical">Topical</option>
                 </select>
             </div>
-            <div style="flex: 1; text-align: center;">
-                <select class="frequency-dropdown" name="frequency">
-                    <option value="" selected disabled>Select Frequency</option>
-                    <option value="Once Daily">Once Daily</option>
-                    <option value="Twice Daily">Twice Daily</option>
-                    <option value="Thrice Daily">Thrice Daily</option>
-                </select>
+            <div>
+                <div style="flex: 1; text-align: center;">
+                    <select class="frequency-dropdown" name="frequency">
+                        <option value="" selected disabled>Select Frequency</option>
+                        <option value="Once Daily">Once Daily</option>
+                        <option value="Twice Daily">Twice Daily</option>
+                        <option value="Thrice Daily">Thrice Daily</option>
+                    </select>
+                </div>
+                <div class="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
+                    <div style="text-align: center;">
+                        <input type="checkbox" name="times-once-daily[]" id="morning-checkbox" value="Morning">
+                        <label for="morning-checkbox">Morning</label>
+                    </div>
+                    <div style="text-align: center;">
+                        <input type="checkbox" name="times-once-daily[]" id="afternoon-checkbox" value="Afternoon">
+                        <label for="afternoon-checkbox">Afternoon</label>
+                    </div>
+                    <div style="text-align: center;">
+                        <input type="checkbox" name="times-once-daily[]" id="evening-checkbox" value="Evening">
+                        <label for="evening-checkbox">Evening</label>
+                    </div>
+                </div>
+                <div class="twice-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
+                    <div style="text-align: center;">
+                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-morning-checkbox" value="Morning">
+                        <label for="twice-daily-morning-checkbox">Morning</label>
+                    </div>
+                    <div style="text-align: center;">
+                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-afternoon-checkbox" value="Afternoon">
+                        <label for="twice-daily-afternoon-checkbox">Afternoon</label>
+                    </div>
+                    <div style="text-align: center;">
+                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-evening-checkbox" value="Evening">
+                        <label for="twice-daily-evening-checkbox">Evening</label>
+                    </div>     
+                </div>                    
             </div>
             <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
         `;
         medicationListContainer.appendChild(newTableBody);
+        attachEventListenersToNewElements();
     });
     
 
@@ -137,6 +168,49 @@ document.addEventListener("DOMContentLoaded", function() {
                 medicationListContainer.removeChild(tableBody);
             }
         });
+    });
+
+    // Function to attach event listeners to the new elements
+    function attachEventListenersToNewElements() {
+        const frequencyDropdowns = document.querySelectorAll(".frequency-dropdown");
+        frequencyDropdowns.forEach(function(dropdown) {
+            dropdown.addEventListener("change", function() {
+                const selectedFrequency = dropdown.value;
+                const onceDailyCheckboxes = dropdown.parentElement.nextElementSibling.querySelector("#once-daily-checkboxes");
+                const twiceDailyCheckboxes = dropdown.parentElement.nextElementSibling.querySelector("#twice-daily-checkboxes");
+                if (selectedFrequency === "Once Daily") {
+                    onceDailyCheckboxes.style.display = "flex";
+                    twiceDailyCheckboxes.style.display = "none";
+                } else if (selectedFrequency === "Twice Daily") {
+                    onceDailyCheckboxes.style.display = "none";
+                    twiceDailyCheckboxes.style.display = "flex";
+                } else {
+                    onceDailyCheckboxes.style.display = "none";
+                    twiceDailyCheckboxes.style.display = "none";
+                }
+            });
+        });
+    }
+
+    // Call the function to attach event listeners to existing elements
+    attachEventListenersToNewElements();
+
+    const frequencyDropdown = document.getElementById("frequency-dropdown");
+    const onceDailyCheckboxes = document.getElementById("once-daily-checkboxes");
+    const twiceDailyCheckboxes = document.getElementById("twice-daily-checkboxes");
+    
+    frequencyDropdown.addEventListener("change", function() {
+        const selectedFrequency = frequencyDropdown.value;
+        if (selectedFrequency === "Once Daily") {
+            onceDailyCheckboxes.style.display = "flex";
+            twiceDailyCheckboxes.style.display = "none";
+        } else if (selectedFrequency === "Twice Daily") {
+            onceDailyCheckboxes.style.display = "none";
+            twiceDailyCheckboxes.style.display = "flex";
+        } else {
+            onceDailyCheckboxes.style.display = "none";
+            twiceDailyCheckboxes.style.display = "none";
+        }
     });
     
 });

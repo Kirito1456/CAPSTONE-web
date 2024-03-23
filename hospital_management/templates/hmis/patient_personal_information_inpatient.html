@@ -336,12 +336,17 @@
                     <div id = "progress-notes">
                         <div id = "progress-note">
                             {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                            <div id = "notes">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}
-                                - Stable vital signs <br>
-                                - Medication administered 9:00AM <br>
-                                - Pain intensity decreased<br>
-                                Last Update: 01/17/23 11:32AM
-                            </div>
+                                {% for progressnotes_id, progressnotes_data in progressnotes.items %}
+                                    {% if progressnotes_id == chosenPatientData_data.uid %}
+                                        {% for id, data in progressnotes_data.items %}
+                                            <div id = "notes">Focues: Focus<br>
+                                                Notes: {{ data.notes }} <br>
+                                                Updated By: Nurse Name <br>
+                                                Last Updated: {{ data.date }} {{ data.time }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
                             {% endfor %}
                         </div>
                     </div>
@@ -356,7 +361,6 @@
                         <table id="vital-signs">
                             <tr id="label">
                                 <th>Date and Time</th>
-                                {% comment %} <th>Weight</th> {% endcomment %}
                                 <th>Temperature</th>
                                 <th>Blood Pressure</th>
                                 <th>Pulse</th>
@@ -366,20 +370,15 @@
                                 <th>Fluid Output</th>
                                 <th>Fluid Intake</th>
                             </tr>
-                            {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
-                                {% if forloop.counter == 1 %}
+                            {% for sorted_vital_signs_id, sorted_vital_signs_data in sorted_vital_signs.items %}
+                                {% if forloop.counter <= 2 %}
                                     <tr>
-                                        <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
-                                        {% comment %} {% if chosenPatientVitalEntryData_data.weight == "-" %}
-                                            <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
-                                        {% else %}
-                                            <td>{{ chosenPatientVitalEntryData_data.weight }} kgs</td>
-                                        {% endif %} {% endcomment %}
-                                        <td>{{ chosenPatientVitalEntryData_data.temperature }} °C</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
-                                        <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
+                                        <td>{{ sorted_vital_signs_data.date }} {{ sorted_vital_signs_data.time }}</td>
+                                        <td>{{ sorted_vital_signs_data.temperature }} °C</td>
+                                        <td>{{ sorted_vital_signs_data.bloodpressure }}</td>
+                                        <td>{{ sorted_vital_signs_data.pulse }} bpm</td>
+                                        <td>{{ sorted_vital_signs_data.respiration }}</td>
+                                        <td>{{ sorted_vital_signs_data.painindex }}/10</td>
                                         <td><input type="checkbox" disabled></td>
                                         <td><input type="checkbox" disabled></td>
                                         <td> ml</td>

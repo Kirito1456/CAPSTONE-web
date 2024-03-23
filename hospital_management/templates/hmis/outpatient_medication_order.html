@@ -114,13 +114,43 @@
                                     <option value="Topical">Topical</option>
                                 </select>
                             </div>
-                            <div style="flex: 1; text-align: center;">
-                                <select class="frequency-dropdown" name="frequency">
-                                    <option value="" selected disabled>Select Frequency</option>
-                                    <option value="Once Daily">Once Daily</option>
-                                    <option value="Twice Daily">Twice Daily</option>
-                                    <option value="Thrice Daily">Thrice Daily</option>
-                                </select>
+                            <div>
+                                <div style="flex: 1; text-align: center;">
+                                    <select class="frequency-dropdown" name="frequency" id="frequency-dropdown">
+                                        <option value="" selected disabled>Select Frequency</option>
+                                        <option value="Once Daily">Once Daily</option>
+                                        <option value="Twice Daily">Twice Daily</option>
+                                        <option value="Thrice Daily">Thrice Daily</option>
+                                    </select>
+                                </div>
+                                <div id="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-once-daily[]" id="morning-checkbox" value="Morning">
+                                        <label for="morning-checkbox">Morning</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-once-daily[]" id="afternoon-checkbox" value="Afternoon">
+                                        <label for="afternoon-checkbox">Afternoon</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-once-daily[]" id="evening-checkbox" value="Evening">
+                                        <label for="evening-checkbox">Evening</label>
+                                    </div>
+                                </div>
+                                <div id="twice-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-morning-checkbox" value="Morning">
+                                        <label for="twice-daily-morning-checkbox">Morning</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-afternoon-checkbox" value="Afternoon">
+                                        <label for="twice-daily-afternoon-checkbox">Afternoon</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-evening-checkbox" value="Evening">
+                                        <label for="twice-daily-evening-checkbox">Evening</label>
+                                    </div>     
+                                </div>                    
                             </div>
                             <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
                         </div>
@@ -158,7 +188,7 @@
     </div>
 </div>
 
-<script src="{% static 'js/create-medication.js' %}"></script>
+<script src="{% static 'js/create-medications.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -179,6 +209,24 @@
 
         backButton.addEventListener('click', function() {
             window.history.back();
+        });
+
+        const frequencyDropdown = document.getElementById("frequency-dropdown");
+        const onceDailyCheckboxes = document.getElementById("once-daily-checkboxes");
+        const twiceDailyCheckboxes = document.getElementById("twice-daily-checkboxes");
+        
+        frequencyDropdown.addEventListener("change", function() {
+            const selectedFrequency = frequencyDropdown.value;
+            if (selectedFrequency === "Once Daily") {
+                onceDailyCheckboxes.style.display = "flex";
+                twiceDailyCheckboxes.style.display = "none";
+            } else if (selectedFrequency === "Twice Daily") {
+                onceDailyCheckboxes.style.display = "none";
+                twiceDailyCheckboxes.style.display = "flex";
+            } else {
+                onceDailyCheckboxes.style.display = "none";
+                twiceDailyCheckboxes.style.display = "none";
+            }
         });
     });
     

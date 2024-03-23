@@ -59,22 +59,16 @@
                             <th class = "tableheader">Respiration</th>
                             <th class = "tableheader">Pain Index</th>
                         </tr>
-                        <!--add if statement for inpatient or outpatient-->
-                        {% for chosenPatientVitalEntryData_id, chosenPatientVitalEntryData_data in chosenPatientVitalEntryData.items %}
-                                <tr>
-                                    <td>{{ chosenPatientVitalEntryData_data.date }} {{ chosenPatientVitalEntryData_data.time }}</td>
-                                    {% if chosenPatientVitalEntryData_data.weight == "-" %}
-                                        <td>{{ chosenPatientVitalEntryData_data.weight }}</td>
-                                    {% else %}
-                                        <td>{{ chosenPatientVitalEntryData_data.weight }} kgs</td>
-                                    {% endif %}
-                                    <td>{{ chosenPatientVitalEntryData_data.temperature }} °C</td>
-                                    <td>{{ chosenPatientVitalEntryData_data.bloodpressure }}</td>
-                                    <td>{{ chosenPatientVitalEntryData_data.pulse }} bpm</td>
-                                    <td>{{ chosenPatientVitalEntryData_data.respiration }}</td>
-                                    <td>{{ chosenPatientVitalEntryData_data.painindex }}/10</td>
-                                </tr>
-                                {% endfor %}
+                        {% for sorted_vital_signs_id, sorted_vital_signs_data in sorted_vital_signs.items %}
+                            <tr>
+                                <td>{{ sorted_vital_signs_data.date }} {{ sorted_vital_signs_data.time }}</td>
+                                <td>{{ sorted_vital_signs_data.temperature }} °C</td>
+                                <td>{{ sorted_vital_signs_data.bloodpressure }}</td>
+                                <td>{{ sorted_vital_signs_data.pulse }} bpm</td>
+                                <td>{{ sorted_vital_signs_data.respiration }}</td>
+                                <td>{{ sorted_vital_signs_data.painindex }}/10</td>
+                            </tr>
+                        {% endfor %}
                     </table>
                 </div>
             </div>

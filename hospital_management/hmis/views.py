@@ -1,6 +1,6 @@
 from datetime import datetime , timedelta
 import datetime as date
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database
@@ -748,7 +748,8 @@ def DoctorDashboard(request):
             for patient_id, patient_data in patients.items():
                 if appointment_data["patientName"] == patient_id:
                     for patientdata_id, patientdata_data in patientdatas.items():
-                        if patientdata_data["status"] == 'Inpatient' and patientdata_data['patientid'] == appointment_data["patientName"]:
+                        if patientdata_data["status"] == 'Inpatient' and patientdata_id == appointment_data["patientName"]:
+                        # if patientdata_data["status"] == 'Inpatient' and patientdata_data['patientid'] == appointment_data["patientName"]:
                             inpatients[patientdata_id] = patientdata_data       
 
     # Sort appointments by date
@@ -854,10 +855,11 @@ def patient_personal_information_inpatient(request):
     patientsdata = db.child("patientdata").get().val()
     vitalsigns = db.child("vitalsigns").get().val()
     consulnotes = db.child("consultationNotes").get().val()
+    progressnotes = db.child("progressnotes").get().val()
     # today = datetime.now()
     # tomorrow = today + timedelta(days=1)
     # date = tomorrow.strftime('%Y-%m-%d')
-    date = datetime.today().strftime('%Y-%m-%d')
+    date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
     medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
@@ -942,8 +944,12 @@ def patient_personal_information_inpatient(request):
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
     for vitalsigns_id, vitalsigns_data in vitalsigns.items():
-        if chosenPatient == vitalsigns_data["patientid"]:
-            chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+        if chosenPatient == vitalsigns_id:
+            for vsid, vsdata in vitalsigns_data.items():
+                chosenPatientVitalEntryData[vsid] = vsdata
+    
+    sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
+    
 
     chosenPatientConsulNotes = {}
     # for consulnotes_id, consulnotes_data in consulnotes.items():
@@ -952,7 +958,7 @@ def patient_personal_information_inpatient(request):
 
     consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
     # Retrieve the data for the specified patient ID and date
-    consulnotes_data = consultation_notes_ref.child(date).get().val()
+    consulnotes_data = consultation_notes_ref.child(date1).get().val()
     if consulnotes_data:
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
         currdiagnosis = consulnotes_data['diagnosis']
@@ -1072,12 +1078,12 @@ def patient_personal_information_inpatient(request):
                         'status': 'Outpatient',
                         'disease': None,
                         'room': None,
-                        'lastVisited': date
+                        'lastVisited': date1
                     })
  
         if 'admitButton' in request.POST:
 
-            #currdiagnosis = request.POST.get("currdiagnosis")
+            currdiagnosis = request.POST.get("currdiagnosis")
             print(currdiagnosis)
              # Check if the patient is already an inpatient
             patient_data = db.child("patientdata").child(chosenPatient).get().val()
@@ -1115,7 +1121,7 @@ def patient_personal_information_inpatient(request):
         # today = datetime.now()
         # tomorrow = today + timedelta(days=1)
         # date = tomorrow.strftime('%Y-%m-%d')
-        date = datetime.today().strftime('%Y-%m-%d')
+        date1 = datetime.today().strftime('%Y-%m-%d')
         doctors = db.child("doctors").get().val()
         uid = request.session['uid'] 
         medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
@@ -1182,9 +1188,12 @@ def patient_personal_information_inpatient(request):
         #Get Vital Signs Data of Chosen Patient
         chosenPatientVitalEntryData = {}
         for vitalsigns_id, vitalsigns_data in vitalsigns.items():
-            if chosenPatient == vitalsigns_data["patientid"]:
-                chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
-
+            if chosenPatient == vitalsigns_id:
+                for vsid, vsdata in vitalsigns_data.items():
+                    chosenPatientVitalEntryData[vsid] = vsdata
+        
+        sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
+    
         chosenPatientConsulNotes = {}
         # for consulnotes_id, consulnotes_data in consulnotes.items():
         #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
@@ -1192,7 +1201,7 @@ def patient_personal_information_inpatient(request):
 
         consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
         # Retrieve the data for the specified patient ID and date
-        consulnotes_data = consultation_notes_ref.child(date).get().val()
+        consulnotes_data = consultation_notes_ref.child(date1).get().val()
         if consulnotes_data:
             chosenPatientConsulNotes[chosenPatient] = consulnotes_data
             currdiagnosis = consulnotes_data['diagnosis']                                                         #'room': 201,})
@@ -1207,7 +1216,9 @@ def patient_personal_information_inpatient(request):
                                                                                 'medicines_list': medicines_list,
                                                                                 'appointmentschedule': appointmentschedule,
                                                                                 'time_slots': time_slots,
-                                                                                'endAppointment': endAppointment})
+                                                                                'endAppointment': endAppointment,
+                                                                                'progressnotes': progressnotes,
+                                                                                'sorted_vital_signs': sorted_vital_signs})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
@@ -1349,12 +1360,17 @@ def patient_vital_signs_history(request):
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
     for vitalsigns_id, vitalsigns_data in vitalsigns.items():
-        if chosenPatient == vitalsigns_data["patientid"]:
-            chosenPatientVitalEntryData[vitalsigns_id] = vitalsigns_data
+        if chosenPatient == vitalsigns_id:
+            for vsid, vsdata in vitalsigns_data.items():
+                chosenPatientVitalEntryData[vsid] = vsdata
+    
+    sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
     return render(request, 'hmis/patient_vital_signs_history.html', {'chosenPatientData': chosenPatientData, 
                                                                      'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 
                                                                      'doctors': doctors,
-                                                                     'uid': uid})
+                                                                     'uid': uid,
+                                                                     'vitalsigns': vitalsigns,
+                                                                     'sorted_vital_signs': sorted_vital_signs})
 
 def patient_medical_history(request):
     doctors = db.child("doctors").get().val()
@@ -1574,10 +1590,11 @@ def outpatient_medication_order(request):
 
 def save_prescriptions(request):
     patient_uid = request.GET.get('chosenPatient')
-    print(patient_uid)
+    patientdata = db.child("patientdata").child(patient_uid).get().val()
+
     if request.method == 'POST':
         numOfDays = int(request.POST.get('numOfDays'))  # Convert to integer
-        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")        
 
         # Calculate endDate
         todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
@@ -1592,7 +1609,27 @@ def save_prescriptions(request):
         frequency = request.POST.getlist('frequency')
         additional_remarks = request.POST.getlist('additionalremarks')  
         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(todaydate, patient_id, medicine_name, dosage, route, frequency, additional_remarks)
+
+        times_list = []
+        
+
+        for freq in frequency:
+            if freq == "Once Daily":
+                times_list.extend(request.POST.getlist('times-once-daily[]'))
+            elif freq == "Twice Daily":
+                times_list.append(', '.join(request.POST.getlist('times-twice-daily[]')))
+            elif freq == "Thrice Daily":
+                times_list.append("Morning, Afternoon, Evening")
+
+        for freq in frequency:
+            if freq == "Once Daily":
+                occurence = 1
+            elif freq == "Twice Daily":
+                occurence = 2
+            elif freq == "Thrice Daily":
+                occurence = 3
+
+
         try:
             id = str(uuid.uuid1())
             status = 'Ongoing'  # Default status
@@ -1607,6 +1644,7 @@ def save_prescriptions(request):
                 'dosage': dosage,
                 'route': route,
                 'frequency': frequency,
+                'times': times_list,
                 'additional_remarks': additional_remarks,
                 'patient_id': patient_id,
                 'todaydate': todaydate,
@@ -1615,8 +1653,65 @@ def save_prescriptions(request):
             }
             db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
 
+            if patientdata['status'] == 'Inpatient':
+                for index in range(len(medicine_name)):
+                    pid = str(uuid.uuid1())
+                    medicine = medicine_name[index]
+                    # Access other lists using the same index
+                    dosage_value = dosage[index]
+                    route_value = route[index]
+                    frequency_value = frequency[index]
+                    additional_remarks_value = additional_remarks[index]
+                    times_value = times_list[index]
+
+                    # Now you can use these values to construct your data dictionary and save to the database
+                    data = {
+                        'date': endDate_str,
+                        'prescriptionsoderUID': id,
+                        'occurence': occurence,
+                        'medicine_name': medicine,
+                        'dosage': dosage_value,
+                        'route': route_value,
+                        'frequency': frequency_value,
+                        'additional_remarks': additional_remarks_value,
+                        'patient_id': patient_id,
+                        'todaydate': todaydate,
+                        'status': 'Ongoing',
+                        'times': times_value
+                    }
+
+                    db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(data)
+
+            elif patientdata['status'] == 'Outpatient':
+                for index in range(len(medicine_name)):
+                    pid = str(uuid.uuid1())
+                    medicine = medicine_name[index]
+                    dosage_value = dosage[index]
+                    route_value = route[index]
+                    frequency_value = frequency[index]
+                    additional_remarks_value = additional_remarks[index]
+                    times_value = times_list[index]
+
+                    # Now you can use these values to construct your data dictionary and save to the database
+                    data = {
+                        'date': endDate_str,
+                        'prescriptionsoderUID': id,
+                        'occurence': occurence,
+                        'medicine_name': medicine,
+                        'dosage': dosage_value,
+                        'route': route_value,
+                        'frequency': frequency_value,
+                        'additional_remarks': additional_remarks_value,
+                        'patient_id': patient_id,
+                        'todaydate': todaydate,
+                        'status': 'Ongoing',
+                        'times': times_value
+                    }
+
+                    db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
+
             messages.success(request, 'Prescription saved successfully!')
-            return redirect(request.META.get('HTTP_REFERER', ''))
+            return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
         #add alerts
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
