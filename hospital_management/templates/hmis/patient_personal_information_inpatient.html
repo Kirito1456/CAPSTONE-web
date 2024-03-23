@@ -268,7 +268,7 @@
                                             {% if appointmentsched_data.uid == uid %}
                                                 <label for="new-appointment-date">New Date: </label>
                                                 <input type="date" id="new-appointment-date" name="new-appointment-date" min="" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;"><br>
-                                                
+                                                <input type="hidden" name="past-appointment-id" value={{ endAppointment }}></input>
                                                 <label for="new-appointment-time">New Time:</label>
                                                 <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                                                     {% for time_slot in time_slots %}
