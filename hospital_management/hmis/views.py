@@ -3,7 +3,7 @@ import datetime as date
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
-from hospital_management.settings import database as firebase_database
+from hospital_management.settings import database as firebase_database, storage as firebase_storage
 from hmis.forms import StaffRegistrationForm, AppointmentScheduleForm, MedicationsListForm
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
@@ -46,17 +46,12 @@ def upload_image(request):
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             image = form.cleaned_data['image']
-            # Initialize Firebase Admin SDK
-            cred = firebase_admin.credentials.Certificate("firebase-adminsdk-8df8z@hmis-a3bbe.iam.gserviceaccount.com")
-            firebase_admin.initialize_app(cred)
             # Upload image to Firebase Storage
             bucket = storage.bucket("your-firebase-storage-bucket-url")
             blob = bucket.blob(image.name)
             blob.upload_from_string(image.read(), content_type=image.content_type)
             # Get the URL of the uploaded image
             image_url = blob.public_url
-            # Do something with the image URL, such as save it to a database
-            # For example: YourModel.objects.create(image_url=image_url)
             return redirect('success_url')  # Redirect to a success page
     else:
         form = ImageUploadForm()
@@ -952,6 +947,7 @@ def patient_personal_information_inpatient(request):
     
 
     chosenPatientConsulNotes = {}
+    
     # for consulnotes_id, consulnotes_data in consulnotes.items():
     #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
     #         chosenPatientConsulNotes[consulnotes_id] = consulnotes_data
@@ -961,7 +957,9 @@ def patient_personal_information_inpatient(request):
     consulnotes_data = consultation_notes_ref.child(date1).get().val()
     if consulnotes_data:
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
-        currdiagnosis = consulnotes_data['diagnosis']
+        if consulnotes_data['diagnosis']:
+            currdiagnosis = consulnotes_data['diagnosis']
+
 
     if request.method == 'POST':
 
@@ -1022,6 +1020,16 @@ def patient_personal_information_inpatient(request):
             return redirect('DoctorDashboard')
 
         if 'addDischargePrescription' in request.POST:
+            numOfDays = int(request.POST.get('numOfDays')) 
+            todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  
+            qid = str(uuid.uuid1())
+
+            todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
+            endDate = todaydate_datetime + timedelta(days=numOfDays)
+
+            endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+            times_list = []
+
             medicine_name = request.POST.getlist('medicineName1')
             dosage = request.POST.getlist('dosage1')
             route = request.POST.getlist('route1')
@@ -1030,14 +1038,34 @@ def patient_personal_information_inpatient(request):
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(todaydate, chosenPatient, medicine_name, dosage, route, frequency, additional_remarks)
 
+            for freq in frequency:
+                if freq == "Once Daily":
+                    times_list.extend(request.POST.getlist('times-once-daily[]'))
+                elif freq == "Twice Daily":
+                    times_list.append(', '.join(request.POST.getlist('times-twice-daily[]')))
+                elif freq == "Thrice Daily":
+                    times_list.append("Morning, Afternoon, Evening")
+
+            for freq in frequency:
+                if freq == "Once Daily":
+                    occurence = 1
+                elif freq == "Twice Daily":
+                    occurence = 2
+                elif freq == "Thrice Daily":
+                    occurence = 3
+
             data = {
                 'patient_id': chosenPatient,
+                'prescriptionsoderUID': qid,
+                'todaydate': todaydate,
+                'endDate': endDate_str,
+                'times': times_list,
                 'medicine_name': medicine_name,
                 'dosage': dosage,
                 'route': route,
                 'frequency': frequency,
                 'additional_remarks': additional_remarks,
-                'todaydate': todaydate
+                'status': 'Ongoing'
             }
             
             appID = str(uuid.uuid1())
@@ -1082,10 +1110,44 @@ def patient_personal_information_inpatient(request):
                         'room': None,
                         'lastVisited': date1
                     })
+
+            for index in range(len(medicine_name)):
+                print(len(medicine_name))
+                print(len(dosage))
+                print(len(route))
+                print(len(frequency))
+                print(len(additional_remarks))
+                print(len(times_list))
+
+                qid = str(uuid.uuid1())
+                medicine = medicine_name[index]
+                dosage_value = dosage[index]
+                route_value = route[index]
+                frequency_value = frequency[index]
+                additional_remarks_value = additional_remarks[index]
+                times_value = times_list[index]
+
+                # Now you can use these values to construct your data dictionary and save to the database
+                data = {
+                    'date': endDate_str,
+                    'prescriptionsoderUID': qid,
+                    'occurence': occurence,
+                    'medicine_name': medicine,
+                    'dosage': dosage_value,
+                    'route': route_value,
+                    'frequency': frequency_value,
+                    'additional_remarks': additional_remarks_value,
+                    'patient_id': chosenPatient,
+                    'todaydate': todaydate,
+                    'status': 'Ongoing',
+                    'times': times_value
+                }
+
+                db.child('patientsorders').child(chosenPatient).child(todaydate).child(qid).set(data)
  
         if 'admitButton' in request.POST:
 
-            # currdiagnosis = request.POST.get("currdiagnosis")
+            currdiagnosis = request.POST.get("currdiagnosis")
             # print(currdiagnosis)
              # Check if the patient is already an inpatient
             patient_data = db.child("patientdata").child(chosenPatient).get().val()
