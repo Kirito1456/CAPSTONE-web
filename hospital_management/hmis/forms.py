@@ -3,6 +3,10 @@ from django.forms import ModelForm
 from django import forms
 from hmis.models import Patient, Staff, AppointmentSchedule, Medications
 
+
+class ImageUploadForm(forms.Form):
+    image = forms.ImageField(label='Select an image')
+
 class AppointmentScheduleForm(forms.ModelForm):
     DAYS_CHOICES = [
         ('sunday', 'Sunday'),

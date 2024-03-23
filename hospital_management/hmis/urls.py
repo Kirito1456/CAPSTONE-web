@@ -1,5 +1,6 @@
 from django.urls import path
 from hmis import views
+from .views import upload_image
 
 urlpatterns = [
     # 
@@ -63,4 +64,9 @@ urlpatterns = [
     path('edit_immunization_history/', views.edit_immunization_history, name="edit_immunization_history"),
     path('edit_family_history/', views.edit_family_history, name="edit_family_history"),
     path('patient_medication_nurse/', views.patient_medication_nurse, name='patient_medication_nurse'),
+    
+    # path('view_image/<submitted_id>/', views.view_image, name='view_image'),
+    path('upload/', upload_image, name='upload_image'),
+
+
 ]

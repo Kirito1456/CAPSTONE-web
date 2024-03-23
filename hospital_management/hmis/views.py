@@ -26,8 +26,42 @@ from pytesseract import pytesseract
 import uuid
 import json
 
+from django.http import HttpResponse, JsonResponse
+from PIL import Image
+import pytesseract
+import base64
+from firebase_admin import db
+
 # Use the firebase_database object directly
 db = firebase_database
+
+# views.py
+import firebase_admin
+from firebase_admin import storage
+from django.shortcuts import render, redirect
+from .forms import ImageUploadForm
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            # Initialize Firebase Admin SDK
+            cred = firebase_admin.credentials.Certificate("firebase-adminsdk-8df8z@hmis-a3bbe.iam.gserviceaccount.com")
+            firebase_admin.initialize_app(cred)
+            # Upload image to Firebase Storage
+            bucket = storage.bucket("your-firebase-storage-bucket-url")
+            blob = bucket.blob(image.name)
+            blob.upload_from_string(image.read(), content_type=image.content_type)
+            # Get the URL of the uploaded image
+            image_url = blob.public_url
+            # Do something with the image URL, such as save it to a database
+            # For example: YourModel.objects.create(image_url=image_url)
+            return redirect('success_url')  # Redirect to a success page
+    else:
+        form = ImageUploadForm()
+    return render(request, 'hmis/upload_image.html', {'form': form})
+
 
 def home(request):
     storage = messages.get_messages(request)
@@ -1490,9 +1524,18 @@ def inpatient_medication_order(request):
     return render(request, 'hmis/inpatient_medication_order.html')
 
 def perform_ocr(request):
+    id = str(uuid.uuid1())
     if request.method == 'POST' and request.FILES.get('image'):
         uploaded_image = request.FILES['image']
         img = Image.open(uploaded_image)
+
+        # encoded_image = base64.b64encode(img.tobytes()).decode('utf-8')
+        # ref = f"/images/"
+        # db.child(ref).update({
+        #     'image_data': encoded_image
+        # }) 
+        # ref.push({'image_data': encoded_image})
+
         text = pytesseract.image_to_string(img)
         return HttpResponse(text)
     
@@ -1617,3 +1660,17 @@ def edit_family_history(request):
             db.child('patientmedicalhistory').child(id).child('familyhistory').set(data)
 
     return render(request, 'hmis/edit_family_history.html')
+
+def view_image(request, submitted_id):
+    ref = db.reference('/images')  # Assuming images are stored under '/images' node in Firebase
+    snapshot = ref.order_by_key().equal_to(submitted_id).get()
+    
+    if snapshot:
+        image_data = snapshot[submitted_id]['image_data']
+        # Decode base64 image data
+        decoded_image = base64.b64decode(image_data)
+        
+        # Render the image in the template
+        return render(request, 'view_image.html', {'image_data': decoded_image})
+    else:
+        return HttpResponse('Image not found')
