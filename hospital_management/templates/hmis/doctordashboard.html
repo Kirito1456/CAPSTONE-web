@@ -39,44 +39,51 @@
     </div>
     
     <div id="appointment-screen">
-        <div id="notification-icon">
-            <i class="fas fa-bell" id="notification-icon-img"></i>
+        <div style="display: flex; flex-direction: row">
+            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; border: 1px solid #ccc">
+                <p style="margin-left: 15px; font-weight: bold;">Appointments for Today</p>
+                {% if appointments %}
+                    <table class="clients_table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment_id, appointment_data in appointments.items %}
+                            <tr>
+                                <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
+                                {% for patient_id, patient_data in patients.items %}
+                                    {% if patient_data.uid == appointment_data.patientName %}
+                                        <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}"
+                                            >{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
+                                    {% endif %}
+                                {% endfor %}
+                                </td>  
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p style="margin-left: 15px;">No Upcoming Appointments for Today</p>
+                {% endif %}
+            </div>
+            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; border: 1px solid #ccc; overflow: auto">
+                <p style="margin-left: 15px; font-weight: bold;">Tasks</p>
+                {% comment %} Sample Task {% endcomment %}
+                <div id="doctortask" style="background-color: grey; margin: 15px; padding: 10px;">
+                    <p>Patient Melissa Jones sent back results</p>
+                    <button style="height: fit-content;">Go</button>
+                </div>
+                {% comment %} Pop up every 4 hours, patients = inpatient under the doctor {% endcomment %}
+                <div id="doctortask" style="background-color: grey; margin: 15px; padding: 10px;">
+                    <p>Doctor Rounds</p>
+                    <button>Go</button>
+                </div>
+            </div>
         </div>
-        <div id="notification-popup">
-            <ul id="notification-list">
-                <!-- Notification items will be populated here dynamically -->
-            </ul>
-        </div>
-        <p>Appointments for Today</p>
-        {% if appointments %}
-            <table class="clients_table">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for appointment_id, appointment_data in appointments.items %}
-                    <tr>
-                        <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
-                        {% for patient_id, patient_data in patients.items %}
-                            {% if patient_data.uid == appointment_data.patientName %}
-                                <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}"
-                                    >{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
-                            {% endif %}
-                        {% endfor %}
-                        </td>  
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No Upcoming Appointments for Today</p>
-        {% endif %}
-
         <br>
-        <p>Inpatients</p>
         {% if inpatients %}
             <table class="clients_table">
                 <thead>

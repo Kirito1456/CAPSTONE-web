@@ -976,6 +976,7 @@ def patient_personal_information_inpatient(request):
         
         if 'submitLabTestRequest' in request.POST:
             id = str(uuid.uuid1())
+            uid = request.session['uid'] 
             request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
             # Retrieve the values of the checkboxes for each test
@@ -1008,7 +1009,8 @@ def patient_personal_information_inpatient(request):
                 'ecg': ecg,
                 'colonoscopy': colonoscopy,
                 'bronchoscopy': bronchoscopy,
-                'pet_scan': pet_scan
+                'pet_scan': pet_scan,
+                'doctor_id': uid 
             }
             
             # Save the data to the database
@@ -1083,8 +1085,8 @@ def patient_personal_information_inpatient(request):
  
         if 'admitButton' in request.POST:
 
-            currdiagnosis = request.POST.get("currdiagnosis")
-            print(currdiagnosis)
+            # currdiagnosis = request.POST.get("currdiagnosis")
+            # print(currdiagnosis)
              # Check if the patient is already an inpatient
             patient_data = db.child("patientdata").child(chosenPatient).get().val()
             if patient_data and patient_data.get('status') == 'Outpatient':

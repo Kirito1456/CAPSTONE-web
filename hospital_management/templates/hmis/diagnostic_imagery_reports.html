@@ -220,7 +220,6 @@
                                     <div class="date">Date</div>
                                     <div class="type">Imagery Type</div>
                                     <div class="report">Report</div>
-                                    <div class="note">Doctor's Notes</div>
                                 </div>
                                 {% for submittedTest_id, submittedTest_data in submittedTest.items %}
                                     {% if submittedTest_id == chosenPatient %}
@@ -234,10 +233,6 @@
                                                         {% comment %} Note: Disposition and Findings (in Db) same {% endcomment %}
                                                         <a href="" id="download-disposition">View Disposition</a>
                                                     </div>
-                                                </div>
-                                                <div class="note">
-                                                    <div id="doctor-notes"></div>
-                                                    <div class="add-notes"><a href="" id="add-doctor-notes">Add Notes</a></div>
                                                 </div>
                                             </div>
                                         {% endfor %}
