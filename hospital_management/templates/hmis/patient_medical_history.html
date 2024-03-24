@@ -386,6 +386,7 @@
         backButton.addEventListener('click', function() {
             window.history.back();
         });
+        
 
         medicalHistoryLink.addEventListener('click', function(event) {
             event.preventDefault();
@@ -455,6 +456,10 @@
                 <button id="add-new-medical-history-button">Add New Row</button>
             </div>            
             </form>`;
+
+            document.getElementById('save-medical-history-button').addEventListener('click', function () {
+                alert('Successfully Added a Medical/Surgical Record!');
+            });
         
             // Add event listeners
             const editMedicalHistoryButton = document.getElementById('edit-medical-history-button');
@@ -594,6 +599,10 @@
                     <button id="add-new-button">Add New Row</button>
                 </div>            
             </form>`;
+
+            document.getElementById('save-allergy-button').addEventListener('click', function () {
+                alert('Successfully Added an Allergy Record!');
+            });
         
             // Add event listeners
             const editAllergyButton = document.getElementById('edit-allergy-button');
@@ -672,7 +681,6 @@
             
             
         });
-        
 
         
         immunizationLink.addEventListener('click', function(event) {
@@ -733,6 +741,10 @@
                     <button id="add-new-immunization-button">Add New Row</button>
                 </div>            
             </form>`;
+
+            document.getElementById('save-immunization-button').addEventListener('click', function () {
+                alert('Successfully Added an Immunization Record!');
+            });
 
             // Add event listeners
             const editImmunizationButton = document.getElementById('edit-immunization-button');
@@ -863,6 +875,10 @@
                 <button id="add-new-family-history-button">Add New Row</button>
             </div>            
             </form>`;
+
+            document.getElementById('save-family-history-button').addEventListener('click', function () {
+                alert('Successfully Added a Family History Record!');
+            });
         
             // Add event listeners
             const editFamilyHistoryButton = document.getElementById('edit-family-history-button');

@@ -121,6 +121,11 @@
         dateFormat: "H:i",
         time_24hr: false
     });
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('save-btn').addEventListener('click', function () {
+            alert('New Schedule Saved!');
+        });
+    });
 </script>
 <script src="{% static 'js/app-scheduling.js' %}"></script>
 {% endblock %}

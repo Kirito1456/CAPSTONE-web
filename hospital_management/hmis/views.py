@@ -1282,7 +1282,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'time_slots': time_slots,
                                                                                 'endAppointment': endAppointment,
                                                                                 'progressnotes': progressnotes,
-                                                                                'sorted_vital_signs': sorted_vital_signs})
+                                                                                'sorted_vital_signs': sorted_vital_signs,
+                                                                                'consulnotes': consulnotes})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
@@ -1451,7 +1452,7 @@ def patient_medical_history(request):
     patientMedical = db.child("patientmedicalhistory").get().val()
     if request.method == 'POST':
         if 'saveMedicalHistoryButton' in request.POST:
-            diagnosis = request.POST.getlist('diagnosis')
+            diagnosis = request.POST.getlist('diagnosis_surgical')
             date_illness = request.POST.getlist('date_illness')
             treatment = request.POST.getlist('treatment')
             remarks = request.POST.getlist('remarks')

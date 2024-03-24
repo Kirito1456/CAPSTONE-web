@@ -29,8 +29,8 @@
         transform: translate(-50%, -50%);
         background-color: #fefefe;
         border: 1px solid #888;
-        width: 20%;
-        height: 30%;
+        width: 60%;
+        height: 60%;
         padding: 20px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
         overflow: auto;
@@ -247,9 +247,15 @@
                             <button id="endtransaction" onclick="openAppointmentModal()">Finish Appointment</button>
                             <form method="post">
                                 {% csrf_token %}
-                                <button type="submit" id="admitButton" name="admitButton">Admit Patient</button>
+                                <button type="submit" id="admitButton" name="admitButton" onclick="confirmAdmit()">Admit Patient</button>
                             </form>
                         {% elif chosenPatientDatas_data.status == 'Inpatient' %}
+                            {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                <div id="last">
+                                    <div id="lname-label">Diagnosis:</div>
+                                    <div id="lname">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
+                                </div>
+                            {% endfor %}
                             <button id="endtransaction" onclick="openDischargeModal()">Discharge</button>
                         {% endif %}
 
@@ -924,6 +930,31 @@
             reschedmodal.style.display = "none";
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('addDischargePrescription').addEventListener('click', function () {
+            alert('Patient successfully discharged!');
+        });
+        document.getElementById('endAppointment').addEventListener('click', function () {
+            alert('Appointment with Patient Ended!');
+        });
+        document.getElementById('appID').addEventListener('click', function () {
+            var chosenPatientData_id = document.getElementById('appID').value;
+            alert('Appointment Ended with Patient, Successfully set up a follow-up appointment.');
+        });
+        document.querySelector('button[name="submitLabTestRequest"]').addEventListener('click', function () {
+            alert('Lab Test Request Submitted!');
+        });
+        document.getElementById('saveChiefComplaintButton').addEventListener('click', function () {
+            alert('Chief Complaint Saved!');
+        });
+        document.querySelector('button[name="rosButton"]').addEventListener('click', function () {
+            alert('Review of Systems Saved!');
+        });
+        document.querySelector('button[name="diagnosisButton"]').addEventListener('click', function () {
+            alert('Diagnosis Saved!');
+        });
+    });
 </script>
 
 <script src="{% static 'js/patient_data.js' %}"></script>
@@ -942,11 +973,7 @@
 
     // Pressing Admit Button
     function confirmAdmit() {
-        if (confirm("Are you sure you want to admit the patient?")) {
-            alert("Patient admitted successfully!");
-        } else {
-            alert("Admission canceled.");
-        }
+        alert("Patient admitted successfully!");
     }
     
     // Get the button and modal

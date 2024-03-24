@@ -126,4 +126,12 @@
 </div>
 
 <script src="{% static 'js/app.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('appID').addEventListener('click', function () {
+            alert('Appointment rescheduled successfully!');
+        });
+    });
+</script>
+
 {% endblock %}

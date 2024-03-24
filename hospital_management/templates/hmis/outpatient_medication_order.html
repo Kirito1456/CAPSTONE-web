@@ -220,13 +220,39 @@
             if (selectedFrequency === "Once Daily") {
                 onceDailyCheckboxes.style.display = "flex";
                 twiceDailyCheckboxes.style.display = "none";
+                // Ensure only one checkbox can be selected
+                limitCheckboxSelection(onceDailyCheckboxes, 1);
             } else if (selectedFrequency === "Twice Daily") {
                 onceDailyCheckboxes.style.display = "none";
                 twiceDailyCheckboxes.style.display = "flex";
+                // Ensure only two checkboxes can be selected
+                limitCheckboxSelection(twiceDailyCheckboxes, 2);
             } else {
                 onceDailyCheckboxes.style.display = "none";
                 twiceDailyCheckboxes.style.display = "none";
             }
+        });
+        
+        function limitCheckboxSelection(container, limit) {
+            const checkboxes = container.querySelectorAll("input[type='checkbox']");
+            let checkedCount = 0;
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener("change", function() {
+                    if (this.checked) {
+                        checkedCount++;
+                        if (checkedCount > limit) {
+                            this.checked = false;
+                            checkedCount--;
+                        }
+                    } else {
+                        checkedCount--;
+                    }
+                });
+            });
+        }
+
+        document.getElementById('submit-medication-button').addEventListener('click', function () {
+            alert('Successfully Added a Medication Order/Prescription!');
         });
     });
     
