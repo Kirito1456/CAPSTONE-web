@@ -19,7 +19,7 @@ body {
     top: 0;
     left: 0;
     
-    background-color: #85AA9B;
+    background-color: #5c7c89;
 }
 
 #all-info{
@@ -191,11 +191,13 @@ a{
 }
 
 .header1 {
-    background-color: #799c8d;
-    color: #F5F5F5;
+    background-color: #5c7c89;
+    color: white; 
+    font-weight: bolder;
+    font-size: 200;
     text-align: center;
-    padding: 8px;
-    width: 100%;
+    padding: 5px;
+    padding-bottom: 0;
     margin-left: 0px;
 }
 
@@ -206,6 +208,7 @@ a{
 
 .login_container {
     padding: 25px;
+    padding-top: 20px;
     text-align: center;
 }
 
@@ -235,7 +238,7 @@ a{
 }
 
 #login_btn, #sendlink_btn {
-    background-color: #799c8d;
+    background-color: #5c7c89;
     border-radius: 10px;
     margin: 10px 0px;
     padding: 10px;
@@ -248,7 +251,7 @@ a{
 }
 
 #login_btn:hover, #sendlink_btn:hover {
-    background-color: #698a7c;
+    background-color: #5c7c89;
 }
 
 #forgetpassword_lb {
@@ -279,7 +282,7 @@ a{
 
 .accounts_table th {
     border-radius: 10px;
-    background-color: #799c8d;
+    background-color: #5c7c89;
     
     padding: 10px;
     text-align: center;
@@ -325,13 +328,13 @@ a{
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
-    background-color: #799c8d;
+    background-color: #5c7c89;
     color: #fff;
     cursor: pointer;
 }
 
 #searchButton:hover {
-    background-color: #698a7c;
+    background-color: #5c7c89;
 }
 
 .button-bar {
@@ -341,7 +344,7 @@ a{
 
 .button-bar button {
     padding: 8px 12px;
-    background-color: #799c8d;
+    background-color: #5c7c89;
     color: white;
     border: none;
     border-radius: 5px;
@@ -350,7 +353,7 @@ a{
 }
 
 .button-bar button:hover {
-    background-color: #698a7c;
+    background-color: #5c7c89;
 }
 
 .container {
@@ -370,7 +373,7 @@ a{
   }
   
   .next {
-    background-color: #799c8d;
+    background-color: #5c7c89;
     color: white;
     border-radius: 5px;
     margin-left: 11px;
@@ -386,7 +389,20 @@ a{
 }
 
 .pagination a.active {
-    background-color: #85AA9B;
+    background-color: #5c7c89;
     color: white;
-    border: 1px solid #85AA9B;
+    border: 1px solid #5c7c89;
+}
+
+#login{
+    width: 66%;
+    height: 50%;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 17%;
+    margin-top: 8%;
+
+    background-color: #fff;
 }

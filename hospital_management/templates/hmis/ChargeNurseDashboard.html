@@ -50,8 +50,8 @@
                 <tbody>
                     {% for room_id, room_data in rooms.items %}
                     <tr>
-                        <td>{{ room_data.fnumber }}</td>
-                        <td>{{ room_data.rnumber }}</td>
+                        <td id = "floor">{{ room_data.fnumber }}</td>
+                        <td id = "room">{{ room_data.rnumber }}</td>
                         <input type="hidden" name="roomID" value="{{ room_id }}">
                         <td>
                             <div>
@@ -89,14 +89,10 @@
                         </td>
                     </tr>
                     {% endfor %}
-
-
                 </tbody>
                 <button class="save-button" type="submit">Save</button>
             </form>
         </table>
-        
-        
     </div>
 </div>
 <script src="{% static 'js/nurse.js' %}"></script>
@@ -106,7 +102,7 @@
     function displayDateTime() {
         var currentDate = new Date();
         var dateTimeString = currentDate.toLocaleString();
-        document.getElementById('current-date-time').innerText = dateTimeString;
+        document.getElementById('current-date-time').innerText = "Current Date and Time: " + dateTimeString;
     }
 
     // Call the function initially and update every second

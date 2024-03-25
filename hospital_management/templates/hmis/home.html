@@ -11,7 +11,8 @@
 
 {% block content %}
 
-<h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
+<div id = "login">
+    <h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
     {% if messages %}
         <ul>
             {% for message in messages %}
@@ -31,4 +32,5 @@
             <a href="{% url 'register' %}" id="login_fp">Create Account</a> | <a href="{% url 'forgotpass' %}" id="login_fp">Forgot Password?</a><br><br>
         </div>
     </form>
+</div>
 {% endblock %}
