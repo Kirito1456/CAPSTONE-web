@@ -64,18 +64,21 @@
             <tbody>
                 {% if appointments %}
                 {% for appointment_id, appointment_data in appointments.items %}
-                <tr>
-                    <td><label class="accountT_lbl">{{ appointment_data.appointmentDate }}</label></td>
-                    <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
-                    {% for patient_id, patient_data in patients.items %}
-                        {% if patient_data.uid == appointment_data.patientName %}
-                            <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
-                        {% endif %}
-                    {% endfor %}
-                    <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
-                    <td><label class="accountT_lbl"><a href="#" class="details-link" >Click for More Details</a></label>
-                    {% for patient_id, patient_data in patients.items %}
-                        {% if appointment_data.patientName == patient_data.uid  %}
+                    <tr>
+                        <form method="post">
+                            {% csrf_token %}
+                        <td><label class="accountT_lbl" id="selected_appointment_date">{{ appointment_data.appointmentDate }}</label></td>
+                        </form>
+                        <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
+                        {% for patient_id, patient_data in patients.items %}
+                            {% if patient_data.uid == appointment_data.patientName %}
+                                <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
+                            {% endif %}
+                        {% endfor %}
+                        <td><label class="accountT_lbl">{{ appointment_data.appointmentVisitType }}</label></td>
+                        <td><label class="accountT_lbl"><a href="#" class="details-link" >Click for More Details</a></label>
+                        {% for patient_id, patient_data in patients.items %}
+                            {% if appointment_data.patientName == patient_data.uid  %}
                                 <div class="details-container" style="display: none;">
                                     <div class="detail-wrapper">
                                         <div class="detailname" style="font-weight: bold;">E-mail: </div>
@@ -98,34 +101,40 @@
                                         </form>
                                     </div>
                                 </div>
-                        {% endif %}
-                    {% endfor %}
-                    </td>    
-                       
-                    <div id="myModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close">&times;</span>
-                            <h2>Reschedule Appointment</h2>
-                            <form id="reschedule-form" method="post" action="{% url 'update_appointment' %}">
-                                {% csrf_token %}
-                                <label for="suggested-time">Suggested Schedule:</label><br>
-                                
-                                <label for="new-appointment-date">New Date:</label>
-                                <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
-                                <label for="new-appointment-time">New Time:</label>
-                                <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                    {% for time_slot in time_slots %}
-                                        <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
-                                    {% endfor %}
-                                </select><br>
-                                <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
-                            </form>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                            
+                        <div id="myModal" class="modal">
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <h2>Reschedule Appointment</h2>
+                                <form id="reschedule-form{{ appointment_id }}" method="post" action="{% url 'update_appointment' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="selected_appointment_date" value="{{ appointment_data.appointmentDate }}">
+                                    <label for="suggested-time">Suggested Schedule:</label><br>
+                                    <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        {% for available_date in available_dates %}
+                                            <option value="{{ available_date }}" name="available_date">{{ available_date }}</option>
+                                        {% endfor %}
+                                    </select><br>
+                                    <label for="new-appointment-date">New Date:</label>
+                                    <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
+                                    <label for="new-appointment-time">New Time:</label>
+                                    <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        {% for time_slot in time_slots %}
+                                            <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
+                                        {% endfor %}
+                                    </select><br>
+                                    <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                       
-                </tr>
+                            
+                    </tr>
                 {% endfor %}
-                {% endif %}
+            {% endif %}
+
             </tbody>
         </table>
     </div>
