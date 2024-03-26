@@ -4,33 +4,193 @@
 
 
 {% block styles%} 
+<<<<<<< HEAD
 <!-- Stylesheet for the program -->
 <link rel="stylesheet" href="{% static 'css/style-users.css' %}">
+=======
+>>>>>>> 09297f8c470b74cb32ebbe3e8a390c484797209c
 
 {% endblock styles%}
 
 {% block content %}
 
+<style>
+
+    body {
+        background-color: #F5F5F5;
+        font-family: 'Inter';
+        margin-left: 0px;
+    }
+
+    #login{
+        display: flex;
+
+        flex-direction: row;
+
+        width: 66%;
+        height: 50%;
+
+        margin-left: 17%;
+        margin-top: 8%;
+
+        border-radius: 10%;
+
+        background-color: #F5F5F5;
+    }
+
+    #header{
+        color: #091f5b;
+        font-weight: bold;
+
+        font-size: 30px;
+
+        text-align: center;
+    }
+
+    #login-credentials{
+        width: 50%;
+
+        background-color: #fff;
+        border-radius: 5% 0 0 5%;
+
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+
+        padding-top: 10%;
+    }
+
+    #logo{
+        width: 50%;
+    }
+
+    #logo-picture{
+        width: 100%;
+        height: 100%;
+
+        border-radius: 0 5% 5% 0;
+
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .login_container {
+        padding: 25px;
+        padding-top: 20px;
+        text-align: left;
+
+        display: flex;
+        flex-direction: column;
+
+        justify-content: start;
+
+        margin-left: 5%;
+    }
+
+    .login_lbl,.fp_lbl {
+        font-size: 16px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .login_txtbox {
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: -5%;
+        margin-top: 1%;
+        width: 90%;
+        display: inline-block;
+    }
+
+    #login_fp, #login_su, #login_noacc-lb {
+        font-size: 15px;
+        font-weight: bold;
+        color: black;
+    }
+
+    #login_fp:hover{
+        text-decoration: underline;
+    }
+
+    #login_btn{
+        background-color: #091f5b;
+        border-radius: 10px;
+        padding: 10px;
+        width: 25%;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 18px;
+        color: #F5F5F5;
+
+        margin-bottom: 10px;
+    }
+
+    #login_btn:hover, #sendlink_btn:hover {
+        background-color: #091f5b;
+    }
+
+    #forgetpassword_lb {
+        font-size: 12px;
+    }
+
+    .red-asterisk {
+        font-size: 16px;
+        font-weight: bold;
+        color: red;
+        text-align: left;
+    }
+
+    #login-button{
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+    }
+
+    #others{
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+
+        padding-top: 5%;
+    }
+
+</style>
+
 <div id = "login">
-    <h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
+    <div id = "login-credentials">
+        <div id="header">LOGIN</div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="login_container">
+                <div id = "email">
+                    <label class="login_lbl"><span class="tab"></span>Email </label><label class="red-asterisk">*</label>
+                </div>
+                <input class="login_txtbox" type="email" placeholder="Enter Email" name="email" required><br><br>
+                <div id = "password">
+                    <label class="login_lbl">Password </label><label class="red-asterisk">*</label>
+                </div>
+                <input class="login_txtbox"type="password" placeholder="Enter Password" name="password" required><br><br>
+                <div id = "login-button">
+                    <button id ="login_btn" type="submit" style="display: flex; justify-content: center; text-align: center;">Log In</button><br><br>
+                </div>
+                <div id = "others">
+                    <a href="{% url 'register' %}" id="login_fp">Create Account</a> &nbsp; | &nbsp; <a href="{% url 'forgotpass' %}" id="login_fp">Forgot Password?</a><br><br>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id = "logo">
+        <img src="{%static 'logo-color.png'%}" id = "logo-picture">
+    </div>
+    
     {% if messages %}
         <ul>
             {% for message in messages %}
-            <h3 class="header3">{{ message }}</h3>
+                <div id = "message" style="display: none;">{{ message }}</div>
+                <script>alert(document.getElementById("message"))</script>
             {% endfor %}
         </ul>
     {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="login_container">
-            <label class="login_lbl"><span class="tab"></span>Email </label><label class="red-asterisk">*</label>
-            <input class="login_txtbox" type="email" placeholder="Enter Email" name="email" required><br><br>
-            <label class="login_lbl">Password </label><label class="red-asterisk">*</label>
-            <input class="login_txtbox"type="password" placeholder="Enter Password" name="password" required><br><br>
-            <button id ="login_btn" type="submit">Log In</button><br><br>
-            <a href="{% url 'register' %}" id="login_fp">Create Account</a> | <a href="{% url 'forgotpass' %}" id="login_fp">Forgot Password?</a><br><br>
-        </div>
-    </form>
+    
 </div>
 {% endblock %}

@@ -538,12 +538,10 @@ p{
     display: flex;
     flex-direction: column;
     width: 35%;
-    background-color: #888;
 }
 
 #out-2,
 #in-2 {
-    background-color: cornflowerblue;
     width: 60%;
 
     margin-bottom: 20px;

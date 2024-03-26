@@ -116,7 +116,7 @@ a{
     border-radius: 10px;
     padding: 10px 8px;
     margin: 8px 0px;
-    width: 185px;
+    width: 20%;
 }
 
 .signup_lbl2 {
@@ -130,6 +130,11 @@ a{
     font-weight: bold;
     color: black;
     text-align: left;
+
+    display: flex;
+    align-items: center;
+
+    margin-right: 20px;
 }
 
 .signup_dd-birthmonth, .signup_dd-birthday, .signup_dd-birthyear, .signup_dd-department, .signup_dd-jobtitle {
@@ -153,12 +158,12 @@ a{
 }
 
 .signup_dd-department, .signup_dd-jobtitle {
-    width: 524px;
+    width: 35%;
 }
 
 #signup_btn {
     color: #F5F5F5;
-    background-color: #799c8d;
+    background-color: #5c7c89;
     border-radius: 10px;
     margin: 2px 25%;
     padding: 10px;
@@ -170,7 +175,7 @@ a{
 }
 
 #signup_btn:hover {
-    background-color: #698a7c;
+    background-color: #5c7c89;
 }
 
 .red-asterisk {
@@ -182,6 +187,9 @@ a{
 
 .form-group {
     padding: 2px;
+
+    display: flex;
+    flex-direction: row;
 }
 
 .admin_lbl{
@@ -405,4 +413,14 @@ a{
     margin-top: 8%;
 
     background-color: #fff;
+}
+
+.admin-screen{
+    margin: 0 20px;
+
+
+}
+
+.signup_txtbox{
+    width: 25%
 }

@@ -9,6 +9,7 @@
         margin-top: 20px;
         margin-bottom: 10px;
     }
+
     #other-side{
         width: 81%;
         height: 100%;
@@ -19,6 +20,7 @@
         display: flex;
         flex-direction: column; /* Ensure child elements stack vertically */
     }
+
     #menu-history-bar {
         background-color: #f4f4f4;
         padding: 5px;
@@ -102,8 +104,7 @@
     .row:hover {
         background-color: #eaeaea;
     }
-        
-    
+         
     #edit-allergy {
         margin: 10px;
     }
@@ -128,6 +129,7 @@
     #edit-allergy-button:hover, #save-allergy-button:hover, #add-new-button:hover, #cancel-allergy-button:hover {
         font-weight: bold;
     }
+
     #immunization-table {
         width: 100%;
         border-radius: 5px;
@@ -184,6 +186,7 @@
     #edit-immunization-button:hover, #save-immunization-button:hover, #add-new-immunization-button:hover, #cancel-immunization-button:hover {
         font-weight: bold;
     }
+
     #family-history-table {
         width: 100%;
         border-radius: 5px;
@@ -244,6 +247,7 @@
     #edit-family-history-button:hover, #save-family-history-button:hover, #add-new-family-history-button:hover, #cancel-family-history-button:hover {
         font-weight: bold;
     }
+    
     #medical-history-table {
         width: 100%;
         border-radius: 5px;
@@ -266,19 +270,19 @@
     }
     
     #medical-history-table .cell.diagnosis {
-        flex-basis: 20%;
+        flex-basis: 15%;
     }
     
     #medical-history-table .cell.date-illness {
-        flex-basis: 20%;
+        flex-basis: 10%;
     }
     
     #medical-history-table .cell.treatment {
-        flex-basis: 20%;
+        flex-basis: 30%;
     }
     
     #medical-history-table .cell.remarks {
-        flex-basis: 20%;
+        flex-basis: 30%;
     }
     
     #medical-history-table .row:nth-child(even) {
@@ -406,29 +410,29 @@
                         {% for surgical_id, surgical_data in patientMedical_data.items %}
                             <div style="font-size: 14px;">
                                 <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
-                                    <div style="flex: 1; text-align: center;">
+                                    <div style="flex: 1; text-align: center; margin-left: -70px">
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'diagnosis_surgical' %}
                                                 {% for diagnosis_surgical_item in item_value %}
-                                                    <input type="text" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
+                                                    <input type="text" style="flex: 1; text-align: center; margin-left: -80px;" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <div style="flex: 1; text-align: center;">
+                                    <div style="flex: 1; text-align: center; margin-left: -235px">
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'date_illness' %}
                                                 {% for date_illness_item in item_value %}
-                                                    <input type="date" name="date_illness" value="{{ date_illness_item }}"><br> 
+                                                    <input type="date" style="flex: 1; text-align: center; margin-left: -100px" name="date_illness" value="{{ date_illness_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <div style="flex: 1; text-align: center;">
+                                    <div style="flex: 1; text-align: center; margin-left: -155px">
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'treatment' %}
                                                 {% for treatment_item in item_value %}
-                                                    <input type="text" name="treatment" value="{{ treatment_item }}"><br> 
+                                                    <input type="text" style="margin-left: -115px; width: 80%" name="treatment" value="{{ treatment_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -437,7 +441,7 @@
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'remarks' %}
                                                 {% for remarks_item in item_value %}
-                                                    <input type="text" name="remarks" value="{{ remarks_item }}"><br> 
+                                                    <input type="text" style="width: 100%; margin-left: -105px" name="remarks" value="{{ remarks_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -450,24 +454,44 @@
 
             </div>
             <div id="edit-medical-history">
-                <button id="edit-medical-history-button">Edit</button>
-                <button id="save-medical-history-button" name="saveMedicalHistoryButton" value={{ chosenPatientData_id }}>Save</button>
-                <button id="cancel-medical-history-button" style="display: none;">Cancel</button>
-                <button id="add-new-medical-history-button">Add New Row</button>
+                <button id="edit-medical-history-button" style="border: 0px;">Edit</button>
+                <button id="save-medical-history-button" style="display: none; background-color: green; color: white; border: 0px;" name="saveMedicalHistoryButton" value={{ chosenPatientData_id }}>Save</button>
+                <button id="cancel-medical-history-button" style="display: none; background-color: red; color: white; border: 0px;">Cancel</button>
+                <button id="add-new-medical-history-button" style="border: 0px;">Add New Row</button>
             </div>            
             </form>`;
 
             document.getElementById('save-medical-history-button').addEventListener('click', function () {
                 alert('Successfully Added a Medical/Surgical Record!');
+
+                if (medicalHistoryLink) {
+                    console.log('Medical history link exists');
+                    medicalHistoryLink.click();
+                } else {
+                    console.log('Medical history link not found');
+                }
             });
         
             // Add event listeners
             const editMedicalHistoryButton = document.getElementById('edit-medical-history-button');
             const cancelMedicalHistoryButton = document.getElementById('cancel-medical-history-button');
             const addNewMedicalHistoryButton = document.getElementById('add-new-medical-history-button');
+            const saveMedicalHistoryButton = document.getElementById('save-medical-history-button');
         
             addNewMedicalHistoryButton.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent form submission
+
+                // Hide the Edit button
+                editMedicalHistoryButton.style.display = 'none';
+
+                // Hide the Add New Medical History button
+                addNewMedicalHistoryButton.style.display = 'none';
+
+                // Show the Cancel button
+                cancelMedicalHistoryButton.style.display = 'inline-block';
+
+                // Show the Save button
+                saveMedicalHistoryButton.style.display = 'inline-block';
                             
                 const newRow = document.createElement('div');
                 newRow.classList.add('row');
@@ -480,10 +504,10 @@
                         <input type="date" name="date_illness">
                     </div>
                     <div class="cell treatment">
-                        <input type="text" name="treatment">
+                        <input type="text" style="width: 93%" name="treatment">
                     </div>
                     <div class="cell remarks">
-                        <input type="text" name="remarks">
+                        <input type="text" style="width: 116%" name="remarks">
                     </div>`;
                         
                 const medicalHistoryTable = document.getElementById('medical-history-table');
@@ -495,6 +519,15 @@
                 
                 // Show the Cancel button
                 cancelMedicalHistoryButton.style.display = 'inline-block';
+
+                // Show the Save button
+                saveMedicalHistoryButton.style.display = 'inline-block';
+
+                // Hide the Edit button
+                editMedicalHistoryButton.style.display = 'none';
+
+                // Hide the Add New Medical History button
+                addNewMedicalHistoryButton.style.display = 'none';
                 
                 // Get all rows excluding the header row
                 const rows = document.querySelectorAll('#medical-history-table .row:not(.header)');
@@ -531,6 +564,15 @@
             cancelMedicalHistoryButton.addEventListener('click', function() {
                 // Hide the Cancel button
                 cancelMedicalHistoryButton.style.display = 'none';
+
+                // Show the Cancel button
+                editMedicalHistoryButton.style.display = 'inline-block';
+                
+                // Show the Add New Medical History button
+                addNewMedicalHistoryButton.style.display = 'inline-block';
+
+                // Hide the Save button
+                saveMedicalHistoryButton.style.display = 'none';
                         
                 // Get all rows excluding the header row
                 const rows = document.querySelectorAll('#medical-history-table .row:not(.header)');
@@ -543,6 +585,8 @@
                     row.querySelector('.cell.treatment').innerHTML = '';
                     row.querySelector('.cell.remarks').innerHTML = '';
                 });
+
+                medicalHistoryLink.click();
             });
         });
         
@@ -561,12 +605,12 @@
                     {% if patientMedical_id == chosenPatient %}
                         {% for allergy_id, allergy_data in patientMedical_data.items %}
                             <div style="font-size: 14px;">
-                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
+                                <div id="row" style="display: flex; justify-content: start; margin-bottom: 5px; margin-right: 10px;">
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in allergy_data.items %}
                                             {% if item_key == 'allergen' %}
                                                 {% for allergen_item in item_value %}
-                                                    <input type="text" name="allergen" value="{{ allergen_item }}"><br> 
+                                                    <input type="text" style="display:flex; justify-content: start;" name="allergen" value="{{ allergen_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -592,25 +636,40 @@
                     {% endif %}
                 {% endfor %}
             </div>
-                <div id="edit-allergy">
+                <div id="edit-allergy" style="display: flex; justify-content: center;">
                     <button id="edit-allergy-button">Edit</button>
-                    <button id="save-allergy-button" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
-                    <button id="cancel-allergy-button" style="display: none;">Cancel</button>
+                    <button id="save-allergy-button" style="display: none; border: 0px; backgroung-color: green; color: white;" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
+                    <button id="cancel-allergy-button" style="display: none; border: 0px; backgroung-color: red; color: white;">Cancel</button>
                     <button id="add-new-button">Add New Row</button>
                 </div>            
             </form>`;
 
             document.getElementById('save-allergy-button').addEventListener('click', function () {
                 alert('Successfully Added an Allergy Record!');
+
+                allergiesLink.click();
             });
         
             // Add event listeners
             const editAllergyButton = document.getElementById('edit-allergy-button');
             const cancelAllergyButton = document.getElementById('cancel-allergy-button');
             const addNewButton = document.getElementById('add-new-button');
+            const saveAllergyButton = document.getElementById('save-allergy-button');
         
             addNewButton.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent form submission
+
+                // Show the Cancel button
+                cancelAllergyButton.style.display = 'inline-block';
+
+                // Show the Cancel button
+                saveAllergyButton.style.display = 'inline-block';
+
+                // Hide the Cancel button
+                editAllergyButton.style.display = 'none';
+
+                // Hide the Cancel button
+                addNewButton.style.display = 'none';
                             
                 const newRow = document.createElement('div');
                 newRow.classList.add('row');
@@ -635,6 +694,15 @@
                 
                 // Show the Cancel button
                 cancelAllergyButton.style.display = 'inline-block';
+
+                // Show the Cancel button
+                saveAllergyButton.style.display = 'inline-block';
+
+                // Hide the Cancel button
+                editAllergyButton.style.display = 'none';
+
+                // Hide the Cancel button
+                addNewButton.style.display = 'none';
                 
                 // Get all rows excluding the header row
                 const rows = document.querySelectorAll('.row:not(.header)');
@@ -665,6 +733,15 @@
             cancelAllergyButton.addEventListener('click', function() {
                 // Hide the Cancel button
                 cancelAllergyButton.style.display = 'none';
+
+                // Hide the Cancel button
+                saveAllergyButton.style.display = 'none';
+
+                // Show the Cancel button
+                editAllergyButton.style.display = 'inline-block';
+
+                // Show the Cancel button
+                addNewButton.style.display = 'inline-block';
                         
                 // Get all rows excluding the header row
                 const rows = document.querySelectorAll('.row:not(.header)');
@@ -677,6 +754,8 @@
                     // Restore original text content
                     severityCell.innerHTML = severityCell.querySelector('select').value;
                 });
+
+                allergiesLink.click();
             });
             
             

@@ -10,100 +10,326 @@
 {% endblock styles%}
 
 {% block content %}
+<style>
+    .account_creation{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5%;
+        height: 100%;
+        width: 80%;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 
+        margin-left: 8%;
+        margin-top: 2%;
+    }
 
-<div class="admin-screen">
-    <form method="post" action="{% url 'create' %}" class="signup_table">
-        {% csrf_token %}
-        <div class="form-group">
-            <label class="signup_lbl">Email <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox" type="email" name="email" placeholder="Enter Email" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">First Name <span class="red-asterisk">*</span></label>
-            <input class="signup_txtboxname" type="text" name="fname" placeholder="Enter First Name" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Last Name <span class="red-asterisk">*</span></label>
-            <input class="signup_txtboxname" type="text" name="lname" placeholder="Enter Last Name" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Sex <span class="red-asterisk">*</span></label>
-            <input type="radio" Name="sex" Value="Male"><label class="signup_lbl2">Male &ensp;</label>
-            <input type="radio" Name="sex" Value="Female"><label class="signup_lbl2">Female</label>
-        </div>
-        
-        <div class="form-group">
-            <label class="signup_lbl">Role <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-jobtitle" name="role" id="roleSelect" required>
-                <option value="">- Select Role -</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Nurse">Nurse</option>
-            </select>
-        </div>
-        
-        <div class="form-group" id="doctorClinic" style="display: none;">
-            <label class="signup_lbl">Clinic Name <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-jobtitle" name="clinic" id="clinicSelect">
-                <option value="">- Select Clinic -</option>
-                {% for account_id, account_data in accounts.items %}
-                    <option value={{ account_id }}>{{ account_data.name}}</option>
-                {% endfor %}
-                <option value="Others"> Others </option>
-            </select>
-        </div>
-        <div id="othersFields" style="display: none; margin-left: 30px;">
-            <div class="form-group">
-                <label class="signup_lbl">New Clinic Name <span class="red-asterisk">*</span></label>
-                <input class="signup_txtboxname" type="text" name="newclinic" placeholder="New Clinic Name">
+    #logo{
+        width: 50%;
+        height: 130%;
+    }
+
+    #logo-picture{
+        width: 100%;
+        height: 130%;
+
+        border-radius: 5% 0 0 5%;
+    }
+
+    #register {
+        padding-top: 10px;
+        text-align: left;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    #signup_btn{
+        background-color: #091f5b;
+        border-radius: 10px;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        color: #F5F5F5;
+
+        margin-bottom: 10px;
+    }
+
+    .red-asterisk {
+        font-weight: bold;
+        color: red;
+        text-align: left;
+    }
+
+    #others{
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+    }
+
+    #register{
+        width: 50%;
+    }
+
+    #name{
+        display: flex;
+        flex-direction: row;
+
+        width: 90%;
+
+        margin-left: 25px;
+    }
+
+    .email{
+        width: 90%;
+
+        margin-left: 25px;
+    }
+
+    .fname, .lname{
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .lname{
+        margin-left: 10px;
+    }
+
+    .signup_txtbox{
+        width: 96.5%;
+    }
+
+    .signup_txtboxname{
+        width: 88%;
+    }
+
+    .lnamebox{
+        width: 93%;
+    }
+
+    #passwords{
+        display: flex;
+        flex-direction: row;
+
+        width: 90%;
+
+        margin-left: 25px;
+    }
+
+    .pass{
+        width: 50%;
+    }
+
+    .con-pass{
+        width: 50%;
+
+        margin-left: 10px;
+    }
+
+    .pass-text{
+        width: 88%;
+    }
+
+    .con-pass-text{
+        width: 93%;
+    }
+
+    .sex{
+        display: flex;
+        flex-direction: row;
+
+        width: 90%;
+
+        margin-left: 25px;
+
+        margin-bottom: 10px;
+    }
+
+    #row{
+        display: flex;
+        flex-direction: row;
+
+        width: 90%;
+
+        margin-left: 25px;
+    }
+
+    .role, .specialization{
+        width: 50%;
+    }    
+
+    .specialization{
+        margin-left: 10px;
+    }    
+
+    .signup_dd-jobtitle{
+        width: 95%;
+    }
+
+    .specialization-choice{
+        width: 100%;
+    }
+
+    .clinic{
+        width: 95%;
+        margin-left: 25px;
+    }
+
+    #button{
+        display: flex;
+        justify-content: center;
+
+        margin-top: 10px;
+    }
+
+    .clinic-name, .floor-no, .clinic-no, .room-no{
+        width: 50%;
+    }
+
+    .floor-no, .room-no{
+        margin-left: 15px;
+    }
+
+    .clinicname, .clinicno{
+        width: 89%;
+    }
+
+    .floorno, .roomno{
+        width: 93%;
+    }
+
+    body {
+        background-color: #F5F5F5;
+        font-family: 'Inter';
+        margin-left: 0px;
+
+        font-size: 14px;
+    }
+ 
+    #header{
+        color: #091f5b;
+        font-weight: bold;
+
+        font-size: 30px;
+
+        text-align: center;
+    }
+</style>
+
+<div class="account_creation">
+    <div id = "logo">
+        <img src="{%static 'logo-color.png'%}" id = "logo-picture">
+    </div>
+    <div id = "register">
+        <div id = "header">REGISTER</div>
+        <form method="post" action="{% url 'create' %}" class="signup_table">
+            {% csrf_token %}
+            <div class="email">
+                <label class="signup_lbl">Email <span class="red-asterisk">*</span></label>
+                <input class="signup_txtbox" type="email" name="email" placeholder="Enter Email" required>
             </div>
-            <div class="form-group">
-                <label class="signup_lbl">Floor Number <span class="red-asterisk">*</span></label>
-                <input class="signup_txtboxname" type="number" name="fnumber" placeholder="Clinic Floor Number">
+            <div id = "name">
+                <div class="fname">
+                    <label class="signup_lbl">First Name <span class="red-asterisk">*</span></label>
+                    <input class="signup_txtboxname" type="text" name="fname" placeholder="Enter First Name" required>
+                </div>
+                <div class="lname">
+                    <label class="signup_lbl">Last Name <span class="red-asterisk">*</span></label>
+                    <input class="signup_txtboxname lnamebox" type="text" name="lname" placeholder="Enter Last Name" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="signup_lbl">Clinic Number <span class="red-asterisk">*</span></label>
-                <input class="signup_txtboxname" type="text" name="onumber" placeholder="Clinic Office Number">
+
+            <div class="sex">
+                <label class="signup_lbl">Sex <span class="red-asterisk">*</span></label>
+                <div id = choices>
+                    <input type="radio" Name="sex" Value="Male"><label class="signup_lbl2">Male &ensp;</label>
+                    <input type="radio" Name="sex" Value="Female"><label class="signup_lbl2">Female</label>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="signup_lbl">Room Number <span class="red-asterisk">*</span></label>
-                <input class="signup_txtboxname" type="number" name="rnumber" placeholder="Room Number">
+
+            <div id = "row">
+                <div class="role">
+                    <label class="signup_lbl">Role <span class="red-asterisk">*</span></label>
+                    <select class="signup_dd-jobtitle" name="role" id="roleSelect" required>
+                        <option value="">- Select Role -</option>
+                        <option value="Doctor">Doctor</option>
+                        <option value="Nurse">Nurse</option>
+                    </select>
+                </div>
+                
+                <div class="specialization">
+                    <label class="signup_lbl">Specialization <span class="red-asterisk">*</span></label>
+                    <select class="signup_dd-jobtitle specialization-choice" name="specialization" id="jobTitleSelect" required>
+                        <option value="">- Select Specialization -</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="clinic" id="doctorClinic" style="display: none;">
+                <label class="signup_lbl">Clinic Name <span class="red-asterisk">*</span></label>
+                <select class="signup_dd-jobtitle" name="clinic" id="clinicSelect">
+                    <option value="">- Select Clinic -</option>
+                    {% for account_id, account_data in accounts.items %}
+                        <option value={{ account_id }}>{{ account_data.name}}</option>
+                    {% endfor %}
+                    <option value="Others"> Others </option>
+                </select>
+            </div>
+
+            <div id="othersFields" style="display: none;">
+                <div id = "row">
+                    <div class="clinic-name">
+                        <label class="signup_lbl">New Clinic Name <span class="red-asterisk">*</span></label>
+                        <input class="signup_txtboxname clinicname" type="text" name="newclinic" placeholder="New Clinic Name">
+                    </div>
+                    <div class="floor-no">
+                        <label class="signup_lbl">Floor Number <span class="red-asterisk">*</span></label>
+                        <input class="signup_txtboxname floorno" type="number" name="fnumber" placeholder="Clinic Floor Number">
+                    </div>
+                </div>
+                <div id = "row">
+                    <div class="clinic-no">
+                        <label class="signup_lbl">Clinic Number <span class="red-asterisk">*</span></label>
+                        <input class="signup_txtboxname clinicno" type="text" name="onumber" placeholder="Clinic Office Number">
+                    </div>
+                    <div class="room-no">
+                        <label class="signup_lbl">Room Number <span class="red-asterisk">*</span></label>
+                        <input class="signup_txtboxname roomno" type="number" name="rnumber" placeholder="Room Number">
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div id = "passwords">
+                <div class="pass">
+                    <label class="signup_lbl">Password <span class="red-asterisk">*</span></label>
+                    <input class="signup_txtbox pass-text"type="password" name="password" placeholder="Enter Password" required>
+                </div>
+                <div class="con-pass">
+                    <label class="signup_lbl">Confirm Password <span class="red-asterisk">*</span></label>
+                    <input class="signup_txtbox con-pass-text"type="password" name="confirmpassword" placeholder="Enter Password" required>
+                </div>
+            </div>
+            
+            <div id = "button">
+                <button id="signup_btn" type="submit">Create Account</button>
             </div>
         </div>
-        <!--
-        <div class="form-group">
-            <label class="signup_lbl">Department <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-department" name="department" required>
-                <option value="">- Select Department -</option>
-                <option value="General Ward">General Ward</option>
-            </select>
-        </div>
-        -->
-        <div class="form-group">
-            <label class="signup_lbl">Specialization <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-jobtitle" name="specialization" id="jobTitleSelect" required>
-                <option value="">- Select Specialization -</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label class="signup_lbl">Password <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox"type="password" name="password" placeholder="Enter Password" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Confirm Password <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox"type="password" name="confirmpassword" placeholder="Enter Password" required>
-        </div>
-        <button id="signup_btn" type="submit">Create Account</button>
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
     </form>
-</div>   
+</div>  
+
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 <script src="{% static 'js/register_account.js' %}"></script>
 {% endblock %}
