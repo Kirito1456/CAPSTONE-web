@@ -152,12 +152,9 @@ a:hover{
 }
 
 #patient-info{
-    margin: 20px;
-
+    margin: 50px;
     height: 90%;
-
     font-size: 14px;
-
     display: flex;
 }
 

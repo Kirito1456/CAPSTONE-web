@@ -448,19 +448,17 @@ def AppointmentUpcoming(request):
         while current_time <= afternoon_end:
             time_slots.append(current_time.strftime('%H:%M'))
             current_time += interval
-    
-    min_date = None
-    if appointmentschedule_data:
-        available_days = appointmentschedule_data.get("days", [])
-        today = datetime.now().date()
-        while today.strftime('%A') not in available_days:
-            today += timedelta(days=1)
-        min_date = today
+
+    if request.method == 'POST':
+        try:
+            selected_date = request.POST.get('selected_appointment_date')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
-                                                             'appointmentschedule_data': appointmentschedule_data})
+                                                             })
 
 
 def delete_appointment(request):
@@ -494,9 +492,6 @@ def update_appointment(request):
 
             # Format time and date objects to desired format
             new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
-            #new_date_formatted = new_time_formatted.strftime("%I:%M %p")            
-            print(new_time_formatted)
-
             new_time_str = new_time_formatted.strftime("%I:%M %p")
             print(new_time_str)
 
@@ -509,6 +504,7 @@ def update_appointment(request):
                 'appointmentTime': new_time_str,
                 'status': 'Ongoing',
             }) 
+        
 
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
@@ -899,8 +895,10 @@ def patient_personal_information_inpatient(request):
     date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
-    medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
-    medicines_list = [medication['Generic Name'] for medication in medications_cursor]
+    medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
+    medicines_list = [medication['Drug'] for medication in medications_cursor]
+
+    
 
     chosenPatient = request.GET.get('chosenPatient', '')
     endAppointment = request.GET.get('appointmentID', '')
@@ -1230,8 +1228,8 @@ def patient_personal_information_inpatient(request):
         date1 = datetime.today().strftime('%Y-%m-%d')
         doctors = db.child("doctors").get().val()
         uid = request.session['uid'] 
-        medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
-        medicines_list = [medication['Generic Name'] for medication in medications_cursor]
+        medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
+        medicines_list = [medication['Drug'] for medication in medications_cursor]
 
         chosenPatient = request.GET.get('chosenPatient', '')
 
@@ -1684,8 +1682,8 @@ def generate_unique_id():
 def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
     patient_uid = request.GET.get('chosenPatient')
-    medications_cursor = collection.find({}, {"Generic Name": 1, "_id": 0})
-    medicines_list = [medication['Generic Name'] for medication in medications_cursor]
+    medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
+    medicines_list = [medication['Drug'] for medication in medications_cursor]
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 
 
@@ -1695,18 +1693,22 @@ def outpatient_medication_order(request):
                                                                      'doctors': doctors,
                                                                      'uid': uid})
 
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
 def save_prescriptions(request):
     patient_uid = request.GET.get('chosenPatient')
     patientdata = db.child("patientdata").child(patient_uid).get().val()
 
     if request.method == 'POST':
-        numOfDays = int(request.POST.get('numOfDays'))  # Convert to integer
-        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")        
+        numOfDays = int(request.POST.get('numOfDays'))
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Calculate endDate
         todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
         endDate = todaydate_datetime + timedelta(days=numOfDays)
-
         endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
 
         patient_id = patient_uid 
@@ -1714,11 +1716,10 @@ def save_prescriptions(request):
         dosage = request.POST.getlist('dosage')
         route = request.POST.getlist('route')
         frequency = request.POST.getlist('frequency')
-        additional_remarks = request.POST.getlist('additionalremarks')  
+        additional_remarks = request.POST.getlist('additionalremarks')
         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         times_list = []
-        
 
         for freq in frequency:
             if freq == "Once Daily":
@@ -1735,7 +1736,6 @@ def save_prescriptions(request):
                 occurence = 2
             elif freq == "Thrice Daily":
                 occurence = 3
-
 
         try:
             id = str(uuid.uuid1())
@@ -1764,14 +1764,12 @@ def save_prescriptions(request):
                 for index in range(len(medicine_name)):
                     pid = str(uuid.uuid1())
                     medicine = medicine_name[index]
-                    # Access other lists using the same index
                     dosage_value = dosage[index]
                     route_value = route[index]
                     frequency_value = frequency[index]
                     additional_remarks_value = additional_remarks[index]
                     times_value = times_list[index]
 
-                    # Now you can use these values to construct your data dictionary and save to the database
                     data = {
                         'date': endDate_str,
                         'prescriptionsoderUID': id,
@@ -1790,40 +1788,45 @@ def save_prescriptions(request):
                     db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(data)
 
             elif patientdata['status'] == 'Outpatient':
-                for index in range(len(medicine_name)):
-                    pid = str(uuid.uuid1())
-                    medicine = medicine_name[index]
-                    dosage_value = dosage[index]
-                    route_value = route[index]
-                    frequency_value = frequency[index]
-                    additional_remarks_value = additional_remarks[index]
-                    times_value = times_list[index]
-
-                    # Now you can use these values to construct your data dictionary and save to the database
-                    data = {
-                        'date': endDate_str,
-                        'prescriptionsoderUID': id,
-                        'occurence': occurence,
-                        'medicine_name': medicine,
-                        'dosage': dosage_value,
-                        'route': route_value,
-                        'frequency': frequency_value,
-                        'additional_remarks': additional_remarks_value,
-                        'patient_id': patient_id,
-                        'todaydate': todaydate,
-                        'status': 'Ongoing',
-                        'times': times_value
-                    }
-
-                    db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
+                # Create prescription PDF here
+                prescription = generate_prescription_pdf(patient_uid, medicine_name, dosage, route, frequency, additional_remarks, times_list)
+                return HttpResponse(prescription, content_type='application/pdf')
 
             messages.success(request, 'Prescription saved successfully!')
             return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
-        #add alerts
+
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
+
     return render(request, 'hmis/view_treatment_plan.html', {'patient_uid': patient_uid})
 
+
+def generate_prescription_pdf(patient_uid, medicine_name, dosage, route, frequency, additional_remarks, times_list):
+    context = {
+        'patient_uid': patient_uid,
+        'medicine_name': medicine_name,
+        'dosage': dosage,
+        'route': route,
+        'frequency': frequency,
+        'additional_remarks': additional_remarks,
+        'times_list': times_list
+    }
+    pdf = render_to_pdf('prescription_template.html', context)
+    if pdf:
+        return pdf
+    else:
+        # Handle PDF generation error
+        messages.error(request, 'Error generating prescription PDF.')
+        return None
+
+def render_to_pdf(template_path, context):
+    template = get_template(template_path)
+    html = template.render(context)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return result.getvalue()
+   
 
 
 def diagnostic_lab_reports(request):

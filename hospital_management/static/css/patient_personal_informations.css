@@ -142,23 +142,7 @@ a:hover{
     font-size: 14;
 }
 
-#patient-info, #consultation-notes-container, #diagnostic-tests-container, #vital-signs-container, #progress-notes-container {
-    display: flex;
-    align-items: center; 
-    flex-wrap: wrap; 
-}
 
-#personal-information {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 20px;
-    margin-bottom: 30px;
-    width: 90%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-    margin-right: 1%;
-}
 
 #vital-signs-box {
     background-color: #f9f9f9;

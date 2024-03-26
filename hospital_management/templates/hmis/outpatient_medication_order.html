@@ -26,8 +26,8 @@
                 </div>
             </div>
             <div id="menu"> 
-                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
-                <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
                 <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
                 <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
                 <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
@@ -49,45 +49,14 @@
                 {% csrf_token %}
                 {% for patients_id, patients_data in patients.items %}
                     {% if patients_data.uid == patient_uid %}
-                        <div id = "patient-information">
-                            <div id = "first">
-                                <div id = "fname-label">Name of Patient</div>
-                                <div id = "fname">{{ patients_data.fname }} {{ patients_data.lname }}</div>
-                            </div>
-                            <div id = "gender">
-                                <div id = "gender-label">Gender</div>
-                                <div id = "gender-view">{{ patients_data.gender }}</div>
-                            </div>
-                            <div id = "bday">
-                                <div id = "bday-label">Date of Birth</div>
-                                <div id = "birthday-view">{{ patients_data.bday }}</div>
-                            </div>
-                            <div id = "age">
-                                <div id = "age-label">Age</div>
-                                <div id = "age-view"></div>
-                            </div>   
-                            <div id="today">
-                                <div id="today-label">Today's Date</div>
-                                <div id="today-view"></div>
-                                <input type="hidden" name="todaydate" id="todayinput">
-                            </div>
-                            <div id = "days">
-                                <div id = "days-label">Good for how many days?</div>
-                                <div id = "days-view"><input type="text" id="numOfDays" name="numOfDays"></div>
-                            </div> 
-                            <div id = "uploading-photo">
-                                <button onclick="openModal()" type="button">Upload Handwritten Image</button>           
-                            </div>
-                            
-                        </div>
                     {% endif %}
                 {% endfor %}
-            <hr>
                 <div id="medications-container">
-                    <div id="head">Medications List</div>
+                    <div style="margin-top: 20px;"id="head">Medications List</div>
                     <div id="medication-list-container">
                         <div id="table-header">
                             <div style="flex: 1; text-align: center;"><input type="checkbox" id="select-all-checkbox"></div>
+                            <div style="flex: 1; text-align: center;">Days</div>
                             <div style="flex: 1; text-align: center;">Medicine Name</div>
                             <div style="flex: 1; text-align: center;">Dosage</div>
                             <div style="flex: 1; text-align: center;">Route</div>
@@ -96,6 +65,7 @@
                         </div>
                         <div id="table-body">
                             <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
+                            <div style="flex: 1; text-align: center;"><input type="number"></div>
                             <div style="flex: 1; text-align: center;">
                                 <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
                                 <datalist id="medicine_name_suggestions">
@@ -191,6 +161,7 @@
 <script src="{% static 'js/create-medications.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
 <script>
+    
     document.addEventListener("DOMContentLoaded", function() {
         var birthdayString = document.getElementById("birthday-view").innerText;
         var birthday = new Date(birthdayString);
