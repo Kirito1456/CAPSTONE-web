@@ -45,6 +45,37 @@
         </div>
 
         <div id = "treatment-plan">
+
+            {% for patients_id, patients_data in patients.items %}
+                {% if patients_data.uid == patient_uid %}
+                    <div id = "patient-information">
+                        <div id = "first">
+                            <div id = "fname-label">Name of Patient</div>
+                            <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
+                        </div>
+                        <div id = "gender">
+                            <div id = "gender-label">Gender</div>
+                            <div id = "gender-view">{{ patients_data.gender }}</div>
+                        </div>
+                        <div id = "bday">
+                            <div id = "bday-label">Date of Birth</div>
+                            <div id = "birthday-view">{{ patients_data.bday }}</div>
+                        </div>
+                        <div id = "age">
+                            <div id = "age-label">Age</div>
+                            <div id = "age-view"></div>
+                        </div>   
+                        
+                        <div id="today">
+                            <div id="today-label">Date of Prescription</div>
+                        
+                            <div id="today-view">{{latest_date}}</div>
+                 
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+                <hr>
             <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                 {% csrf_token %}
                 {% comment %} {% for patients_id, patients_data in patients.items %}
@@ -65,7 +96,7 @@
                         </div>
                         <div id="table-body">
                             <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-                            <div style="flex: 1; text-align: center;"><input type="number"></div>
+                            <div style="flex: 1; text-align: center;"><input type="number" name="days"></div>
                             <div style="flex: 1; text-align: center;">
                                 <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
                                 <datalist id="medicine_name_suggestions">
@@ -82,18 +113,31 @@
                             </div>
                             <div style="flex: 1; text-align: center;">
                                 
-                                <input type="text" name="route" id="route_input" placeholder="Enter Route Name" disabled>
+                                <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                             </div>
                             <div>
                                 <div style="flex: 1; text-align: center;">
-                                    <select class="frequency-dropdown" name="frequency" id="frequency-dropdown">
+                                    {% comment %} <select class="frequency-dropdown" name="frequency" id="frequency-dropdown">
                                         <option value="" selected disabled>Select Frequency</option>
                                         <option value="Once Daily">Once Daily</option>
                                         <option value="Twice Daily">Twice Daily</option>
                                         <option value="Thrice Daily">Thrice Daily</option>
-                                    </select>
+                                    </select> {% endcomment %}
+
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
+                                        <label for="morning-checkbox">Morning</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
+                                        <label for="afternoon-checkbox">Afternoon</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
+                                        <label for="evening-checkbox">Evening</label>
+                                    </div>
                                 </div>
-                                <div id="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
+                                {% comment %} <div id="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
                                     <div style="text-align: center;">
                                         <input type="checkbox" name="times-once-daily[]" id="morning-checkbox" value="Morning">
                                         <label for="morning-checkbox">Morning</label>
@@ -120,7 +164,7 @@
                                         <input type="checkbox" name="times-twice-daily[]" id="twice-daily-evening-checkbox" value="Evening">
                                         <label for="twice-daily-evening-checkbox">Evening</label>
                                     </div>     
-                                </div>                    
+                                </div>                     {% endcomment %}
                             </div>
                             <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
                         </div>

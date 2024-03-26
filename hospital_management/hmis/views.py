@@ -1712,43 +1712,47 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 
 def save_prescriptions(request):
-    patient_uid = request.GET.get('chosenPatient')
-    patientdata = db.child("patientdata").child(patient_uid).get().val()
-
     if request.method == 'POST':
-        numOfDays = int(request.POST.get('numOfDays'))
+        patient_uid = request.GET.get('chosenPatient')
+        patientdata = db.child("patientdata").child(patient_uid).get().val()
+        print(patientdata)
+        #numOfDays = int(request.POST.get('numOfDays'))
         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        days = request.POST.getlist('days')
+        numOfDays = 0
+        for day in days:
+            try:
+                day_int = int(day)
+                if day_int > numOfDays:
+                    numOfDays = day_int
+            except ValueError:
+                pass 
 
         # Calculate endDate
         todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
-        endDate = todaydate_datetime + timedelta(days=numOfDays)
+        endDate = todaydate_datetime + timedelta(days= numOfDays)
         endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
 
         patient_id = patient_uid 
         medicine_name = request.POST.getlist('medicine_name')
         dosage = request.POST.getlist('dosage')
         route = request.POST.getlist('route')
-        frequency = request.POST.getlist('frequency')
+        
+        #frequency = request.POST.getlist('frequency')
+        
         additional_remarks = request.POST.getlist('additionalremarks')
         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        times_list = []
-
-        for freq in frequency:
-            if freq == "Once Daily":
-                times_list.extend(request.POST.getlist('times-once-daily[]'))
-            elif freq == "Twice Daily":
-                times_list.append(', '.join(request.POST.getlist('times-twice-daily[]')))
-            elif freq == "Thrice Daily":
-                times_list.append("Morning, Afternoon, Evening")
-
-        for freq in frequency:
-            if freq == "Once Daily":
-                occurence = 1
-            elif freq == "Twice Daily":
-                occurence = 2
-            elif freq == "Thrice Daily":
-                occurence = 3
+        #times_list = []
+        times = request.POST.getlist('times-daily[]')
+        # occurence = 0
+        # for time in times:
+        #     if time == 'Morning':
+        #         occurence += 1
+        #     if time == 'Afternoon':
+        #         occurence += 1
+        #     if time == 'Evening':
+        #         occurence += 1
 
         try:
             id = str(uuid.uuid1())
@@ -1760,11 +1764,12 @@ def save_prescriptions(request):
 
             data = {
                 'prescriptionsoderUID': id,
+                'days': days,
                 'medicine_name': medicine_name,
                 'dosage': dosage,
                 'route': route,
-                'frequency': frequency,
-                'times': times_list,
+                #'frequency': occurence,
+                'times': times,
                 'additional_remarks': additional_remarks,
                 'patient_id': patient_id,
                 'todaydate': todaydate,

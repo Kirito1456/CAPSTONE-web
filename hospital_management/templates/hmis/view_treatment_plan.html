@@ -88,7 +88,8 @@
                             <div style="flex: 1; text-align: center;">Medication Name</div>
                             <div style="flex: 1; text-align: center;">Dosage</div>
                             <div style="flex: 1; text-align: center;">Route</div>
-                            <div style="flex: 1; text-align: center;">Frequency</div>
+                            <div style="flex: 1; text-align: center;">Days</div>
+                            {% comment %} <div style="flex: 1; text-align: center;">Frequency</div> {% endcomment %}
                             <div style="flex: 1; text-align: center;">Additional Remarks</div>
                         </div>
                         {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
@@ -123,9 +124,9 @@
                                     </div>
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in prescriptionorders_data.items %}
-                                            {% if item_key == 'frequency' %}
-                                                {% for frequency_item in item_value %}
-                                                    {{ frequency_item }}<br> 
+                                            {% if item_key == 'days' %}
+                                                {% for day_item in item_value %}
+                                                    {{ day_item }}<br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
