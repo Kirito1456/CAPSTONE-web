@@ -1,6 +1,6 @@
 {% extends 'hmis/base.html' %}
 {%load static%}
-{% block title %}Admin Create Account Page{% endblock %}
+{% block title %}Forget Password{% endblock %}
 
 
 {% block styles%} 
@@ -9,25 +9,212 @@
 {% endblock styles%}
 
 {% block content %}
+
+<style>
+
+    body {
+        background-color: #F5F5F5;
+        font-family: 'Inter';
+        margin-left: 0px;
+    }
+
+    #forget-pass{
+        display: flex;
+
+        flex-direction: row;
+
+        width: 66%;
+        height: 50%;
+
+        margin-left: 17%;
+        margin-top: 8%;
+
+        border-radius: 10%;
+
+        background-color: #F5F5F5;
+    }
+
+    .header{
+        color: #091f5b;
+        font-weight: bold;
+
+        font-size: 30px;
+
+        text-align: center;
+    }
+
+    #side{
+        width: 50%;
+
+        background-color: #fff;
+        border-radius: 5% 0 0 5%;
+
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+
+        padding-top: 10%;
+    }
+
+    #logo{
+        width: 50%;
+    }
+
+    #logo-picture{
+        width: 100%;
+        height: 100%;
+
+        border-radius: 0 5% 5% 0;
+
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .login_container {
+        padding: 25px;
+        padding-top: 20px;
+        text-align: left;
+
+        display: flex;
+        flex-direction: column;
+
+        justify-content: start;
+
+        margin-left: 5%;
+    }
+
+    .fp_lbl {
+        font-size: 16px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .login_txtbox {
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: -5%;
+        margin-top: 1%;
+        width: 90%;
+        display: inline-block;
+    }
+
+    #login_fp, #login_su, #login_noacc-lb {
+        font-size: 15px;
+        font-weight: bold;
+        color: black;
+    }
+
+    #login_fp:hover{
+        text-decoration: underline;
+    }
+
+    #login_btn{
+        background-color: #091f5b;
+        border-radius: 10px;
+        padding: 10px;
+        width: 25%;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 18px;
+        color: #F5F5F5;
+
+        margin-bottom: 10px;
+    }
+
+    #login_btn:hover, #sendlink_btn:hover {
+        background-color: #091f5b;
+    }
+
+    #forgetpassword_lb {
+        font-size: 12px;
+    }
+
+    .red-asterisk {
+        font-size: 16px;
+        font-weight: bold;
+        color: red;
+        text-align: left;
+    }
+
+    #login-button{
+        width: 100%;
+
+        display: flex;
+        justify-content: center;
+    }
+
+    #others{
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+
+        padding-top: 5%;
+    }
+
+    .forgotpassword_table{
+        width: 100%;
+
+        margin-left: -10px;
+    }
+
+    .fp_txtbox{
+        width: 90%;
+    }
+
+    #sendlink_btn{
+        background-color: #091f5b;
+
+        width: 35%;
+    }
+
+    #button{
+        display: flex;
+        justify-content: center;
+    }
+
+    #forgetpassword{
+        width: 75%;
+
+        display: flex;
+        justify-content: center;
+
+        margin-left: 15%;
+    } 
+
+</style>
+
 {%if msg%}
     <script>
         window.alert('{{msg}}');
     </script>
 {% endif%}
-<h1 class="header1">HOSPITAL MANAGEMENT INFORMATION SYSTEM</h1>
-    <form method="post" action="{% url 'reset' %}">
-        {% csrf_token %}
-        <div class="login_container">
-            <table class="forgotpassword_table">
-                <tr>
-                    <td><label class="fp_lbl">Email </label><label class="red-asterisk">*</label></td>
-                    <td><input class="fp_txtbox" type="text" name="email-fp" id="email-fp" required><br></td>
-                </tr>
-                <tr>
-                    <td colspan="2"><label id="forgetpassword_lb">A link will be sent to your e-mail. Please follow the instructions given to reset your password.</label></td>
-                </tr>
-            </table><br><br>
-            <button id="sendlink_btn" type="submit">Send Link</button><br><br>
-        </div>
-    </form>
+
+<div id = forget-pass>
+    <div id="side">
+        <div class="header">FORGET PASSWORD</div>
+        <form method="post" action="{% url 'reset' %}">
+            {% csrf_token %}
+            <div class="login_container">
+                <table class="forgotpassword_table">
+                    <tr>
+                        <td><label class="fp_lbl">Email </label><label class="red-asterisk">*</label></td>
+                        <td><input class="fp_txtbox" type="text" name="email-fp" id="email-fp" required><br></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div id = "forgetpassword">
+                                <label id="forgetpassword_lb">A link will be sent to your e-mail. Please follow the instructions given to reset your password.</label>
+                            </div>
+                        </td>
+                    </tr>
+                </table><br><br>
+                <div id = "button">
+                    <button id="sendlink_btn" type="submit">Send Link</button><br><br>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id = "logo">
+        <img src="{%static 'logo-color.png'%}" id = "logo-picture">
+    </div>
+</div>
+
 {% endblock %}
