@@ -49,12 +49,24 @@ detailsLinks.forEach(function(detailsLink) {
 var modal = document.getElementById("myModal");
 var span = document.getElementsByClassName("close")[0];
 
-function openModal(appointmentId) {
+function openModal(appointmentId, appointmentTime) {
     
     modal.style.display = "block";
     var appIDInput = document.getElementById('appID');
     appIDInput.value = appointmentId;
+
+    var same = document.getElementById('same-appointment-time');
+    same.value = appointmentTime;
+    same.innerHTML = appointmentTime;
 }
+
+document.getElementById('selected_appointment_date').addEventListener('change', updateAppointmentTime);
+
+function updateAppointmentTime() {
+    var selectedTime = document.getElementById('selected_appointment_date').value;
+    document.getElementById('same-appointment-time').innerHTML = selectedTime;
+}
+
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {

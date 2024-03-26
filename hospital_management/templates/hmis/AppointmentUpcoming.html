@@ -5,7 +5,7 @@
 
 {% block styles %} 
 <!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/style-appointment.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 {% endblock styles %}
@@ -65,11 +65,13 @@
                 {% if appointments %}
                 {% for appointment_id, appointment_data in appointments.items %}
                     <tr>
-                        <form method="post">
+                        <form method="post" >
                             {% csrf_token %}
-                        <td><label class="accountT_lbl" id="selected_appointment_date">{{ appointment_data.appointmentDate }}</label></td>
+                            <input type="hidden" name="selected_appointment_date" value="{{ appointment_data.appointmentDate }}">
+                        
+                            <td><label class="accountT_lbl" name="selected_appointment_date">{{ appointment_data.appointmentDate }}</label></td>
                         </form>
-                        <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
+                            <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
                         {% for patient_id, patient_data in patients.items %}
                             {% if patient_data.uid == appointment_data.patientName %}
                                 <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
@@ -93,7 +95,7 @@
                                         <div class="detailvalue">{{ patient_data.address}}</div>
                                     </div>
                                     <div class="button-container">
-                                        <button class="reschedule-button" onclick="openModal('{{ appointment_id }}')">Reschedule</button>
+                                        <button class="reschedule-button" onclick="openModal('{{ appointment_id }}', '{{ appointment_data.appointmentTime }}')">Reschedule</button>
                                         <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
                                         <form action="{% url 'delete_appointment' %}" method="post">
                                             {% csrf_token %}
@@ -104,6 +106,7 @@
                             {% endif %}
                         {% endfor %}
                         </td>
+                        
                             
                         <div id="myModal" class="modal">
                             <div class="modal-content">
@@ -111,21 +114,13 @@
                                 <h2>Reschedule Appointment</h2>
                                 <form id="reschedule-form{{ appointment_id }}" method="post" action="{% url 'update_appointment' %}">
                                     {% csrf_token %}
-                                    <input type="hidden" name="selected_appointment_date" value="{{ appointment_data.appointmentDate }}">
-                                    <label for="suggested-time">Suggested Schedule:</label><br>
-                                    <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                        {% for available_date in available_dates %}
-                                            <option value="{{ available_date }}" name="available_date">{{ available_date }}</option>
+                                    <label for="suggested-time">Suggested Schedule:</label>
+                                    <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        {% for next_available_date in next_available_dates %}
+                                            <option value="{{ next_available_date }}" name="next_available_date">{{ next_available_date }}</option>
                                         {% endfor %}
                                     </select><br>
-                                    <label for="new-appointment-date">New Date:</label>
-                                    <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
-                                    <label for="new-appointment-time">New Time:</label>
-                                    <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                        {% for time_slot in time_slots %}
-                                            <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
-                                        {% endfor %}
-                                    </select><br>
+                                    <div id="same-appointment-time" name="same-appointment-time"></div><br>
                                     <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
                                 </form>
                             </div>

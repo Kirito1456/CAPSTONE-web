@@ -286,39 +286,35 @@
 
                     <div id="appModal" class="modalFinish" style="display: none;">
                         <h2>Finish Appointment</h2>
-                            <button id="followup" onclick="openModal('{{ chosenPatientData_id }}')">Follow - Up Checkup</button>
+
+                        <input type="checkbox" id="followupCheckbox" onchange="toggleFollowup()">
+                        <label for="followupCheckbox">Follow-Up Checkup</label>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <button id="endAppointment" name="endAppointment">End Appointment</button>
+                        </form>
+                    
+                    
+                        <div id="followupDropdown" style="display: none;">
                             <div id="myModal" class="modalFinish1">
                                 <div class="modal-content">
                                     <span id="closeModalButton1">&times;</span>
                                     <h2>Follow Up Appointment</h2>
                                     <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
                                         {% csrf_token %}
-                                        {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
-                                            {% if appointmentsched_data.uid == uid %}
-                                                <label for="new-appointment-date">New Date: </label>
-                                                <input type="date" id="new-appointment-date" name="new-appointment-date" min="" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;"><br>
-                                                <input type="hidden" name="past-appointment-id" value={{ endAppointment }}></input>
-                                                <label for="new-appointment-time">New Time:</label>
-                                                <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                                    {% for time_slot in time_slots %}
-                                                        <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
-                                                    {% endfor %}
-                                                </select><br>
-                                            {% endif %}
-                                        {% endfor %}
-                                        <button type="submit" id="appID" name="appID" value={{ chosenPatientData_id }}>Appointment Finished</button>
-                                        {% comment %} <button id="closeModalButton1">Close</button> {% endcomment %}
-        
+                                        <label for="suggested-time">Suggested Schedule:</label>
+                                        <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                            {% for next_available_date in next_available_dates %}
+                                                <option value="{{ next_available_date }}">{{ next_available_date }}</option>
+                                            {% endfor %}
+                                        </select><br>
+                                        <button type="submit" id="appID" name="appID" value="{{ chosenPatientData_id }}">Appointment Finished</button>
                                     </form>
                                 </div>
                             </div>
-                            <form method="post">
-                                {% csrf_token %}
-                                <button id="endAppointment" name="endAppointment">End Appointment</button>
-                            </form>
-
+                        </div>
                     </div>
-
                     
 
                     <button onclick="toggleBiometricInfo()">Biometric Information</button>
@@ -910,15 +906,12 @@
             <button type="button" id="closeInpatientModal1">Close</button>
             {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
                 {% if appointmentsched_data.uid == uid %}
-                    <label for="new-appointment-date">New Date: </label>
-                    <input type="date" id="new-appointment-date" name="new-appointment-date" min="" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;"><br>
-                    
-                    <label for="new-appointment-time">New Time:</label>
-                    <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        {% for time_slot in time_slots %}
-                            <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
-                        {% endfor %}
-                    </select><br>
+                <label for="suggested-time">Suggested Schedule:</label>
+                <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    {% for next_available_date in next_available_dates %}
+                        <option value="{{ next_available_date }}" name="next_available_date">{{ next_available_date }}</option>
+                    {% endfor %}
+                </select><br>
                 {% endif %}
             {% endfor %}
         </form>
@@ -1250,6 +1243,15 @@
             dropdown.appendChild(option);
         });
     }
+    function toggleFollowup() {
+        var followupCheckbox = document.getElementById("followupCheckbox");
+        var followupDropdown = document.getElementById("followupDropdown");
     
+        if (followupCheckbox.checked) {
+            followupDropdown.style.display = "block";
+        } else {
+            followupDropdown.style.display = "none";
+        }
+    }
 </script>
 {% endblock %}

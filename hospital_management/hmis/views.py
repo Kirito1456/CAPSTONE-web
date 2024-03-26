@@ -419,46 +419,47 @@ def AppointmentUpcoming(request):
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
 
     if appointmentschedule_data:
-    # Define time slots for morning
-        morning_start_str = appointmentschedule_data.get("morning_start")
-        morning_end_str = appointmentschedule_data.get("morning_end")
+        
+        available_days_str = appointmentschedule_data.get("days", "")
+        day_name_to_number = {
+            'monday': 1,
+            'tuesday': 2,
+            'wednesday': 3,
+            'thursday': 4,
+            'friday': 5,
+            'saturday': 6,
+            'sunday': 7
+        }
 
-        # Convert strings to datetime objects for morning
-        morning_start = datetime.strptime(morning_start_str, '%H:%M')
-        morning_end = datetime.strptime(morning_end_str, '%H:%M')
+        # Convert available days to numbers
+        available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
 
-        # Define time slots for afternoon
-        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
-        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+        print("Available days: ", available_days_numbers)
+        
 
-        # Convert strings to datetime objects for afternoon
-        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
-        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+        # Get the current day of the week
+        current_day_of_week = datetime.now().weekday()
+        print("Current day of the week:", current_day_of_week)        
+        # Find the next 3 available dates
+        next_available_dates = []
+        days_checked = 0
+        current_date = datetime.now()
+        while len(next_available_dates) < 3 and days_checked < 7:  # Check up to 7 days
+            if current_day_of_week in available_days_numbers:
+                # Check if there are no appointments on this date
+                if current_date.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
+                    next_available_dates.append(current_date.date())
+                    # print(next_available_dates)
+            current_date += timedelta(days=1)
+            current_day_of_week = (current_day_of_week + 1) % 7
+            days_checked += 1
 
-        interval = timedelta(minutes=30)
-
-        # Calculate time slots for morning
-        current_time = morning_start
-        while current_time <= morning_end:
-            time_slots.append(current_time.strftime('%H:%M'))
-            current_time += interval
-
-        # Calculate time slots for afternoon
-        current_time = afternoon_start
-        while current_time <= afternoon_end:
-            time_slots.append(current_time.strftime('%H:%M'))
-            current_time += interval
-
-    if request.method == 'POST':
-        try:
-            selected_date = request.POST.get('selected_appointment_date')
-        except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
+    
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
-                                                             })
+                                                             'next_available_dates': next_available_dates})
 
 
 def delete_appointment(request):
@@ -486,8 +487,17 @@ def update_appointment(request):
     if request.method == 'POST':
         try:
             appID = request.POST.get('appID')
-            new_date = request.POST.get('new-appointment-date')
-            new_time = request.POST.get('new-appointment-time')
+            new_date_str = request.POST.get('selected_appointment_date')  # Corrected name
+
+            # Convert new_date_str to datetime object
+            new_date = datetime.strptime(new_date_str, "%B %d, %Y")
+
+            # Format new_date to "yyyy-mm-dd" string
+            new_date_formatted = new_date.strftime("%Y-%m-%d")
+
+            new_time = request.POST.get('same-appointment-time')
+            print(new_date_formatted)
+            print(new_time)
             print(appID)
 
             # Format time and date objects to desired format
@@ -500,7 +510,7 @@ def update_appointment(request):
 
             # Update appointment data in Firebase
             db.child(appointment_path).update({
-                'appointmentDate': new_date,
+                'appointmentDate': new_date_formatted,
                 'appointmentTime': new_time_str,
                 'status': 'Ongoing',
             }) 
@@ -897,6 +907,68 @@ def patient_personal_information_inpatient(request):
     uid = request.session['uid'] 
     medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
     medicines_list = [medication['Drug'] for medication in medications_cursor]
+
+    upcomings = db.child("appointments").get().val()
+    patients = db.child("patients").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid']    
+
+    # Filter and sort upcoming appointments
+    upcoming_appointments = {}
+    for appointment_id, appointment_data in upcomings.items():
+        if appointment_data["doctorUID"] == uid:
+            appointment_date_str = appointment_data.get("appointmentDate", "")
+            appointment_time_str = appointment_data.get("appointmentTime", "")
+        
+            if appointment_date_str and appointment_time_str:
+                # Convert appointment date string to datetime object
+                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+            
+                # Check if appointment date is in the future
+                if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Ongoing":
+                    upcoming_appointments[appointment_id] = appointment_data
+
+    # Sort appointments by date
+    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    
+    time_slots = []
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+
+    if appointmentschedule_data:
+        
+        available_days_str = appointmentschedule_data.get("days", "")
+        day_name_to_number = {
+            'monday': 1,
+            'tuesday': 2,
+            'wednesday': 3,
+            'thursday': 4,
+            'friday': 5,
+            'saturday': 6,
+            'sunday': 7
+        }
+
+        # Convert available days to numbers
+        available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
+
+        print("Available days: ", available_days_numbers)
+        
+
+        # Get the current day of the week
+        current_day_of_week = datetime.now().weekday()
+        print("Current day of the week:", current_day_of_week)        
+        # Find the next 3 available dates
+        next_available_dates = []
+        days_checked = 0
+        current_date = datetime.now()
+        while len(next_available_dates) < 3 and days_checked < 7:  # Check up to 7 days
+            if current_day_of_week in available_days_numbers:
+                # Check if there are no appointments on this date
+                if current_date.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
+                    next_available_dates.append(current_date.date())
+                    # print(next_available_dates)
+            current_date += timedelta(days=1)
+            current_day_of_week = (current_day_of_week + 1) % 7
+            days_checked += 1
 
     
 
@@ -1323,7 +1395,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'endAppointment': endAppointment,
                                                                                 'progressnotes': progressnotes,
                                                                                 'sorted_vital_signs': sorted_vital_signs,
-                                                                                'consulnotes': consulnotes})
+                                                                                'consulnotes': consulnotes,
+                                                                                'next_available_dates': next_available_dates})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
