@@ -5,6 +5,14 @@
 <link rel="stylesheet" href="{% static 'css/patient_personal_informations.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
+    .form_container{
+        border: 1px solid #ccc;
+        padding: 5px;
+        width: fit-content;
+        margin: 5px;
+        border-radius: 5px;
+    }
+
     #patient-info, #consultation-notes-container, #diagnostic-tests-container, #vital-signs-container, #progress-notes-container {
         display: flex;
         align-items: center; 
@@ -823,93 +831,39 @@
         <h2>Discharge Instruction Form</h2>
         <form id="dischargeForm1" method="post">
             {% csrf_token %}
-            <div id = "days">
-                <div id = "days-label">Good for how many days?</div>
-                <div id = "days-view"><input type="text" id="numOfDays" name="numOfDays"></div>
-            </div>
-            <div id="prescriptionsContainer1" class="prescriptions-container">
-                <div class="prescription-row1 header">
-                    <div class="cell">Select</div>
-                    <div class="cell">Medicine Name</div>
-                    <div class="cell">Dosage</div>
-                    <div class="cell">Route</div>
-                    <div class="cell">Frequency</div>
-                    <div class="cell">Remarks</div>
-                </div>
-                <div class="prescription-row1">
-                    
-                    <div class="cell"><input type="checkbox" name="selectMedicine[]" class="selectMedicine" /></div>
-                    <div class="cell">
-                        <input type="text" name="medicineName1" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                        <datalist id="medicine_name_suggestions">
-                            {% for medicine in medicines_list %}
-                                <option value="{{ medicine }}">
-                            {% endfor %}
-                        </datalist>
-                    </div>
-                    <div class="cell"><input type="text" name="dosage1" /></div>
-                    <div class="cell"><select class="route-dropdown" name="route1">
-                        <option value="" selected disabled>Select Route</option>
-                        <option value="Oral">Oral</option>
-                        <option value="Injection">Injection</option>
-                        <option value="Topical">Topical</option>
-                    </select></div>
-                    <div>
-                        <div style="flex: 1; text-align: center;">
-                            <select class="frequency-dropdown" name="frequency1" id="frequency-dropdown">
-                                <option value="" selected disabled>Select Frequency</option>
-                                <option value="Once Daily">Once Daily</option>
-                                <option value="Twice Daily">Twice Daily</option>
-                                <option value="Thrice Daily">Thrice Daily</option>
-                            </select>
-                        </div>
-                        <div id="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
-                            <div style="text-align: center;">
-                                <input type="checkbox" name="times-once-daily[]" id="morning-checkbox" value="Morning">
-                                <label for="morning-checkbox">Morning</label>
-                            </div>
-                            <div style="text-align: center;">
-                                <input type="checkbox" name="times-once-daily[]" id="afternoon-checkbox" value="Afternoon">
-                                <label for="afternoon-checkbox">Afternoon</label>
-                            </div>
-                            <div style="text-align: center;">
-                                <input type="checkbox" name="times-once-daily[]" id="evening-checkbox" value="Evening">
-                                <label for="evening-checkbox">Evening</label>
-                            </div>
-                        </div>
-                        <div id="twice-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
-                            <div style="text-align: center;">
-                                <input type="checkbox" name="times-twice-daily[]" id="twice-daily-morning-checkbox" value="Morning">
-                                <label for="twice-daily-morning-checkbox">Morning</label>
-                            </div>
-                            <div style="text-align: center;">
-                                <input type="checkbox" name="times-twice-daily[]" id="twice-daily-afternoon-checkbox" value="Afternoon">
-                                <label for="twice-daily-afternoon-checkbox">Afternoon</label>
-                            </div>
-                            <div style="text-align: center;">
-                                <input type="checkbox" name="times-twice-daily[]" id="twice-daily-evening-checkbox" value="Evening">
-                                <label for="twice-daily-evening-checkbox">Evening</label>
-                            </div>     
-                        </div>                    
-                    </div>
-                    <div class="cell"><input type="text" name="remarks1" /></div>
-                </div>
-            </div>
-            
-            <button type="button" id="addMedicine1">Add Medicine</button><br>
-            <button type="button" id="removeSelectedRows">Remove Selected Rows</button><br>
-            <button type="submit" id="addDischargePrescription" name="addDischargePrescription">Submit</button>
-            <button type="button" id="closeInpatientModal1">Close</button>
+            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                <div style="margin: 5px; font-weight: bold;">Patient Name: </div>
+                <div class="form_container">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
+                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                    <div style="margin: 5px; font-weight: bold;">Diagnosis: </div>
+                    <div class="form_container">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
+                {% endfor %}
+                {% for doctor_id, doctor_data in doctors.items %}
+                    {% if doctor_data.uid == uid %}
+                        <div style="margin: 5px; font-weight: bold;">Attending Physician: </div>
+                        <div class="form_container">{{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                    {% endif %}
+                {% endfor %}
+                <div style="margin: 5px; font-weight: bold;">Total Days of Stay: </div>
+                <div class="form_container">{{ num_days }}</div>
+            {% endfor %}
             {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
                 {% if appointmentsched_data.uid == uid %}
-                <label for="suggested-time">Suggested Schedule:</label>
+                <label for="suggested-date">Suggested Schedule:</label>
                 <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                     {% for next_available_date in next_available_dates %}
                         <option value="{{ next_available_date }}" name="next_available_date">{{ next_available_date }}</option>
                     {% endfor %}
                 </select><br>
+                <label for="suggested-time">Suggested Time:</label>
+                <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    {% for available_slot in available_slots %}
+                        <option value="{{ available_slot }}" name="available_slot">{{ available_slot }}</option>
+                    {% endfor %}
+                </select><br>
                 {% endif %}
             {% endfor %}
+            <input type="checkbox" onclick="openModal()">Add Prescription</input>
         </form>
     </div>
 </div>

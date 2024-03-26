@@ -226,13 +226,9 @@
                                         {% for submitted_id, submitted_data in submittedTest_data.items %}
                                             <div class="report-item">
                                                 <div class="date">{{ submitted_data.date }}</div>
-                                                <div class="type">{{ submitted_data.type }}</div>
+                                                <div class="type">{{ submitted_data.testRequestKey }}</div>
                                                 <div class="report">
-                                                    <div id="download">
-                                                        <a href="" id="download-imagery">View Image</a>
-                                                        {% comment %} Note: Disposition and Findings (in Db) same {% endcomment %}
-                                                        <a href="" id="download-disposition">View Disposition</a>
-                                                    </div>
+                                                    <a href="{{ submitted_data.downloadURL }}" class="view-image" style="color: blue;">View Image</a>
                                                 </div>
                                             </div>
                                         {% endfor %}
@@ -245,6 +241,16 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.view-image').click(function(event) {
+            event.preventDefault(); // Prevent default behavior of the link
+            var imageUrl = $(this).attr('href');
+            window.open(imageUrl, '_blank'); // Open the image in a new tab
+        });
+    });
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const backButton = document.getElementById('backButton');

@@ -649,7 +649,7 @@ def AppointmentPast(request):
                 if appointment_datetime < date.datetime.now() or appointment_data["status"] == "Finished":
                     past_appointments[appointment_id] = appointment_data
 
-     
+    
 
     # Sort appointments by date
     sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
@@ -960,13 +960,14 @@ def patient_personal_information_inpatient(request):
         next_available_dates = []
         days_checked = 0
         current_date = datetime.now()
-        while len(next_available_dates) < 3 and days_checked < 7:  # Check up to 7 days
+        days_after = current_date + timedelta(days=7)
+        while len(next_available_dates) < 4 and days_checked < 14:  # Check up to 7 days
             if current_day_of_week in available_days_numbers:
                 # Check if there are no appointments on this date
-                if current_date.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
-                    next_available_dates.append(current_date.date())
+                if days_after.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
+                    next_available_dates.append(days_after.date())
                     # print(next_available_dates)
-            current_date += timedelta(days=1)
+            days_after += timedelta(days=1)
             current_day_of_week = (current_day_of_week + 1) % 7
             days_checked += 1
 
@@ -975,8 +976,34 @@ def patient_personal_information_inpatient(request):
     chosenPatient = request.GET.get('chosenPatient', '')
     endAppointment = request.GET.get('appointmentID', '')
 
+    past_appointments = {}
+    for appointment_id, appointment_data in upcomings.items():
+        if appointment_data["doctorUID"] == uid:
+            appointment_date_str = appointment_data.get("appointmentDate", "")
+            appointment_time_str = appointment_data.get("appointmentTime", "")
+        
+            if appointment_date_str and appointment_time_str:
+            # Convert appointment date string to datetime object
+                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+            
+            # Check if appointment date is in the future
+                if (appointment_datetime < date.datetime.now() or appointment_data["status"] == "Finished") and appointment_data["patientName"] == chosenPatient:
+                    past_appointments[appointment_id] = appointment_data
+
+    sorted_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p"), reverse=True))
+
+    first_appointment = next(iter(sorted_appointments.values()), None)
+    first_appointment_date = first_appointment['appointmentDate'] if first_appointment else None
+
+    print('FIRST APPOINTMENT', first_appointment_date)
     appointmentschedule = db.child("appointmentschedule").get().val()
     doctorSched = db.child("appointmentschedule").child(uid).get().val()
+
+    given_date = datetime.strptime(first_appointment_date, '%Y-%m-%d')
+    today_date = datetime.now()
+
+    num_days = (today_date - given_date).days
+    print('TOTAL DAYS IS ', num_days)
 
     time_slots = []
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
@@ -1307,10 +1334,26 @@ def patient_personal_information_inpatient(request):
         chosenPatient = request.GET.get('chosenPatient', '')
 
         appointmentschedule = db.child("appointmentschedule").get().val()
-        doctorSched = db.child("appointmentschedule").child(uid).get().val()
 
         time_slots = []
+        
         appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+        
+        available1_slots = []
+        formatted_dates = []
+        for date_obj in next_available_dates:
+            formatted_date = date_obj.strftime("%Y-%m-%d")
+        
+            # Append the formatted date to the list
+            formatted_dates.append(formatted_date)
+
+        for available1_slots in formatted_dates:
+            for time_slot in time_slots:
+                if appointment_data['appointmentTime'] != time_slot:
+                    available1_slots.append(time_slot)
+                    print('TIME SLOT 1', time_slot)
+                    print('AVAIL SLOTS 1', available1_slots)
+
         
 
         if appointmentschedule_data:
@@ -1344,8 +1387,13 @@ def patient_personal_information_inpatient(request):
                 time_slots.append(current_time.strftime('%H:%M'))
                 current_time += interval
 
+        for available1_slots in formatted_dates:
+            for time_slot in time_slots:
+                if appointment_data['appointmentTime'] != time_slot:
+                    available1_slots.append(time_slot)
+                    print('TIME SLOT 1', time_slot)
+                    print('AVAIL SLOTS 1', available1_slots)
 
-        print(time_slots)
         chosenPatientData = {}
         for patients_id, patients_data in patients.items():
             if chosenPatient == patients_data["uid"]:
@@ -1396,16 +1444,14 @@ def patient_personal_information_inpatient(request):
                                                                                 'uid': uid,
                                                                                 'medicines_list': medicines_list,
                                                                                 'appointmentschedule': appointmentschedule,
-                                                                                'time_slots': time_slots,
                                                                                 'endAppointment': endAppointment,
                                                                                 'progressnotes': progressnotes,
                                                                                 'sorted_vital_signs': sorted_vital_signs,
                                                                                 'consulnotes': consulnotes,
-<<<<<<< HEAD
-                                                                                'next_available_dates': next_available_dates})
-=======
-                                                                                'medicines_list': medicines_list})
->>>>>>> 0df8181ab97b073c4069343fd0b908bbc37c70d0
+                                                                                'medicines_list': medicines_list,
+                                                                                'next_available_dates': next_available_dates,
+                                                                                'num_days': num_days,
+                                                                                'available1_slots': available1_slots})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
@@ -1928,6 +1974,7 @@ def diagnostic_lab_reports(request):
 
 def diagnostic_imagery_reports(request):
     submittedTest = db.child("submittedTest").get().val()
+    
     chosenPatient = request.GET.get('chosenPatient', '')
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient})
 
