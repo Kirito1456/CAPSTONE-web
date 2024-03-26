@@ -957,9 +957,6 @@ def patient_personal_information_inpatient(request):
     # Remove booked times from the available time slots
     time_slots = [time_slot for time_slot in time_slots if time_slot not in booked_times]
 
-
-    print(booked_times)
-    print(time_slots)
     chosenPatientData = {}
     for patients_id, patients_data in patients.items():
         if chosenPatient == patients_data["uid"]:
@@ -999,6 +996,10 @@ def patient_personal_information_inpatient(request):
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
         if consulnotes_data['diagnosis']:
             currdiagnosis = consulnotes_data['diagnosis']
+
+    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
+    medicines_set = {medication['Disease'] for medication in medications_cursor}
+    medicines_list = list(medicines_set)
 
 
     if request.method == 'POST':
@@ -1308,7 +1309,11 @@ def patient_personal_information_inpatient(request):
         consulnotes_data = consultation_notes_ref.child(date1).get().val()
         if consulnotes_data:
             chosenPatientConsulNotes[chosenPatient] = consulnotes_data
-            currdiagnosis = consulnotes_data['diagnosis']                                                         #'room': 201,})
+            currdiagnosis = consulnotes_data['diagnosis']                     
+
+        medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
+        medicines_set = {medication['Disease'] for medication in medications_cursor}
+        medicines_list = list(medicines_set)
 
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
@@ -1323,7 +1328,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'endAppointment': endAppointment,
                                                                                 'progressnotes': progressnotes,
                                                                                 'sorted_vital_signs': sorted_vital_signs,
-                                                                                'consulnotes': consulnotes})
+                                                                                'consulnotes': consulnotes,
+                                                                                'medicines_list': medicines_list})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
@@ -1682,13 +1688,20 @@ def generate_unique_id():
 def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
     patient_uid = request.GET.get('chosenPatient')
-    medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
-    medicines_list = [medication['Drug'] for medication in medications_cursor]
+    diagnosis = request.GET.get('diagnosis')
+    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2,})
+    medicines_set = {medication['Drug'] for medication in medications_cursor if medication['Disease'] == diagnosis}
+    medicines_list = list(medicines_set)
+    cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
+    pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
+    pharmacy_lists_json = json.dumps(pharmacy_lists)
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 
 
+
     return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients, 
                                                                      'medicines_list': medicines_list, 
+                                                                     'pharmacy_lists':pharmacy_lists_json,
                                                                      'patient_uid': patient_uid,
                                                                      'doctors': doctors,
                                                                      'uid': uid})

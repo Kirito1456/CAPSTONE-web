@@ -47,10 +47,10 @@
         <div id = "treatment-plan">
             <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                 {% csrf_token %}
-                {% for patients_id, patients_data in patients.items %}
+                {% comment %} {% for patients_id, patients_data in patients.items %}
                     {% if patients_data.uid == patient_uid %}
                     {% endif %}
-                {% endfor %}
+                {% endfor %} {% endcomment %}
                 <div id="medications-container">
                     <div style="margin-top: 20px;"id="head">Medications List</div>
                     <div id="medication-list-container">
@@ -70,19 +70,19 @@
                                 <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
                                 <datalist id="medicine_name_suggestions">
                                     {% for medicine in medicines_list %}
-                                        <option value="{{ medicine }}">
+                                        <option value="{{ medicine }}">{{ medicine }}</option>
                                     {% endfor %}
                                 </datalist>
                             </div>
-
-                            <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
+                            
                             <div style="flex: 1; text-align: center;">
-                                <select class="route-dropdown" name="route">
-                                    <option value="" selected disabled>Select Route</option>
-                                    <option value="Oral">Oral</option>
-                                    <option value="Injection">Injection</option>
-                                    <option value="Topical">Topical</option>
+                                <select class="dosage-input" name="dosage" id="dosage_input">
+                                    <option value="" selected disabled>Select Dosage</option>
                                 </select>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                
+                                <input type="text" name="route" id="route_input" placeholder="Enter Route Name" disabled>
                             </div>
                             <div>
                                 <div style="flex: 1; text-align: center;">
@@ -161,7 +161,49 @@
 <script src="{% static 'js/create-medications.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
 <script>
-    
+      // Retrieve pharmacy_lists from the template
+      var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
+      console.log(pharmacyLists);  // Print pharmacy_lists to the console
+
+      // Add your additional JavaScript code here
+      const medicineNameInput = document.getElementById('medicine_name_input');
+      const dosageInput = document.getElementById('dosage_input');
+      const routeInput = document.getElementById('route_input');
+
+      medicineNameInput.addEventListener('input', populateDosageDropdown);
+
+      dosageInput.addEventListener('change', changeRouteDropdown);
+
+      function populateDosageDropdown() {
+          const selectedMedicine = medicineNameInput.value.trim();
+          dosageInput.innerHTML = '<option value="" selected disabled>Select Dosage</option>'; // Reset dosage dropdown
+          
+          // Populate dosage dropdown based on selected medicine
+          pharmacyLists.forEach(function(pharmacy) {
+              if (pharmacy.Drug.trim() === selectedMedicine) { // Ensure consistent comparison
+                  const option = document.createElement('option');
+                  option.text = pharmacy.Strength;
+                  option.value = pharmacy.Strength;
+                  dosageInput.appendChild(option);
+              }
+          });
+
+          // Trigger the change event on dosage dropdown to update the route dropdown
+          dosageInput.dispatchEvent(new Event('change'));
+      }
+
+      function changeRouteDropdown() {
+          const selectedStrength = dosageInput.value.trim();
+          
+          // Change route dropdown based on selected strength
+          pharmacyLists.forEach(function(pharmacy) {
+              if (pharmacy.Strength.trim() === selectedStrength) { // Ensure consistent comparison
+                  routeInput.value = pharmacy.Route;
+              }
+          });
+      }
+
+
     document.addEventListener("DOMContentLoaded", function() {
         var birthdayString = document.getElementById("birthday-view").innerText;
         var birthday = new Date(birthdayString);
@@ -225,6 +267,8 @@
         document.getElementById('submit-medication-button').addEventListener('click', function () {
             alert('Successfully Added a Medication Order/Prescription!');
         });
+
+        
     });
     
 </script>
