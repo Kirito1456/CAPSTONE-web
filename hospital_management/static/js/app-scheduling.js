@@ -27,11 +27,13 @@ editBtn.addEventListener("click", function(event) {
     toggleInputs(false);
     saveBtn.style.display = "inline-block";
     cnclBtn.style.display = "inline-block";
+    editBtn.style.display = "none";
 });
 
 cnclBtn.addEventListener("click", function() {
     saveBtn.style.display = "none";
     cnclBtn.style.display = "none";
+    editBtn.style.display = "inline-block";
     toggleInputs(true);
 });
 

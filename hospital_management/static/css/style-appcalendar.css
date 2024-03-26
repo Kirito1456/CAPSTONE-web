@@ -7,6 +7,8 @@ body {
   .container {
     width: 100%;
     background-color: #fff;
+
+    padding-bottom: 30px;
   }
   
   .header {
@@ -16,7 +18,7 @@ body {
   }
   
   .header #month {
-    color: #698a7c;
+    color: #5c7c89;
     font-size: 30px;
     font-weight: 600;
   }
@@ -32,13 +34,13 @@ body {
   }
   
   .header button {
-    background-color: #698a7c;
+    background-color: #5c7c89;
   }
   
   .weekdays {
     width: 100%;
     display: flex;
-    background-color: #698a7c;
+    background-color: #5c7c89;
     font-size: 17px;
     color: #fff;
     font-weight: 500;
@@ -67,7 +69,7 @@ body {
     padding: 8px;
     cursor: pointer;
     box-sizing: border-box;
-    color: #698a7c;
+    color: rgb(92, 124, 137);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -75,12 +77,12 @@ body {
   }
   
   .day:hover {
-    background-color: rgba(112, 111, 211, 0.1);
-    color: #698a7c;
+    background-color: rgba(143, 141, 236, 0.1);
+    color: #5c7c89;
   }
   
   #currentDay {
-    background-color: rgba(105, 138, 124, 0.8);;
+    background-color: rgba(105, 122, 138, 0.8);
     color: #fff;
   }
   

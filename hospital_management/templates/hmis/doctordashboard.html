@@ -84,6 +84,7 @@
         </div>
         <br>
         {% if inpatients %}
+        <div id = "inpatient-table">
             <table class="clients_table">
                 <thead>
                     <tr>
@@ -115,8 +116,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
         {% else %}
+        <div id = "none">
             <p>No Inpatients Assigned</p>
+        </div>
         {% endif %}
     </div>
 </div>

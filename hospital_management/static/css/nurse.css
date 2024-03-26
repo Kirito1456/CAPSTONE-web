@@ -6,7 +6,7 @@ body {
 
 #whole-screen {
     display: flex;
-    height: 100vh; /* Set the whole-screen height to fill the viewport */
+    height: 100%; /* Set the whole-screen height to fill the viewport */
 }
 
 #side-menu {
@@ -17,7 +17,7 @@ body {
     top: 0;
     left: 0;
     
-    background-color: #85AA9B;
+    background-color: #5c7c89;
 }
 
 #all-info{
@@ -50,10 +50,12 @@ body {
 #name{
     font-size: 18px;
     font-weight: bold;
+    color: #fff;
 }
 
 #role{
     font-size: 14px;
+    color: #fff;
 }
 
 #menu{
@@ -85,11 +87,11 @@ a{
 
 #appointment-screen{
     width: 80%;
-    height: 95%;
+    height: 85%;
     position: absolute;
-    top: 50%;
-    left: 46%;
-    transform: translate(-35%, -50%);
+    top: 45%;
+    left: 45.5%;
+    transform: translate(-35%, -45%);
     flex: 1; /* Take remaining space */
     overflow-x: auto; /* Enable horizontal scrolling */
     padding: 20px; /* Add padding for space between cards and viewport edge */
@@ -107,13 +109,13 @@ a{
     padding: 8px 12px;
     border: none;
     border-radius: 30px;
-    background-color: #799c8d;
+    background-color: #5c7c89;
     color: #fff;
     cursor: pointer;
 }
 
 #searchButton:hover {
-    background-color: #698a7c;
+    background-color: #5c7c89;
 }
 
 #notification-icon {
@@ -219,7 +221,7 @@ a{
 .button {
     padding: 5px;
     width: fit-content;
-    background-color: #698a7c;
+    background-color: #5c7c89;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -240,7 +242,8 @@ a{
 
 .clients_table th {
     border-radius: 10px;
-    background-color: #85AA9B;
+    background-color: #5c7c89;
+    color: #fff;
     
     padding: 8px;
     text-align: center;
@@ -249,6 +252,10 @@ a{
 .clients_table td {
     border-radius: 10px;
     padding: 8px;
+}
+
+#floor, #room{
+    text-align: center;
 }
 
 .accountT_lbl {
@@ -294,4 +301,22 @@ a{
 .clients_table th:nth-child(6),
 .clients_table td:nth-child(6) {
     width: 10%; /* Details column width */
+}
+
+.save-button{
+    background-color: #5c7c89;
+    color: #f9f9f9;
+
+    border: 0px;
+
+    padding: 5px 20px;
+
+    margin-top: 10px;
+    margin-bottom: -10px;
+
+    border-radius: 10px;
+}
+
+.save-button:hover{
+    font-weight: bold;
 }
