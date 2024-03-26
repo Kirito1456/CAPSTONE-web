@@ -351,7 +351,12 @@
                     </div>
                     <button><a href="{% url 'patient_medical_history' %}?chosenPatient={{chosenPatientData_data.uid}}">Medical History</a></button>
                     <button><a href = "{% url 'view_treatment_plan_all' %}?chosenPatient={{chosenPatientData_data.uid}}">Treatment Plan</a></button>
-                    <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}">Make Order</a></button>
+
+                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                        {% if chosenPatientConsulNotes_data.diagnosis %}
+                            <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Order</a></button>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             {% endfor %}
         </div>
@@ -733,24 +738,15 @@
                     <form id="diagnosis" method='post'>
                         {% csrf_token %}
                     <div id="diagnosisDropdown" class="dropdown-content" style="display: none;">
-                        <select id="health-conditions" name="diagnosis">
-                            <option value="">Select a condition...</option>
-                            <option value="Hypertension">Hypertension</option>
-                            <option value="Urinary Tract Infection">Urinary Tract Infection</option>
-                            <option value="Diabetes Mellitus Type 2">Diabetes Mellitus Type 2</option>
-                            <option value="Lower Respiratory Tract Infection">Lower Respiratory Tract Infection</option>
-                            <option value="Community Acquired Pneumonia">Community Acquired Pneumonia</option>
-                            <option value="Pulmonary Tuberculosis">Pulmonary Tuberculosis</option>
-                            <option value="Musculoskeletal Disease">Musculoskeletal Disease</option>
-                            <option value="Ischemic Heart Disease">Ischemic Heart Disease</option>
-                            <option value="Upper Respiratory Tract Infection">Upper Respiratory Tract Infection</option>
-                            <option value="Cerebrovascular Disease">Cerebrovascular Disease</option>
-                            <option value="Others">Others</option>
-                        </select>
-                        <div id="otherDiagnosis" style="display: none;">
-                            <input type="text" name="otherDiagnosis"></input>
-                        </div>
                         
+                        <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
+                            <datalist id="disease_name_suggestion">
+                                <option value="">-- Select Disease --</option>
+                                {% for medicine in medicines_list %}
+                                    <option value="{{ medicine }}">{{ medicine }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </select>
                         <button type="submit" name="diagnosisButton" value={{ chosenPatientData_id }}>Save</button>
                     </div>
                     </form>

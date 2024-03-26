@@ -1029,9 +1029,6 @@ def patient_personal_information_inpatient(request):
     # Remove booked times from the available time slots
     time_slots = [time_slot for time_slot in time_slots if time_slot not in booked_times]
 
-
-    print(booked_times)
-    print(time_slots)
     chosenPatientData = {}
     for patients_id, patients_data in patients.items():
         if chosenPatient == patients_data["uid"]:
@@ -1071,6 +1068,10 @@ def patient_personal_information_inpatient(request):
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
         if consulnotes_data['diagnosis']:
             currdiagnosis = consulnotes_data['diagnosis']
+
+    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
+    medicines_set = {medication['Disease'] for medication in medications_cursor}
+    medicines_list = list(medicines_set)
 
 
     if request.method == 'POST':
@@ -1380,7 +1381,11 @@ def patient_personal_information_inpatient(request):
         consulnotes_data = consultation_notes_ref.child(date1).get().val()
         if consulnotes_data:
             chosenPatientConsulNotes[chosenPatient] = consulnotes_data
-            currdiagnosis = consulnotes_data['diagnosis']                                                         #'room': 201,})
+            currdiagnosis = consulnotes_data['diagnosis']                     
+
+        medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
+        medicines_set = {medication['Disease'] for medication in medications_cursor}
+        medicines_list = list(medicines_set)
 
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
@@ -1396,7 +1401,11 @@ def patient_personal_information_inpatient(request):
                                                                                 'progressnotes': progressnotes,
                                                                                 'sorted_vital_signs': sorted_vital_signs,
                                                                                 'consulnotes': consulnotes,
+<<<<<<< HEAD
                                                                                 'next_available_dates': next_available_dates})
+=======
+                                                                                'medicines_list': medicines_list})
+>>>>>>> 0df8181ab97b073c4069343fd0b908bbc37c70d0
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
@@ -1755,13 +1764,20 @@ def generate_unique_id():
 def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
     patient_uid = request.GET.get('chosenPatient')
-    medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
-    medicines_list = [medication['Drug'] for medication in medications_cursor]
+    diagnosis = request.GET.get('diagnosis')
+    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2,})
+    medicines_set = {medication['Drug'] for medication in medications_cursor if medication['Disease'] == diagnosis}
+    medicines_list = list(medicines_set)
+    cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
+    pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
+    pharmacy_lists_json = json.dumps(pharmacy_lists)
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 
 
+
     return render(request, 'hmis/outpatient_medication_order.html', {'patients': patients, 
                                                                      'medicines_list': medicines_list, 
+                                                                     'pharmacy_lists':pharmacy_lists_json,
                                                                      'patient_uid': patient_uid,
                                                                      'doctors': doctors,
                                                                      'uid': uid})
@@ -1772,43 +1788,47 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 
 def save_prescriptions(request):
-    patient_uid = request.GET.get('chosenPatient')
-    patientdata = db.child("patientdata").child(patient_uid).get().val()
-
     if request.method == 'POST':
-        numOfDays = int(request.POST.get('numOfDays'))
+        patient_uid = request.GET.get('chosenPatient')
+        patientdata = db.child("patientdata").child(patient_uid).get().val()
+        print(patientdata)
+        #numOfDays = int(request.POST.get('numOfDays'))
         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        days = request.POST.getlist('days')
+        numOfDays = 0
+        for day in days:
+            try:
+                day_int = int(day)
+                if day_int > numOfDays:
+                    numOfDays = day_int
+            except ValueError:
+                pass 
 
         # Calculate endDate
         todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
-        endDate = todaydate_datetime + timedelta(days=numOfDays)
+        endDate = todaydate_datetime + timedelta(days= numOfDays)
         endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
 
         patient_id = patient_uid 
         medicine_name = request.POST.getlist('medicine_name')
         dosage = request.POST.getlist('dosage')
         route = request.POST.getlist('route')
-        frequency = request.POST.getlist('frequency')
+        
+        #frequency = request.POST.getlist('frequency')
+        
         additional_remarks = request.POST.getlist('additionalremarks')
         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        times_list = []
-
-        for freq in frequency:
-            if freq == "Once Daily":
-                times_list.extend(request.POST.getlist('times-once-daily[]'))
-            elif freq == "Twice Daily":
-                times_list.append(', '.join(request.POST.getlist('times-twice-daily[]')))
-            elif freq == "Thrice Daily":
-                times_list.append("Morning, Afternoon, Evening")
-
-        for freq in frequency:
-            if freq == "Once Daily":
-                occurence = 1
-            elif freq == "Twice Daily":
-                occurence = 2
-            elif freq == "Thrice Daily":
-                occurence = 3
+        #times_list = []
+        times = request.POST.getlist('times-daily[]')
+        # occurence = 0
+        # for time in times:
+        #     if time == 'Morning':
+        #         occurence += 1
+        #     if time == 'Afternoon':
+        #         occurence += 1
+        #     if time == 'Evening':
+        #         occurence += 1
 
         try:
             id = str(uuid.uuid1())
@@ -1820,11 +1840,12 @@ def save_prescriptions(request):
 
             data = {
                 'prescriptionsoderUID': id,
+                'days': days,
                 'medicine_name': medicine_name,
                 'dosage': dosage,
                 'route': route,
-                'frequency': frequency,
-                'times': times_list,
+                #'frequency': occurence,
+                'times': times,
                 'additional_remarks': additional_remarks,
                 'patient_id': patient_id,
                 'todaydate': todaydate,
