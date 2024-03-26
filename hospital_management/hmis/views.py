@@ -387,7 +387,6 @@ def update_profile (request):
 
 # Function to get upcoming appointments
 def AppointmentUpcoming(request):
-    #print(request.session['uid'])
     
     if request.session.get('uid') is None:
         return redirect('home')
@@ -415,10 +414,53 @@ def AppointmentUpcoming(request):
 
     # Sort appointments by date
     sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    
+    time_slots = []
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+
+    if appointmentschedule_data:
+    # Define time slots for morning
+        morning_start_str = appointmentschedule_data.get("morning_start")
+        morning_end_str = appointmentschedule_data.get("morning_end")
+
+        # Convert strings to datetime objects for morning
+        morning_start = datetime.strptime(morning_start_str, '%H:%M')
+        morning_end = datetime.strptime(morning_end_str, '%H:%M')
+
+        # Define time slots for afternoon
+        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
+        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+
+        # Convert strings to datetime objects for afternoon
+        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+
+        interval = timedelta(minutes=30)
+
+        # Calculate time slots for morning
+        current_time = morning_start
+        while current_time <= morning_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+
+        # Calculate time slots for afternoon
+        current_time = afternoon_start
+        while current_time <= afternoon_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+    
+    min_date = None
+    if appointmentschedule_data:
+        available_days = appointmentschedule_data.get("days", [])
+        today = datetime.now().date()
+        while today.strftime('%A') not in available_days:
+            today += timedelta(days=1)
+        min_date = today
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
-                                                             'patients': patients, 'uid': uid, 'doctors': doctors})
+                                                             'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
+                                                             'appointmentschedule_data': appointmentschedule_data})
 
 
 def delete_appointment(request):

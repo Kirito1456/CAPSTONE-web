@@ -108,10 +108,16 @@
                             <h2>Reschedule Appointment</h2>
                             <form id="reschedule-form" method="post" action="{% url 'update_appointment' %}">
                                 {% csrf_token %}
+                                <label for="suggested-time">Suggested Schedule:</label><br>
+                                
                                 <label for="new-appointment-date">New Date:</label>
                                 <input type="date" id="new-appointment-date" name="new-appointment-date" min="" required><br>
                                 <label for="new-appointment-time">New Time:</label>
-                                <select id="new-appointment-time" name="new-appointment-time"></select><br>
+                                <select id="new-appointment-time" name="new-appointment-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                    {% for time_slot in time_slots %}
+                                        <option value="{{ time_slot }}" name="time_chosen">{{ time_slot }}</option>
+                                    {% endfor %}
+                                </select><br>
                                 <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
                             </form>
                         </div>
@@ -125,7 +131,7 @@
     </div>
 </div>
 
-<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'js/appointment.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('appID').addEventListener('click', function () {
