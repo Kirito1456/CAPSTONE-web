@@ -941,13 +941,13 @@ def patient_personal_information_inpatient(request):
         
         available_days_str = appointmentschedule_data.get("days", "")
         day_name_to_number = {
-            'monday': 1,
-            'tuesday': 2,
-            'wednesday': 3,
-            'thursday': 4,
-            'friday': 5,
-            'saturday': 6,
-            'sunday': 7
+            'monday': 0,
+            'tuesday': 1,
+            'wednesday': 2,
+            'thursday': 3,
+            'friday': 4,
+            'saturday': 5,
+            'sunday': 6
         }
 
         # Convert available days to numbers
@@ -978,47 +978,33 @@ def patient_personal_information_inpatient(request):
 
         print('LIST FINAL', list_final)
 
-        # Find the 7th, 14th, 21st, and 30th available days
-        for i in target_days:
-            if len(list_final) >= i:
-                next_available_dates.append(list_final[i-1])
-        print('LIST FINAL', next_available_dates)
+        # Get current date
+        current_date = datetime.now().date()
+
+        # Calculate dates 1 week, 2 weeks, 3 weeks, and 1 month from now
+        one_week_from_now = current_date + timedelta(weeks=1)
+        two_weeks_from_now = current_date + timedelta(weeks=2)
+        three_weeks_from_now = current_date + timedelta(weeks=3)
+        one_month_from_now = current_date + timedelta(days=30)
+
+        # Define a threshold for finding the nearest date
+        threshold = timedelta(days=3)  # Adjust as needed
+
+        # Function to find the nearest date
+        def find_nearest_date(target_date, dates_list):
+            nearest_date = min(dates_list, key=lambda x: abs(x - target_date))
+            return nearest_date
+
+        # Find the nearest dates
+        nearest_dates = {
+            'one_week_from_now': find_nearest_date(one_week_from_now, list_final),
+            'two_weeks_from_now': find_nearest_date(two_weeks_from_now, list_final),
+            'three_weeks_from_now': find_nearest_date(three_weeks_from_now, list_final),
+            'one_month_from_now': find_nearest_date(one_month_from_now, list_final)
+        }
+
+        print("Nearest dates:", nearest_dates)
        
-
-    
-
-    chosenPatient = request.GET.get('chosenPatient', '')
-    endAppointment = request.GET.get('appointmentID', '')
-
-    past_appointments = {}
-    for appointment_id, appointment_data in upcomings.items():
-        if appointment_data["doctorUID"] == uid:
-            appointment_date_str = appointment_data.get("appointmentDate", "")
-            appointment_time_str = appointment_data.get("appointmentTime", "")
-        
-            if appointment_date_str and appointment_time_str:
-            # Convert appointment date string to datetime object
-                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
-            
-            # Check if appointment date is in the future
-                if (appointment_datetime < date.datetime.now() or appointment_data["status"] == "Finished") and appointment_data["patientName"] == chosenPatient:
-                    past_appointments[appointment_id] = appointment_data
-
-    sorted_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p"), reverse=True))
-
-    first_appointment = next(iter(sorted_appointments.values()), None)
-    first_appointment_date = first_appointment['appointmentDate'] if first_appointment else None
-
-    print('FIRST APPOINTMENT', first_appointment_date)
-    appointmentschedule = db.child("appointmentschedule").get().val()
-    doctorSched = db.child("appointmentschedule").child(uid).get().val()
-
-    given_date = datetime.strptime(first_appointment_date, '%Y-%m-%d')
-    today_date = datetime.now()
-
-    num_days = (today_date - given_date).days
-    print('TOTAL DAYS IS ', num_days)
-
     time_slots = []
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
     
@@ -1052,6 +1038,32 @@ def patient_personal_information_inpatient(request):
         while current_time <= afternoon_end:
             time_slots.append(current_time.strftime('%H:%M'))
             current_time += interval
+    
+    if time_slots:
+        earliest_time = min(time_slots)
+        print("Earliest time slot:", earliest_time)
+    else:
+        print("No time slots available")
+
+
+    chosenPatient = request.GET.get('chosenPatient', '')
+    endAppointment = request.GET.get('appointmentID', '')
+
+    past_appointments = {}
+    for appointment_id, appointment_data in upcomings.items():
+        if appointment_data["doctorUID"] == uid:
+            appointment_date_str = appointment_data.get("appointmentDate", "")
+            appointment_time_str = appointment_data.get("appointmentTime", "")
+        
+            if appointment_date_str and appointment_time_str:
+            # Convert appointment date string to datetime object
+                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+            
+            # Check if appointment date is in the future
+                if (appointment_datetime < date.datetime.now() or appointment_data["status"] == "Finished") and appointment_data["patientName"] == chosenPatient:
+                    past_appointments[appointment_id] = appointment_data
+
+    sorted_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p"), reverse=True))
 
     # Fetch appointments from the database
     appointments = db.child("appointments").get().val()
@@ -1115,7 +1127,8 @@ def patient_personal_information_inpatient(request):
     medicines_list = list(medicines_set)
 
     time_slots = []
-        
+    appointmentschedule = db.child("appointmentschedule").get().val()
+    doctorSched = db.child("appointmentschedule").child(uid).get().val()
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
     
     formatted_dates = []
@@ -1232,6 +1245,7 @@ def patient_personal_information_inpatient(request):
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(todaydate, chosenPatient, medicine_name, dosage, route, frequency, additional_remarks)
             selected_time = request.POST.get('selected_time')
+
             followUpDays = 0
             if selected_time == 'one_week':
                 followUpDays = 7
@@ -1461,6 +1475,13 @@ def patient_personal_information_inpatient(request):
     progressnotes = db.child("progressnotes").get().val()
     nurses = db.child("nurses").get().val()
 
+    first_appointment = next(iter(sorted_appointments.values()), None)
+    first_appointment_date = first_appointment['appointmentDate'] if first_appointment else None
+    print('FIRST DATE IS ', first_appointment_date)
+    given_date = datetime.strptime(first_appointment_date, '%Y-%m-%d')
+    today_date = datetime.now()
+    num_days = (today_date - given_date).days
+
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
                                                                                 'chosenPatientDatas': chosenPatientDatas, 
                                                                                 'chosenPatientVitalEntryData': chosenPatientVitalEntryData,
@@ -1477,7 +1498,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'next_available_dates': next_available_dates,
                                                                                 'num_days': num_days,
                                                                                 'nurses': nurses,
-                                                                                'list_final': list_final})
+                                                                                'nearest_dates': nearest_dates,
+                                                                                'earliest_time': earliest_time})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
