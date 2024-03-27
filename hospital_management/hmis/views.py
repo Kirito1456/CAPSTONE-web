@@ -32,6 +32,11 @@ import pytesseract
 import base64
 from firebase_admin import db
 
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
 # Use the firebase_database object directly
 db = firebase_database
 
@@ -445,12 +450,22 @@ def AppointmentUpcoming(request):
             current_day_of_week = (current_day_of_week + 1) % 7
             days_checked += 1
 
+        dates_to_pass = []
+        for date_str in next_available_dates:
+    # Convert each date string to a datetime object
+            #date_obj = datetime.strptime(str(date_str), "%B %d, %Y")
+    # Convert the datetime object to a string in the desired format and add to the list
+            dates_to_pass.append(date_str.strftime("%Y-%m-%d"))
+
+# Now next_available_dates contains the dates in the desired format
+            print(dates_to_pass)
+
     
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
-                                                             'next_available_dates': next_available_dates})
+                                                             'next_available_dates': dates_to_pass})
 
 
 def delete_appointment(request):
@@ -479,31 +494,35 @@ def update_appointment(request):
     if request.method == 'POST':
         try:
             appID = request.POST.get('appID')
-            print('APPID', appID)
+            #print('APPID', appID)
 
             new_time = request.POST.get('new_appointment_time')
             print('Time nakuha is ', new_time)
 
-            new_date_str = request.POST.gt('selected_appointment_date')  # Corrected name
-            # Convert new_date_str to dateteime object
-            new_date = datetime.strptime(new_date_str, "%B %d, %Y")
-            # Format new_date to "yyyy-mm-dd" string
-            new_date_formatted = new_date.strftime("%Y-%m-%d")
-
+            # Assuming new_date_str is obtained from request.POST.get
+            new_date_str = request.POST.get('selected_appointment_date')
+            print(new_date_str)
+            # Convert new_date_str to datetime object
+            # new_date = datetime.strptime(new_date_str, "%B %d, %Y")
+            # print(new_date)
+            # # Format new_date to "YYYY-MM-DD" string
+            # new_date_formatted = new_date.strftime("%Y-%m-%d")
             
+            
+            # print(new_date_formatted)
 
-            # Format time and date objects to desired format
-            new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
-            new_time_str = new_time_formatted.strftime("%I:%M %p")
-            print(new_time_str)
+            # # Format time and date objects to desired format
+            # new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
+            # new_time_str = new_time_formatted.strftime("%I:%M %p")
+            # print(new_time_str)
 
             # Construct the path to the appointment data in Firebase
             appointment_path = f"/appointments/{appID}"  # Adjust the path as per your Firebase structure
 
             # Update appointment data in Firebase
             db.child(appointment_path).update({
-                'appointmentDate': new_date_formatted,
-                'appointmentTime': new_time_str,
+                'appointmentDate': new_date_str,
+                #'appointmentTime': new_time_str,
                 'status': 'Ongoing',
             }) 
         
@@ -1826,10 +1845,7 @@ def outpatient_medication_order(request):
                                                                      'doctors': doctors,
                                                                      'uid': uid})
 
-from io import BytesIO
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
+
 
 def save_prescriptions(request):
     if request.method == 'POST':

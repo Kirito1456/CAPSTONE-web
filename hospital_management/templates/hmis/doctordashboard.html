@@ -11,7 +11,7 @@
 
 {% block content %}
 <div id="whole-screen">
-    <div id="side-menu">
+    <div id="side-menu" style="background-color: #334a7c;">
         <div id="all-info">
             <div id="user-info"> 
                 <div id = "image">
@@ -40,7 +40,7 @@
     
     <div id="appointment-screen">
         <div style="display: flex; flex-direction: row">
-            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; border: 1px solid #ccc">
+            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; margin-bottom: 5px; border: 1px solid #ccc">
                 <p style="margin-left: 15px; font-weight: bold;">Appointments for Today</p>
                 {% if appointments %}
                     <table class="clients_table">
@@ -69,7 +69,7 @@
                     <p style="margin-left: 15px;">No Upcoming Appointments for Today</p>
                 {% endif %}
             </div>
-            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; border: 1px solid #ccc; overflow: auto">
+            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; margin-bottom: 5px; border: 1px solid #ccc; overflow: auto">
                 <p style="margin-left: 15px; font-weight: bold;">Tasks</p>
                 {% comment %} Sample Task {% endcomment %}
                 <div id="doctortask" style="background-color: grey; margin: 15px; padding: 10px;">
@@ -84,48 +84,58 @@
         </div>
         <br>
         {% if inpatients %}
-        <div id = "inpatient-table">
-            <table class="clients_table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Disease</th>
-                        <th>Room Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for patient_id, patient_data in patients.items %}
-                    <tr>
-                        {% for inpatient_id, inpatient_data in inpatients.items %}
-                            {% if patient_data.uid == inpatient_data.patientid %}
-                                <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}">
-                                    {{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
-                                    <td><label class="accountT_lbl">
-                                        {{ inpatient_data.disease }}</label></td>
-                                    {% for room_id, room_data in rooms.items %}
-                                        {% if inpatient_data.room == room_id %}
-                                            <td><label class="accountT_lbl">
-                                                {{ room_data.rnumber }}</label></td>
-                                        {% endif %}
-                                    {% endfor %}
-                            {% endif %}
-                            
+        <div id = "inpatient">
+            <div id = "top">
+                <p style="margin-left: 15px; font-weight: bold; width: fit-content;">Inpatients Assigned</p>
+                <div class="search-bar side">
+                    <input type="text" id="searchInput" placeholder="Search...">
+                    <button id="searchButton">Search</button>
+                </div>
+            </div>
+            <div id = "inpatient-table">
+                
+                <table class="inpatients_table">
+                    <thead>
+                        <tr>
+                            <th id="patient-name">Name</th>
+                            <th id="disease">Disease</th>
+                            <th id="roomno">Room Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient_id, patient_data in patients.items %}
+                        <tr>
+                            {% for inpatient_id, inpatient_data in inpatients.items %}
+                                {% if patient_data.uid == inpatient_data.patientid %}
+                                    <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}">
+                                        {{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
+                                        <td><label class="accountT_lbl">
+                                            {{ inpatient_data.disease }}</label></td>
+                                        {% for room_id, room_data in rooms.items %}
+                                            {% if inpatient_data.room == room_id %}
+                                                <td><label class="accountT_lbl">
+                                                    {{ room_data.rnumber }}</label></td>
+                                            {% endif %}
+                                        {% endfor %}
+                                {% endif %}
+                                
+                            {% endfor %}
+                            </td>  
+                        </tr>
                         {% endfor %}
-                        </td>  
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <div id = "none">
-            <p>No Inpatients Assigned</p>
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div id = "none">
+                <p>No Inpatients Assigned</p>
+            </div>
         </div>
         {% endif %}
     </div>
 </div>
 
-<script src="{% static 'js/appointment.js' %}"></script>
+<script src="{% static 'js/doctordashboard.js' %}"></script>
 <script>
     // JavaScript for Notification Popup
 document.addEventListener("DOMContentLoaded", function() {

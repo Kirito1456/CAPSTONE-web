@@ -23,7 +23,7 @@ body {
     left: 0;
     color: white;
     
-    background-color: #5c7c89;
+    background-color: #334a7c;
 }
 
 #user-info{
@@ -125,7 +125,7 @@ a:hover{
 
 .clients_table th {
     border-radius: 10px;
-    background-color: #5c7c89;
+    background-color: #334a7c;
     
     padding: 8px;
     text-align: center;
@@ -150,11 +150,11 @@ a:hover{
 
 /* Alternate row colors */
 .clients_table tr:nth-child(odd) {
-    background-color: #f9f9f9; /* Lighter color */
+    background-color: #adb8ce; /* Lighter color */
 }
 
 .clients_table tr:nth-child(even) {
-    background-color: #D3D3D3; /* Darker color */
+    background-color: #c8cfde; /* Darker color */
 }
 
 .clients_table th:nth-child(1),
@@ -204,16 +204,12 @@ a:hover{
 }
 
 #searchButton {
-    padding: 5px 12px;
+    padding: 5px 15px;
     border: none;
     border-radius: 30px;
-    background-color: #5c7c89;
+    background-color: #334a7c;
     color: #fff;
     cursor: pointer;
-}
-
-#searchButton:hover {
-    background-color: #5c7c89;
 }
 
 .apt-header-btns{
@@ -707,7 +703,7 @@ header .current-date{
 }
 
 .day-checkbox input[type="checkbox"]:checked + label {
-    background-color: #5c7c89;
+    background-color: #334a7c;
     color: #fff;
 }
 
@@ -748,7 +744,7 @@ header .current-date{
 }
 
 #edit-btn {
-    background-color: #007bff;
+    background-color: #334a7c;
 }
 
 #notification-icon {
@@ -831,4 +827,76 @@ header .current-date{
 
 #none, #inpatient-table{
     margin-left: 1%;
+
+    width: 98%;
+
+    margin-top: 1%;
+}
+
+.inpatients_table{
+    width: 100%;
+
+    padding-top: 10px;
+}
+
+.inpatients_table th{
+    background-color: #334a7c;
+
+    padding: 10px;
+    border-radius: 10px;
+
+    color: #D3D3D3;
+
+    margin: 0;
+}
+
+#disease{
+    width: 40%;
+}
+
+#patient-name, #roomno{
+    width: 30%;
+}
+
+.inpatients_table td{
+    text-align: center;
+
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Alternate row colors */
+.inpatients_table tr:nth-child(odd) {
+    background-color: #adb8ce; /* Lighter color */
+}
+
+.inpatients_table tr:nth-child(even) {
+    background-color: #c8cfde; /* Darker color */
+}
+
+#top{
+    display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: -20px;
+
+    margin-right: 10px;
+}
+
+.side{
+    height: 50%;
+}
+
+#inpatient{
+    background-color: white;
+
+    height: 350px;
+
+    margin-left: 10px;
+    margin-right: 10px;
+
+    border: 1px solid #ccc
 }
