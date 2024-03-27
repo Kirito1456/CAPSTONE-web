@@ -95,7 +95,7 @@
                                         <div class="detailvalue">{{ patient_data.address}}</div>
                                     </div>
                                     <div class="button-container">
-                                        <button class="reschedule-button" onclick="openModal('{{ appointment_id }}', '{{ appointment_data.appointmentTime }}')">Reschedule</button>
+                                        <button class="reschedule-button" onclick="openModal('{{ appointment_id }}')">Reschedule</button>
                                         <button class="message-button" onclick="window.location.href = 'Message.html';">Message</button>
                                         <form action="{% url 'delete_appointment' %}" method="post">
                                             {% csrf_token %}
@@ -114,17 +114,20 @@
                                 <h2>Reschedule Appointment</h2>
                                 <form id="reschedule-form{{ appointment_id }}" method="post" action="{% url 'update_appointment' %}">
                                     {% csrf_token %}
-                                    <label for="suggested-time">Suggested Schedule:</label>
+                                    <label for="suggested-date">Suggested Schedule:</label>
                                     <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                                         {% for next_available_date in next_available_dates %}
-                                            <option value="{{ next_available_date }}" name="next_available_date">{{ next_available_date }}</option>
+                                            <option value={{ next_available_date }} name="next_available_date">{{ next_available_date }}</option>
                                         {% endfor %}
                                     </select><br>
-                                    <div id="same-appointment-time" name="same-appointment-time"></div><br>
-                                    <button type="submit" id="appID" name="appID" value={{ appointment_id }}>Submit</button>
+                                    <label for="suggested-time">Suggested Time:</label>
+                                    <input type="text" id="new_appointment_time" name='new_appointment_time' value={{ appointment_data.appointmentTime }} style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;" disabled></input><br>
+                                    <button type="submit" id="appID" name='appID' value={{ appointment_id }}>Submit</button>
+
                                 </form>
                             </div>
                         </div>
+
                             
                     </tr>
                 {% endfor %}

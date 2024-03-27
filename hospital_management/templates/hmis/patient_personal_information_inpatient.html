@@ -5,6 +5,95 @@
 <link rel="stylesheet" href="{% static 'css/patient_personal_informations.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
+
+    #update-with-new-order {
+        display: flex;
+        justify-content: space-between;
+        margin: 15px;
+    }
+    
+    #remove-medication-button {
+        margin-top: 10px;
+    }
+    
+    #remove-medication-button a {
+        background-color: red;
+        color: white;
+        padding: 3px;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+    
+    #add-medication-button a, #submit-medication-button a {
+        background-color: green;
+        color: white;
+        padding: 3px;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+    
+    #table-header{
+       font-weight: bold; 
+       background-color: #4280c7; 
+       color: white; 
+       padding: 5px;
+       margin: 5px;
+       border-radius: 5px;
+    }
+
+    #table-body{
+        padding: 5px;
+        margin: 5px;
+        border-radius: 5px;
+     }
+
+    #medication-list{
+        display: flex; 
+        flex-direction: column;
+    }
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .form-group {
+        margin-right: 20px; /* Adjust spacing between form groups */
+    }
+    
+    #view-notes-history, #view-vitalsigns-history {
+        display: inline-block;
+        padding: 5px;
+        font-size: 12px;
+        background-color: #4280c7;
+        color: #fff;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px; 
+        cursor: pointer;
+        margin: 10px;
+    }
+    
+    #view-notes-history:hover, #view-vitalsigns-history:hover {
+        background-color: #0056b3;
+    }
+
+    .button_patient {
+        display: inline-block;
+        padding: 5px;
+        font-size: 12px;
+        background-color: #4280c7;
+        color: #fff;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px; 
+        cursor: pointer;
+        margin: 10px;
+    }
+    
+    .button_patient:hover {
+        background-color: #0056b3;
+    }
+
     .form_container{
         border: 1px solid #ccc;
         padding: 5px;
@@ -13,20 +102,97 @@
         border-radius: 5px;
     }
 
+    .container-big {
+        display: flex;
+        align-items: center; 
+        flex-wrap: wrap; 
+    }
+
+    .container-small {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .container-inside {
+        padding: 10px;
+    }
+    
     #patient-info, #consultation-notes-container, #diagnostic-tests-container, #vital-signs-container, #progress-notes-container {
         display: flex;
         align-items: center; 
         flex-wrap: wrap; 
     }
     
-    #personal-information {
+    #personal-information, #progress-notes-box {
         background-color: #f9f9f9;
         border: 1px solid #ddd;
-        padding: 20px;
         margin-bottom: 30px;
         width: 100%;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
+    #info_container{
+        display: flex;
+    }
+
+    #progress-note{
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    #info_box{
+        padding: 10px;
+        flex: 1;
+    }
+ 
+    #button_box{
+        padding: 10px;
+        flex: 1;
+        
+    }   
+
+    .head{
+        text-align: center;
+        font-weight: bold;
+    
+        font-size: 14px;
+    
+        padding-bottom: 5px;
+        padding-top: 5px;
+        background-color: #5c7c89;
+        color: #fff;
+    
+        margin-bottom: 10px;
+    }
+
+    #vital-signs-box {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    #consultation-notes{
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    #diagnostic-tests{
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        width: 90%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+        margin-right: 1%;
+    }
+    
     
     #head-personal-information {
         text-align: center;
@@ -36,7 +202,6 @@
 
         padding-bottom: 5px;
         padding-top: 5px;
-        border-radius: 5px;
         background-color: #5c7c89;
         color: #fff;
 
@@ -114,11 +279,10 @@
     }
     .modal-content1 {
         background-color: white;
-        margin: auto;
+        margin: 20px;
         padding: 20px;
         border: 1px solid #888;
         border-radius: 5px;
-        max-width: 600px;
         position: absolute;
         top: 50%;
         left: 50%;
@@ -253,622 +417,810 @@
             {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
             <div id = "personal-information">
                 <div id = "head-personal-information">Personal Information</div>
-                    <div id = "first">
-                        <div id = "fname-label">Name:</div>
-                        <div id = "fname">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
-                    </div>
-                    
-                    <div id = "gender">
-                        <div id = "gender-label">Sex:</div>
-                        <div id = "gender-view">{{ chosenPatientData_data.gender }}</div>
-                    </div>
-
-                    <div id = "bday">
-                        <div id = "bday-label">Birthday:</div>
-                        <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
-                    </div>
-
-                    {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
-                        <div id="last">
-                            <div id="lname-label">Status:</div>
-                            <div id="lname">{{ chosenPatientDatas_data.status }}</div>
+                <div id="info_container">
+                    <div id="info_box">
+                        <div id = "first">
+                            <div id = "fname-label">Name:</div>
+                            <div id = "fname">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
                         </div>
                         
-                        {% if chosenPatientDatas_data.status == 'Outpatient' %}
-                            <button id="endtransaction" onclick="openAppointmentModal()">Finish Appointment</button>
+                        <div id = "gender">
+                            <div id = "gender-label">Sex:</div>
+                            <div id = "gender-view">{{ chosenPatientData_data.gender }}</div>
+                        </div>
+
+                        <div id = "bday">
+                            <div id = "bday-label">Birthday:</div>
+                            <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
+                        </div>
+
+                        {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                            <div id="last">
+                                <div id="lname-label">Status:</div>
+                                <div id="lname">{{ chosenPatientDatas_data.status }}</div>
+                            </div>
+                            
+                            {% if chosenPatientDatas_data.status == 'Outpatient' %}
+                                <button id="endtransaction" onclick="openAppointmentModal()">Finish Appointment</button>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" id="admitButton" name="admitButton" onclick="confirmAdmit()">Admit Patient</button>
+                                </form>
+                            {% elif chosenPatientDatas_data.status == 'Inpatient' %}
+                                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                    <div id="last">
+                                        <div id="lname-label">Diagnosis:</div>
+                                        <div id="lname">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
+                                    </div>
+                                {% endfor %}
+                                <button id="endtransaction" onclick="openDischargeModal()">Discharge</button>
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+                    <div id="button-box">
+
+                        <div id="appModal" class="modalFinish" style="display: none;">
+                            <h2>Finish Appointment</h2>
+
+                            <input type="checkbox" id="followupCheckbox" onchange="toggleFollowup()">
+                            <label for="followupCheckbox">Follow-Up Checkup</label>
+
                             <form method="post">
                                 {% csrf_token %}
-                                <button type="submit" id="admitButton" name="admitButton" onclick="confirmAdmit()">Admit Patient</button>
+                                <button id="endAppointment" name="endAppointment">End Appointment</button>
                             </form>
-                        {% elif chosenPatientDatas_data.status == 'Inpatient' %}
-                            {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                <div id="last">
-                                    <div id="lname-label">Diagnosis:</div>
-                                    <div id="lname">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
-                                </div>
-                            {% endfor %}
-                            <button id="endtransaction" onclick="openDischargeModal()">Discharge</button>
-                        {% endif %}
-
-                    {% endfor %}
-
-                    <div id="appModal" class="modalFinish" style="display: none;">
-                        <h2>Finish Appointment</h2>
-
-                        <input type="checkbox" id="followupCheckbox" onchange="toggleFollowup()">
-                        <label for="followupCheckbox">Follow-Up Checkup</label>
-
-                        <form method="post">
-                            {% csrf_token %}
-                            <button id="endAppointment" name="endAppointment">End Appointment</button>
-                        </form>
-                    
-                    
-                        <div id="followupDropdown" style="display: none;">
-                            <div id="myModal" class="modalFinish1">
-                                <div class="modal-content">
-                                    <span id="closeModalButton1">&times;</span>
-                                    <h2>Follow Up Appointment</h2>
-                                    <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
-                                        {% csrf_token %}
-                                        <label for="suggested-time">Suggested Schedule:</label>
-                                        <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                            {% for next_available_date in next_available_dates %}
-                                                <option value="{{ next_available_date }}">{{ next_available_date }}</option>
-                                            {% endfor %}
-                                        </select><br>
-                                        <button type="submit" id="appID" name="appID" value="{{ chosenPatientData_id }}">Appointment Finished</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-
-                    <button onclick="toggleBiometricInfo()">Biometric Information</button>
-                    <div id="biometric-info" style="display: none;">
-                        {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
-                        <div id = "blood-type">
-                            <div id = "blood-type-label">Blood Type:</div>
-                            <div id = "blood-type-view">{{ chosenPatientDatas_data.bloodtype }}</div>
-                        </div>
-                        <div id = "height">
-                            <div id = "height-label">Height: </div>
-                            <div id = "height-view">{{ chosenPatientDatas_data.height }} cm</div>
-                        </div><div id = "weight">
-                            <div id = "weight-label">Weight:</div>
-                            <div id = "weight-view">{{ chosenPatientDatas_data.weight }} kg</div>
-                        </div>
-                        {% endfor %}
-                    </div>
-
-                    <button onclick="toggleContactInfo()">Contact Information</button>
-                    <div id="contact-details" style="display: none;">
-                        <div id="address">
-                            <div id="address-label">Address:</div>
-                            <div id="address-view">{{ chosenPatientData_data.address }}</div>
-                        </div>
-                        <div id="phone">
-                            <div id="phone-number-label">Phone Number:</div>
-                            <div id="phone-number">{{ chosenPatientData_data.cnumber }}</div>
-                        </div>
-                        <div id="email">
-                            <div id="email-label">E-mail Address:</div>
-                            <div id="e-mail">{{ chosenPatientData_data.email }}</div>
-                        </div>
-                    </div>
-                    <button><a href="{% url 'patient_medical_history' %}?chosenPatient={{chosenPatientData_data.uid}}">Medical History</a></button>
-                    <button><a href = "{% url 'view_treatment_plan_all' %}?chosenPatient={{chosenPatientData_data.uid}}">Treatment Plan</a></button>
-
-                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                        {% if chosenPatientConsulNotes_data.diagnosis %}
-                            <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Order</a></button>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-
-        <div id = "progress-notes-container">
-            <div id = "progress-notes">
-                <div id = "head">Progress Notes</div>
-                    <div id = "progress-notes">
-                        <div id = "progress-note">
-                            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                {% for progressnotes_id, progressnotes_data in progressnotes.items %}
-                                    {% if progressnotes_id == chosenPatientData_data.uid %}
-                                        {% for id, data in progressnotes_data.items %}
-                                            <div id = "notes">Focues: Focus<br>
-                                                Notes: {{ data.notes }} <br>
-                                                Updated By: Nurse Name <br>
-                                                Last Updated: {{ data.date }} {{ data.time }}
-                                            </div>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endfor %}
-                        </div>
-                    </div>
-            </div>
-        </div>
-
-        <div id="vital-signs-container">
-            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                <div id="vital-signs-box">
-                    <div id="head">Latest Vital Signs</div>
-                    <div id="vital-signs-table">
-                        <table id="vital-signs">
-                            <tr id="label">
-                                <th>Date and Time</th>
-                                <th>Temperature</th>
-                                <th>Blood Pressure</th>
-                                <th>Pulse</th>
-                                <th>Respiration</th>
-                                <th>Pain Index</th>
-                                <th>Stool</th>
-                                <th>Fluid Output</th>
-                                <th>Fluid Intake</th>
-                            </tr>
-                            {% for sorted_vital_signs_id, sorted_vital_signs_data in sorted_vital_signs.items %}
-                                {% if forloop.counter <= 2 %}
-                                    <tr>
-                                        <td>{{ sorted_vital_signs_data.date }} {{ sorted_vital_signs_data.time }}</td>
-                                        <td>{{ sorted_vital_signs_data.temperature }} °C</td>
-                                        <td>{{ sorted_vital_signs_data.bloodpressure }}</td>
-                                        <td>{{ sorted_vital_signs_data.pulse }} bpm</td>
-                                        <td>{{ sorted_vital_signs_data.respiration }}</td>
-                                        <td>{{ sorted_vital_signs_data.painindex }}/10</td>
-                                        <td><input type="checkbox" disabled></td>
-                                        <td><input type="checkbox" disabled></td>
-                                        <td> ml</td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        </table>
-                        <div id="below-table">
-                            <div id="view-vs-history-button" class="pagination">
-                                <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id="view-vs-history">View History</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <div id="consultation-notes-container">
-            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-            <div id="consultation-notes">
-                <div id="head">Consultation Notes</div >
-                <button id="chiefComplaintButton">Chief Complaint</button>
-                <form method='post'>
-                    {% csrf_token %}
-                    
-                    <div id="chiefComplaintArea" style="display: none;">
-                        {% if chosenPatientConsulNotes %}
-                            {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." 
-                                name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
-                            {% endfor %}
-                        {% else %}
-                            <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." 
-                            name="chiefComplaint"></textarea>
-                        {% endif %}
-                        <button id="saveChiefComplaintButton" type="submit" name="complaintButton" value={{ chosenPatientData_id }} >Save</button>
-                        <button id="cancelChiefComplaintButton">Cancel</button>
-                    </div>
-
-                </form>
-                <div id="ros">
-                    <button id="reviewOfSystemsButton">Review of Systems</button>
-                    <div id="reviewOfSystemsModal" class="modal" style="display: none;">
-                        <div class="modal-content">
-                            <h2>Review of Systems</h2>
-                            <form id="reviewOfSystemsForm" method='post' >
-                                {% csrf_token %}
-                                {% if chosenPatientConsulNotes %}
-                                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                        <div class="column">
-                                            <p>Skin</p>
-                                                <input type="checkbox" name="skin_conditions" value="Rashes" {% if 'Rashes' in chosenPatientConsulNotes_data.review_of_systems.skin %} checked {% endif %}><label>Rashes</label><br>
-                                                <input type="checkbox" name="skin_conditions" value="Itching" {% if 'Itching' in chosenPatientConsulNotes_data.review_of_systems.skin %} checked {% endif %}><label>Itching</label><br>
-                                                <input type="checkbox" name="skin_conditions" value="Change in Hair or Nails" {% if 'Change in Hair or Nails' in chosenPatientConsulNotes_data.review_of_systems.skin %} checked {% endif %}><label>Change in Hair or Nails</label><br>
-                                            <p>Head</p>
-                                                <input type="checkbox" name="head_conditions" value="Headaches" {% if 'Headaches' in chosenPatientConsulNotes_data.review_of_systems.head %} checked {% endif %}><label>Headaches</label><br>
-                                                <input type="checkbox" name="head_conditions" value="Head Injury" {% if 'Head Injury' in chosenPatientConsulNotes_data.review_of_systems.head %} checked {% endif %}><label>Head Injury</label><br>
-                                            <p>Eyes</p>
-                                                <input type="checkbox" name="eye_conditions" value="Glasses or Contacts" {% if 'Glasses or Contacts' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Glasses or Contacts</label><br>
-                                                <input type="checkbox" name="eye_conditions" value="Change in Vision" {% if 'Change in Vision' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Change in Vision</label><br>
-                                                <input type="checkbox" name="eye_conditions" value="Eye Pain" {% if 'Eye Pain' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Eye Pain</label><br>
-                                                <input type="checkbox" name="eye_conditions" value="Double Vision" {% if 'Double Vision' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Double Vision</label><br>
-                                                <input type="checkbox" name="eye_conditions" value="Flashing Lights" {% if 'Flashing Lights' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Flashing Lights</label><br>
-                                                <input type="checkbox" name="eye_conditions" value="Glaucoma/Cataracts" {% if 'Glaucoma/Cataracts' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Glaucoma/Cataracts</label><br>
-                                            <p>Ears</p>
-                                                <input type="checkbox" name="ear_conditions" value="Change in Hearing" {% if 'Change in Hearing' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Change in Hearing</label><br>
-                                                <input type="checkbox" name="ear_conditions" value="Ear Pain" {% if 'Ear Pain' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Ear Pain</label><br>
-                                                <input type="checkbox" name="ear_conditions" value="Ear Discharge" {% if 'Ear Discharge' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Ear Discharge</label><br>
-                                                <input type="checkbox" name="ear_conditions" value="Ringing" {% if 'Ringing' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Ringing</label><br>
-                                                <input type="checkbox" name="ear_conditions" value="Dizziness" {% if 'Dizziness' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Dizziness</label><br>
-                                            <p>Nose/Sinuses</p>
-                                                <input type="checkbox" name="nose_conditions" value="Nose Bleeds" {% if 'Nose Bleeds' in chosenPatientConsulNotes_data.review_of_systems.nose %} checked {% endif %}><label>Nose Bleeds</label><br>
-                                                <input type="checkbox" name="nose_conditions" value="Nasal Stuffiness" {% if 'Nasal Stuffiness' in chosenPatientConsulNotes_data.review_of_systems.nose %} checked {% endif %}><label>Nasal Stuffiness</label><br>
-                                                <input type="checkbox" name="nose_conditions" value="Frequent Colds" {% if 'Frequent Colds' in chosenPatientConsulNotes_data.review_of_systems.nose %} checked {% endif %}><label>Frequent Colds</label><br>
-                                            <p>Allergies</p>
-                                                <input type="checkbox" name="allergy_conditions" value="Frequent Colds" {% if 'Frequent Colds' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Hives</label><br>
-                                                <input type="checkbox" name="allergy_conditions" value="Swelling of Lips or Tongues" {% if 'Swelling of Lips or Tongues' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Swelling of Lips or Tongues</label><br>
-                                                <input type="checkbox" name="allergy_conditions" value="Hay Fever" {% if 'Hay Fever' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Hay Fever</label><br>
-                                                <input type="checkbox" name="allergy_conditions" value="Asthma" {% if 'Asthma' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Asthma</label><br>
-                                                <input type="checkbox" name="allergy_conditions" value="Eczema/Sensitive" {% if 'Eczema/Sensitive' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Eczema/Sensitive</label><br>
-                                            <p>Mouth/Throat</p>
-                                                <input type="checkbox" name="mouth_conditions" value="Bleeding Gums" {% if 'Bleeding Gums' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Bleeding Gums</label><br>
-                                                <input type="checkbox" name="mouth_conditions" value="Sore Tongue" {% if 'Sore Tongue' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Sore Tongue</label><br>
-                                                <input type="checkbox" name="mouth_conditions" value="Sore Throat" {% if 'Sore Throat' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Sore Throat</label><br>
-                                                <input type="checkbox" name="mouth_conditions" value="Hoarseness" {% if 'Hoarseness' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Hoarseness</label><br>
-                                            <p>Neck</p>
-                                                <input type="checkbox" name="neck_conditions" value="Lumps" {% if 'Lumps' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Lumps</label><br>
-                                                <input type="checkbox" name="neck_conditions" value="Swollen Glands" {% if 'Swollen Glands' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Swollen Glands</label><br>
-                                                <input type="checkbox" name="neck_conditions" value="Goiter" {% if 'Goiter' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Goiter</label><br>
-                                                <input type="checkbox" name="neck_conditions" value="Stiffness" {% if 'Stiffness' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Stiffness</label><br>
-                                            <p>Breast</p>
-                                                <input type="checkbox" name="breast_conditions" value="Lumps" {% if 'Lumps' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>Lumps</label><br>
-                                                <input type="checkbox" name="breast_conditions" value="Pain" {% if 'Pain' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>Pain</label><br>
-                                                <input type="checkbox" name="breast_conditions" value="Nipple Discharge" {% if 'Nipple Discharge' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>Nipple Discharge</label><br>
-                                                <input type="checkbox" name="breast_conditions" value="BSE" {% if 'BSE' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>BSE</label><br>
-                                            <p>Respiratory/Cardiac</p>
-                                                <input type="checkbox" name="cardiac_conditions" value="Shortness of Breath" {% if 'Shortness of Breath' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Shortness of Breath</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Cough" {% if 'Cough' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Cough</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Production of Phlegm" {% if 'Production of Phlegm' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Production of Phlegm</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Wheezing" {% if 'Wheezing' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Wheezing</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Coughing up Blood" {% if 'Coughing up Blood' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Coughing up Blood</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Chest Pain" {% if 'Chest Pain' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Chest Pain</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Fever" {% if 'Fever' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Fever</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Night Sweats" {% if 'Night Sweats' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Night Sweats</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="BSE" {% if 'BSE' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Swelling in Hands/Feet</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Swelling in Hands/Feet" {% if 'Swelling in Hands/Feet' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Blue Fingers/Toes</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="High Blood Pressure" {% if 'High Blood Pressure' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>High Blood Pressure</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Heart Murmur" {% if 'Heart Murmur' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Heart Murmur</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="HX of Heart Medication" {% if 'HX of Heart Medication' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>HX of Heart Medication</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Bronchities/Emphysema" {% if 'Bronchities/Emphysema' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Bronchities/Emphysema</label><br>
-                                                <input type="checkbox" name="cardiac_conditions" value="Rheumatic Heart Disease" {% if 'Rheumatic Heart Disease' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Rheumatic Heart Disease</label><br>
-                                        </div>
-                                        <div class="column">
-                                            <p>Gastrointestinal</p>
-                                                <input type="checkbox" name="gastro_conditions" value="Change in Appetite/Weight" {% if 'Change in Appetite/Weight' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Change in Appetite/Weight</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Problems Swallowing" {% if 'Problems Swallowing' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Problems Swallowing</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Nausea" {% if 'Nausea' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Nausea</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Heartburn" {% if 'Heartburn' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Heartburn</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Vomiting" {% if 'Vomiting' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Vomiting</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Vomiting Blood" {% if 'Vomiting Blood' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Vomiting Blood</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Constipation" {% if 'Constipation' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Constipation</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Diarrhea" {% if 'Diarrhea' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Diarrhea</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Change in Bowel Habits" {% if 'Change in Bowel Habits' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Change in Bowel Habits</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Abdominal Pain" {% if 'Abdominal Pain' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Abdominal Pain</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Excessive Belching" {% if 'Excessive Belching' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Excessive Belching</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Excessive Flatus" {% if 'Excessive Flatus' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Excessive Flatus</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Yellow color of Skin" {% if 'Yellow color of Skin' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Yellow color of Skin</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Food Intolerance" {% if 'Food Intolerance' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Food Intolerance</label><br>
-                                                <input type="checkbox" name="gastro_conditions" value="Rectal Bleeding/Hemorrhoids" {% if 'Rectal Bleeding/Hemorrhoids' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Rectal Bleeding/Hemorrhoids</label><br>
-                                            <p>Urinary</p>
-                                                <input type="checkbox" name="urinary_conditions" value="Difficulty in Urinaition" {% if 'Difficulty in Urinaition' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Difficulty in Urinaition</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="Pain or buring on urination" {% if 'Pain or buring on urination' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Pain or buring on urination</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="Frequent urination at night" {% if 'Frequent urination at night' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Frequent urination at night</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="Urgent need to urinate" {% if 'Urgent need to urinate' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Urgent need to urinate</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="Incontinence of urine" {% if 'Incontinence of urine' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Incontinence of urine</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="Dribbling" {% if 'Dribbling' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Dribbling</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="Decreased urine stream" {% if 'Decreased urine stream' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Decreased urine stream</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="Blood in urine" {% if 'Blood in urine' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Blood in urine</label><br>
-                                                <input type="checkbox" name="urinary_conditions" value="UTI/Stones/Prostate Infection" {% if 'UTI/Stones/Prostate Infection' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>UTI/Stones/Prostate Infection</label><br>
-                                        </div>
-                                        <div class="column">
-                                            <p>Peripheral Vascular</p>
-                                                <input type="checkbox" name="pv_conditions" value="Leg cramps" {% if 'Leg cramps' in chosenPatientConsulNotes_data.review_of_systems.pv %} checked {% endif %}><label>Leg cramps</label><br>
-                                                <input type="checkbox" name="pv_conditions" value="Varicose veins" {% if 'Varicose veins' in chosenPatientConsulNotes_data.review_of_systems.pv %} checked {% endif %}><label>Varicose veins</label><br>
-                                                <input type="checkbox" name="pv_conditions" value="Clots in veins" {% if 'Clots in veins' in chosenPatientConsulNotes_data.review_of_systems.pv %} checked {% endif %}><label>Clots in veins</label><br>
-                                            <p>Muscoskeletal</p>
-                                                <input type="checkbox" name="ms_conditions" value="Pain" {% if 'Pain' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Pain</label><br>
-                                                <input type="checkbox" name="ms_conditions" value="Swelling" {% if 'Swelling' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Swelling</label><br>
-                                                <input type="checkbox" name="ms_conditions" value="Stiffness" {% if 'Stiffness' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Stiffness</label><br>
-                                                <input type="checkbox" name="ms_conditions" value="Decrease joint motion" {% if 'Decrease joint motion' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Decrease joint motion</label><br>
-                                                <input type="checkbox" name="ms_conditions" value="Broken bone" {% if 'Broken bone' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Broken bone</label><br>
-                                                <input type="checkbox" name="ms_conditions" value="Serious sprains" {% if 'Serious sprains' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Serious sprains</label><br>
-                                                <input type="checkbox" name="ms_conditions" value="Arthritis" {% if 'Arthritis' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Arthritis</label><br>
-                                                <input type="checkbox" name="ms_conditions" value="Gout" {% if 'Gout' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Gout</label><br>
-                                            <p>Neurologic</p>
-                                                <input type="checkbox" name="neuro_conditions" value="Headaches" {% if 'Headaches' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Headaches</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Seizures" {% if 'Seizures' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Seizures</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Loss of consciousness/Fainting" {% if 'Loss of consciousness/Fainting' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Loss of consciousness/Fainting</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Paralysis" {% if 'Paralysis' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Paralysis</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Weakness" {% if 'Weakness' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Weakness</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Loss of muscle size" {% if 'Loss of muscle size' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Loss of muscle size</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Muscle spasm" {% if 'Muscle spasm' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Muscle spasm</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Tremor" {% if 'Tremor' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Tremor</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Involuntary movement" {% if 'Involuntary movement' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Involuntary movement</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Incoordination" {% if 'Incoordination' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Incoordination</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Numbness" {% if 'Numbness' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Numbness</label><br>
-                                                <input type="checkbox" name="neuro_conditions" value="Feeling of pins and needles" {% if 'Feeling of pins and needles' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Feeling of pins and needles</label><br>
-                                            <p>Hematologic</p>
-                                                <input type="checkbox" name="hema_conditions" value="Anemia" {% if 'Anemia' in chosenPatientConsulNotes_data.review_of_systems.hema%} checked {% endif %}><label>Anemia</label><br>
-                                                <input type="checkbox" name="hema_conditions" value="Easy bruising/bleeding" {% if 'Easy bruising/bleeding' in chosenPatientConsulNotes_data.review_of_systems.hema%} checked {% endif %}><label>Easy bruising/bleeding</label><br>
-                                                <input type="checkbox" name="hema_conditions" value="Past tranfusions" {% if 'Past tranfusions' in chosenPatientConsulNotes_data.review_of_systems.hema%} checked {% endif %}><label>Past tranfusions</label><br>
-                                            <p>Endocrine</p>
-                                                <input type="checkbox" name="endo_conditions" value="Abnormal Growth" {% if 'Abnormal Growth' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Abnormal Growth</label><br>
-                                                <input type="checkbox" name="endo_conditions" value="Increased appetite" {% if 'Increased appetite' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Increased appetite</label><br>
-                                                <input type="checkbox" name="endo_conditions" value="Increased thirst" {% if 'Increased thirst' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Increased thirst</label><br>
-                                                <input type="checkbox" name="endo_conditions" value="Increase urine production" {% if 'Increase urine production' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Increase urine production</label><br>
-                                                <input type="checkbox" name="endo_conditions" value="Thyroid trouble" {% if 'Past tranfusions' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Thyroid trouble</label><br>
-                                                <input type="checkbox" name="endo_conditions" value="Heat/cold Intolerance" {% if 'Thyroid trouble' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Heat/cold Intolerance</label><br>
-                                                <input type="checkbox" name="endo_conditions" value="Excessive Sweating" {% if 'Excessive Sweating' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Excessive Sweating</label><br>
-                                                <input type="checkbox" name="endo_conditions" value="Diabetes" {% if 'Diabetes' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Diabetes</label><br>
-                                        </div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="column">
-                                        <p>Skin</p>
-                                        <input type="checkbox" name="skin_conditions" value="Rashes"><label>Rashes</label><br>
-                                        <input type="checkbox" name="skin_conditions" value="Itching"><label>Itching</label><br>
-                                        <input type="checkbox" name="skin_conditions" value="Change in Hair or Nails"><label>Change in Hair or Nails</label><br>
-                                        <p>Head</p>
-                                        <input type="checkbox" name="head_conditions" value="Headaches"><label>Headaches</label><br>
-                                        <input type="checkbox" name="head_conditions" value="Head Injury"><label>Head Injury</label><br>
-                                        <p>Eyes</p>
-                                        <input type="checkbox" name="eye_conditions" value="Glasses or Contacts"><label>Glasses or Contacts</label><br>
-                                        <input type="checkbox" name="eye_conditions" value="Change in Vision"><label>Change in Vision</label><br>
-                                        <input type="checkbox" name="eye_conditions" value="Eye Pain"><label>Eye Pain</label><br>
-                                        <input type="checkbox" name="eye_conditions" value="Double Vision"><label>Double Vision</label><br>
-                                        <input type="checkbox" name="eye_conditions" value="Flashing Lights"><label>Flashing Lights</label><br>
-                                        <input type="checkbox" name="eye_conditions" value="Glaucoma/Cataracts"><label>Glaucoma/Cataracts</label><br>
-                                        <p>Ears</p>
-                                        <input type="checkbox" name="ear_conditions" value="Change in Hearing"><label>Change in Hearing</label><br>
-                                        <input type="checkbox" name="ear_conditions" value="Ear Pain"><label>Ear Pain</label><br>
-                                        <input type="checkbox" name="ear_conditions" value="Ear Discharge"><label>Ear Discharge</label><br>
-                                        <input type="checkbox" name="ear_conditions" value="Ringing"><label>Ringing</label><br>
-                                        <input type="checkbox" name="ear_conditions" value="Dizziness"><label>Dizziness</label><br>
-                                        <p>Nose/Sinuses</p>
-                                        <input type="checkbox" name="nose_conditions" value="Nose Bleeds"><label>Nose Bleeds</label><br>
-                                        <input type="checkbox" name="nose_conditions" value="Nasal Stuffiness"><label>Nasal Stuffiness</label><br>
-                                        <input type="checkbox" name="nose_conditions" value="Frequent Colds"><label>Frequent Colds</label><br>
-                                        <p>Allergies</p>
-                                        <input type="checkbox" name="allergy_conditions" value="Frequent Colds"><label>Hives</label><br>
-                                        <input type="checkbox" name="allergy_conditions" value="Swelling of Lips or Tongues"><label>Swelling of Lips or Tongues</label><br>
-                                        <input type="checkbox" name="allergy_conditions" value="Hay Fever"><label>Hay Fever</label><br>
-                                        <input type="checkbox" name="allergy_conditions" value="Asthma"><label>Asthma</label><br>
-                                        <input type="checkbox" name="allergy_conditions" value="Eczema/Sensitive"><label>Eczema/Sensitive</label><br>
-                                        <p>Mouth/Throat</p>
-                                        <input type="checkbox" name="mouth_conditions" value="Bleeding Gums"><label>Bleeding Gums</label><br>
-                                        <input type="checkbox" name="mouth_conditions" value="Sore Tongue"><label>Sore Tongue</label><br>
-                                        <input type="checkbox" name="mouth_conditions" value="Sore Throat"><label>Sore Throat</label><br>
-                                        <input type="checkbox" name="mouth_conditions" value="Hoarseness"><label>Hoarseness</label><br>
-                                        <p>Neck</p>
-                                        <input type="checkbox" name="neck_conditions" value="Lumps"><label>Lumps</label><br>
-                                        <input type="checkbox" name="neck_conditions" value="Swollen Glands"><label>Swollen Glands</label><br>
-                                        <input type="checkbox" name="neck_conditions" value="Goiter"><label>Goiter</label><br>
-                                        <input type="checkbox" name="neck_conditions" value="Stiffness"><label>Stiffness</label><br>
-                                        <p>Breast</p>
-                                        <input type="checkbox" name="breast_conditions" value="Lumps"><label>Lumps</label><br>
-                                        <input type="checkbox" name="breast_conditions" value="Pain"><label>Pain</label><br>
-                                        <input type="checkbox" name="breast_conditions" value="Nipple Discharge"><label>Nipple Discharge</label><br>
-                                        <input type="checkbox" name="breast_conditions" value="BSE"><label>BSE</label><br>
-                                        <p>Respiratory/Cardiac</p>
-                                        <input type="checkbox" name="cardiac_conditions" value="Shortness of Breath"><label>Shortness of Breath</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Cough"><label>Cough</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Production of Phlegm"><label>Production of Phlegm</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Wheezing"><label>Wheezing</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Coughing up Blood"><label>Coughing up Blood</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Chest Pain"><label>Chest Pain</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Fever"><label>Fever</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Night Sweats"><label>Night Sweats</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="BSE"><label>Swelling in Hands/Feet</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Swelling in Hands/Feet"><label>Blue Fingers/Toes</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="High Blood Pressure"><label>High Blood Pressure</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Heart Murmur"><label>Heart Murmur</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="HX of Heart Medication"><label>HX of Heart Medication</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Bronchities/Emphysema"><label>Bronchities/Emphysema</label><br>
-                                        <input type="checkbox" name="cardiac_conditions" value="Rheumatic Heart Disease"><label>Rheumatic Heart Disease</label><br>
-                                    </div>
-                                    <div class="column">
-                                        <p>Gastrointestinal</p>
-                                        <input type="checkbox" name="gastro_conditions" value="Change in Appetite/Weight"><label>Change in Appetite/Weight</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Problems Swallowing"><label>Problems Swallowing</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Nausea"><label>Nausea</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Heartburn"><label>Heartburn</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Vomiting"><label>Vomiting</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Vomiting Blood"><label>Vomiting Blood</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Constipation"><label>Constipation</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Diarrhea"><label>Diarrhea</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Change in Bowel Habits"><label>Change in Bowel Habits</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Abdominal Pain"><label>Abdominal Pain</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Excessive Belching"><label>Excessive Belching</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Excessive Flatus"><label>Excessive Flatus</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Yellow color of Skin"><label>Yellow color of Skin</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Food Intolerance"><label>Food Intolerance</label><br>
-                                        <input type="checkbox" name="gastro_conditions" value="Rectal Bleeding/Hemorrhoids"><label>Rectal Bleeding/Hemorrhoids</label><br>
-                                        <p>Urinary</p>
-                                        <input type="checkbox" name="urinary_conditions" value="Difficulty in Urinaition"><label>Difficulty in Urinaition</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="Pain or buring on urination"><label>Pain or buring on urination</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="Frequent urination at night"><label>Frequent urination at night</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="Urgent need to urinate"><label>Urgent need to urinate</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="Incontinence of urine"><label>Incontinence of urine</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="Dribbling"><label>Dribbling</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="Decreased urine stream"><label>Decreased urine stream</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="Blood in urine"><label>Blood in urine</label><br>
-                                        <input type="checkbox" name="urinary_conditions" value="UTI/Stones/Prostate Infection"><label>UTI/Stones/Prostate Infection</label><br>
-                                    </div>
-                                    <div class="column">
-                                        <p>Peripheral Vascular</p>
-                                        <input type="checkbox" name="pv_conditions" value="Leg cramps"><label>Leg cramps</label><br>
-                                        <input type="checkbox" name="pv_conditions" value="Varicose veins"><label>Varicose veins</label><br>
-                                        <input type="checkbox" name="pv_conditions" value="Clots in veins"><label>Clots in veins</label><br>
-                                        <p>Muscoskeletal</p>
-                                        <input type="checkbox" name="ms_conditions" value="Pain"><label>Pain</label><br>
-                                        <input type="checkbox" name="ms_conditions" value="Swelling"><label>Swelling</label><br>
-                                        <input type="checkbox" name="ms_conditions" value="Stiffness"><label>Stiffness</label><br>
-                                        <input type="checkbox" name="ms_conditions" value="Decrease joint motion"><label>Decrease joint motion</label><br>
-                                        <input type="checkbox" name="ms_conditions" value="Broken bone"><label>Broken bone</label><br>
-                                        <input type="checkbox" name="ms_conditions" value="Serious sprains"><label>Serious sprains</label><br>
-                                        <input type="checkbox" name="ms_conditions" value="Arthritis"><label>Arthritis</label><br>
-                                        <input type="checkbox" name="ms_conditions" value="Gout"><label>Gout</label><br>
-                                        <p>Neurologic</p>
-                                        <input type="checkbox" name="neuro_conditions" value="Headaches"><label>Headaches</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Seizures"><label>Seizures</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Loss of consciousness/Fainting"><label>Loss of consciousness/Fainting</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Paralysis"><label>Paralysis</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Weakness"><label>Weakness</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Loss of muscle size"><label>Loss of muscle size</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Muscle spasm"><label>Muscle spasm</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Tremor"><label>Tremor</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Involuntary movement"><label>Involuntary movement</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Incoordination"><label>Incoordination</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Numbness"><label>Numbness</label><br>
-                                        <input type="checkbox" name="neuro_conditions" value="Feeling of pins and needles"><label>Feeling of pins and needles</label><br>
-                                        <p>Hematologic</p>
-                                        <input type="checkbox" name="hema_conditions" value="Anemia"><label>Anemia</label><br>
-                                        <input type="checkbox" name="hema_conditions" value="Easy bruising/bleeding"><label>Easy bruising/bleeding</label><br>
-                                        <input type="checkbox" name="hema_conditions" value="Past tranfusions"><label>Past tranfusions</label><br>
-                                        <p>Endocrine</p>
-                                        <input type="checkbox" name="endo_conditions" value="Abnormal Growth"><label>Abnormal Growth</label><br>
-                                        <input type="checkbox" name="endo_conditions" value="Increased appetite"><label>Increased appetite</label><br>
-                                        <input type="checkbox" name="endo_conditions" value="Increased thirst"><label>Increased thirst</label><br>
-                                        <input type="checkbox" name="endo_conditions" value="Increase urine production"><label>Increase urine production</label><br>
-                                        <input type="checkbox" name="endo_conditions" value="Thyroid trouble"><label>Thyroid trouble</label><br>
-                                        <input type="checkbox" name="endo_conditions" value="Heat/cold Intolerance"><label>Heat/cold Intolerance</label><br>
-                                        <input type="checkbox" name="endo_conditions" value="Excessive Sweating"><label>Excessive Sweating</label><br>
-                                        <input type="checkbox" name="endo_conditions" value="Diabetes"><label>Diabetes</label><br>
-                                    </div>
-                                {% endif %}
-                                <button type="submit" name="rosButton" value={{ chosenPatientData_id }}>Save</button>
-                            </form>
-                            <button id="closeModalButton">Close</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="diagnosisButton">
-                    <button onclick="toggleDropdown()">Diagnosis</button>
-                    <form id="diagnosis" method='post'>
-                        {% csrf_token %}
-                    <div id="diagnosisDropdown" class="dropdown-content" style="display: none;">
                         
-                        <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
-                            <datalist id="disease_name_suggestion">
-                                <option value="">-- Select Disease --</option>
-                                {% for medicine in medicines_list %}
-                                    <option value="{{ medicine }}">{{ medicine }}</option>
-                                {% endfor %}
-                            </datalist>
-                        </select>
-                        <button type="submit" name="diagnosisButton" value={{ chosenPatientData_id }}>Save</button>
-                    </div>
-                    </form>
-                    {% if chosenPatientConsulNotes %}
+                        
+                            <div id="followupDropdown" style="display: none;">
+                                <div id="myModal" class="modalFinish1">
+                                    <div class="modal-content">
+                                        <span id="closeModalButton1">&times;</span>
+                                        <h2>Follow Up Appointment</h2>
+                                        <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
+                                            {% csrf_token %}
+                                            <label for="suggested-time">Suggested Schedule:</label>
+                                            {% comment %} <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                                {% for next_available_date in next_available_dates %}
+                                                    <option value="{{ next_available_date }}">{{ next_available_date }}</option>
+                                                {% endfor %}
+                                            </select><br> {% endcomment %}
+                                            <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                                <option value="one_week" name="selected_time">1 week</option>
+                                                <option value="two_weeks" name="selected_time">2 weeks</option>
+                                                <option value="three_weeks" name="selected_time">3 weeks</option>
+                                                <option value="one_month" name="selected_time">1 month</option>
+                                            </select><br>
+                                            <button type="submit" id="appID" name="appID" value="{{ chosenPatientData_id }}">Appointment Finished</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="toggleBiometricInfo()">Biometric Information</button>
+                        <div id="biometric-info" style="display: none;">
+                            {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                            <div id = "blood-type">
+                                <div id = "blood-type-label">Blood Type:</div>
+                                <div id = "blood-type-view">{{ chosenPatientDatas_data.bloodtype }}</div>
+                            </div>
+                            <div id = "height">
+                                <div id = "height-label">Height: </div>
+                                <div id = "height-view">{{ chosenPatientDatas_data.height }} cm</div>
+                            </div><div id = "weight">
+                                <div id = "weight-label">Weight:</div>
+                                <div id = "weight-view">{{ chosenPatientDatas_data.weight }} kg</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <button onclick="toggleContactInfo()">Contact Information</button>
+                        <div id="contact-details" style="display: none;">
+                            <div id="address">
+                                <div id="address-label">Address:</div>
+                                <div id="address-view">{{ chosenPatientData_data.address }}</div>
+                            </div>
+                            <div id="phone">
+                                <div id="phone-number-label">Phone Number:</div>
+                                <div id="phone-number">{{ chosenPatientData_data.cnumber }}</div>
+                            </div>
+                            <div id="email">
+                                <div id="email-label">E-mail Address:</div>
+                                <div id="e-mail">{{ chosenPatientData_data.email }}</div>
+                            </div>
+                        </div>
+                        <button><a href="{% url 'patient_medical_history' %}?chosenPatient={{chosenPatientData_data.uid}}">Medical History</a></button>
+                        <button><a href = "{% url 'view_treatment_plan_all' %}?chosenPatient={{chosenPatientData_data.uid}}">Treatment Plan</a></button>
+
                         {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                             {% if chosenPatientConsulNotes_data.diagnosis %}
-                                <p >Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</p>
-                            {% else %} 
-                                <p>Diagnosis: No Current Diagnosis</p>
-                            {% endif %} 
-                        {% endfor %}   
-                    {% else %} 
-                        <p>Diagnosis: No Current Diagnosis</p>
-                    {% endif %}   
-            </div>
-            {% endfor %}
-        </div>
-        
-        <div id = "diagnostic-tests-container">
-            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-            <div id = "diagnostic-tests">
-                <div id = "head">Diagnostic Tests</div>
-                    <button><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
-                    
-                    <button id="requestLabTestButton">Request New Test</button>
+                                <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Order</a></button>
+                            {% endif %}
+                        {% endfor %}
 
-                    <div id="newLabTestModal" class="modal2" style="display: none;">
-                        <div class="modal-content2">
-                            <h2>Request New Test</h2>
-                            <form method="post" id="newLabTestForm">
-                                {% csrf_token %}
-                                <input type="checkbox" id="bloodTestCheckbox" name="bloodTestCheckbox">
-                                <label for="bloodTestCheckbox">Blood Test</label><br>
-                                <input type="checkbox" id="urineTestCheckbox" name="urineTestCheckbox">
-                                <label for="urineTestCheckbox">Urine Test</label><br>
-                                <input type="checkbox" id="stoolTestCheckbox" name="stoolTestCheckbox">
-                                <label for="stoolTestCheckbox">Stool Test</label><br>
-                                <input type="checkbox" id="tissueBiopsyCheckbox" name="tissueBiopsyCheckbox">
-                                <label for="tissueBiopsyCheckbox">Tissue Biopsy</label><br>
-                                <input type="checkbox" id="xrayCheckbox" name="xrayCheckbox">
-                                <label for="xrayCheckbox">X-rays</label><br>
-                                <input type="checkbox" id="ctScanCheckbox" name="ctScanCheckbox">
-                                <label for="ctScanCheckbox">Computed Tomography/CT Scan</label><br>
-                                <input type="checkbox" id="mriCheckbox" name="mriCheckbox">
-                                <label for="mriCheckbox">Magnetic Resonance Imaging/MRI</label><br>
-                                <input type="checkbox" id="ultrasoundCheckbox" name="ultrasoundCheckbox">
-                                <label for="ultrasoundCheckbox">Ultrasound</label><br>
-                                <input type="checkbox" id="ecgCheckbox" name="ecgCheckbox">
-                                <label for="ecgCheckbox">Electrocardiogram/ECG/EKG</label><br>
-                                <input type="checkbox" id="colonoscopyCheckbox" name="colonoscopyCheckbox">
-                                <label for="colonoscopyCheckbox">Colonoscopy</label><br>
-                                <input type="checkbox" id="bronchoscopyCheckbox" name="bronchoscopyCheckbox">
-                                <label for="bronchoscopyCheckbox">Bronchoscopy</label><br>
-                                <input type="checkbox" id="petScanCheckbox" name="petScanCheckbox">
-                                <label for="petScanCheckbox">Positron Emission Tomography (PET) Scan</label><br>
-                                <button type="submit" name="submitLabTestRequest">Submit</button>
-                                <button id="closeModal">Cancel</button>
-                            </form>                            
-                            
-                        </div>
                     </div>
-                    
-                    </div>
+                
+                </div>
                 </div>
             {% endfor %}
         </div>
+
+        <div id="whole-container" style="display: flex; flex-direction: row">
+            <div id="left-container">
+            {% comment %} Consultation Notes {% endcomment %}
+                <div class = "container-big" style="margin-right: 30px;">
+                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                    <div class = "container-small" style="width: 300px;">
+                        <div class="head">Consultation Notes</div >
+                            <div class="container-inside">
+                                <button id="chiefComplaintButton">Chief Complaint</button>
+                                <form method='post'>
+                                    {% csrf_token %}
+                                    <div id="chiefComplaintArea" style="display: none;">
+                                        {% if chosenPatientConsulNotes %}
+                                            {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                                <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." 
+                                                name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
+                                            {% endfor %}
+                                        {% else %}
+                                            <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." 
+                                            name="chiefComplaint"></textarea>
+                                        {% endif %}
+                                        <button id="saveChiefComplaintButton" type="submit" name="complaintButton" value={{ chosenPatientData_id }} >Save</button>
+                                        <button id="cancelChiefComplaintButton">Cancel</button>
+                                    </div>
+                                </form>
+
+                                <div id="ros">
+                                    <button id="reviewOfSystemsButton">Review of Systems</button>
+                                    <div id="reviewOfSystemsModal" class="modal" style="display: none;">
+                                        <div class="modal-content">
+                                            <h2>Review of Systems</h2>
+                                            <form id="reviewOfSystemsForm" method='post' >
+                                                {% csrf_token %}
+                                                {% if chosenPatientConsulNotes %}
+                                                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                                        <div class="column">
+                                                            <p>Skin</p>
+                                                                <input type="checkbox" name="skin_conditions" value="Rashes" {% if 'Rashes' in chosenPatientConsulNotes_data.review_of_systems.skin %} checked {% endif %}><label>Rashes</label><br>
+                                                                <input type="checkbox" name="skin_conditions" value="Itching" {% if 'Itching' in chosenPatientConsulNotes_data.review_of_systems.skin %} checked {% endif %}><label>Itching</label><br>
+                                                                <input type="checkbox" name="skin_conditions" value="Change in Hair or Nails" {% if 'Change in Hair or Nails' in chosenPatientConsulNotes_data.review_of_systems.skin %} checked {% endif %}><label>Change in Hair or Nails</label><br>
+                                                            <p>Head</p>
+                                                                <input type="checkbox" name="head_conditions" value="Headaches" {% if 'Headaches' in chosenPatientConsulNotes_data.review_of_systems.head %} checked {% endif %}><label>Headaches</label><br>
+                                                                <input type="checkbox" name="head_conditions" value="Head Injury" {% if 'Head Injury' in chosenPatientConsulNotes_data.review_of_systems.head %} checked {% endif %}><label>Head Injury</label><br>
+                                                            <p>Eyes</p>
+                                                                <input type="checkbox" name="eye_conditions" value="Glasses or Contacts" {% if 'Glasses or Contacts' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Glasses or Contacts</label><br>
+                                                                <input type="checkbox" name="eye_conditions" value="Change in Vision" {% if 'Change in Vision' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Change in Vision</label><br>
+                                                                <input type="checkbox" name="eye_conditions" value="Eye Pain" {% if 'Eye Pain' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Eye Pain</label><br>
+                                                                <input type="checkbox" name="eye_conditions" value="Double Vision" {% if 'Double Vision' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Double Vision</label><br>
+                                                                <input type="checkbox" name="eye_conditions" value="Flashing Lights" {% if 'Flashing Lights' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Flashing Lights</label><br>
+                                                                <input type="checkbox" name="eye_conditions" value="Glaucoma/Cataracts" {% if 'Glaucoma/Cataracts' in chosenPatientConsulNotes_data.review_of_systems.eyes %} checked {% endif %}><label>Glaucoma/Cataracts</label><br>
+                                                            <p>Ears</p>
+                                                                <input type="checkbox" name="ear_conditions" value="Change in Hearing" {% if 'Change in Hearing' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Change in Hearing</label><br>
+                                                                <input type="checkbox" name="ear_conditions" value="Ear Pain" {% if 'Ear Pain' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Ear Pain</label><br>
+                                                                <input type="checkbox" name="ear_conditions" value="Ear Discharge" {% if 'Ear Discharge' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Ear Discharge</label><br>
+                                                                <input type="checkbox" name="ear_conditions" value="Ringing" {% if 'Ringing' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Ringing</label><br>
+                                                                <input type="checkbox" name="ear_conditions" value="Dizziness" {% if 'Dizziness' in chosenPatientConsulNotes_data.review_of_systems.ear %} checked {% endif %}><label>Dizziness</label><br>
+                                                            <p>Nose/Sinuses</p>
+                                                                <input type="checkbox" name="nose_conditions" value="Nose Bleeds" {% if 'Nose Bleeds' in chosenPatientConsulNotes_data.review_of_systems.nose %} checked {% endif %}><label>Nose Bleeds</label><br>
+                                                                <input type="checkbox" name="nose_conditions" value="Nasal Stuffiness" {% if 'Nasal Stuffiness' in chosenPatientConsulNotes_data.review_of_systems.nose %} checked {% endif %}><label>Nasal Stuffiness</label><br>
+                                                                <input type="checkbox" name="nose_conditions" value="Frequent Colds" {% if 'Frequent Colds' in chosenPatientConsulNotes_data.review_of_systems.nose %} checked {% endif %}><label>Frequent Colds</label><br>
+                                                            <p>Allergies</p>
+                                                                <input type="checkbox" name="allergy_conditions" value="Frequent Colds" {% if 'Frequent Colds' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Hives</label><br>
+                                                                <input type="checkbox" name="allergy_conditions" value="Swelling of Lips or Tongues" {% if 'Swelling of Lips or Tongues' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Swelling of Lips or Tongues</label><br>
+                                                                <input type="checkbox" name="allergy_conditions" value="Hay Fever" {% if 'Hay Fever' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Hay Fever</label><br>
+                                                                <input type="checkbox" name="allergy_conditions" value="Asthma" {% if 'Asthma' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Asthma</label><br>
+                                                                <input type="checkbox" name="allergy_conditions" value="Eczema/Sensitive" {% if 'Eczema/Sensitive' in chosenPatientConsulNotes_data.review_of_systems.allergy %} checked {% endif %}><label>Eczema/Sensitive</label><br>
+                                                            <p>Mouth/Throat</p>
+                                                                <input type="checkbox" name="mouth_conditions" value="Bleeding Gums" {% if 'Bleeding Gums' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Bleeding Gums</label><br>
+                                                                <input type="checkbox" name="mouth_conditions" value="Sore Tongue" {% if 'Sore Tongue' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Sore Tongue</label><br>
+                                                                <input type="checkbox" name="mouth_conditions" value="Sore Throat" {% if 'Sore Throat' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Sore Throat</label><br>
+                                                                <input type="checkbox" name="mouth_conditions" value="Hoarseness" {% if 'Hoarseness' in chosenPatientConsulNotes_data.review_of_systems.mouth %} checked {% endif %}><label>Hoarseness</label><br>
+                                                            <p>Neck</p>
+                                                                <input type="checkbox" name="neck_conditions" value="Lumps" {% if 'Lumps' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Lumps</label><br>
+                                                                <input type="checkbox" name="neck_conditions" value="Swollen Glands" {% if 'Swollen Glands' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Swollen Glands</label><br>
+                                                                <input type="checkbox" name="neck_conditions" value="Goiter" {% if 'Goiter' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Goiter</label><br>
+                                                                <input type="checkbox" name="neck_conditions" value="Stiffness" {% if 'Stiffness' in chosenPatientConsulNotes_data.review_of_systems.neck %} checked {% endif %}><label>Stiffness</label><br>
+                                                            <p>Breast</p>
+                                                                <input type="checkbox" name="breast_conditions" value="Lumps" {% if 'Lumps' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>Lumps</label><br>
+                                                                <input type="checkbox" name="breast_conditions" value="Pain" {% if 'Pain' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>Pain</label><br>
+                                                                <input type="checkbox" name="breast_conditions" value="Nipple Discharge" {% if 'Nipple Discharge' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>Nipple Discharge</label><br>
+                                                                <input type="checkbox" name="breast_conditions" value="BSE" {% if 'BSE' in chosenPatientConsulNotes_data.review_of_systems.breast %} checked {% endif %}><label>BSE</label><br>
+                                                            <p>Respiratory/Cardiac</p>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Shortness of Breath" {% if 'Shortness of Breath' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Shortness of Breath</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Cough" {% if 'Cough' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Cough</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Production of Phlegm" {% if 'Production of Phlegm' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Production of Phlegm</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Wheezing" {% if 'Wheezing' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Wheezing</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Coughing up Blood" {% if 'Coughing up Blood' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Coughing up Blood</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Chest Pain" {% if 'Chest Pain' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Chest Pain</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Fever" {% if 'Fever' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Fever</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Night Sweats" {% if 'Night Sweats' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Night Sweats</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="BSE" {% if 'BSE' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Swelling in Hands/Feet</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Swelling in Hands/Feet" {% if 'Swelling in Hands/Feet' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Blue Fingers/Toes</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="High Blood Pressure" {% if 'High Blood Pressure' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>High Blood Pressure</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Heart Murmur" {% if 'Heart Murmur' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Heart Murmur</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="HX of Heart Medication" {% if 'HX of Heart Medication' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>HX of Heart Medication</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Bronchities/Emphysema" {% if 'Bronchities/Emphysema' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Bronchities/Emphysema</label><br>
+                                                                <input type="checkbox" name="cardiac_conditions" value="Rheumatic Heart Disease" {% if 'Rheumatic Heart Disease' in chosenPatientConsulNotes_data.review_of_systems.cardiac %} checked {% endif %}><label>Rheumatic Heart Disease</label><br>
+                                                        </div>
+                                                        <div class="column">
+                                                            <p>Gastrointestinal</p>
+                                                                <input type="checkbox" name="gastro_conditions" value="Change in Appetite/Weight" {% if 'Change in Appetite/Weight' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Change in Appetite/Weight</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Problems Swallowing" {% if 'Problems Swallowing' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Problems Swallowing</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Nausea" {% if 'Nausea' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Nausea</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Heartburn" {% if 'Heartburn' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Heartburn</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Vomiting" {% if 'Vomiting' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Vomiting</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Vomiting Blood" {% if 'Vomiting Blood' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Vomiting Blood</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Constipation" {% if 'Constipation' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Constipation</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Diarrhea" {% if 'Diarrhea' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Diarrhea</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Change in Bowel Habits" {% if 'Change in Bowel Habits' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Change in Bowel Habits</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Abdominal Pain" {% if 'Abdominal Pain' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Abdominal Pain</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Excessive Belching" {% if 'Excessive Belching' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Excessive Belching</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Excessive Flatus" {% if 'Excessive Flatus' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Excessive Flatus</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Yellow color of Skin" {% if 'Yellow color of Skin' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Yellow color of Skin</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Food Intolerance" {% if 'Food Intolerance' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Food Intolerance</label><br>
+                                                                <input type="checkbox" name="gastro_conditions" value="Rectal Bleeding/Hemorrhoids" {% if 'Rectal Bleeding/Hemorrhoids' in chosenPatientConsulNotes_data.review_of_systems.gastro %} checked {% endif %}><label>Rectal Bleeding/Hemorrhoids</label><br>
+                                                            <p>Urinary</p>
+                                                                <input type="checkbox" name="urinary_conditions" value="Difficulty in Urinaition" {% if 'Difficulty in Urinaition' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Difficulty in Urinaition</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="Pain or buring on urination" {% if 'Pain or buring on urination' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Pain or buring on urination</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="Frequent urination at night" {% if 'Frequent urination at night' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Frequent urination at night</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="Urgent need to urinate" {% if 'Urgent need to urinate' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Urgent need to urinate</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="Incontinence of urine" {% if 'Incontinence of urine' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Incontinence of urine</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="Dribbling" {% if 'Dribbling' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Dribbling</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="Decreased urine stream" {% if 'Decreased urine stream' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Decreased urine stream</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="Blood in urine" {% if 'Blood in urine' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>Blood in urine</label><br>
+                                                                <input type="checkbox" name="urinary_conditions" value="UTI/Stones/Prostate Infection" {% if 'UTI/Stones/Prostate Infection' in chosenPatientConsulNotes_data.review_of_systems.urinary %} checked {% endif %}><label>UTI/Stones/Prostate Infection</label><br>
+                                                        </div>
+                                                        <div class="column">
+                                                            <p>Peripheral Vascular</p>
+                                                                <input type="checkbox" name="pv_conditions" value="Leg cramps" {% if 'Leg cramps' in chosenPatientConsulNotes_data.review_of_systems.pv %} checked {% endif %}><label>Leg cramps</label><br>
+                                                                <input type="checkbox" name="pv_conditions" value="Varicose veins" {% if 'Varicose veins' in chosenPatientConsulNotes_data.review_of_systems.pv %} checked {% endif %}><label>Varicose veins</label><br>
+                                                                <input type="checkbox" name="pv_conditions" value="Clots in veins" {% if 'Clots in veins' in chosenPatientConsulNotes_data.review_of_systems.pv %} checked {% endif %}><label>Clots in veins</label><br>
+                                                            <p>Muscoskeletal</p>
+                                                                <input type="checkbox" name="ms_conditions" value="Pain" {% if 'Pain' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Pain</label><br>
+                                                                <input type="checkbox" name="ms_conditions" value="Swelling" {% if 'Swelling' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Swelling</label><br>
+                                                                <input type="checkbox" name="ms_conditions" value="Stiffness" {% if 'Stiffness' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Stiffness</label><br>
+                                                                <input type="checkbox" name="ms_conditions" value="Decrease joint motion" {% if 'Decrease joint motion' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Decrease joint motion</label><br>
+                                                                <input type="checkbox" name="ms_conditions" value="Broken bone" {% if 'Broken bone' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Broken bone</label><br>
+                                                                <input type="checkbox" name="ms_conditions" value="Serious sprains" {% if 'Serious sprains' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Serious sprains</label><br>
+                                                                <input type="checkbox" name="ms_conditions" value="Arthritis" {% if 'Arthritis' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Arthritis</label><br>
+                                                                <input type="checkbox" name="ms_conditions" value="Gout" {% if 'Gout' in chosenPatientConsulNotes_data.review_of_systems.ms %} checked {% endif %}><label>Gout</label><br>
+                                                            <p>Neurologic</p>
+                                                                <input type="checkbox" name="neuro_conditions" value="Headaches" {% if 'Headaches' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Headaches</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Seizures" {% if 'Seizures' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Seizures</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Loss of consciousness/Fainting" {% if 'Loss of consciousness/Fainting' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Loss of consciousness/Fainting</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Paralysis" {% if 'Paralysis' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Paralysis</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Weakness" {% if 'Weakness' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Weakness</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Loss of muscle size" {% if 'Loss of muscle size' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Loss of muscle size</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Muscle spasm" {% if 'Muscle spasm' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Muscle spasm</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Tremor" {% if 'Tremor' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Tremor</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Involuntary movement" {% if 'Involuntary movement' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Involuntary movement</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Incoordination" {% if 'Incoordination' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Incoordination</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Numbness" {% if 'Numbness' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Numbness</label><br>
+                                                                <input type="checkbox" name="neuro_conditions" value="Feeling of pins and needles" {% if 'Feeling of pins and needles' in chosenPatientConsulNotes_data.review_of_systems.neuro%} checked {% endif %}><label>Feeling of pins and needles</label><br>
+                                                            <p>Hematologic</p>
+                                                                <input type="checkbox" name="hema_conditions" value="Anemia" {% if 'Anemia' in chosenPatientConsulNotes_data.review_of_systems.hema%} checked {% endif %}><label>Anemia</label><br>
+                                                                <input type="checkbox" name="hema_conditions" value="Easy bruising/bleeding" {% if 'Easy bruising/bleeding' in chosenPatientConsulNotes_data.review_of_systems.hema%} checked {% endif %}><label>Easy bruising/bleeding</label><br>
+                                                                <input type="checkbox" name="hema_conditions" value="Past tranfusions" {% if 'Past tranfusions' in chosenPatientConsulNotes_data.review_of_systems.hema%} checked {% endif %}><label>Past tranfusions</label><br>
+                                                            <p>Endocrine</p>
+                                                                <input type="checkbox" name="endo_conditions" value="Abnormal Growth" {% if 'Abnormal Growth' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Abnormal Growth</label><br>
+                                                                <input type="checkbox" name="endo_conditions" value="Increased appetite" {% if 'Increased appetite' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Increased appetite</label><br>
+                                                                <input type="checkbox" name="endo_conditions" value="Increased thirst" {% if 'Increased thirst' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Increased thirst</label><br>
+                                                                <input type="checkbox" name="endo_conditions" value="Increase urine production" {% if 'Increase urine production' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Increase urine production</label><br>
+                                                                <input type="checkbox" name="endo_conditions" value="Thyroid trouble" {% if 'Past tranfusions' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Thyroid trouble</label><br>
+                                                                <input type="checkbox" name="endo_conditions" value="Heat/cold Intolerance" {% if 'Thyroid trouble' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Heat/cold Intolerance</label><br>
+                                                                <input type="checkbox" name="endo_conditions" value="Excessive Sweating" {% if 'Excessive Sweating' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Excessive Sweating</label><br>
+                                                                <input type="checkbox" name="endo_conditions" value="Diabetes" {% if 'Diabetes' in chosenPatientConsulNotes_data.review_of_systems.endo%} checked {% endif %}><label>Diabetes</label><br>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <div class="column">
+                                                        <p>Skin</p>
+                                                        <input type="checkbox" name="skin_conditions" value="Rashes"><label>Rashes</label><br>
+                                                        <input type="checkbox" name="skin_conditions" value="Itching"><label>Itching</label><br>
+                                                        <input type="checkbox" name="skin_conditions" value="Change in Hair or Nails"><label>Change in Hair or Nails</label><br>
+                                                        <p>Head</p>
+                                                        <input type="checkbox" name="head_conditions" value="Headaches"><label>Headaches</label><br>
+                                                        <input type="checkbox" name="head_conditions" value="Head Injury"><label>Head Injury</label><br>
+                                                        <p>Eyes</p>
+                                                        <input type="checkbox" name="eye_conditions" value="Glasses or Contacts"><label>Glasses or Contacts</label><br>
+                                                        <input type="checkbox" name="eye_conditions" value="Change in Vision"><label>Change in Vision</label><br>
+                                                        <input type="checkbox" name="eye_conditions" value="Eye Pain"><label>Eye Pain</label><br>
+                                                        <input type="checkbox" name="eye_conditions" value="Double Vision"><label>Double Vision</label><br>
+                                                        <input type="checkbox" name="eye_conditions" value="Flashing Lights"><label>Flashing Lights</label><br>
+                                                        <input type="checkbox" name="eye_conditions" value="Glaucoma/Cataracts"><label>Glaucoma/Cataracts</label><br>
+                                                        <p>Ears</p>
+                                                        <input type="checkbox" name="ear_conditions" value="Change in Hearing"><label>Change in Hearing</label><br>
+                                                        <input type="checkbox" name="ear_conditions" value="Ear Pain"><label>Ear Pain</label><br>
+                                                        <input type="checkbox" name="ear_conditions" value="Ear Discharge"><label>Ear Discharge</label><br>
+                                                        <input type="checkbox" name="ear_conditions" value="Ringing"><label>Ringing</label><br>
+                                                        <input type="checkbox" name="ear_conditions" value="Dizziness"><label>Dizziness</label><br>
+                                                        <p>Nose/Sinuses</p>
+                                                        <input type="checkbox" name="nose_conditions" value="Nose Bleeds"><label>Nose Bleeds</label><br>
+                                                        <input type="checkbox" name="nose_conditions" value="Nasal Stuffiness"><label>Nasal Stuffiness</label><br>
+                                                        <input type="checkbox" name="nose_conditions" value="Frequent Colds"><label>Frequent Colds</label><br>
+                                                        <p>Allergies</p>
+                                                        <input type="checkbox" name="allergy_conditions" value="Frequent Colds"><label>Hives</label><br>
+                                                        <input type="checkbox" name="allergy_conditions" value="Swelling of Lips or Tongues"><label>Swelling of Lips or Tongues</label><br>
+                                                        <input type="checkbox" name="allergy_conditions" value="Hay Fever"><label>Hay Fever</label><br>
+                                                        <input type="checkbox" name="allergy_conditions" value="Asthma"><label>Asthma</label><br>
+                                                        <input type="checkbox" name="allergy_conditions" value="Eczema/Sensitive"><label>Eczema/Sensitive</label><br>
+                                                        <p>Mouth/Throat</p>
+                                                        <input type="checkbox" name="mouth_conditions" value="Bleeding Gums"><label>Bleeding Gums</label><br>
+                                                        <input type="checkbox" name="mouth_conditions" value="Sore Tongue"><label>Sore Tongue</label><br>
+                                                        <input type="checkbox" name="mouth_conditions" value="Sore Throat"><label>Sore Throat</label><br>
+                                                        <input type="checkbox" name="mouth_conditions" value="Hoarseness"><label>Hoarseness</label><br>
+                                                        <p>Neck</p>
+                                                        <input type="checkbox" name="neck_conditions" value="Lumps"><label>Lumps</label><br>
+                                                        <input type="checkbox" name="neck_conditions" value="Swollen Glands"><label>Swollen Glands</label><br>
+                                                        <input type="checkbox" name="neck_conditions" value="Goiter"><label>Goiter</label><br>
+                                                        <input type="checkbox" name="neck_conditions" value="Stiffness"><label>Stiffness</label><br>
+                                                        <p>Breast</p>
+                                                        <input type="checkbox" name="breast_conditions" value="Lumps"><label>Lumps</label><br>
+                                                        <input type="checkbox" name="breast_conditions" value="Pain"><label>Pain</label><br>
+                                                        <input type="checkbox" name="breast_conditions" value="Nipple Discharge"><label>Nipple Discharge</label><br>
+                                                        <input type="checkbox" name="breast_conditions" value="BSE"><label>BSE</label><br>
+                                                        <p>Respiratory/Cardiac</p>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Shortness of Breath"><label>Shortness of Breath</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Cough"><label>Cough</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Production of Phlegm"><label>Production of Phlegm</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Wheezing"><label>Wheezing</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Coughing up Blood"><label>Coughing up Blood</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Chest Pain"><label>Chest Pain</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Fever"><label>Fever</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Night Sweats"><label>Night Sweats</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="BSE"><label>Swelling in Hands/Feet</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Swelling in Hands/Feet"><label>Blue Fingers/Toes</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="High Blood Pressure"><label>High Blood Pressure</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Heart Murmur"><label>Heart Murmur</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="HX of Heart Medication"><label>HX of Heart Medication</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Bronchities/Emphysema"><label>Bronchities/Emphysema</label><br>
+                                                        <input type="checkbox" name="cardiac_conditions" value="Rheumatic Heart Disease"><label>Rheumatic Heart Disease</label><br>
+                                                    </div>
+                                                    <div class="column">
+                                                        <p>Gastrointestinal</p>
+                                                        <input type="checkbox" name="gastro_conditions" value="Change in Appetite/Weight"><label>Change in Appetite/Weight</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Problems Swallowing"><label>Problems Swallowing</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Nausea"><label>Nausea</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Heartburn"><label>Heartburn</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Vomiting"><label>Vomiting</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Vomiting Blood"><label>Vomiting Blood</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Constipation"><label>Constipation</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Diarrhea"><label>Diarrhea</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Change in Bowel Habits"><label>Change in Bowel Habits</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Abdominal Pain"><label>Abdominal Pain</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Excessive Belching"><label>Excessive Belching</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Excessive Flatus"><label>Excessive Flatus</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Yellow color of Skin"><label>Yellow color of Skin</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Food Intolerance"><label>Food Intolerance</label><br>
+                                                        <input type="checkbox" name="gastro_conditions" value="Rectal Bleeding/Hemorrhoids"><label>Rectal Bleeding/Hemorrhoids</label><br>
+                                                        <p>Urinary</p>
+                                                        <input type="checkbox" name="urinary_conditions" value="Difficulty in Urinaition"><label>Difficulty in Urinaition</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="Pain or buring on urination"><label>Pain or buring on urination</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="Frequent urination at night"><label>Frequent urination at night</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="Urgent need to urinate"><label>Urgent need to urinate</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="Incontinence of urine"><label>Incontinence of urine</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="Dribbling"><label>Dribbling</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="Decreased urine stream"><label>Decreased urine stream</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="Blood in urine"><label>Blood in urine</label><br>
+                                                        <input type="checkbox" name="urinary_conditions" value="UTI/Stones/Prostate Infection"><label>UTI/Stones/Prostate Infection</label><br>
+                                                    </div>
+                                                    <div class="column">
+                                                        <p>Peripheral Vascular</p>
+                                                        <input type="checkbox" name="pv_conditions" value="Leg cramps"><label>Leg cramps</label><br>
+                                                        <input type="checkbox" name="pv_conditions" value="Varicose veins"><label>Varicose veins</label><br>
+                                                        <input type="checkbox" name="pv_conditions" value="Clots in veins"><label>Clots in veins</label><br>
+                                                        <p>Muscoskeletal</p>
+                                                        <input type="checkbox" name="ms_conditions" value="Pain"><label>Pain</label><br>
+                                                        <input type="checkbox" name="ms_conditions" value="Swelling"><label>Swelling</label><br>
+                                                        <input type="checkbox" name="ms_conditions" value="Stiffness"><label>Stiffness</label><br>
+                                                        <input type="checkbox" name="ms_conditions" value="Decrease joint motion"><label>Decrease joint motion</label><br>
+                                                        <input type="checkbox" name="ms_conditions" value="Broken bone"><label>Broken bone</label><br>
+                                                        <input type="checkbox" name="ms_conditions" value="Serious sprains"><label>Serious sprains</label><br>
+                                                        <input type="checkbox" name="ms_conditions" value="Arthritis"><label>Arthritis</label><br>
+                                                        <input type="checkbox" name="ms_conditions" value="Gout"><label>Gout</label><br>
+                                                        <p>Neurologic</p>
+                                                        <input type="checkbox" name="neuro_conditions" value="Headaches"><label>Headaches</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Seizures"><label>Seizures</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Loss of consciousness/Fainting"><label>Loss of consciousness/Fainting</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Paralysis"><label>Paralysis</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Weakness"><label>Weakness</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Loss of muscle size"><label>Loss of muscle size</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Muscle spasm"><label>Muscle spasm</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Tremor"><label>Tremor</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Involuntary movement"><label>Involuntary movement</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Incoordination"><label>Incoordination</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Numbness"><label>Numbness</label><br>
+                                                        <input type="checkbox" name="neuro_conditions" value="Feeling of pins and needles"><label>Feeling of pins and needles</label><br>
+                                                        <p>Hematologic</p>
+                                                        <input type="checkbox" name="hema_conditions" value="Anemia"><label>Anemia</label><br>
+                                                        <input type="checkbox" name="hema_conditions" value="Easy bruising/bleeding"><label>Easy bruising/bleeding</label><br>
+                                                        <input type="checkbox" name="hema_conditions" value="Past tranfusions"><label>Past tranfusions</label><br>
+                                                        <p>Endocrine</p>
+                                                        <input type="checkbox" name="endo_conditions" value="Abnormal Growth"><label>Abnormal Growth</label><br>
+                                                        <input type="checkbox" name="endo_conditions" value="Increased appetite"><label>Increased appetite</label><br>
+                                                        <input type="checkbox" name="endo_conditions" value="Increased thirst"><label>Increased thirst</label><br>
+                                                        <input type="checkbox" name="endo_conditions" value="Increase urine production"><label>Increase urine production</label><br>
+                                                        <input type="checkbox" name="endo_conditions" value="Thyroid trouble"><label>Thyroid trouble</label><br>
+                                                        <input type="checkbox" name="endo_conditions" value="Heat/cold Intolerance"><label>Heat/cold Intolerance</label><br>
+                                                        <input type="checkbox" name="endo_conditions" value="Excessive Sweating"><label>Excessive Sweating</label><br>
+                                                        <input type="checkbox" name="endo_conditions" value="Diabetes"><label>Diabetes</label><br>
+                                                    </div>
+                                                {% endif %}
+                                                <button type="submit" name="rosButton" value={{ chosenPatientData_id }}>Save</button>
+                                            </form>
+                                            <button id="closeModalButton">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="diagnosisButton">
+                                    <button onclick="toggleDropdown()">Diagnosis</button>
+                                    <form id="diagnosis" method='post'>
+                                        {% csrf_token %}
+                                        <div id="diagnosisDropdown" class="dropdown-content" style="display: none;">
+                                            <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
+                                                <datalist id="disease_name_suggestion">
+                                                    <option value="">-- Select Disease --</option>
+                                                    {% for medicine in medicines_list %}
+                                                        <option value="{{ medicine }}">{{ medicine }}</option>
+                                                    {% endfor %}
+                                                </datalist>
+                                            </select>
+                                            <button type="submit" name="diagnosisButton" value={{ chosenPatientData_id }}>Save</button>
+                                        </div>
+                                    </form>
+                                    {% if chosenPatientConsulNotes %}
+                                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                            {% if chosenPatientConsulNotes_data.diagnosis %}
+                                                <p >Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</p>
+                                            {% else %} 
+                                                <p>Diagnosis: No Current Diagnosis</p>
+                                            {% endif %} 
+                                        {% endfor %}   
+                                    {% else %} 
+                                        <p>Diagnosis: No Current Diagnosis</p>
+                                    {% endif %} 
+                                </div> 
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% comment %} Diagnostic Test {% endcomment %}
+                <div class = "container-big">
+                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                    <div class = "container-small" style="width: 300px;">
+                        <div class = "head">Diagnostic Tests</div>
+                            <div class="container-inside">
+                                <button><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
+                                <button id="requestLabTestButton">Request New Test</button>
+                                <div id="newLabTestModal" class="modal2" style="display: none;">
+                                    <div class="modal-content2">
+                                        <h2>Request New Test</h2>
+                                        <form method="post" id="newLabTestForm">
+                                            {% csrf_token %}
+                                            <input type="checkbox" id="bloodTestCheckbox" name="bloodTestCheckbox">
+                                            <label for="bloodTestCheckbox">Blood Test</label><br>
+                                            <input type="checkbox" id="urineTestCheckbox" name="urineTestCheckbox">
+                                            <label for="urineTestCheckbox">Urine Test</label><br>
+                                            <input type="checkbox" id="stoolTestCheckbox" name="stoolTestCheckbox">
+                                            <label for="stoolTestCheckbox">Stool Test</label><br>
+                                            <input type="checkbox" id="tissueBiopsyCheckbox" name="tissueBiopsyCheckbox">
+                                            <label for="tissueBiopsyCheckbox">Tissue Biopsy</label><br>
+                                            <input type="checkbox" id="xrayCheckbox" name="xrayCheckbox">
+                                            <label for="xrayCheckbox">X-rays</label><br>
+                                            <input type="checkbox" id="ctScanCheckbox" name="ctScanCheckbox">
+                                            <label for="ctScanCheckbox">Computed Tomography/CT Scan</label><br>
+                                            <input type="checkbox" id="mriCheckbox" name="mriCheckbox">
+                                            <label for="mriCheckbox">Magnetic Resonance Imaging/MRI</label><br>
+                                            <input type="checkbox" id="ultrasoundCheckbox" name="ultrasoundCheckbox">
+                                            <label for="ultrasoundCheckbox">Ultrasound</label><br>
+                                            <input type="checkbox" id="ecgCheckbox" name="ecgCheckbox">
+                                            <label for="ecgCheckbox">Electrocardiogram/ECG/EKG</label><br>
+                                            <input type="checkbox" id="colonoscopyCheckbox" name="colonoscopyCheckbox">
+                                            <label for="colonoscopyCheckbox">Colonoscopy</label><br>
+                                            <input type="checkbox" id="bronchoscopyCheckbox" name="bronchoscopyCheckbox">
+                                            <label for="bronchoscopyCheckbox">Bronchoscopy</label><br>
+                                            <input type="checkbox" id="petScanCheckbox" name="petScanCheckbox">
+                                            <label for="petScanCheckbox">Positron Emission Tomography (PET) Scan</label><br>
+                                            <button type="submit" name="submitLabTestRequest">Submit</button>
+                                            <button id="closeModal">Cancel</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            <div id="right-container"  style="width: 100%;">
+            {% comment %} Progess Notes {% endcomment %}
+                <div class = "container-big">
+                    <div class = "container-small" style="width: 100%;">
+                        <div class = "head">Progress Notes</div>
+                            <div id = "progress-notes">
+                                <div id = "progress-note" style="height: 150px; overflow-y: auto;">
+                                    <table>
+                                        <tr>
+                                            <th>Last Updated</th>
+                                            <th>Nurse</th>
+                                            <th>Focus</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                            {% for progressnotes_id, progressnotes_data in progressnotes.items %}
+                                                {% if progressnotes_id == chosenPatientData_data.uid %}
+                                                    {% for id, data in progressnotes_data.items %}
+                                                        <tr>
+                                                            <td style="text-align: center;">{{ data.date }} {{ data.time }}</td>
+                                                            <td style="text-align: center;">
+                                                                {% for nurse_id, nurse_data in nurses.items %}
+                                                                    {% if nurse_id == data.nurseID %}
+                                                                        {{ nurse_data.fname }} {{ nurse_data.lname }}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </td>
+                                                            <td style="text-align: center;">{{ data.focus }}</td>
+                                                            <td style="text-align: center;">{{ data.notes }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </table>
+                                    
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+                {% comment %} Vital Signs {% endcomment %}
+                <div class = "container-big">
+                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                        <div class = "container-small"  style="width: 100%;">
+                            <div class="head">Latest Vital Signs</div>
+                            <div id="vital-signs-table">
+                                <table id="vital-signs">
+                                    <tr id="label">
+                                        <th>Date and Time</th>
+                                        <th>Temperature</th>
+                                        <th>Blood Pressure</th>
+                                        <th>Pulse</th>
+                                        <th>Respiration</th>
+                                        <th>Pain Index</th>
+                                        {% comment %} <th>Stool</th>
+                                        <th>Fluid Output</th>
+                                        <th>Fluid Intake</th> {% endcomment %}
+                                    </tr>
+                                    {% for sorted_vital_signs_id, sorted_vital_signs_data in sorted_vital_signs.items %}
+                                        {% if forloop.counter <= 2 %}
+                                            <tr>
+                                                <td>{{ sorted_vital_signs_data.date }} {{ sorted_vital_signs_data.time }}</td>
+                                                <td>{{ sorted_vital_signs_data.temperature }} °C</td>
+                                                <td>{{ sorted_vital_signs_data.bloodpressure }}</td>
+                                                <td>{{ sorted_vital_signs_data.pulse }} bpm</td>
+                                                <td>{{ sorted_vital_signs_data.respiration }}</td>
+                                                <td>{{ sorted_vital_signs_data.painindex }}/10</td>
+                                                {% comment %} <td><input type="checkbox" disabled></td>
+                                                <td><input type="checkbox" disabled></td>
+                                                <td> ml</td> {% endcomment %}
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </table>
+                                    <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id="view-vitalsigns-history">View History</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        
 
         </div>
     </div>
 </div>
 
-<div id="inpatientModal1" class="modal1" style="display: none;">
+<div id="inpatientModal1" class="modal1" style="display: none; overflow-y: auto;">
     <div class="modal-content1">
         <h2>Discharge Instruction Form</h2>
         <form id="dischargeForm1" method="post">
             {% csrf_token %}
-            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                <div style="margin: 5px; font-weight: bold;">Patient Name: </div>
-                <div class="form_container">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
-                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                    <div style="margin: 5px; font-weight: bold;">Diagnosis: </div>
-                    <div class="form_container">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
+            <div style="margin: 5px; font-weight: bold;">Patient Details</div>
+            <div class="form-row">
+                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                    <div class="form-group">
+                        <div style="margin: 5px; font-weight: bold;">Patient Name: </div>
+                        <div class="form_container">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
+                    </div>
+                    <div class="form-group">
+                        <div style="margin: 5px; font-weight: bold;">Birthday: </div>
+                        <div class="form_container">{{ chosenPatientData_data.bday }}</div>
+                    </div>
+                    <div class="form-group">
+                        <div style="margin: 5px; font-weight: bold;">Gender: </div>
+                        <div class="form_container">{{ chosenPatientData_data.gender }}</div>
+                    </div>
+                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                        <div class="form-group">
+                            <div style="margin: 5px; font-weight: bold;">Diagnosis: </div>
+                            <div class="form_container">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
+                        </div>
+                    {% endfor %}
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <div class="form-group">
+                                <div style="margin: 5px; font-weight: bold;">Attending Physician: </div>
+                                <div class="form_container">{{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="form-group">
+                        <div style="margin: 5px; font-weight: bold;">Total Days of Stay: </div>
+                        <div class="form_container">{{ num_days }}</div>
+                    </div>
                 {% endfor %}
-                {% for doctor_id, doctor_data in doctors.items %}
-                    {% if doctor_data.uid == uid %}
-                        <div style="margin: 5px; font-weight: bold;">Attending Physician: </div>
-                        <div class="form_container">{{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                    {% endif %}
-                {% endfor %}
-                <div style="margin: 5px; font-weight: bold;">Total Days of Stay: </div>
-                <div class="form_container">{{ num_days }}</div>
-            {% endfor %}
+            </div>
+            <hr>
+            <div style="margin: 5px; font-weight: bold;">Follow Up</div>
             {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
                 {% if appointmentsched_data.uid == uid %}
-                <label for="suggested-date">Suggested Schedule:</label>
-                <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    {% for next_available_date in next_available_dates %}
-                        <option value="{{ next_available_date }}" name="next_available_date">{{ next_available_date }}</option>
-                    {% endfor %}
-                </select><br>
-                <label for="suggested-time">Suggested Time:</label>
-                <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    {% for available_slot in available_slots %}
-                        <option value="{{ available_slot }}" name="available_slot">{{ available_slot }}</option>
-                    {% endfor %}
-                </select><br>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="suggested-date" style="margin: 5px; font-weight: bold;">Suggested Schedule:</label>
+                            <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                {% for next_available_date in next_available_dates %}
+                                    <option value="one_week" name="selected_time">1 week {{next_available_date}}</option>
+                                    {% comment %} <option value="two_weeks" name="selected_time">2 weeks</option>
+                                    <option value="three_weeks" name="selected_time">3 weeks</option>
+                                    <option value="one_month" name="selected_time">1 month</option> {% endcomment %}
+                                {% endfor %}
+                            </select><br>
+                        </div>
+                    </div>
                 {% endif %}
             {% endfor %}
-            <input type="checkbox" onclick="openModal()">Add Prescription</input>
+            <hr>
+            <div style="margin: 5px; font-weight: bold;">Prescriptions</div>
+            <input type="checkbox" id="prescriptionCheckbox" style="margin-top: 10px;">Add Prescription</input>
+
+            <div id="medications-container" style="display: none; width: 100%;">
+
+                <div id="table-header" style="display: flex; width: 100%;">
+                    <div style="flex: 1; text-align: center;"><input type="checkbox" id="select-all-checkbox"></div>
+                    <div style="flex: 1; text-align: center;">Days</div>
+                    <div style="flex: 1; text-align: center;">Medicine Name</div>
+                    <div style="flex: 1; text-align: center;">Dosage</div>
+                    <div style="flex: 1; text-align: center;">Route</div>
+                    <div style="flex: 1; text-align: center;">Frequency</div>
+                    <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                </div>
+            
+                <div id="table-body" style="display: flex; width: 100%;">
+                    <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
+                    <div style="flex: 1; text-align: center;"><input type="number" name="days" style="width: 100px;"></div>
+                    <div style="flex: 1; text-align: center;">
+                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                        <datalist id="medicine_name_suggestions">
+                            {% for medicine in medicines_list %}
+                                <option value="{{ medicine }}">{{ medicine }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                    
+                    <div style="flex: 1; text-align: center;">
+                        <select class="dosage-input" name="dosage" id="dosage_input">
+                            <option value="" selected disabled>Select Dosage</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="text-align: center;">
+                            <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
+                            <label for="morning-checkbox">Morning</label>
+                        </div>
+                        <div style="text-align: center;">
+                            <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
+                            <label for="afternoon-checkbox">Afternoon</label>
+                        </div>
+                        <div style="text-align: center;">
+                            <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
+                            <label for="evening-checkbox">Evening</label>
+                        </div>
+                    </div>
+                    <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
+                </div>
+                
+                <div id="update-with-new-order" style="width: 100%;">
+                    <div id="buttons-container" style="width: 100%;">
+                        <div id="add-medication-button" style="width: 50%; text-align: center;"><a href="#" id="add-medication-link">Add Medication</a></div>
+                        <div id="remove-medication-button" style="width: 50%; text-align: center;"><a href="#" id="remove-medication-link">Remove Selected</a></div>
+                    </div>
+                    <button id="submit-medication-button" type="submit" style="width: 100%;">Create Order/Prescription</button>
+                </div>
+            
+            </div>
+            
+            </div>
+            <button name="discharge_patient">Discharge Patient</button>
         </form>
     </div>
 </div>
 
 <script>
+    var prescriptionCheckbox = document.getElementById("prescriptionCheckbox");
+    var prescriptionTable = document.getElementById("medications-container");
+
+    prescriptionCheckbox.addEventListener("change", function() {
+        if (prescriptionCheckbox.checked) {
+            prescriptionTable.style.display = "table"; // Show the table
+        } else {
+            prescriptionTable.style.display = "none"; // Hide the table
+        }
+    });
+
+    // Get the add medication button
+    var addMedicationButton = document.getElementById("add-medication-link");
+
+    // Add event listener to the add medication button
+    addMedicationButton.addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default form submission behavior
+
+        // Get the table body
+        var tableBody = document.getElementById("table-body");
+
+        // Create a new row
+        var newRow = document.createElement("div");
+        newRow.setAttribute("style", "display: flex; width: 100%;");
+
+        // Add HTML content to the new row
+        var newRowHTML = `
+            <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
+            <div style="flex: 1; text-align: center;"><input type="number" name="days" style="width: 100px;"></div>
+            <div style="flex: 1; text-align: center;">
+                <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                <datalist id="medicine_name_suggestions">
+                    {% for medicine in medicines_list %}
+                        <option value="{{ medicine }}">{{ medicine }}</option>
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div style="flex: 1; text-align: center;">
+                <select class="dosage-input" name="dosage" id="dosage_input">
+                    <option value="" selected disabled>Select Dosage</option>
+                </select>
+            </div>
+            <div style="flex: 1; text-align: center;">
+                <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
+            </div>
+            <div style="flex: 1; text-align: center;">
+                <div style="text-align: center;">
+                    <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
+                    <label for="morning-checkbox">Morning</label>
+                </div>
+                <div style="text-align: center;">
+                    <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
+                    <label for="afternoon-checkbox">Afternoon</label>
+                </div>
+                <div style="text-align: center;">
+                    <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
+                    <label for="evening-checkbox">Evening</label>
+                </div>
+            </div>
+            <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
+        `;
+
+        // Append the new row to the end of the table body
+        tableBody.appendChild(newRow);
+    });
+
     var reschedmodal = document.getElementById("myModal");
     var span = document.getElementById("closeModalButton1");
     
@@ -921,6 +1273,7 @@
         document.querySelector('button[name="diagnosisButton"]').addEventListener('click', function () {
             alert('Diagnosis Saved!');
         });
+        
     });
 </script>
 

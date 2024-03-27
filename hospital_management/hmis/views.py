@@ -397,6 +397,8 @@ def AppointmentUpcoming(request):
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']    
 
+    
+
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
     for appointment_id, appointment_data in upcomings.items():
@@ -484,21 +486,22 @@ def delete_appointment(request):
     return render(request, 'hmis/AppointmentUpcoming.html')
 
 def update_appointment(request):
+    
     if request.method == 'POST':
         try:
             appID = request.POST.get('appID')
-            new_date_str = request.POST.get('selected_appointment_date')  # Corrected name
+            print('APPID', appID)
 
-            # Convert new_date_str to datetime object
+            new_time = request.POST.get('new_appointment_time')
+            print('Time nakuha is ', new_time)
+
+            new_date_str = request.POST.gt('selected_appointment_date')  # Corrected name
+            # Convert new_date_str to dateteime object
             new_date = datetime.strptime(new_date_str, "%B %d, %Y")
-
             # Format new_date to "yyyy-mm-dd" string
             new_date_formatted = new_date.strftime("%Y-%m-%d")
 
-            new_time = request.POST.get('same-appointment-time')
-            print(new_date_formatted)
-            print(new_time)
-            print(appID)
+            
 
             # Format time and date objects to desired format
             new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
@@ -907,11 +910,11 @@ def patient_personal_information_inpatient(request):
     uid = request.session['uid'] 
     medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
     medicines_list = [medication['Drug'] for medication in medications_cursor]
-
+    
     upcomings = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
     doctors = db.child("doctors").get().val()
-    uid = request.session['uid']    
+    uid = request.session['uid']   
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -957,19 +960,30 @@ def patient_personal_information_inpatient(request):
         current_day_of_week = datetime.now().weekday()
         print("Current day of the week:", current_day_of_week)        
         # Find the next 3 available dates
+        target_days = [7, 14, 21, 30]
         next_available_dates = []
+        list_final = []
         days_checked = 0
         current_date = datetime.now()
-        days_after = current_date + timedelta(days=7)
-        while len(next_available_dates) < 4 and days_checked < 14:  # Check up to 7 days
+
+        while len(next_available_dates) < 4 and days_checked < 60:  # Check up to 30 days
             if current_day_of_week in available_days_numbers:
                 # Check if there are no appointments on this date
-                if days_after.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
-                    next_available_dates.append(days_after.date())
-                    # print(next_available_dates)
-            days_after += timedelta(days=1)
+                if current_date.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
+                    list_final.append(current_date.date())
+
+            current_date += timedelta(days=1)
             current_day_of_week = (current_day_of_week + 1) % 7
             days_checked += 1
+
+        print('LIST FINAL', list_final)
+
+        # Find the 7th, 14th, 21st, and 30th available days
+        for i in target_days:
+            if len(list_final) >= i:
+                next_available_dates.append(list_final[i-1])
+        print('LIST FINAL', next_available_dates)
+       
 
     
 
@@ -1100,6 +1114,48 @@ def patient_personal_information_inpatient(request):
     medicines_set = {medication['Disease'] for medication in medications_cursor}
     medicines_list = list(medicines_set)
 
+    time_slots = []
+        
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+    
+    formatted_dates = []
+    for date_obj in next_available_dates:
+        formatted_date = date_obj.strftime("%Y-%m-%d")
+    
+        # Append the formatted date to the list
+        formatted_dates.append(formatted_date)        
+
+    if appointmentschedule_data:
+    # Define time slots for morning
+        morning_start_str = appointmentschedule_data.get("morning_start")
+        morning_end_str = appointmentschedule_data.get("morning_end")
+
+        # Convert strings to datetime objects for morning
+        morning_start = datetime.strptime(morning_start_str, '%H:%M')
+        morning_end = datetime.strptime(morning_end_str, '%H:%M')
+
+        # Define time slots for afternoon
+        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
+        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+
+        # Convert strings to datetime objects for afternoon
+        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+
+        interval = timedelta(minutes=30)
+
+        # Calculate time slots for morning
+        current_time = morning_start
+        while current_time <= morning_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+
+        # Calculate time slots for afternoon
+        current_time = afternoon_start
+        while current_time <= afternoon_end:
+            time_slots.append(current_time.strftime('%H:%M'))
+            current_time += interval
+
 
     if request.method == 'POST':
 
@@ -1159,15 +1215,13 @@ def patient_personal_information_inpatient(request):
             db.child("appointments").child(endAppointment).update({'status': 'Finished'})
             return redirect('DoctorDashboard')
 
-        if 'addDischargePrescription' in request.POST:
-            numOfDays = int(request.POST.get('numOfDays')) 
+        if 'discharge_patient' in request.POST:
+            numOfDays = request.POST.getlist('days') 
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  
             qid = str(uuid.uuid1())
 
             todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
-            endDate = todaydate_datetime + timedelta(days=numOfDays)
-
-            endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+            
             times_list = []
 
             medicine_name = request.POST.getlist('medicineName1')
@@ -1177,6 +1231,19 @@ def patient_personal_information_inpatient(request):
             additional_remarks = request.POST.getlist('remarks1')  
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(todaydate, chosenPatient, medicine_name, dosage, route, frequency, additional_remarks)
+            selected_time = request.POST.get('selected_time')
+            followUpDays = 0
+            if selected_time == 'one_week':
+                followUpDays = 7
+            elif selected_time == 'two_weeks':
+                followUpDays = 14
+            elif selected_time == 'three_weeks':
+                followUpDays = 21
+            elif selected_time == 'one_month':
+                followUpDays = 30
+            
+            endDate = todaydate_datetime + timedelta(days=followUpDays)
+            endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
 
             for freq in frequency:
                 if freq == "Once Daily":
@@ -1207,7 +1274,16 @@ def patient_personal_information_inpatient(request):
                 'additional_remarks': additional_remarks,
                 'status': 'Ongoing'
             }
+
             
+            earliest_time = None
+            for time in time_slots:
+                select_time = datetime.strptime(time, '%H:%M')
+                if earliest_time < select_time:
+                    earliest_time = select_time
+
+            time_12h = earliest_time.strftime("%I:%M %p")
+
             appID = str(uuid.uuid1())
             appointment_date = request.POST.get('new-appointment-date')
             if appointment_date:
@@ -1218,7 +1294,7 @@ def patient_personal_information_inpatient(request):
                 # Convert to 12-hour format with AM/PM
                 time_12h = time_obj.strftime("%I:%M %p")
                 data1 = {
-                    'appointmentDate': appointment_date,
+                    'appointmentDate': endDate_str,
                     'appointmentTime': time_12h,
                     'appointmentVisitType': 'Follow-Up Visit',
                     'doctorUID': uid,
@@ -1226,6 +1302,8 @@ def patient_personal_information_inpatient(request):
                     'status': 'Ongoing'
                 }
                 db.child('appointments').child(appID).set(data1)
+
+            
 
             if medicine_name:
                 db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
@@ -1335,64 +1413,9 @@ def patient_personal_information_inpatient(request):
 
         appointmentschedule = db.child("appointmentschedule").get().val()
 
-        time_slots = []
-        
-        appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-        
-        available1_slots = []
-        formatted_dates = []
-        for date_obj in next_available_dates:
-            formatted_date = date_obj.strftime("%Y-%m-%d")
-        
-            # Append the formatted date to the list
-            formatted_dates.append(formatted_date)
-
-        for available1_slots in formatted_dates:
-            for time_slot in time_slots:
-                if appointment_data['appointmentTime'] != time_slot:
-                    available1_slots.append(time_slot)
-                    print('TIME SLOT 1', time_slot)
-                    print('AVAIL SLOTS 1', available1_slots)
-
         
 
-        if appointmentschedule_data:
-        # Define time slots for morning
-            morning_start_str = appointmentschedule_data.get("morning_start")
-            morning_end_str = appointmentschedule_data.get("morning_end")
-
-            # Convert strings to datetime objects for morning
-            morning_start = datetime.strptime(morning_start_str, '%H:%M')
-            morning_end = datetime.strptime(morning_end_str, '%H:%M')
-
-            # Define time slots for afternoon
-            afternoon_start_str = appointmentschedule_data.get("afternoon_start")
-            afternoon_end_str = appointmentschedule_data.get("afternoon_end")
-
-            # Convert strings to datetime objects for afternoon
-            afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
-            afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
-
-            interval = timedelta(minutes=30)
-
-            # Calculate time slots for morning
-            current_time = morning_start
-            while current_time <= morning_end:
-                time_slots.append(current_time.strftime('%H:%M'))
-                current_time += interval
-
-            # Calculate time slots for afternoon
-            current_time = afternoon_start
-            while current_time <= afternoon_end:
-                time_slots.append(current_time.strftime('%H:%M'))
-                current_time += interval
-
-        for available1_slots in formatted_dates:
-            for time_slot in time_slots:
-                if appointment_data['appointmentTime'] != time_slot:
-                    available1_slots.append(time_slot)
-                    print('TIME SLOT 1', time_slot)
-                    print('AVAIL SLOTS 1', available1_slots)
+        
 
         chosenPatientData = {}
         for patients_id, patients_data in patients.items():
@@ -1435,6 +1458,8 @@ def patient_personal_information_inpatient(request):
         medicines_set = {medication['Disease'] for medication in medications_cursor}
         medicines_list = list(medicines_set)
 
+    progressnotes = db.child("progressnotes").get().val()
+    nurses = db.child("nurses").get().val()
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
                                                                                 'chosenPatientDatas': chosenPatientDatas, 
@@ -1451,7 +1476,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'medicines_list': medicines_list,
                                                                                 'next_available_dates': next_available_dates,
                                                                                 'num_days': num_days,
-                                                                                'available1_slots': available1_slots})
+                                                                                'nurses': nurses,
+                                                                                'list_final': list_final})
     # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
 
 def save_chiefComplaint(request):
