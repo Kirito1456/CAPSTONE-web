@@ -17,7 +17,7 @@ body {
     top: 0;
     left: 0;
     
-    background-color: #5c7c89;
+    background-color: #091f5b;
 }
 
 #all-info{
@@ -109,13 +109,13 @@ a{
     padding: 8px 12px;
     border: none;
     border-radius: 30px;
-    background-color: #5c7c89;
+    background-color: #091f5b;
     color: #fff;
     cursor: pointer;
 }
 
 #searchButton:hover {
-    background-color: #5c7c89;
+    background-color: #091f5b;
 }
 
 #notification-icon {
@@ -189,7 +189,7 @@ a{
 }
 
 .patient-card-info {
-    background-color: #698a7c; 
+    background-color: #091f5b; 
     color: #fff;
     padding: 10px;
 }
@@ -221,7 +221,7 @@ a{
 .button {
     padding: 5px;
     width: fit-content;
-    background-color: #5c7c89;
+    background-color: #091f5b;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -242,7 +242,7 @@ a{
 
 .clients_table th {
     border-radius: 10px;
-    background-color: #5c7c89;
+    background-color: #091f5b;
     color: #fff;
     
     padding: 8px;
@@ -304,14 +304,14 @@ a{
 }
 
 .save-button{
-    background-color: #5c7c89;
+    background-color: #091f5b;
     color: #f9f9f9;
 
     border: 0px;
 
     padding: 5px 20px;
 
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: -10px;
 
     border-radius: 10px;

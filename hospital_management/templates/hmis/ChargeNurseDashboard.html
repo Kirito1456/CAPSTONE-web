@@ -37,16 +37,16 @@
     </div>
     <div id="appointment-screen">
         <div id="current-date-time"></div>
-        <table class="clients_table">
-            <thead>
-                <tr>
-                    <th>Floor Number</th>
-                    <th>Room Number</th>
-                    <th>Assigned Nurses</th>
-                </tr>
-            </thead>
-            <form method="post" action="{% url 'ChargeNurseDashboard' %}">
+        <form method="post" action="{% url 'ChargeNurseDashboard' %}">
             {% csrf_token %}
+            <table class="clients_table">
+                <thead>
+                    <tr>
+                        <th>Floor Number</th>
+                        <th>Room Number</th>
+                        <th>Assigned Nurses</th>
+                    </tr>
+                </thead>
                 <tbody>
                     {% for room_id, room_data in rooms.items %}
                     <tr>
@@ -90,9 +90,9 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-                <button class="save-button" type="submit">Save</button>
-            </form>
-        </table>
+            </table>
+            <button class="save-button" type="submit">Save</button>
+        </form>
     </div>
 </div>
 <script src="{% static 'js/nurse.js' %}"></script>
