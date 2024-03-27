@@ -117,11 +117,11 @@
                                     <label for="suggested-date">Suggested Schedule:</label>
                                     <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                                         {% for next_available_date in next_available_dates %}
-                                            <option value={{ next_available_date }} name="next_available_date">{{ next_available_date }}</option>
+                                            <option value={{ next_available_date }} >{{ next_available_date }}</option>
                                         {% endfor %}
                                     </select><br>
                                     <label for="suggested-time">Suggested Time:</label>
-                                    <input type="text" id="new_appointment_time" name='new_appointment_time' value={{ appointment_data.appointmentTime }} style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;" disabled></input><br>
+                                    <input type="text" id="new_appointment_time" name='new_appointment_time' value={{ appointment_data.appointmentTime }} style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;" ></input><br>
                                     <button type="submit" id="appID" name='appID' value={{ appointment_id }}>Submit</button>
 
                                 </form>
