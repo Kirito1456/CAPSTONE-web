@@ -397,7 +397,9 @@ def AppointmentUpcoming(request):
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']    
 
-    
+    next_available_dates = []
+    time_slots = []
+    days_checked = 0
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -417,11 +419,8 @@ def AppointmentUpcoming(request):
     # Sort appointments by date
     sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
     
-    time_slots = []
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-
     if appointmentschedule_data:
-        
         available_days_str = appointmentschedule_data.get("days", "")
         day_name_to_number = {
             'monday': 1,
@@ -435,23 +434,13 @@ def AppointmentUpcoming(request):
 
         # Convert available days to numbers
         available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
-
-        print("Available days: ", available_days_numbers)
         
-
-        # Get the current day of the week
         current_day_of_week = datetime.now().weekday()
-        print("Current day of the week:", current_day_of_week)        
-        # Find the next 3 available dates
-        next_available_dates = []
-        days_checked = 0
         current_date = datetime.now()
         while len(next_available_dates) < 3 and days_checked < 7:  # Check up to 7 days
             if current_day_of_week in available_days_numbers:
-                # Check if there are no appointments on this date
                 if current_date.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
                     next_available_dates.append(current_date.date())
-                    # print(next_available_dates)
             current_date += timedelta(days=1)
             current_day_of_week = (current_day_of_week + 1) % 7
             days_checked += 1
@@ -902,9 +891,7 @@ def patient_personal_information_inpatient(request):
     vitalsigns = db.child("vitalsigns").get().val()
     consulnotes = db.child("consultationNotes").get().val()
     progressnotes = db.child("progressnotes").get().val()
-    # today = datetime.now()
-    # tomorrow = today + timedelta(days=1)
-    # date = tomorrow.strftime('%Y-%m-%d')
+
     date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
@@ -916,6 +903,12 @@ def patient_personal_information_inpatient(request):
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']   
 
+    time_slots = []
+    next_available_dates = []
+    list_final = []
+    days_checked = 0
+    current_date = datetime.now()
+
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
     for appointment_id, appointment_data in upcomings.items():
@@ -924,21 +917,17 @@ def patient_personal_information_inpatient(request):
             appointment_time_str = appointment_data.get("appointmentTime", "")
         
             if appointment_date_str and appointment_time_str:
-                # Convert appointment date string to datetime object
                 appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
             
-                # Check if appointment date is in the future
                 if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Ongoing":
                     upcoming_appointments[appointment_id] = appointment_data
 
     # Sort appointments by date
     sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
     
-    time_slots = []
+    
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-
     if appointmentschedule_data:
-        
         available_days_str = appointmentschedule_data.get("days", "")
         day_name_to_number = {
             'monday': 0,
@@ -950,21 +939,8 @@ def patient_personal_information_inpatient(request):
             'sunday': 6
         }
 
-        # Convert available days to numbers
         available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
-
-        print("Available days: ", available_days_numbers)
-        
-
-        # Get the current day of the week
         current_day_of_week = datetime.now().weekday()
-        print("Current day of the week:", current_day_of_week)        
-        # Find the next 3 available dates
-        target_days = [7, 14, 21, 30]
-        next_available_dates = []
-        list_final = []
-        days_checked = 0
-        current_date = datetime.now()
 
         while len(next_available_dates) < 4 and days_checked < 60:  # Check up to 30 days
             if current_day_of_week in available_days_numbers:
@@ -975,8 +951,6 @@ def patient_personal_information_inpatient(request):
             current_date += timedelta(days=1)
             current_day_of_week = (current_day_of_week + 1) % 7
             days_checked += 1
-
-        print('LIST FINAL', list_final)
 
         # Get current date
         current_date = datetime.now().date()
@@ -1003,12 +977,6 @@ def patient_personal_information_inpatient(request):
             'one_month_from_now': find_nearest_date(one_month_from_now, list_final)
         }
 
-        print("Nearest dates:", nearest_dates)
-       
-    time_slots = []
-    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-    
-    if appointmentschedule_data:
         # Define time slots for morning
         morning_start_str = appointmentschedule_data.get("morning_start")
         morning_end_str = appointmentschedule_data.get("morning_end")
@@ -1044,7 +1012,6 @@ def patient_personal_information_inpatient(request):
         print("Earliest time slot:", earliest_time)
     else:
         print("No time slots available")
-
 
     chosenPatient = request.GET.get('chosenPatient', '')
     endAppointment = request.GET.get('appointmentID', '')
@@ -1109,10 +1076,6 @@ def patient_personal_information_inpatient(request):
     
 
     chosenPatientConsulNotes = {}
-    
-    # for consulnotes_id, consulnotes_data in consulnotes.items():
-    #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
-    #         chosenPatientConsulNotes[consulnotes_id] = consulnotes_data
 
     consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
     # Retrieve the data for the specified patient ID and date
@@ -1290,14 +1253,6 @@ def patient_personal_information_inpatient(request):
             }
 
             
-            earliest_time = None
-            for time in time_slots:
-                select_time = datetime.strptime(time, '%H:%M')
-                if earliest_time < select_time:
-                    earliest_time = select_time
-
-            time_12h = earliest_time.strftime("%I:%M %p")
-
             appID = str(uuid.uuid1())
             appointment_date = request.POST.get('new-appointment-date')
             if appointment_date:
@@ -1323,7 +1278,6 @@ def patient_personal_information_inpatient(request):
                 db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
             
             patientData = db.child("patientdata").child(chosenPatient).get().val()
-            
             rooms = db.child("rooms").get().val()
             for room_id, room_data in rooms.items():
                 if patientData['room'] == room_id:
@@ -1410,67 +1364,63 @@ def patient_personal_information_inpatient(request):
 
             #db.child("patientdata").child(chosenPatient).update({"status": "Inpatient",
                                                                  #'diagnosis': currdiagnosis,
-        patients = db.child("patients").get().val()
-        patientsdata = db.child("patientdata").get().val()
-        vitalsigns = db.child("vitalsigns").get().val()
-        consulnotes = db.child("consultationNotes").get().val()
-        # today = datetime.now()
-        # tomorrow = today + timedelta(days=1)
-        # date = tomorrow.strftime('%Y-%m-%d')
-        date1 = datetime.today().strftime('%Y-%m-%d')
-        doctors = db.child("doctors").get().val()
-        uid = request.session['uid'] 
-        medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
-        medicines_list = [medication['Drug'] for medication in medications_cursor]
+    patients = db.child("patients").get().val()
+    patientsdata = db.child("patientdata").get().val()
+    vitalsigns = db.child("vitalsigns").get().val()
+    consulnotes = db.child("consultationNotes").get().val()
+    # today = datetime.now()
+    # tomorrow = today + timedelta(days=1)
+    # date = tomorrow.strftime('%Y-%m-%d')
+    date1 = datetime.today().strftime('%Y-%m-%d')
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+    medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
+    medicines_list = [medication['Drug'] for medication in medications_cursor]
 
-        chosenPatient = request.GET.get('chosenPatient', '')
+    chosenPatient = request.GET.get('chosenPatient', '')
 
-        appointmentschedule = db.child("appointmentschedule").get().val()
+    appointmentschedule = db.child("appointmentschedule").get().val()
 
-        
+    chosenPatientData = {}
+    for patients_id, patients_data in patients.items():
+        if chosenPatient == patients_data["uid"]:
+            chosenPatientData[patients_id] = patients_data
 
-        
+            #retrieve patient birthdate
+            chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
+            #calculate patient age function
+            # chosenPatientAge = calculate_age(chosenPatientBirthday)
 
-        chosenPatientData = {}
-        for patients_id, patients_data in patients.items():
-            if chosenPatient == patients_data["uid"]:
-                chosenPatientData[patients_id] = patients_data
+    chosenPatientDatas = {}
+    for patientsdata_id, patientsdata_data in patientsdata.items():
+        if "patientid" in patientsdata_data:
+            if chosenPatient == patientsdata_data["patientid"]:
+                chosenPatientDatas[patientsdata_id] = patientsdata_data
 
-                #retrieve patient birthdate
-                chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
-                #calculate patient age function
-                # chosenPatientAge = calculate_age(chosenPatientBirthday)
-
-        chosenPatientDatas = {}
-        for patientsdata_id, patientsdata_data in patientsdata.items():
-            if "patientid" in patientsdata_data:
-                if chosenPatient == patientsdata_data["patientid"]:
-                    chosenPatientDatas[patientsdata_id] = patientsdata_data
-
-        #Get Vital Signs Data of Chosen Patient
-        chosenPatientVitalEntryData = {}
-        for vitalsigns_id, vitalsigns_data in vitalsigns.items():
-            if chosenPatient == vitalsigns_id:
-                for vsid, vsdata in vitalsigns_data.items():
-                    chosenPatientVitalEntryData[vsid] = vsdata
-        
-        sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
+    #Get Vital Signs Data of Chosen Patient
+    chosenPatientVitalEntryData = {}
+    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+        if chosenPatient == vitalsigns_id:
+            for vsid, vsdata in vitalsigns_data.items():
+                chosenPatientVitalEntryData[vsid] = vsdata
     
-        chosenPatientConsulNotes = {}
-        # for consulnotes_id, consulnotes_data in consulnotes.items():
-        #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
-        #         chosenPatientConsulNotes[consulnotes_id] = consulnotes_data
+    sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
 
-        consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
-        # Retrieve the data for the specified patient ID and date
-        consulnotes_data = consultation_notes_ref.child(date1).get().val()
-        if consulnotes_data:
-            chosenPatientConsulNotes[chosenPatient] = consulnotes_data
-            currdiagnosis = consulnotes_data['diagnosis']                     
+    chosenPatientConsulNotes = {}
+    # for consulnotes_id, consulnotes_data in consulnotes.items():
+    #     if chosenPatient == consulnotes_data.data["patientID"] and date == consulnotes_data["date"]:
+    #         chosenPatientConsulNotes[consulnotes_id] = consulnotes_data
 
-        medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
-        medicines_set = {medication['Disease'] for medication in medications_cursor}
-        medicines_list = list(medicines_set)
+    consultation_notes_ref = db.child("consultationNotes").child(chosenPatient)
+    # Retrieve the data for the specified patient ID and date
+    consulnotes_data = consultation_notes_ref.child(date1).get().val()
+    if consulnotes_data:
+        chosenPatientConsulNotes[chosenPatient] = consulnotes_data
+        currdiagnosis = consulnotes_data['diagnosis']                     
+
+    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
+    medicines_set = {medication['Disease'] for medication in medications_cursor}
+    medicines_list = list(medicines_set)
 
     progressnotes = db.child("progressnotes").get().val()
     nurses = db.child("nurses").get().val()
