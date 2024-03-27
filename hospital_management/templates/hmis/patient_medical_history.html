@@ -1123,7 +1123,6 @@
                     <div class="row header" style="display: flex;">
                         <div class="cell diagnosis" style="flex: 1; text-align: center;">Date of Consultation</div>
                         <div class="cell date-illness" style="flex: 1; text-align: center;">Chief Complaint</div>
-                        <div class="cell treatment" style="flex: 1; text-align: center;">Review of Systems</div>
                         <div class="cell remarks" style="flex: 1; text-align: center;">Diagnosis</div>
                     </div>
                     
@@ -1139,11 +1138,6 @@
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in consulNotes_data.items %}
                                            <div>{{ item_value.chiefComplaint }}</div>
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1; text-align: center;">
-                                        {% for item_key, item_value in consulNotes_data.items %}
-                                           <div>Review of Systems</div>
                                         {% endfor %}
                                     </div>
                                     <div style="flex: 1; text-align: center;">

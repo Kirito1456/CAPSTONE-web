@@ -452,15 +452,8 @@ def AppointmentUpcoming(request):
 
         dates_to_pass = []
         for date_str in next_available_dates:
-    # Convert each date string to a datetime object
-            #date_obj = datetime.strptime(str(date_str), "%B %d, %Y")
-    # Convert the datetime object to a string in the desired format and add to the list
             dates_to_pass.append(date_str.strftime("%Y-%m-%d"))
-
-# Now next_available_dates contains the dates in the desired format
-            print(dates_to_pass)
-
-    
+            
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
@@ -539,97 +532,64 @@ def followup_appointment(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
     appointmentschedule = db.child("appointmentschedule").get().val()
+    print('DLLOW1')
     
-    time_slots = []
-    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-
-    if appointmentschedule_data:
-    # Define time slots for morning
-        morning_start_str = appointmentschedule_data.get("morning_start")
-        morning_end_str = appointmentschedule_data.get("morning_end")
-
-        # Convert strings to datetime objects for morning
-        morning_start = datetime.strptime(morning_start_str, '%H:%M')
-        morning_end = datetime.strptime(morning_end_str, '%H:%M')
-
-        # Define time slots for afternoon
-        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
-        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
-
-        # Convert strings to datetime objects for afternoon
-        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
-        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
-
-        interval = timedelta(minutes=30)
-
-        # Calculate time slots for morning
-        current_time = morning_start
-        while current_time <= morning_end:
-            time_slots.append(current_time.strftime('%H:%M'))
-            current_time += interval
-
-        # Calculate time slots for afternoon
-        current_time = afternoon_start
-        while current_time <= afternoon_end:
-            time_slots.append(current_time.strftime('%H:%M'))
-            current_time += interval
-
-
-    #print(time_slots)
-
     if request.method == 'POST':
-        try:
-            id=str(uuid.uuid1())
-            endAppointment = request.POST.get('past-appointment-id')
-            print(endAppointment)
-            appID = request.POST.get('appID')
-            new_date = request.POST.get('new-appointment-date')
-            new_time = request.POST.get('new-appointment-time')
-            doctor = request.session['uid']
-            # print(appID)
-            # print(id)
-            # print(doctor)
-            # print(new_date)
+        print('DLL2')
+        # try:
+        print('DLLOW333')
+        id=str(uuid.uuid1())
+        endAppointment = request.POST.get('past-appointment-id')
+        print(endAppointment)
+        appID = request.POST.get('appID')
+        # Get the date from the request.POST dictionary
+        date_str = request.POST.get('three_days_after')
 
-            # Convert to datetime object
-            time_obj = datetime.strptime(new_time, "%H:%M")
+        # Convert the date string to a datetime object
+        date_obj = datetime.strptime(date_str, '%B %d, %Y')
 
-            # Convert to 12-hour format with AM/PM
-            time_12h = time_obj.strftime("%I:%M %p")
+        # Format the datetime object to the desired format (yyyy-mm-dd)
+        formatted_date = date_obj.strftime('%Y-%m-%d')
 
-            # Format time and date objects to desired format
-            #new_time_formatted = date.datetime.strptime(new_time, "%H:%M")
-            #new_date_formatted = new_time_formatted.strftime("%I:%M %p")            
-            #print(new_time_formatted)
+        new_time = request.POST.get('followup_time')
+        doctor = request.session['uid']
 
-            #new_time_str = new_time_formatted.strftime("%I:%M %p")
-            #print(new_time_str)
+        # Convert to datetime object
+        time_obj = datetime.strptime(new_time, "%H:%M")
 
-            # Construct the path to the appointment data in Firebase
-            appointment_path = f"/appointments/{id}"  # Adjust the path as per your Firebase structure
+        # Convert to 12-hour format with AM/PM
+        time_12h = time_obj.strftime("%I:%M %p")
 
-            # Update appointment data in Firebase
-            db.child(appointment_path).set({
-                'doctorUID': doctor,
-                'appointmentVisitType': "Follow-Up Visit",
-                'appointmentDate': new_date,
-                'appointmentTime': time_12h,
-                'status': 'Ongoing',
-                'patientName': appID
-            }) 
-            appointment_path1 = f"/appointments/{endAppointment}"
-            db.child(appointment_path1).update({
-                'status': 'Finished'
-            }) 
+        # Construct the path to the appointment data in Firebase
+        appointment_path = f"/appointments/{id}"  # Adjust the path as per your Firebase structure
 
-        except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
+        # Update appointment data in Firebase
+        # db.child(appointment_path).set({
+        #     'doctorUID': doctor,
+        #     'appointmentVisitType': "Follow-Up Visit",
+        #     'appointmentDate': formatted_date,
+        #     'appointmentTime': time_12h,
+        #     'status': 'Ongoing',
+        #     'patientName': appID
+        # }) 
+        data = {
+            'doctorUID': doctor,
+            'appointmentVisitType': "Follow-Up Visit",
+            'appointmentDate': formatted_date,
+            'appointmentTime': time_12h,
+            'status': 'Ongoing',
+            'patientName': chosenPatient
+        }
+        db.child("appointments").child(id).set(data)
+        db.child("appointments").child(appID).update({'status': 'Finished'})
+
+        # except Exception as e:
+        #     messages.error(request, f'An error occurred: {str(e)}')
 
         return redirect('DoctorDashboard')  # Redirect to the appointments list page
 
     return render(request, 'hmis/AppointmentUpcoming.html', {'uid': uid,
-                                                            'appointmentschedule': appointmentschedule,
-                                                            'time_slots': time_slots})
+                                                            'appointmentschedule': appointmentschedule,})
         
 
 def AppointmentPast(request):
@@ -971,10 +931,12 @@ def patient_personal_information_inpatient(request):
             current_day_of_week = (current_day_of_week + 1) % 7
             days_checked += 1
 
+        print('List Final is ', list_final)
         # Get current date
         current_date = datetime.now().date()
-
+        three_days = current_date + timedelta(days=3)
         # Calculate dates 1 week, 2 weeks, 3 weeks, and 1 month from now
+        
         one_week_from_now = current_date + timedelta(weeks=1)
         two_weeks_from_now = current_date + timedelta(weeks=2)
         three_weeks_from_now = current_date + timedelta(weeks=3)
@@ -995,6 +957,9 @@ def patient_personal_information_inpatient(request):
             'three_weeks_from_now': find_nearest_date(three_weeks_from_now, list_final),
             'one_month_from_now': find_nearest_date(one_month_from_now, list_final)
         }
+        
+        three_days_after = find_nearest_date(three_days, list_final)
+        print('three_days_after', three_days_after)
 
         # Define time slots for morning
         morning_start_str = appointmentschedule_data.get("morning_start")
@@ -1080,9 +1045,8 @@ def patient_personal_information_inpatient(request):
 
     chosenPatientDatas = {}
     for patientsdata_id, patientsdata_data in patientsdata.items():
-        if "patientid" in patientsdata_data:
-            if chosenPatient == patientsdata_data["patientid"]:
-                chosenPatientDatas[patientsdata_id] = patientsdata_data
+        if patientsdata_id == chosenPatient:
+            chosenPatientDatas[patientsdata_id] = patientsdata_data
 
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
@@ -1101,8 +1065,10 @@ def patient_personal_information_inpatient(request):
     consulnotes_data = consultation_notes_ref.child(date1).get().val()
     if consulnotes_data:
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
-        if consulnotes_data['diagnosis']:
+        if 'diagnosis' in consulnotes_data:
             currdiagnosis = consulnotes_data['diagnosis']
+        else:
+            currdiagnosis = None
 
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
     medicines_set = {medication['Disease'] for medication in medications_cursor}
@@ -1207,8 +1173,19 @@ def patient_personal_information_inpatient(request):
 
 
         if 'endAppointment' in request.POST:
+            appointment_id = request.POST.get('endAppointment')
+            
+            # Check if the follow-up checkbox is checked
+            if 'followupCheckbox' in request.POST:
+                followup_appointment()
+                print('PASS')
+            
+            # Update the appointment status to 'Finished' in the database
             db.child("appointments").child(endAppointment).update({'status': 'Finished'})
+            
+            # Redirect to the DoctorDashboard
             return redirect('DoctorDashboard')
+
 
         if 'discharge_patient' in request.POST:
             numOfDays = request.POST.getlist('days') 
@@ -1349,6 +1326,49 @@ def patient_personal_information_inpatient(request):
                 }
 
                 db.child('patientsorders').child(chosenPatient).child(todaydate).child(qid).set(data)
+                
+            new_id = str(uuid.uuid1())
+            uid1 = request.session['uid'] 
+            discharge_day = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            pname = request.POST.get('pname')
+            bday = request.POST.get('bday')
+            gender = request.POST.get('gender')
+            diagnosis = request.POST.get('diagnosis')
+            attending_physician = request.POST.get('attending_physician')
+            today_days_stay = request.POST.get('today_days_stay')
+            selected_time = request.POST.get('selected_appointment_date')
+            print('SELECTED TIME', selected_time)
+            followup_time = request.POST.get('followup_time')
+
+            date_obj = datetime.strptime(selected_time, '%B %d, %Y')
+
+            # Format the datetime object to the desired format (yyyy-mm-dd)
+            formatted_date = date_obj.strftime('%Y-%m-%d')
+
+            data = {
+                'doctorid': uid1,
+                'discharge_day': discharge_day,
+                'pname': pname,
+                'bday': bday,
+                'gender': gender,
+                'diagnosis': diagnosis,
+                'attending_physician': attending_physician,
+                'today_days_stay': today_days_stay,
+                'patientid': chosenPatient 
+            }
+            
+            # Save the data to the database
+            db.child('admissionHistory').child(chosenPatient).child(discharge_day).set(data)
+
+            data2 = {
+                'appointmentDate': formatted_date,
+                'appointmentTime': followup_time,
+                'appointmentVisitType': 'Follow-Up Visit',
+                'doctorUID': uid1,
+                'patientName': chosenPatient,
+                'status': 'Ongoing'
+            }
+            db.child('appointments').child(new_id).set(data2)
  
         if 'admitButton' in request.POST:
 
@@ -1412,9 +1432,8 @@ def patient_personal_information_inpatient(request):
 
     chosenPatientDatas = {}
     for patientsdata_id, patientsdata_data in patientsdata.items():
-        if "patientid" in patientsdata_data:
-            if chosenPatient == patientsdata_data["patientid"]:
-                chosenPatientDatas[patientsdata_id] = patientsdata_data
+        if patientsdata_id == chosenPatient:
+            chosenPatientDatas[patientsdata_id] = patientsdata_data
 
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
@@ -1435,7 +1454,10 @@ def patient_personal_information_inpatient(request):
     consulnotes_data = consultation_notes_ref.child(date1).get().val()
     if consulnotes_data:
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
-        currdiagnosis = consulnotes_data['diagnosis']                     
+        if 'diagnosis' in consulnotes_data:
+            currdiagnosis = consulnotes_data['diagnosis']
+        else:
+            currdiagnosis = None                  
 
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
     medicines_set = {medication['Disease'] for medication in medications_cursor}
@@ -1444,12 +1466,20 @@ def patient_personal_information_inpatient(request):
     progressnotes = db.child("progressnotes").get().val()
     nurses = db.child("nurses").get().val()
 
+    print('SORTED APPOINTMENTS ARE ', sorted_appointments)
+    
     first_appointment = next(iter(sorted_appointments.values()), None)
+    print('FIRST APPOINTMENTS IS ', first_appointment)
     first_appointment_date = first_appointment['appointmentDate'] if first_appointment else None
-    print('FIRST DATE IS ', first_appointment_date)
-    given_date = datetime.strptime(first_appointment_date, '%Y-%m-%d')
-    today_date = datetime.now()
-    num_days = (today_date - given_date).days
+    print('CONVERTED FIRST DATE IS ', first_appointment_date)
+    if first_appointment_date is None:
+        num_days = 0
+    else:
+        given_date = datetime.strptime(first_appointment_date, '%Y-%m-%d')
+        today_date = datetime.now()
+        num_days = (today_date - given_date).days
+
+        
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
                                                                                 'chosenPatientDatas': chosenPatientDatas, 
@@ -1468,8 +1498,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'num_days': num_days,
                                                                                 'nurses': nurses,
                                                                                 'nearest_dates': nearest_dates,
-                                                                                'earliest_time': earliest_time})
-    # return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 'chosenPatientDatas': chosenPatientDatas, 'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 'chosenPatientAge' : chosenPatientAge})
+                                                                                'earliest_time': earliest_time,
+                                                                                'three_days_after': three_days_after})
 
 def save_chiefComplaint(request):
         
@@ -1920,22 +1950,21 @@ def save_prescriptions(request):
                     medicine = medicine_name[index]
                     dosage_value = dosage[index]
                     route_value = route[index]
-                    frequency_value = frequency[index]
                     additional_remarks_value = additional_remarks[index]
                     times_value = times_list[index]
+                    days = days[index]
 
                     data = {
                         'date': endDate_str,
                         'prescriptionsoderUID': id,
-                        'occurence': occurence,
                         'medicine_name': medicine,
                         'dosage': dosage_value,
                         'route': route_value,
-                        'frequency': frequency_value,
                         'additional_remarks': additional_remarks_value,
                         'patient_id': patient_id,
                         'todaydate': todaydate,
                         'status': 'Ongoing',
+                        'days': days,
                         'times': times_value
                     }
 

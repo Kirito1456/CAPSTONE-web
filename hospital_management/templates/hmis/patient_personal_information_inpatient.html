@@ -463,9 +463,25 @@
 
                         <div id="appModal" class="modalFinish" style="display: none;">
                             <h2>Finish Appointment</h2>
-
-                            <input type="checkbox" id="followupCheckbox" onchange="toggleFollowup()">
-                            <label for="followupCheckbox">Follow-Up Checkup</label>
+                            <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
+                            {% csrf_token %}
+                                <input type="checkbox" id="followupCheckbox" name="followupCheckbox" onchange="toggleFollowup()">
+                                <label for="followupCheckbox">Follow-Up Checkup</label>
+                                <div id="followupDiv" style="display: none;">
+                                    {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
+                                        {% if appointmentsched_data.uid == uid %}
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label for="suggested-date" style="margin-top: 5px; font-weight: bold;">Suggested Schedule:</label>
+                                                    <div name="three_days_after" style="margin-top: 5px;">{{ three_days_after }}</div>
+                                                    <label for="suggested-time" style="margin-top: 5px; font-weight: bold;">Suggested Time:</label>
+                                                    <div name="followup_time" style="margin-top: 5px;">{{ earliest_time }}</div><br>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </form>
 
                             <form method="post">
                                 {% csrf_token %}
@@ -561,11 +577,11 @@
                                     <div id="chiefComplaintArea" style="display: none;">
                                         {% if chosenPatientConsulNotes %}
                                             {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                                <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." 
+                                                <textarea id="chiefComplaintText" rows="4" cols="35" placeholder="Enter chief complaint..." 
                                                 name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
                                             {% endfor %}
                                         {% else %}
-                                            <textarea id="chiefComplaintText" rows="4" cols="50" placeholder="Enter chief complaint..." 
+                                            <textarea id="chiefComplaintText" rows="4" cols="35" placeholder="Enter chief complaint..." 
                                             name="chiefComplaint"></textarea>
                                         {% endif %}
                                         <button id="saveChiefComplaintButton" type="submit" name="complaintButton" value={{ chosenPatientData_id }} >Save</button>
@@ -943,34 +959,40 @@
                         <div class = "head">Progress Notes</div>
                             <div id = "progress-notes">
                                 <div id = "progress-note" style="height: 150px; overflow-y: auto;">
-                                    <table>
-                                        <tr>
-                                            <th>Last Updated</th>
-                                            <th>Nurse</th>
-                                            <th>Focus</th>
-                                            <th>Notes</th>
-                                        </tr>
-                                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                            {% for progressnotes_id, progressnotes_data in progressnotes.items %}
-                                                {% if progressnotes_id == chosenPatientData_data.uid %}
-                                                    {% for id, data in progressnotes_data.items %}
-                                                        <tr>
-                                                            <td style="text-align: center;">{{ data.date }} {{ data.time }}</td>
-                                                            <td style="text-align: center;">
-                                                                {% for nurse_id, nurse_data in nurses.items %}
-                                                                    {% if nurse_id == data.nurseID %}
-                                                                        {{ nurse_data.fname }} {{ nurse_data.lname }}
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                            </td>
-                                                            <td style="text-align: center;">{{ data.focus }}</td>
-                                                            <td style="text-align: center;">{{ data.notes }}</td>
-                                                        </tr>
+                                    {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                                        {% if chosenPatientDatas_data.status == 'Inpatient' %}
+                                            <table>
+                                                <tr>
+                                                    <th>Last Updated</th>
+                                                    <th>Nurse</th>
+                                                    <th>Focus</th>
+                                                    <th>Notes</th>
+                                                </tr>
+                                                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                                    {% for progressnotes_id, progressnotes_data in progressnotes.items %}
+                                                        {% if progressnotes_id == chosenPatientData_data.uid %}
+                                                            {% for id, data in progressnotes_data.items %}
+                                                                <tr>
+                                                                    <td style="text-align: center;">{{ data.date }} {{ data.time }}</td>
+                                                                    <td style="text-align: center;">
+                                                                        {% for nurse_id, nurse_data in nurses.items %}
+                                                                            {% if nurse_id == data.nurseID %}
+                                                                                {{ nurse_data.fname }} {{ nurse_data.lname }}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </td>
+                                                                    <td style="text-align: center;">{{ data.focus }}</td>
+                                                                    <td style="text-align: center;">{{ data.notes }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        {% endif %}
                                                     {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endfor %}
-                                    </table>
+                                                {% endfor %}
+                                            </table>
+                                        {% else %}
+                                            <p style="font-size: 14px; font-weight: normal;"><em>Not available for Outpatients</em></p>
+                                        {% endif %}
+                                    {% endfor %}
                                     
                                 </div>
                             </div>
@@ -982,6 +1004,9 @@
                     {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
                         <div class = "container-small"  style="width: 100%;">
                             <div class="head">Latest Vital Signs</div>
+                            {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                                        {% if chosenPatientDatas_data.status == 'Inpatient' %}
+
                             <div id="vital-signs-table">
                                 <table id="vital-signs">
                                     <tr id="label">
@@ -1014,6 +1039,10 @@
                                     <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id="view-vitalsigns-history">View History</a>
                                 </div>
                             </div>
+                                {% else %}
+                                    <p style="margin-left: 10px; font-size: 14px; font-weight: normal;"><em>Not available for Outpatients</em></p>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     {% endfor %}
                 </div>
@@ -1036,33 +1065,45 @@
                 {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
                     <div class="form-group">
                         <div style="margin: 5px; font-weight: bold;">Patient Name: </div>
-                        <div class="form_container">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
+                        <input type="hidden" name="pname" value="{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}">
+
+                        <div class="form_container" value="{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}" name="pname">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
                     </div>
                     <div class="form-group">
                         <div style="margin: 5px; font-weight: bold;">Birthday: </div>
-                        <div class="form_container">{{ chosenPatientData_data.bday }}</div>
+                        <div class="form_container" value="{{ chosenPatientData_data.bday }}" name="bday">{{ chosenPatientData_data.bday }}</div>
+                        <input type="hidden" name="bday" value="{{ chosenPatientData_data.bday }}">
+
                     </div>
                     <div class="form-group">
                         <div style="margin: 5px; font-weight: bold;">Gender: </div>
-                        <div class="form_container">{{ chosenPatientData_data.gender }}</div>
+                        <div class="form_container" value="{{ chosenPatientData_data.gender }}" name="gender">{{ chosenPatientData_data.gender }}</div>
+                        <input type="hidden" name="gender" value="{{ chosenPatientData_data.gender }}">
+
                     </div>
                     {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                         <div class="form-group">
                             <div style="margin: 5px; font-weight: bold;">Diagnosis: </div>
-                            <div class="form_container">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
+                            <div class="form_container" value="{{ chosenPatientConsulNotes_data.diagnosis }}" name="diagnosis">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
+                            <input type="hidden" name="diagnosis" value="{{ chosenPatientConsulNotes_data.diagnosis }}">
+
                         </div>
                     {% endfor %}
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
                             <div class="form-group">
                                 <div style="margin: 5px; font-weight: bold;">Attending Physician: </div>
-                                <div class="form_container">{{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                                <div class="form_container" value="{{ doctor_data.fname }} {{ doctor_data.lname }}" name="attending_physician">{{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                                <input type="hidden" name="attending_physician" value="{{ doctor_data.fname }} {{ doctor_data.lname }}">
+
                             </div>
                         {% endif %}
                     {% endfor %}
                     <div class="form-group">
                         <div style="margin: 5px; font-weight: bold;">Total Days of Stay: </div>
-                        <div class="form_container">{{ num_days }}</div>
+                        <div class="form_container" value="{{ num_days }}" name="today_days_stay">{{ num_days }}</div>
+                        <input type="hidden" name="num_days" value="{{ num_days }}">
+
                     </div>
                 {% endfor %}
             </div>
@@ -1075,7 +1116,7 @@
                             <label for="suggested-date" style="margin: 5px; font-weight: bold;">Suggested Schedule:</label>
                             <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                                 {% for key, value in nearest_dates.items %}
-                                    <option value="{{ key }}" name="selected_time">
+                                    <option value="{{ value }}">
                                         {% if key == 'one_week_from_now' %}
                                             1 Week: {{ value }}
                                         {% elif key == 'two_weeks_from_now' %}
@@ -1090,6 +1131,8 @@
                             </select><br>
                             <label for="suggested-time" style="margin: 5px; font-weight: bold;">Suggested Time:</label>
                             <input type="text" name="followup_time" value={{ earliest_time }}></input>
+                            <input type="hidden" name="followup_time" value="{{ earliest_time }}">
+
                         </div>
                     </div>
                 {% endif %}
@@ -1156,9 +1199,9 @@
                 </div>
             
             </div>
-            
-            </div>
             <button name="discharge_patient">Discharge Patient</button>
+            </div>
+            
         </form>
     </div>
 </div>
@@ -1555,15 +1598,15 @@
             dropdown.appendChild(option);
         });
     }
-    function toggleFollowup() {
-        var followupCheckbox = document.getElementById("followupCheckbox");
-        var followupDropdown = document.getElementById("followupDropdown");
-    
-        if (followupCheckbox.checked) {
-            followupDropdown.style.display = "block";
-        } else {
-            followupDropdown.style.display = "none";
+        function toggleFollowup() {
+            var followupDiv = document.getElementById("followupDiv");
+            var checkbox = document.getElementById("followupCheckbox");
+            
+            if (checkbox.checked) {
+                followupDiv.style.display = "block";
+            } else {
+                followupDiv.style.display = "none";
+            }
         }
-    }
 </script>
 {% endblock %}
