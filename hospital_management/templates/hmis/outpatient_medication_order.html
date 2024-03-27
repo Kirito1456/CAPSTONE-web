@@ -45,12 +45,43 @@
         </div>
 
         <div id = "treatment-plan">
+
+            {% for patients_id, patients_data in patients.items %}
+                {% if patients_data.uid == patient_uid %}
+                    <div id = "patient-information">
+                        <div id = "first">
+                            <div id = "fname-label">Name of Patient</div>
+                            <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
+                        </div>
+                        <div id = "gender">
+                            <div id = "gender-label">Gender</div>
+                            <div id = "gender-view">{{ patients_data.gender }}</div>
+                        </div>
+                        <div id = "bday">
+                            <div id = "bday-label">Date of Birth</div>
+                            <div id = "birthday-view">{{ patients_data.bday }}</div>
+                        </div>
+                        <div id = "age">
+                            <div id = "age-label">Age</div>
+                            <div id = "age-view"></div>
+                        </div>   
+                        
+                        <div id="today">
+                            <div id="today-label">Date of Prescription</div>
+                        
+                            <div id="today-view">{{latest_date}}</div>
+                 
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+                <hr>
             <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                 {% csrf_token %}
-                {% for patients_id, patients_data in patients.items %}
+                {% comment %} {% for patients_id, patients_data in patients.items %}
                     {% if patients_data.uid == patient_uid %}
                     {% endif %}
-                {% endfor %}
+                {% endfor %} {% endcomment %}
                 <div id="medications-container">
                     <div style="margin-top: 20px;"id="head">Medications List</div>
                     <div id="medication-list-container">
@@ -65,35 +96,48 @@
                         </div>
                         <div id="table-body">
                             <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-                            <div style="flex: 1; text-align: center;"><input type="number"></div>
+                            <div style="flex: 1; text-align: center;"><input type="number" name="days"></div>
                             <div style="flex: 1; text-align: center;">
                                 <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
                                 <datalist id="medicine_name_suggestions">
                                     {% for medicine in medicines_list %}
-                                        <option value="{{ medicine }}">
+                                        <option value="{{ medicine }}">{{ medicine }}</option>
                                     {% endfor %}
                                 </datalist>
                             </div>
-
-                            <div style="flex: 1; text-align: center;"><input type="text" class="dosage-input" placeholder="Dosage" name="dosage"></div>
+                            
                             <div style="flex: 1; text-align: center;">
-                                <select class="route-dropdown" name="route">
-                                    <option value="" selected disabled>Select Route</option>
-                                    <option value="Oral">Oral</option>
-                                    <option value="Injection">Injection</option>
-                                    <option value="Topical">Topical</option>
+                                <select class="dosage-input" name="dosage" id="dosage_input">
+                                    <option value="" selected disabled>Select Dosage</option>
                                 </select>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                
+                                <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                             </div>
                             <div>
                                 <div style="flex: 1; text-align: center;">
-                                    <select class="frequency-dropdown" name="frequency" id="frequency-dropdown">
+                                    {% comment %} <select class="frequency-dropdown" name="frequency" id="frequency-dropdown">
                                         <option value="" selected disabled>Select Frequency</option>
                                         <option value="Once Daily">Once Daily</option>
                                         <option value="Twice Daily">Twice Daily</option>
                                         <option value="Thrice Daily">Thrice Daily</option>
-                                    </select>
+                                    </select> {% endcomment %}
+
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
+                                        <label for="morning-checkbox">Morning</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
+                                        <label for="afternoon-checkbox">Afternoon</label>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
+                                        <label for="evening-checkbox">Evening</label>
+                                    </div>
                                 </div>
-                                <div id="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
+                                {% comment %} <div id="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
                                     <div style="text-align: center;">
                                         <input type="checkbox" name="times-once-daily[]" id="morning-checkbox" value="Morning">
                                         <label for="morning-checkbox">Morning</label>
@@ -120,7 +164,7 @@
                                         <input type="checkbox" name="times-twice-daily[]" id="twice-daily-evening-checkbox" value="Evening">
                                         <label for="twice-daily-evening-checkbox">Evening</label>
                                     </div>     
-                                </div>                    
+                                </div>                     {% endcomment %}
                             </div>
                             <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
                         </div>
@@ -161,7 +205,49 @@
 <script src="{% static 'js/create-medications.js' %}"></script>
 <script src="{% static 'js/ocr.js' %}"></script>
 <script>
-    
+      // Retrieve pharmacy_lists from the template
+      var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
+      console.log(pharmacyLists);  // Print pharmacy_lists to the console
+
+      // Add your additional JavaScript code here
+      const medicineNameInput = document.getElementById('medicine_name_input');
+      const dosageInput = document.getElementById('dosage_input');
+      const routeInput = document.getElementById('route_input');
+
+      medicineNameInput.addEventListener('input', populateDosageDropdown);
+
+      dosageInput.addEventListener('change', changeRouteDropdown);
+
+      function populateDosageDropdown() {
+          const selectedMedicine = medicineNameInput.value.trim();
+          dosageInput.innerHTML = '<option value="" selected disabled>Select Dosage</option>'; // Reset dosage dropdown
+          
+          // Populate dosage dropdown based on selected medicine
+          pharmacyLists.forEach(function(pharmacy) {
+              if (pharmacy.Drug.trim() === selectedMedicine) { // Ensure consistent comparison
+                  const option = document.createElement('option');
+                  option.text = pharmacy.Strength;
+                  option.value = pharmacy.Strength;
+                  dosageInput.appendChild(option);
+              }
+          });
+
+          // Trigger the change event on dosage dropdown to update the route dropdown
+          dosageInput.dispatchEvent(new Event('change'));
+      }
+
+      function changeRouteDropdown() {
+          const selectedStrength = dosageInput.value.trim();
+          
+          // Change route dropdown based on selected strength
+          pharmacyLists.forEach(function(pharmacy) {
+              if (pharmacy.Strength.trim() === selectedStrength) { // Ensure consistent comparison
+                  routeInput.value = pharmacy.Route;
+              }
+          });
+      }
+
+
     document.addEventListener("DOMContentLoaded", function() {
         var birthdayString = document.getElementById("birthday-view").innerText;
         var birthday = new Date(birthdayString);
@@ -225,6 +311,8 @@
         document.getElementById('submit-medication-button').addEventListener('click', function () {
             alert('Successfully Added a Medication Order/Prescription!');
         });
+
+        
     });
     
 </script>
