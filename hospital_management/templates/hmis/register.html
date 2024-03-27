@@ -253,7 +253,7 @@
         <img src="{%static 'logo-color.png'%}" id = "logo-picture">
     </div>
     <div id = "register">
-        <div id = "header">REGISTER</div>
+        <div id = "header"  style="color: #334a7c;">REGISTER</div>
         <form method="post" action="{% url 'create' %}" class="signup_table">
             {% csrf_token %}
             <div class="email">
@@ -344,7 +344,7 @@
             </div>
             
             <div id = "button">
-                <button id="signup_btn" type="submit">Create Account</button>
+                <button id="signup_btn" style="background-color: #334a7c;" type="submit">Create Account</button>
             </div>
         </div>
     </form>

@@ -96,7 +96,7 @@
     padding: 8px 12px;
     border: none;
     border-radius: 30px;
-    background-color: #5c7c89;
+    background-color: #334a7c;
     color: #fff;
     cursor: pointer;
 }
@@ -157,7 +157,7 @@ a:hover{
 
 #head{
     font-weight: bold;
-    background-color: #5c7c89;
+    background-color: #334a7c;
     color: white;
 }
 
@@ -239,6 +239,8 @@ a:hover{
     align-items: flex-end;
 
     bottom: 0px;
+
+    margin-top: 10px;
 }
 
 .pagination a {
@@ -250,9 +252,9 @@ a:hover{
 }
 
 .pagination a.active {
-    background-color: #5c7c89;
+    background-color: #334a7c;
     color: white;
-    border: 1px solid #5c7c89;
+    border: 1px solid #334a7c;
 }
 
 #current-date-time {
