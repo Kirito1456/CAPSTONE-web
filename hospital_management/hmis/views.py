@@ -1111,12 +1111,14 @@ def patient_personal_information_inpatient(request):
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
         if 'diagnosis' in consulnotes_data:
             currdiagnosis = consulnotes_data['diagnosis']
+            medicines_set = {medication['Disease'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
+            medicines_list = list(medicines_set)
         else:
             currdiagnosis = None
 
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
-    medicines_set = {medication['Disease'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
-    medicines_list = list(medicines_set)
+    # medicines_set = {medication['Disease'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
+    # medicines_list = list(medicines_set)
 
     cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
     pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
@@ -1340,7 +1342,7 @@ def patient_personal_information_inpatient(request):
             }
             
             # Save the data to the database
-            db.child('testrequest').child(chosenPatient).child(id).set(data)
+            db.child('testrequest').child(chosenPatient).set(data)
 
 
         if 'endAppointment' in request.POST:
@@ -1719,12 +1721,15 @@ def patient_personal_information_inpatient(request):
         chosenPatientConsulNotes[chosenPatient] = consulnotes_data
         if 'diagnosis' in consulnotes_data:
             currdiagnosis = consulnotes_data['diagnosis']
+            medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2})
+            medicines_set = {medication['Drug'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
+            medicines_list = list(medicines_set)
         else:
             currdiagnosis = None                  
 
-    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2})
-    medicines_set = {medication['Drug'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
-    medicines_list = list(medicines_set)
+    # medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2})
+    # medicines_set = {medication['Drug'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
+    # medicines_list = list(medicines_set)
 
     cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
     pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
