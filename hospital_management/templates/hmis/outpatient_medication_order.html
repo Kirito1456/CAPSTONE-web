@@ -145,12 +145,13 @@
                 </div>
                 
             </form>
-            
+            <button onclick="openModal7()">Upload Image</button>
         </div>
 </div>
 
-<div id="myModal" class="modal">
-    <div class="modal-content">
+
+<div id="myModal" class="modal" style="background-color: rgba(128, 128, 128, 0.5);">
+    <div class="modal-content" style="background-color: white;">
         <span class="close">&times;</span>
         <h2>Uploading Photo</h2>
         <div id = "uploading-header">Upload Handwritten Image</div>
@@ -163,13 +164,25 @@
                 <button id="remove-button" type="button" onclick="removeFile()" style="display: none;">Remove</button>
                 <button id="upload-button" type="submit" style="display: none;">Upload Photo</button>
             </div>
-        </form>     
+        </form>   
+        <div id="ocrResult"></div>  
+        <div id="dosages"></div>  
     </div>
 </div>
 
 <script src="{% static 'js/create-medication.js' %}"></script>
-<script src="{% static 'js/ocr.js' %}"></script>
+<script src="{% static 'js/ocr1.js' %}"></script>
 <script>
+    function openModal7() {
+        var modal = document.getElementById('myModal');
+        modal.style.display = "block";
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        var modal = document.getElementById('myModal');
+        modal.style.display = "none";
+    }
     // Retrieve pharmacy_lists from the template
     var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
     console.log(pharmacyLists);  // Print pharmacy_lists to the console

@@ -121,7 +121,7 @@
                                         {% endfor %}
                                     </select><br>
                                     <label for="suggested-time">Suggested Time:</label>
-                                    <input type="text" id="new_appointment_time" name='new_appointment_time' value={{ appointment_data.appointmentTime }} style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;" ></input><br>
+                                    <div name="new_appointment_time" id="new_appointment_time" value={{ time_early }} style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: fit-content;">{{ time_early }}</div><br>
                                     <button type="submit" id="appID" name='appID' value={{ appointment_id }}>Submit</button>
 
                                 </form>

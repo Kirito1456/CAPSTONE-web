@@ -57,7 +57,6 @@ document.getElementById('upload-button').addEventListener('click', function(even
     }
 });
 
-// Function to perform OCR
 function performOCR(file) {
     const formData = new FormData();
     formData.append('image', file);
@@ -77,10 +76,46 @@ function performOCR(file) {
     })
     .then(text => {
         console.log('OCR result:', text);
-        alert('OCR result: ' + text);
+        // Extract medicine names (Alprazolam and Lorazepam)
+        const medicineNames = extractSpecificMedicineNames(text);
+        const dosages = extractDosages(text);
+        // Display extracted medicine names in a div
+        document.getElementById('ocrResult').textContent = 'Medicine names: ' + medicineNames.join(', ');
+        document.getElementById('dosages').textContent = 'Dosages: ' + dosages.join(', ');
+
     })
     .catch(error => {
         console.error('Error performing OCR:', error);
         alert('Failed to perform OCR. Please try again.');
     });
+}
+
+// Function to extract specific medicine names (Alprazolam and Lorazepam) from the OCR result
+function extractSpecificMedicineNames(text) {
+    const medicineNames = [];
+    // Search for Alprazolam and Lorazepam in the OCR result
+    if (text.includes('Alprazolam')) {
+        medicineNames.push('Alprazolam');
+    }
+    if (text.includes('Lorazepam')) {
+        medicineNames.push('Lorazepam');
+    }
+    if (text.includes('Amoxicillin')) {
+        medicineNames.push('Amoxicillin');
+    }
+    if (text.includes('Colace')) {
+        medicineNames.push('Colace');
+    }
+    return medicineNames;
+}
+
+function extractDosages(text) {
+    const dosages = [];
+    // Example regex pattern to match numerical values followed by "mg"
+    const regex = /\b(\d+(?:\.\d+)?) mg\b/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        dosages.push(match[0]);
+    }
+    return dosages;
 }

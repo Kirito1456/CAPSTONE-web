@@ -453,12 +453,52 @@ def AppointmentUpcoming(request):
         dates_to_pass = []
         for date_str in next_available_dates:
             dates_to_pass.append(date_str.strftime("%Y-%m-%d"))
+
+        # Define time slots for morning
+        morning_start_str = appointmentschedule_data.get("morning_start")
+        morning_end_str = appointmentschedule_data.get("morning_end")
+
+        # Convert strings to datetime objects for morning
+        morning_start = datetime.strptime(morning_start_str, '%H:%M')
+        morning_end = datetime.strptime(morning_end_str, '%H:%M')
+
+        # Define time slots for afternoon
+        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
+        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+
+        # Convert strings to datetime objects for afternoon
+        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+
+        interval = timedelta(minutes=30)
+
+        # Calculate time slots for morning
+        current_time = morning_start
+        while current_time <= morning_end:
+            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
+            current_time += interval
+
+        # Calculate time slots for afternoon
+        current_time = afternoon_start
+        while current_time <= afternoon_end:
+            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
+            current_time += interval
+    
+    time_objects = [datetime.strptime(time_slot, '%I:%M %p') for time_slot in time_slots]
+
+    # Find the earliest time slot
+    if time_objects:
+        earliest_time = min(time_objects)
+        time_early = earliest_time.strftime('%I:%M %p')
+        print("Earliest time slot:", time_early)
+    else:
+        print("No time slots available")
             
 
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
-                                                             'next_available_dates': dates_to_pass})
+                                                             'next_available_dates': dates_to_pass, 'time_early': time_early})
 
 
 def delete_appointment(request):
@@ -982,18 +1022,22 @@ def patient_personal_information_inpatient(request):
         # Calculate time slots for morning
         current_time = morning_start
         while current_time <= morning_end:
-            time_slots.append(current_time.strftime('%H:%M'))
+            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
             current_time += interval
 
         # Calculate time slots for afternoon
         current_time = afternoon_start
         while current_time <= afternoon_end:
-            time_slots.append(current_time.strftime('%H:%M'))
+            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
             current_time += interval
     
-    if time_slots:
-        earliest_time = min(time_slots)
-        print("Earliest time slot:", earliest_time)
+    time_objects = [datetime.strptime(time_slot, '%I:%M %p') for time_slot in time_slots]
+
+    # Find the earliest time slot
+    if time_objects:
+        earliest_time = min(time_objects)
+        time_early = earliest_time.strftime('%I:%M %p')
+        print("Earliest time slot:", time_early)
     else:
         print("No time slots available")
 
@@ -1071,8 +1115,12 @@ def patient_personal_information_inpatient(request):
             currdiagnosis = None
 
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
-    medicines_set = {medication['Disease'] for medication in medications_cursor}
+    medicines_set = {medication['Disease'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
     medicines_list = list(medicines_set)
+
+    cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
+    pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
+    pharmacy_lists_json = json.dumps(pharmacy_lists)
 
     time_slots = []
     appointmentschedule = db.child("appointmentschedule").get().val()
@@ -1117,8 +1165,131 @@ def patient_personal_information_inpatient(request):
             time_slots.append(current_time.strftime('%H:%M'))
             current_time += interval
 
-
+    
     if request.method == 'POST':
+        
+        if 'submitMedOrder' in request.POST:
+            patient_uid = request.GET.get('chosenPatient')
+            patientdata = db.child("patientdata").child(patient_uid).get().val()
+            print(patientdata)
+            #numOfDays = int(request.POST.get('numOfDays'))
+            todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            days = request.POST.getlist('days')
+            numOfDays = 0
+            for day in days:
+                try:
+                    day_int = int(day)
+                    if day_int > numOfDays:
+                        numOfDays = day_int
+                except ValueError:
+                    pass 
+
+            # Calculate endDate
+            todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
+            endDate = todaydate_datetime + timedelta(days= numOfDays)
+            endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+
+            patient_id = patient_uid 
+            medicine_name = request.POST.getlist('medicine_name')
+            dosage = request.POST.getlist('dosage')
+            route = request.POST.getlist('route')
+            
+            #frequency = request.POST.getlist('frequency')
+            
+            additional_remarks = request.POST.getlist('additionalremarks')
+            todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            #times_list = []
+            times = request.POST.getlist('times-daily[]')
+            times_list = []
+
+            # Iterate through the days and construct the times_list
+            for day in days:
+                times = request.POST.getlist('times-daily[]')
+                times_str = ', '.join(times)
+                times_list.append(times_str)
+
+            try:
+                id = str(uuid.uuid1())
+                status = 'Ongoing'  # Default status
+
+                # Check if endDate is reached
+                if datetime.now() > endDate:
+                    status = 'Finished'
+
+                data = {
+                    'prescriptionsoderUID': id,
+                    'days': days,
+                    'medicine_name': medicine_name,
+                    'dosage': dosage,
+                    'route': route,
+                    #'frequency': occurence,
+                    'times': times_list,
+                    'additional_remarks': additional_remarks,
+                    'patient_id': patient_id,
+                    'todaydate': todaydate,
+                    'endDate': endDate_str,
+                    'status': status
+                }
+                db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
+                print('STATUS ', patientdata['status'])
+                if patientdata['status'] == 'Inpatient':
+                    for index in range(len(medicine_name)):
+                        pid = str(uuid.uuid1())
+                        medicine = medicine_name[index]
+                        dosage_value = dosage[index]
+                        route_value = route[index]
+                        additional_remarks_value = additional_remarks[index]
+                        times_value = times_list[index]
+
+                        
+                        days = days[index]
+
+                        data = {
+                            'date': endDate_str,
+                            'prescriptionsoderUID': id,
+                            'medicine_name': medicine,
+                            'dosage': dosage_value,
+                            'route': route_value,
+                            'additional_remarks': additional_remarks_value,
+                            'patient_id': patient_id,
+                            'todaydate': todaydate,
+                            'status': 'Ongoing',
+                            'days': days,
+                            'times': times_value
+                        }
+
+                        db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(data)
+
+                elif patientdata['status'] == 'Outpatient':
+                    for index in range(len(medicine_name)):
+                        pid = str(uuid.uuid1())
+                        medicine = medicine_name[index]
+                        dosage_value = dosage[index]
+                        route_value = route[index]
+                        additional_remarks_value = additional_remarks[index]
+                        times_value = times_list[index]
+
+                        
+                        days = days[index]
+
+                        data = {
+                            'date': endDate_str,
+                            'prescriptionsoderUID': id,
+                            'medicine_name': medicine,
+                            'dosage': dosage_value,
+                            'route': route_value,
+                            'additional_remarks': additional_remarks_value,
+                            'patient_id': patient_id,
+                            'todaydate': todaydate,
+                            'status': 'Ongoing',
+                            'days': days,
+                            'times': times_value
+                        }
+
+                        db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
+            except Exception as e:
+                messages.error(request, f'Error: {str(e)}')
 
         if 'complaintButton' in request.POST:
             save_chiefComplaint(request)
@@ -1337,9 +1508,8 @@ def patient_personal_information_inpatient(request):
             attending_physician = request.POST.get('attending_physician')
             today_days_stay = request.POST.get('today_days_stay')
             selected_time = request.POST.get('selected_appointment_date')
-            print('SELECTED TIME', selected_time)
-            followup_time = request.POST.get('followup_time')
-
+            followup_time1 = request.POST.get('followup_time1')
+            print('FOLLOW UP TIME', followup_time1)
             date_obj = datetime.strptime(selected_time, '%B %d, %Y')
 
             # Format the datetime object to the desired format (yyyy-mm-dd)
@@ -1362,13 +1532,106 @@ def patient_personal_information_inpatient(request):
 
             data2 = {
                 'appointmentDate': formatted_date,
-                'appointmentTime': followup_time,
+                'appointmentTime': time_early,
                 'appointmentVisitType': 'Follow-Up Visit',
                 'doctorUID': uid1,
                 'patientName': chosenPatient,
                 'status': 'Ongoing'
             }
             db.child('appointments').child(new_id).set(data2)
+
+            patient_uid = request.GET.get('chosenPatient')
+            patientdata = db.child("patientdata").child(patient_uid).get().val()
+            print(patientdata)
+            #numOfDays = int(request.POST.get('numOfDays'))
+            todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            days = request.POST.getlist('days')
+            numOfDays = 0
+            for day in days:
+                try:
+                    day_int = int(day)
+                    if day_int > numOfDays:
+                        numOfDays = day_int
+                except ValueError:
+                    pass 
+
+            # Calculate endDate
+            todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
+            endDate = todaydate_datetime + timedelta(days= numOfDays)
+            endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+
+            patient_id = patient_uid 
+            medicine_name = request.POST.getlist('medicine_name')
+            dosage = request.POST.getlist('dosage')
+            route = request.POST.getlist('route')
+            
+            #frequency = request.POST.getlist('frequency')
+            
+            additional_remarks = request.POST.getlist('additionalremarks')
+            todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            #times_list = []
+            times = request.POST.getlist('times-daily[]')
+            times_list = []
+
+            # Iterate through the days and construct the times_list
+            for day in days:
+                times = request.POST.getlist('times-daily[]')
+                times_str = ', '.join(times)
+                times_list.append(times_str)
+
+            try:
+                id = str(uuid.uuid1())
+                status = 'Ongoing'  # Default status
+
+                # Check if endDate is reached
+                if datetime.now() > endDate:
+                    status = 'Finished'
+
+                data = {
+                    'prescriptionsoderUID': id,
+                    'days': days,
+                    'medicine_name': medicine_name,
+                    'dosage': dosage,
+                    'route': route,
+                    #'frequency': occurence,
+                    'times': times_list,
+                    'additional_remarks': additional_remarks,
+                    'patient_id': patient_id,
+                    'todaydate': todaydate,
+                    'endDate': endDate_str,
+                    'status': status
+                }
+                db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
+                
+                for index in range(len(medicine_name)):
+                    pid = str(uuid.uuid1())
+                    medicine = medicine_name[index]
+                    dosage_value = dosage[index]
+                    route_value = route[index]
+                    additional_remarks_value = additional_remarks[index]
+                    times_value = times_list[index]
+
+                    
+                    days = days[index]
+
+                    data = {
+                        'date': endDate_str,
+                        'prescriptionsoderUID': id,
+                        'medicine_name': medicine,
+                        'dosage': dosage_value,
+                        'route': route_value,
+                        'additional_remarks': additional_remarks_value,
+                        'patient_id': patient_id,
+                        'todaydate': todaydate,
+                        'status': 'Ongoing',
+                        'days': days,
+                        'times': times_value
+                    }
+
+                    db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
+            except Exception as e:
+                messages.error(request, f'Error: {str(e)}')
  
         if 'admitButton' in request.POST:
 
@@ -1403,6 +1666,8 @@ def patient_personal_information_inpatient(request):
 
             #db.child("patientdata").child(chosenPatient).update({"status": "Inpatient",
                                                                  #'diagnosis': currdiagnosis,
+                    
+    
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
     vitalsigns = db.child("vitalsigns").get().val()
@@ -1413,8 +1678,6 @@ def patient_personal_information_inpatient(request):
     date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
-    medications_cursor = collection.find({}, {"Drug": 1, "_id": 0})
-    medicines_list = [medication['Drug'] for medication in medications_cursor]
 
     chosenPatient = request.GET.get('chosenPatient', '')
 
@@ -1459,10 +1722,14 @@ def patient_personal_information_inpatient(request):
         else:
             currdiagnosis = None                  
 
-    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
-    medicines_set = {medication['Disease'] for medication in medications_cursor}
+    medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2})
+    medicines_set = {medication['Drug'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
     medicines_list = list(medicines_set)
 
+    cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
+    pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
+    pharmacy_lists_json = json.dumps(pharmacy_lists)
+    
     progressnotes = db.child("progressnotes").get().val()
     nurses = db.child("nurses").get().val()
 
@@ -1498,8 +1765,9 @@ def patient_personal_information_inpatient(request):
                                                                                 'num_days': num_days,
                                                                                 'nurses': nurses,
                                                                                 'nearest_dates': nearest_dates,
-                                                                                'earliest_time': earliest_time,
-                                                                                'three_days_after': three_days_after})
+                                                                                'time_early': time_early,
+                                                                                'three_days_after': three_days_after,
+                                                                                'pharmacy_lists': pharmacy_lists_json})
 
 def save_chiefComplaint(request):
         
@@ -1911,6 +2179,13 @@ def save_prescriptions(request):
 
         #times_list = []
         times = request.POST.getlist('times-daily[]')
+        times_list = []
+
+        # Iterate through the days and construct the times_list
+        for day in days:
+            times = request.POST.getlist('times-daily[]')
+            times_str = ', '.join(times)
+            times_list.append(times_str)
         # occurence = 0
         # for time in times:
         #     if time == 'Morning':
@@ -1935,7 +2210,7 @@ def save_prescriptions(request):
                 'dosage': dosage,
                 'route': route,
                 #'frequency': occurence,
-                'times': times,
+                'times': times_list,
                 'additional_remarks': additional_remarks,
                 'patient_id': patient_id,
                 'todaydate': todaydate,
@@ -1943,7 +2218,7 @@ def save_prescriptions(request):
                 'status': status
             }
             db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
-
+            print('STATUS ', patientdata['status'])
             if patientdata['status'] == 'Inpatient':
                 for index in range(len(medicine_name)):
                     pid = str(uuid.uuid1())
@@ -1952,6 +2227,8 @@ def save_prescriptions(request):
                     route_value = route[index]
                     additional_remarks_value = additional_remarks[index]
                     times_value = times_list[index]
+
+                    
                     days = days[index]
 
                     data = {
@@ -1971,8 +2248,34 @@ def save_prescriptions(request):
                     db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(data)
 
             elif patientdata['status'] == 'Outpatient':
-                # Create prescription PDF here
-                prescription = generate_prescription_pdf(patient_uid, medicine_name, dosage, route, frequency, additional_remarks, times_list)
+                for index in range(len(medicine_name)):
+                    pid = str(uuid.uuid1())
+                    medicine = medicine_name[index]
+                    dosage_value = dosage[index]
+                    route_value = route[index]
+                    additional_remarks_value = additional_remarks[index]
+                    times_value = times_list[index]
+
+                    
+                    days = days[index]
+
+                    data = {
+                        'date': endDate_str,
+                        'prescriptionsoderUID': id,
+                        'medicine_name': medicine,
+                        'dosage': dosage_value,
+                        'route': route_value,
+                        'additional_remarks': additional_remarks_value,
+                        'patient_id': patient_id,
+                        'todaydate': todaydate,
+                        'status': 'Ongoing',
+                        'days': days,
+                        'times': times_value
+                    }
+
+                    db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
+
+                prescription = generate_prescription_pdf(patient_uid, medicine_name, dosage, route, days, additional_remarks, times_list)
                 return HttpResponse(prescription, content_type='application/pdf')
 
             messages.success(request, 'Prescription saved successfully!')

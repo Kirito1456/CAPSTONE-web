@@ -5,7 +5,17 @@
 <link rel="stylesheet" href="{% static 'css/patient_personal_informations.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
-
+    body {
+        font-family: 'Arial', sans-serif;
+    }
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    
     #update-with-new-order {
         display: flex;
         justify-content: space-between;
@@ -475,7 +485,7 @@
                                                     <label for="suggested-date" style="margin-top: 5px; font-weight: bold;">Suggested Schedule:</label>
                                                     <div name="three_days_after" style="margin-top: 5px;">{{ three_days_after }}</div>
                                                     <label for="suggested-time" style="margin-top: 5px; font-weight: bold;">Suggested Time:</label>
-                                                    <div name="followup_time" style="margin-top: 5px;">{{ earliest_time }}</div><br>
+                                                    <div name="followup_time" style="margin-top: 5px;">{{ time_early }}</div><br>
                                                 </div>
                                             </div>
                                         {% endif %}
@@ -1057,6 +1067,8 @@
 
 <div id="inpatientModal1" class="modal1" style="display: none; overflow-y: auto;">
     <div class="modal-content1">
+        <span class="close" onclick="closeModal()">&times;</span> <!-- Close button -->
+
         <h2>Discharge Instruction Form</h2>
         <form id="dischargeForm1" method="post">
             {% csrf_token %}
@@ -1130,8 +1142,8 @@
                                 {% endfor %}
                             </select><br>
                             <label for="suggested-time" style="margin: 5px; font-weight: bold;">Suggested Time:</label>
-                            <input type="text" name="followup_time" value={{ earliest_time }}></input>
-                            <input type="hidden" name="followup_time" value="{{ earliest_time }}">
+                            <div name="followup_time1" value={{ time_early }} style="margin-top: 5px;">{{ time_early }}</div><br>
+                            <input type="hidden" name="followup_time1" value={{ time_early }}>
 
                         </div>
                     </div>
@@ -1159,8 +1171,8 @@
                     <div style="flex: 1; text-align: center;">
                         <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
                         <datalist id="medicine_name_suggestions">
-                            {% for medicine in medicines_list %}
-                                <option value="{{ medicine }}">{{ medicine }}</option>
+                            {% for medicines in medicines_list %}
+                                <option value="{{ medicines }}">{{ medicines }}</option>
                             {% endfor %}
                         </datalist>
                     </div>
@@ -1195,11 +1207,10 @@
                         <div id="add-medication-button" style="width: 50%; text-align: center;"><a href="#" id="add-medication-link">Add Medication</a></div>
                         <div id="remove-medication-button" style="width: 50%; text-align: center;"><a href="#" id="remove-medication-link">Remove Selected</a></div>
                     </div>
-                    <button id="submit-medication-button" type="submit" style="width: 100%;">Create Order/Prescription</button>
                 </div>
             
             </div>
-            <button name="discharge_patient">Discharge Patient</button>
+            <button name="discharge_patient" style="background-color: green;">Discharge Patient</button>
             </div>
             
         </form>
@@ -1207,6 +1218,7 @@
 </div>
 
 <script>
+    
     var prescriptionCheckbox = document.getElementById("prescriptionCheckbox");
     var prescriptionTable = document.getElementById("medications-container");
 
@@ -1217,6 +1229,47 @@
             prescriptionTable.style.display = "none"; // Hide the table
         }
     });
+
+    var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
+    console.log(pharmacyLists);  // Print pharmacy_lists to the console
+
+    // Add your additional JavaScript code here
+    const medicineNameInput = document.getElementById('medicine_name_input');
+    const dosageInput = document.getElementById('dosage_input');
+    const routeInput = document.getElementById('route_input');
+
+    medicineNameInput.addEventListener('input', populateDosageDropdown);
+
+    dosageInput.addEventListener('change', changeRouteDropdown);
+
+    function populateDosageDropdown() {
+        const selectedMedicine = medicineNameInput.value.trim();
+        dosageInput.innerHTML = '<option value="" selected disabled>Select Dosage</option>'; // Reset dosage dropdown
+        
+        // Populate dosage dropdown based on selected medicine
+        pharmacyLists.forEach(function(pharmacy) {
+            if (pharmacy.Drug.trim() === selectedMedicine) { // Ensure consistent comparison
+                const option = document.createElement('option');
+                option.text = pharmacy.Strength;
+                option.value = pharmacy.Strength;
+                dosageInput.appendChild(option);
+            }
+        });
+
+        // Trigger the change event on dosage dropdown to update the route dropdown
+        dosageInput.dispatchEvent(new Event('change'));
+    }
+
+    function changeRouteDropdown() {
+        const selectedStrength = dosageInput.value.trim();
+        
+        // Change route dropdown based on selected strength
+        pharmacyLists.forEach(function(pharmacy) {
+            if (pharmacy.Strength.trim() === selectedStrength) { // Ensure consistent comparison
+                routeInput.value = pharmacy.Route;
+            }
+        });
+    }
 
     // Get the add medication button
     var addMedicationButton = document.getElementById("add-medication-link");
@@ -1396,6 +1449,10 @@
         modal.style.display = "none"; // Assuming the modal is a div with id "newLabTestModal"
     }
 
+    function closeModal() {
+        var modal = document.getElementById('inpatientModal1');
+        modal.style.display = 'none';
+    }
     
     // Get the close button inside the modal
     var closeModalButton = document.getElementById("closeModal");
