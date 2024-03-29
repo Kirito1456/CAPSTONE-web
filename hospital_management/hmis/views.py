@@ -2232,53 +2232,78 @@ def save_prescriptions(request):
                     route_value = route[index]
                     additional_remarks_value = additional_remarks[index]
                     times_value = times_list[index]
-
-                    
                     days = days[index]
 
-                    data = {
-                        'date': endDate_str,
-                        'prescriptionsoderUID': id,
-                        'medicine_name': medicine,
-                        'dosage': dosage_value,
-                        'route': route_value,
-                        'additional_remarks': additional_remarks_value,
-                        'patient_id': patient_id,
-                        'todaydate': todaydate,
-                        'status': 'Ongoing',
-                        'days': days,
-                        'times': times_value
-                    }
+                    # Calculate counter based on the number of times
+                    times_split = times_value.split(', ')
+                    counter = len(times_split)
 
-                    db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(data)
+                    # Calculate total by multiplying counter with days
+                    total = counter * days
+
+                    # Save prescriptions for each time separately
+                    for time in times_split:
+                        for _ in range(total):
+                            data = {
+                                'date': endDate_str,
+                                'prescriptionsoderUID': id,
+                                'medicine_name': medicine,
+                                'dosage': dosage_value,
+                                'route': route_value,
+                                'additional_remarks': additional_remarks_value,
+                                'patient_id': patient_id,
+                                'todaydate': todaydate,
+                                'status': 'Ongoing',
+                                'days': days,
+                                'times': time,  # Save each time separately
+                                'total': total  # Total for this prescription
+                            }
+
+                            # Save to database
+                            db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(data)
+
 
             elif patientdata['status'] == 'Outpatient':
                 for index in range(len(medicine_name)):
-                    pid = str(uuid.uuid1())
+                    
                     medicine = medicine_name[index]
                     dosage_value = dosage[index]
                     route_value = route[index]
                     additional_remarks_value = additional_remarks[index]
                     times_value = times_list[index]
+                    days = int(days[index])
 
-                    
-                    days = days[index]
+                    # Calculate counter based on the number of times
+                    times_split = times_value.split(', ')
+                    counter = len(times_split)
 
-                    data = {
-                        'date': endDate_str,
-                        'prescriptionsoderUID': id,
-                        'medicine_name': medicine,
-                        'dosage': dosage_value,
-                        'route': route_value,
-                        'additional_remarks': additional_remarks_value,
-                        'patient_id': patient_id,
-                        'todaydate': todaydate,
-                        'status': 'Ongoing',
-                        'days': days,
-                        'times': times_value
-                    }
-
-                    db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
+                    # Calculate total by multiplying counter with days
+                    total = counter * days
+                    print('COUNTER is ', counter)
+                    print('TOTAL is ', total)
+                    print('TIME SPLIT is ', times_split)
+                    print('RANGE is ', range(total))
+                    # Save prescriptions for each time separately
+                    for i in range(total):
+                        pid = str(uuid.uuid1())
+                        for j in range(len(times_split)):
+                            data = {
+                                'date': endDate_str,
+                                'prescriptionsoderUID': id,
+                                'medicine_name': medicine,
+                                'dosage': dosage_value,
+                                'route': route_value,
+                                'additional_remarks': additional_remarks_value,
+                                'patient_id': patient_id,
+                                'todaydate': todaydate,
+                                'status': 'Ongoing',
+                                'days': days,
+                                'times': times[i].strip(),  # Save each time separately
+                                'total': total  # Total for this prescription
+                            }
+                            print('DATA is ', data)
+                            # Save to database
+                            db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
 
                 prescription = generate_prescription_pdf(patient_uid, medicine_name, dosage, route, days, additional_remarks, times_list)
                 return HttpResponse(prescription, content_type='application/pdf')
