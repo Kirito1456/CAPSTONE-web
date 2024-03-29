@@ -5,7 +5,7 @@
 
 {% block styles %} 
 <!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-appointmentss.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 {% endblock styles %}
@@ -112,23 +112,23 @@
                             <div class="modal-content">
                                 <span class="close">&times;</span>
                                 <h2>Reschedule Appointment</h2>
-                                <form id="reschedule-form{{ appointment_id }}" method="post" action="{% url 'update_appointment' %}">
+                                <form id="reschedule-form{{ appointment_id }}" method="POST" action="{% url 'update_appointment' %}">
                                     {% csrf_token %}
-                                    <label for="suggested-date">Suggested Schedule:</label>
-                                    <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                        {% for next_available_date in next_available_dates %}
-                                            <option value={{ next_available_date }} >{{ next_available_date }}</option>
+                                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <label for="suggested-date" style="margin-right: 10px;">Suggested Schedule:</label>
+                                        <input type="text" id="selected_appointment_date" name="selected_appointment_date" value={{ next_available_date_str }} style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        </input>
+                                    </div>
+                                    <label for="suggested-time">Suggested Time:</label>
+                                    <select id="new_appointment_time" name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        {% for time_slot in time_slots %}
+                                            <option value="{{ time_slot }}">{{ time_slot }}</option>
                                         {% endfor %}
                                     </select><br>
-                                    <label for="suggested-time">Suggested Time:</label>
-                                    <div name="new_appointment_time" id="new_appointment_time" value={{ time_early }} style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: fit-content;">{{ time_early }}</div><br>
-                                    <button type="submit" id="appID" name='appID' value={{ appointment_id }}>Submit</button>
-
+                                    <button type="submit" id="appID" name="appID" value="{{ appointment_id }}">Submit</button>
                                 </form>
                             </div>
                         </div>
-
-                            
                     </tr>
                 {% endfor %}
             {% endif %}

@@ -398,7 +398,7 @@
             <form method="post">
             {% csrf_token %}
             <div id="medical-history-table">
-                <div class="row header">
+                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
                     <div class="cell diagnosis">Diagnosis</div>
                     <div class="cell date-illness">Date of Illness</div>
                     <div class="cell treatment">Treatment</div>
@@ -414,7 +414,7 @@
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'diagnosis_surgical' %}
                                                 {% for diagnosis_surgical_item in item_value %}
-                                                    <input type="text" style="flex: 1; text-align: center; margin-left: -80px;" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="flex: 1; text-align: center; margin-left: -80px;" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -423,7 +423,7 @@
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'date_illness' %}
                                                 {% for date_illness_item in item_value %}
-                                                    <input type="date" style="flex: 1; text-align: center; margin-left: -100px" name="date_illness" value="{{ date_illness_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="date" style="flex: 1; text-align: center; margin-left: -100px" name="date_illness" value="{{ date_illness_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -432,7 +432,7 @@
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'treatment' %}
                                                 {% for treatment_item in item_value %}
-                                                    <input type="text" style="margin-left: -115px; width: 80%" name="treatment" value="{{ treatment_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="margin-left: -115px; width: 80%" name="treatment" value="{{ treatment_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -441,7 +441,7 @@
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'remarks' %}
                                                 {% for remarks_item in item_value %}
-                                                    <input type="text" style="width: 100%; margin-left: -105px" name="remarks" value="{{ remarks_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="width: 100%; margin-left: -105px" name="remarks" value="{{ remarks_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -597,7 +597,7 @@
             <form method="post">
             {% csrf_token %}
             <div id="allergy-table">
-                <div class="row header">
+                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
                     <div class="cell allergen">Allergen</div>
                     <div class="cell severity">Severity</div>
                 </div>
@@ -610,7 +610,7 @@
                                         {% for item_key, item_value in allergy_data.items %}
                                             {% if item_key == 'allergen' %}
                                                 {% for allergen_item in item_value %}
-                                                    <input type="text" style="display:flex; justify-content: start;" name="allergen" value="{{ allergen_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="allergen" value="{{ allergen_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -619,7 +619,7 @@
                                         {% for item_key, item_value in allergy_data.items %}
                                             {% if item_key == 'severity' %}
                                                 {% for severity_item in item_value %}
-                                                    <select name="severity">
+                                                    <select name="severity" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">
                                                         <option value="" disabled>Select Severity</option>
                                                         <option value="Mild" {% if severity_item == 'Mild' %} selected {% endif %}>Mild</option>
                                                         <option value="Moderate" {% if severity_item == 'Moderate' %} selected {% endif %}>Moderate</option>
@@ -767,20 +767,10 @@
             <form method="post">
             {% csrf_token %}
             <div id="immunization-table">
-                <div class="row header">
+                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
                     <div class="cell vaccine">Vaccine Name</div>
                     <div class="cell date">Date Administered</div>
                 </div>
-                {% comment %} {% for patientImmunizationHistory_id, patientImmunizationHistory_data in patientImmunizationHistory.items %}
-                    <div class="row" >
-                        <div class="cell vaccine">
-                            <input type="text" name="vaccine" value="{{ patientImmunizationHistory_data }}">
-                        </div>
-                        <div class="cell date">
-                            <input type="date" name="date" value="{{ patientImmunizationHistory_data.date }}">
-                        </div>
-                    </div>
-                {% endfor %} {% endcomment %}
 
                 {% for patientMedical_id, patientMedical_data in patientMedical.items %}
                     {% if patientMedical_id == chosenPatient %}
@@ -791,7 +781,7 @@
                                         {% for item_key, item_value in immunization_data.items %}
                                             {% if item_key == 'vaccine' %}
                                                 {% for vaccine_item in item_value %}
-                                                    <input type="text" name="vaccine" value="{{ vaccine_item }}"><br> 
+                                                    <input type="text" name="vaccine" value="{{ vaccine_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -800,7 +790,7 @@
                                         {% for item_key, item_value in immunization_data.items %}
                                             {% if item_key == 'date' %}
                                                 {% for severity_item in item_value %}
-                                                    <input type="date" name="date" value="{{ severity_item }}"><br>
+                                                    <input type="date" name="date" value="{{ severity_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br>
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -896,7 +886,7 @@
             <form method="post">
             {% csrf_token %}
             <div id="family-history-table">
-                <div class="row header">
+                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
                     <div class="cell family-member">Family Member</div>
                     <div class="cell diagnosis">Diagnosis</div>
                     <div class="cell age">Age</div>
@@ -912,7 +902,7 @@
                                         {% for item_key, item_value in family_data.items %}
                                             {% if item_key == 'family_member' %}
                                                 {% for family_member_item in item_value %}
-                                                    <select name="family_member">
+                                                    <select name="family_member"  style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">
                                                         <option value="" disabled>Select Family Member</option>
                                                         <option value="Father" {% if family_member_item == 'Father' %} selected {% endif %}>Father</option>
                                                         <option value="Mother" {% if family_member_item == 'Mother' %} selected {% endif %}>Mother</option>
@@ -926,7 +916,7 @@
                                         {% for item_key, item_value in family_data.items %}
                                             {% if item_key == 'diagnosis' %}
                                                 {% for diagnosis_item in item_value %}
-                                                    <input type="text" name="diagnosis" value="{{ diagnosis_item }}"><br>
+                                                    <input type="text" name="diagnosis" value="{{ diagnosis_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br>
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -935,7 +925,7 @@
                                         {% for item_key, item_value in family_data.items %}
                                             {% if item_key == 'age' %}
                                                 {% for age_item in item_value %}
-                                                    <input type="number" name="age" value="{{ age_item }}"><br>
+                                                    <input type="number" name="age" value="{{ age_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br>
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -1048,7 +1038,7 @@
                 {% csrf_token %}
                 <div id="social-history-table">
 
-                    <div class="row header">
+                    <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
                         <div class="cell">
                             <input type="checkbox" id="smoking" name="smoking" value="Yes">
                             <label for="smoking">Smoking</label>
@@ -1059,7 +1049,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" name="saveSocialHistoryButton">Save</button>
+                <button style="margin: 10px; background-color: #334A7C; color: white;" type="submit" name="saveSocialHistoryButton">Save</button>
             </form>
             
             `;
@@ -1120,7 +1110,7 @@
             <form method="post">
             {% csrf_token %}
                 <div id="consul-notes-table">
-                    <div class="row header" style="display: flex;">
+                    <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
                         <div class="cell diagnosis" style="flex: 1; text-align: center;">Date of Consultation</div>
                         <div class="cell date-illness" style="flex: 1; text-align: center;">Chief Complaint</div>
                         <div class="cell remarks" style="flex: 1; text-align: center;">Diagnosis</div>
@@ -1132,17 +1122,17 @@
                                 <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in consulNotes_data.items %}
-                                           <div>{{ item_key }}</div>
+                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">{{ item_key }}</div>
                                         {% endfor %}
                                     </div>
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in consulNotes_data.items %}
-                                           <div>{{ item_value.chiefComplaint }}</div>
+                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">{{ item_value.chiefComplaint }}</div>
                                         {% endfor %}
                                     </div>
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in consulNotes_data.items %}
-                                           <div>{{ item_value.diagnosis }}</div>
+                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">{{ item_value.diagnosis }}</div>
                                         {% endfor %}
                                     </div>
                                 </div>

@@ -79,11 +79,18 @@ function performOCR(file) {
         // Extract medicine names (Alprazolam and Lorazepam)
         const medicineNames = extractSpecificMedicineNames(text);
         const dosages = extractDosages(text);
+        const routes = extractRoute(text);
+        const frequencies = extractFrequency(text);
+        const days = extractNumberOfDays(text);
         // Display extracted medicine names in a div
         document.getElementById('ocrResult').textContent = 'Medicine names: ' + medicineNames.join(', ');
         document.getElementById('dosages').textContent = 'Dosages: ' + dosages.join(', ');
-
+        document.getElementById('routes').textContent = 'Routes: ' + routes.join(', ');
+        document.getElementById('frequencies').textContent = 'Frequencies: ' + frequencies.join(', ');
+        document.getElementById('days').textContent = 'Days: ' + days.join(', ');
     })
+    
+    
     .catch(error => {
         console.error('Error performing OCR:', error);
         alert('Failed to perform OCR. Please try again.');
@@ -91,9 +98,11 @@ function performOCR(file) {
 }
 
 // Function to extract specific medicine names (Alprazolam and Lorazepam) from the OCR result
+// const fuzz = require('fuzzball');
+
 function extractSpecificMedicineNames(text) {
     const medicineNames = [];
-    // Search for Alprazolam and Lorazepam in the OCR result
+    // Search for medicines in the OCR result
     if (text.includes('Alprazolam')) {
         medicineNames.push('Alprazolam');
     }
@@ -106,8 +115,42 @@ function extractSpecificMedicineNames(text) {
     if (text.includes('Colace')) {
         medicineNames.push('Colace');
     }
+    if (text.includes('Rosuvastatin')) {
+        medicineNames.push('Rosuvastatin');
+    }
+    if (text.includes('Atorvastatin')) {
+        medicineNames.push('Atorvastatin');
+    }
+    if (text.includes('Cefoxitin sodium')) {
+        medicineNames.push('Cefoxitin sodium');
+    }
+    if (text.includes('Prednisolone')) {
+        medicineNames.push('Prednisolone');
+    }
+    if (text.includes('HCTZ')) {
+        medicineNames.push('HCTZ');
+    }
+    if (text.includes('Metformin')) {
+        medicineNames.push('Metformin');
+    }
+    if (text.includes('Glipizide')) {
+        medicineNames.push('Glipizide');
+    }
+    if (text.includes('Diclofenac')) {
+        medicineNames.push('Diclofenac');
+    }
+    if (text.includes('Paracetamol')) {
+        medicineNames.push('Paracetamol');
+    }
+    if (text.includes('Loratadine')) {
+        medicineNames.push('Loratadine');
+    }
+    if (text.includes('Hydroxyzine')) {
+        medicineNames.push('Hydroxyzine');
+    }
     return medicineNames;
 }
+
 
 function extractDosages(text) {
     const dosages = [];
@@ -118,4 +161,36 @@ function extractDosages(text) {
         dosages.push(match[0]);
     }
     return dosages;
+}
+
+function extractRoute(text) {
+    const routes = [];
+    const routeKeywords = ['Oral', 'Topical', 'Injection'];
+    for (const keyword of routeKeywords) {
+        if (text.includes(keyword)) {
+            routes.push(keyword);
+        }
+    }
+    return routes;
+}
+
+function extractFrequency(text) {
+    const frequencies = [];
+    const frequencyKeywords = ['Morning', 'Afternoon', 'Evening'];
+    for (const keyword of frequencyKeywords) {
+        if (text.includes(keyword)) {
+            frequencies.push(keyword);
+        }
+    }
+    return frequencies;
+}
+
+function extractNumberOfDays(text) {
+    const days = [];
+    const regex = /\b(\d+) days?\b/g; // Match numerical values followed by "days" or "day"
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        days.push(match[1]); // Extract the numerical value only
+    }
+    return days;
 }

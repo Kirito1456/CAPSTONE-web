@@ -5,7 +5,27 @@
 <!-- <link rel="stylesheet" href="{% static 'css/patient_medication_style.css' %}"> -->
 <link rel="stylesheet" href="{% static 'css/view_treatment_plan.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
-
+<style>
+    #table-header{
+        display: flex; 
+        font-weight: bold; 
+        background-color: #334A7C; 
+        color: white; 
+        padding: 5px; 
+        margin: 5px; 
+        margin-right: 10px;
+     }
+     .buttons_info {
+        padding: 5px;
+        margin: 10px; 
+        border: none; 
+        border-radius: 4px; 
+        background-color: #ADB8CE; 
+        color: black;
+        cursor: pointer; 
+        margin-right:10px;
+    }
+</style>
 {% endblock styles%}
 
 {% block content %}
@@ -48,6 +68,12 @@
             {% for patients_id, patients_data in patients.items %}
                 {% if patients_data.uid == chosen_patient_uid %}
                     <div id = "patient-information">
+                        <button class="buttons_info">
+                            <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
+                        </button>
+                        <button class="buttons_info">
+                            <a href="{% url 'outpatient_medication_order' %}?chosenPatient={{patients_data.uid}}">Make Order</a>
+                        </button>
                         <div id = "first">
                             <div id = "fname-label">Name of Patient</div>
                             <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
@@ -72,10 +98,7 @@
                  
                         </div>
                         
-                        <button><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{patients_data.uid}}">Make Order</a></button>
-                        <button>
-                            <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
-                        </button>
+                        
                     </div>
                 {% endif %}
             {% endfor %}

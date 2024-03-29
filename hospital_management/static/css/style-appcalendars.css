@@ -18,7 +18,7 @@ body {
   }
   
   .header #month {
-    color: #5c7c89;
+    color: #334A7C;
     font-size: 30px;
     font-weight: 600;
   }
@@ -34,13 +34,13 @@ body {
   }
   
   .header button {
-    background-color: #5c7c89;
+    background-color: #334A7C;
   }
   
   .weekdays {
     width: 100%;
     display: flex;
-    background-color: #5c7c89;
+    background-color: #334A7C;
     font-size: 17px;
     color: #fff;
     font-weight: 500;
@@ -78,7 +78,7 @@ body {
   
   .day:hover {
     background-color: rgba(143, 141, 236, 0.1);
-    color: #5c7c89;
+    color: #334A7C;
   }
   
   #currentDay {

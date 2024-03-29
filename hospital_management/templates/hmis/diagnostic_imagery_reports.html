@@ -6,12 +6,13 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
+    
     #head-corner, #head{
         float: left;
         font-size: 18;
         font-weight: bold;
         padding: 10px;
-        background-color: #5c7c89;
+        background-color: #334A7C;
         text-align: center;
         color: white;
     }
@@ -227,7 +228,7 @@
                             <div id="reports-container">
                                 <div class="report-item label">
                                     <div class="date">Date</div>
-                                    <div class="type">Imagery Type</div>
+                                    <div class="type">Test Result Type</div>
                                     <div class="report">Report</div>
                                 </div>
                                 {% for submittedTest_id, submittedTest_data in submittedTest.items %}
@@ -235,7 +236,33 @@
                                         {% for submitted_id, submitted_data in submittedTest_data.items %}
                                             <div class="report-item">
                                                 <div class="date">{{ submitted_data.date }}</div>
-                                                <div class="type">{{ submitted_data.testRequestKey }}</div>
+                                                <div class="type">
+                                                    {% if submitted_data.testRequestKey == 'blood_test' %}
+                                                        Blood Test
+                                                    {% elif submitted_data.testRequestKey == 'urine_test' %}
+                                                        Urine Test
+                                                    {% elif submitted_data.testRequestKey == 'stool_test' %}
+                                                        Stool Test
+                                                    {% elif submitted_data.testRequestKey == 'tissue_biopsy' %}
+                                                        Tissue Biopsy
+                                                    {% elif submitted_data.testRequestKey == 'xray' %}
+                                                        X-ray
+                                                    {% elif submitted_data.testRequestKey == 'ct_scan' %}
+                                                        CT Scan
+                                                    {% elif submitted_data.testRequestKey == 'mri' %}
+                                                        MRI
+                                                    {% elif submitted_data.testRequestKey == 'ultrasound' %}
+                                                        Ultrasound
+                                                    {% elif submitted_data.testRequestKey == 'ecg' %}
+                                                        ECG
+                                                    {% elif submitted_data.testRequestKey == 'colonoscopy' %}
+                                                        Colonoscopy
+                                                    {% elif submitted_data.testRequestKey == 'bronchoscopy' %}
+                                                        Bronchoscopy
+                                                    {% elif submitted_data.testRequestKey == 'pet_scan' %}
+                                                        PET Scan
+                                                    {% endif %}
+                                                </div>
                                                 <div class="report">
                                                     <a href="{{ submitted_data.downloadURL }}" class="view-image" style="color: blue;">View Image</a>
                                                 </div>
@@ -243,6 +270,7 @@
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
+
                             </div>
 
                         </div>

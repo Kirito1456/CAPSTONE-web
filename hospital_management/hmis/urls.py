@@ -67,6 +67,7 @@ urlpatterns = [
     
     # path('view_image/<submitted_id>/', views.view_image, name='view_image'),
     path('upload/', upload_image, name='upload_image'),
+    # path('ocr/', views.ocr_view, name='ocr_view'),
 
 
 ]

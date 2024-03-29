@@ -72,7 +72,7 @@
                         </td>
                         <td>{{ patients_data.gender }}</td>
                         {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                            {% if patients_id == chosenPatientData_data.patientid %}
+                            {% if patients_id == chosenPatientData_data.patientid or patients_id == chosenPatientData_data.patientID %}
                                 {% if chosenPatientData_data.status == "Inpatient" %}
                                     <td>{{ chosenPatientData_data.disease }}</td>
                                     <td>-</td>

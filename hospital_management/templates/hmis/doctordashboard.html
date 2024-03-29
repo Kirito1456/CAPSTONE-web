@@ -5,7 +5,7 @@
 
 {% block styles %} 
 <!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/style-appointments.css' %}">
+<link rel="stylesheet" href="{% static 'css/style-appointmentss.css' %}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 {% endblock styles %}
 
@@ -72,14 +72,27 @@
             <div style="flex: 1; background-color: white; height: 300px; margin: 10px; margin-bottom: 5px; border: 1px solid #ccc; overflow: auto">
                 <p style="margin-left: 15px; font-weight: bold;">Tasks</p>
                 {% comment %} Sample Task {% endcomment %}
-                <div id="doctortask" style="background-color: grey; margin: 15px; padding: 10px;">
-                    <p>Patient Melissa Jones sent back results</p>
-                    <button style="height: fit-content;">Go</button>
-                </div>
+                {% for patients_id, patients_data in patients.items%}
+                    {% for submittedTest_id, submittedTest_data in submittedTest.items%}
+                        {% if patients_id == submittedTest_id%}
+                            <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
+                                <p><i class="fas fa-notes-medical" style="margin-right: 5px;"></i> 
+                                    Patient {{ patients_data.fname}} {{ patients_data.lname}} sent back results
+                                    <button style="height: fit-content; background-color: #ADB8CE;">
+                                        <a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{patients_id}}">Go</a>
+                                    </button>
+                                </p>
+                                
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
                 {% comment %} Pop up every 4 hours, patients = inpatient under the doctor {% endcomment %}
-                <div id="doctortask" style="background-color: grey; margin: 15px; padding: 10px;">
-                    <p>Doctor Rounds</p>
-                </div>
+                {% if inpatients %}
+                    <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
+                        <p><i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i> Reminder, You have Inpatients! Finish doctor rounds.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <br>
@@ -111,6 +124,7 @@
                                         {{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
                                         <td><label class="accountT_lbl">
                                             {{ inpatient_data.disease }}</label></td>
+                                            
                                         {% for room_id, room_data in rooms.items %}
                                             {% if inpatient_data.room == room_id %}
                                                 <td><label class="accountT_lbl">

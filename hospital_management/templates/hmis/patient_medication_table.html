@@ -6,6 +6,9 @@
 <link rel="stylesheet" href="{% static 'css/view_treatment_plan.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
 <style>
+    .body{
+        font-family: 'Arial', sans-serif;
+    }
     .modal-content {
         width: fit-content;
         background-color: #ffffff; /* Solid white background color */
@@ -107,8 +110,7 @@
                                     <span class="po-date"
                                         data-medication="{{ po_data.medicine_name|join:' ' }}"
                                         data-dosage="{{ po_data.dosage|join:' ' }}"
-                                        data-route="{{ po_data.route|join:' ' }}"
-                                        data-frequency="{{ po_data.frequency|join:' ' }}">
+                                        data-route="{{ po_data.route|join:' ' }}">
                                         {{ po_date }}
                                     </span>
                                 </div>
@@ -162,13 +164,11 @@
                     "<th>Medicine Name</th>" +
                     "<th>Dosage</th>" +
                     "<th>Route</th>" +
-                    "<th>Frequency</th>" +
                 "</tr>" +
                 "<tr>" +
                     "<td>" + medication + "</td>" +
                     "<td>" + dosage + "</td>" +
                     "<td>" + route + "</td>" +
-                    "<td>" + frequency + "</td>" +
                 "</tr>" +
             "</table>";
 

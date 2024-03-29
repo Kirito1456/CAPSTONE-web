@@ -5,12 +5,47 @@
 <!-- <link rel="stylesheet" href="{% static 'css/patient_medication_style.css' %}"> -->
 <link rel="stylesheet" href="{% static 'css/view_treatment_plan.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
+<style>
+    body{
+        font-family: 'Arial', sans-serif;
+    }
+    #medication-table{
+        width: 90%;
+    
+        border-bottom: #334A7C solid 1px;
+    }
+    
+    
+    th{
+        text-align: center;
+        font-weight: bold;
+    
+        font-size: 14px;
+    
+        padding: 5px;
+    
+        background-color: #334A7C;
+        color: #fff;   
+    }
 
+    .buttons_info {
+        padding: 5px;
+        margin: 5px; 
+        border: none; 
+        border-radius: 4px; 
+        background-color: #ADB8CE; 
+        color: black;
+        cursor: pointer; 
+        margin-right:10px;
+    }
+
+
+</style>
 {% endblock styles%}
 
 {% block content %}
 <div class = "whole-screen">
-    <div id = "side-menu">
+    <div id = "side-menu" style="background-color: #334a7c;">
         <div id = "all-info">
             <div id = "user-info"> 
                 <div id = "image">
@@ -36,6 +71,7 @@
 
             </div>
         </div>
+    </div>
     </div>
     <div id = "other-information">
         <div id = "title">
@@ -85,7 +121,7 @@
                 <div id="medications-container">
                     <div style="margin-top: 20px;"id="head">Medications List</div>
                     <div id="medication-list-container">
-                        <div id="table-header">
+                        <div id="table-header" style="background-color: #334A7C;">
                             <div style="flex: 1; text-align: center;"><input type="checkbox" id="select-all-checkbox"></div>
                             <div style="flex: 1; text-align: center;">Days</div>
                             <div style="flex: 1; text-align: center;">Medicine Name</div>
@@ -140,12 +176,12 @@
                             <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
                             <div id="remove-medication-button"><a href="#" id="remove-medication-link">Remove Selected</a></div>
                         </div>
-                        <button id="submit-medication-button" type="submit">Create Order/Prescription</button>
+                        <button class="buttons_info" id="submit-medication-button" type="submit">Create Order/Prescription</button>
                     </div>
                 </div>
                 
             </form>
-            <button onclick="openModal7()">Upload Image</button>
+            <button class="buttons_info" onclick="openModal7()">Upload Image</button>
         </div>
 </div>
 
@@ -167,12 +203,16 @@
         </form>   
         <div id="ocrResult"></div>  
         <div id="dosages"></div>  
+        <div id="routes"></div>  
+        <div id="frequencies"></div>  
+        <div id="days"></div>  
     </div>
 </div>
 
 <script src="{% static 'js/create-medication.js' %}"></script>
-<script src="{% static 'js/ocr1.js' %}"></script>
+<script src="{% static 'js/ocr12.js' %}"></script>
 <script>
+    
     function openModal7() {
         var modal = document.getElementById('myModal');
         modal.style.display = "block";

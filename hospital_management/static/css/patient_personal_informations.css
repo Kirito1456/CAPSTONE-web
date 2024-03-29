@@ -397,28 +397,6 @@ button{
     margin-top: 5px;
 }
 
-.column {
-    float: left;
-    width: 33.33%;
-    padding: 10px;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fefefe;
-    border: 1px solid #888;
-    width: 60%;
-    height: 90%;
-    padding: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    overflow: auto;
-}
-
 .modal1 {
     display: none;
     position: fixed;

@@ -1,5 +1,7 @@
 body{
     margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+
 }
 
 .whole-screen{
@@ -155,7 +157,7 @@ a:hover{
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
-    background-color: #799c8d;
+    background-color: #334A7C;
     color: #fff;
     cursor: pointer;
 }
@@ -277,9 +279,9 @@ a:hover{
 }
 
 .pagination a.active {
-    background-color: #85AA9B;
+    background-color: #334A7C;
     color: white;
-    border: 1px solid #85AA9B;
+    border: 1px solid #334A7C;
 }
 
 #treatment-plan{
@@ -320,7 +322,7 @@ a:hover{
 #medication-table{
     width: 90%;
 
-    border-bottom: #85AA9B solid 1px;
+    border-bottom: #334A7C solid 1px;
 }
 
 
@@ -332,7 +334,7 @@ th{
 
     padding: 5px;
 
-    background-color: #85AA9B;
+    background-color: #334A7C;
     color: #fff;   
 }
 
@@ -486,15 +488,6 @@ td{
     font-size: 12px;
 }
 
-#table-header{
-   display: flex; 
-   font-weight: bold; 
-   background-color: #85AA9B; 
-   color: white; 
-   padding: 5px; 
-   margin: 5px; 
-   margin-right: 10px;
-}
 
 #table-body{
     display: flex;
@@ -502,7 +495,7 @@ td{
     margin: 5px; 
     margin-right: 10px;
  }
-
+s
 #medication-list{
     display: flex; 
     flex-direction: column;
