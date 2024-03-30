@@ -71,9 +71,6 @@
                         <button class="buttons_info">
                             <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
                         </button>
-                        <button class="buttons_info">
-                            <a href="{% url 'outpatient_medication_order' %}?chosenPatient={{patients_data.uid}}">Make Order</a>
-                        </button>
                         <div id = "first">
                             <div id = "fname-label">Name of Patient</div>
                             <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
@@ -122,7 +119,7 @@
                                         {% for item_key, item_value in prescriptionorders_data.items %}
                                             {% if item_key == 'medicine_name' %}
                                                 {% for medicine_name_item in item_value %}
-                                                    {{ medicine_name_item }}<br> 
+                                                    <p>{{ medicine_name_item }}</p><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -131,7 +128,7 @@
                                         {% for item_key, item_value in prescriptionorders_data.items %}
                                             {% if item_key == 'dosage' %}
                                                 {% for dosage_item in item_value %}
-                                                    {{ dosage_item }}<br> 
+                                                <p>{{ dosage_item }}</p><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -140,7 +137,7 @@
                                         {% for item_key, item_value in prescriptionorders_data.items %}
                                             {% if item_key == 'route' %}
                                                 {% for route_item in item_value %}
-                                                    {{ route_item }}<br> 
+                                                <p>{{ route_item }}</p><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -149,7 +146,7 @@
                                         {% for item_key, item_value in prescriptionorders_data.items %}
                                             {% if item_key == 'days' %}
                                                 {% for day_item in item_value %}
-                                                    {{ day_item }}<br> 
+                                                <p>{{ day_item }}</p><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -158,7 +155,7 @@
                                         {% for item_key, item_value in prescriptionorders_data.items %}
                                             {% if item_key == 'additional_remarks' %}
                                                 {% for additional_remarks_item in item_value %}
-                                                    {{ additional_remarks_item }}<br> 
+                                                <p>{{ additional_remarks_item }}</p><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}

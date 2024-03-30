@@ -15,6 +15,10 @@
         border-bottom: #334A7C solid 1px;
     }
     
+    .row span {
+        display: inline-block;
+        margin-right: 10px; /* Add margin to separate cells */
+    }
     
     th{
         text-align: center;
@@ -114,74 +118,72 @@
                 <hr>
             <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                 {% csrf_token %}
-                {% comment %} {% for patients_id, patients_data in patients.items %}
-                    {% if patients_data.uid == patient_uid %}
-                    {% endif %}
-                {% endfor %} {% endcomment %}
-                <div id="medications-container">
-                    <div style="margin-top: 20px;"id="head">Medications List</div>
-                    <div id="medication-list-container">
-                        <div id="table-header" style="background-color: #334A7C;">
-                            <div style="flex: 1; text-align: center;"><input type="checkbox" id="select-all-checkbox"></div>
-                            <div style="flex: 1; text-align: center;">Days</div>
-                            <div style="flex: 1; text-align: center;">Medicine Name</div>
-                            <div style="flex: 1; text-align: center;">Dosage</div>
-                            <div style="flex: 1; text-align: center;">Route</div>
-                            <div style="flex: 1; text-align: center;">Frequency</div>
-                            <div style="flex: 1; text-align: center;">Additional Remarks</div>
-                        </div>
-                        <div id="table-body">
-                            <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-                            <div style="flex: 1; text-align: center;"><input type="number" name="days"></div>
-                            <div style="flex: 1; text-align: center;">
-                                <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                                <datalist id="medicine_name_suggestions">
-                                    {% for medicine in medicines_list %}
-                                        <option value="{{ medicine }}">{{ medicine }}</option>
-                                    {% endfor %}
-                                </datalist>
+                    <div id="medications-container">
+                        <div style="margin-top: 20px; margin-bottom: 10px; font-size: 15px;" id="head">Add Medicine Here</div>
+                        <div id="medication-list-container">
+                            <div id="table-header" style="background-color: #334A7C; display: flex; color: white; padding: 10px;">
+                                <div style="flex: 1; text-align: center;">Days</div>
+                                <div style="flex: 1; text-align: center;">Medicine Name</div>
+                                <div style="flex: 1; text-align: center;">Dosage</div>
+                                <div style="flex: 1; text-align: center;">Route</div>
+                                <div style="flex: 1; text-align: center;">Frequency</div>
+                                <div style="flex: 1; text-align: center;">Additional Remarks</div>
                             </div>
-                            
-                            <div style="flex: 1; text-align: center;">
-                                <select class="dosage-input" name="dosage" id="dosage_input">
-                                    <option value="" selected disabled>Select Dosage</option>
-                                </select>
-                            </div>
-                            <div style="flex: 1; text-align: center;">
-                                
-                                <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
-                            </div>
-                            <div>
+                            <div id="table-body">
+                                <div style="flex: 1; text-align: center;"><input type="number" name="days" id="daysInput"></div>
                                 <div style="flex: 1; text-align: center;">
-                                    <div style="text-align: center;">
-                                        <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
-                                        <label for="morning-checkbox">Morning</label>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
-                                        <label for="afternoon-checkbox">Afternoon</label>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
-                                        <label for="evening-checkbox">Evening</label>
+                                    <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                                    <datalist id="medicine_name_suggestions">
+                                        {% for medicine in medicines_list %}
+                                            <option value="{{ medicine }}">{{ medicine }}</option>
+                                        {% endfor %}
+                                    </datalist>
+                                </div>
+                                
+                                <div style="flex: 1; text-align: center;">
+                                    <select class="dosage-input" name="dosage" id="dosage_input">
+                                        <option value="" selected disabled>Select Dosage</option>
+                                    </select>
+                                </div>
+                                <div style="flex: 1; text-align: center;">
+                                    <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
+                                </div>
+                                <div>
+                                    <div style="flex: 1; text-align: center;">
+                                        <div style="text-align: center;">
+                                            <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
+                                            <label for="morning-checkbox">Morning</label>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
+                                            <label for="afternoon-checkbox">Afternoon</label>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
+                                            <label for="evening-checkbox">Evening</label>
+                                        </div>
                                     </div>
                                 </div>
+                                <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks" id="remarksInput"></div>
                             </div>
-                            <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
                         </div>
+                        
+                        <button class="buttons_info" id="add-medication-button" type="button">Add</button>
                     </div>
-                    
-                    <div id="update-with-new-order">
-                        <div id="buttons-container">
-                            <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
-                            <div id="remove-medication-button"><a href="#" id="remove-medication-link">Remove Selected</a></div>
-                        </div>
-                        <button class="buttons_info" id="submit-medication-button" type="submit">Create Order/Prescription</button>
-                    </div>
-                </div>
                 
+                <hr>
+                
+                <div style="margin-top: 20px; margin-bottom: 10px; margin-left: 10px; font-size: 15px;" id="head">Medicine List</div>
+                <div id="medication_cart">
+                    
+                    <div id="medicineList" name="medicineList" style="align-items: center;"></div>
+                    <input type="hidden" id="hiddenFieldsContainer" name="hiddenFieldsContainer">
+                    
+                    <button class="buttons_info" name="submitorders" style="margin-left: 16px;" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">Submit</button>
+                    
+                </div>
             </form>
-            <button class="buttons_info" onclick="openModal7()">Upload Image</button>
+                <button class="buttons_info" onclick="openModal7()" style="margin-left: 16px;">Upload Image</button>
         </div>
 </div>
 
@@ -201,18 +203,102 @@
                 <button id="upload-button" type="submit" style="display: none;">Upload Photo</button>
             </div>
         </form>   
-        <div id="ocrResult"></div>  
-        <div id="dosages"></div>  
-        <div id="routes"></div>  
-        <div id="frequencies"></div>  
-        <div id="days"></div>  
+        <div id="ocrResult" name="medName"></div>  
+        <div id="dosages" name="dosages"></div>  
+        <div id="routes" name="routes"></div>  
+        <div id="frequencies" name="frequencies"></div>  
+        <div id="days" name="days"></div>  
     </div>
 </div>
 
 <script src="{% static 'js/create-medication.js' %}"></script>
 <script src="{% static 'js/ocr12.js' %}"></script>
 <script>
+    document.getElementById("add-medication-button").addEventListener("click", function() {
+        // Retrieve input values
+        var days = document.getElementById("daysInput").value;
+        var medicineName = document.getElementById("medicine_name_input").value;
+        var dosage = document.getElementById("dosage_input").value;
+        var route = document.getElementById("route_input").value;
+        var remarks = document.getElementById("remarksInput").value;
     
+        // Create a new row container
+        var newRow = document.createElement("div");
+        newRow.classList.add("row");
+        newRow.style.display = "flex";
+        newRow.style.padding = "10px";
+        newRow.style.alignItems = "center";
+    
+        // Create cells for each value
+        var cells = [
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div")
+        ];
+    
+        // Counter variable for numbering
+        var counter = document.querySelectorAll("#medicineList .row").length + 1;
+    
+        // Set cell content with numbering
+        cells[0].innerHTML = "<span>" + counter + ". " + medicineName + " (" + dosage + ")</span>";
+        cells[1].innerHTML = "<span>Sig. Take every <strong>" + days + "</strong> days during ";
+    
+    
+      
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+        // Array to store checked times
+        var checkedTimes = [];
+
+        // Loop through checked checkboxes and add their values to the array
+        checkboxes.forEach(function(checkbox) {
+            checkedTimes.push(checkbox.value);
+        });
+
+        // Combine checked times into one string separated by commas
+        var checkedTimesString = checkedTimes.join(", ");
+
+        // Append checked times string to the cell
+        cells[2].innerText = checkedTimesString;
+
+        // Append cells to the new row
+        cells.forEach(function(cell) {
+            newRow.appendChild(cell);
+        });
+    
+        cells[3].innerHTML = "<span> through <strong>" + route + "</strong>. " + remarks + "</span>" ;
+    
+        // Append new row container to the medicine list
+        document.getElementById("medicineList").appendChild(newRow);
+        var hiddenFieldsContainer = document.getElementById("hiddenFieldsContainer");
+
+        var hiddenFields = [
+            { name: "medicine_name[]", value: medicineName },
+            { name: "dosage[]", value: dosage },
+            { name: "days[]", value: days },
+            { name: "route[]", value: route },
+            { name: "remarks[]", value: remarks },
+            { name: "times[]", value: checkedTimesString }
+        ];
+
+        hiddenFields.forEach(function(field) {
+            var hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = field.name;
+            hiddenInput.value = field.value;
+            hiddenFieldsContainer.appendChild(hiddenInput);
+        });
+
+    });
+    
+    
+    
+    
+    
+
     function openModal7() {
         var modal = document.getElementById('myModal');
         modal.style.display = "block";
@@ -272,116 +358,6 @@
         var ageMonth = today.getMonth() - birthday.getMonth();
         const backButton = document.getElementById('backButton');
 
-        document.getElementById('add-medication-link').addEventListener('change', function(event) {
-            // Check if the change event occurred on the dosage dropdown
-            if (event.target && event.target.classList.contains('dosage-input')) {
-                // Change route dropdown based on selected strength
-                const selectedStrength = event.target.value.trim();
-                const routeInput = event.target.closest('.table-body').querySelector('.route-input');
-                pharmacyLists.forEach(function(pharmacy) {
-                    if (pharmacy.Strength.trim() === selectedStrength) {
-                        routeInput.value = pharmacy.Route;
-                    }
-                });
-            }
-        });
-
-        document.getElementById('add-medication-link').addEventListener('click', function(event) {
-            event.preventDefault();
-            var medicationListContainer = document.getElementById("medication-list-container");
-            // Create a new row element
-            var newRow = document.createElement('div');
-            newRow.id = "table-body";
-            // Add HTML content for the new row
-            newRow.innerHTML = `
-                <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-                <div style="flex: 1; text-align: center;"><input type="number" name="days"></div>
-                <div style="flex: 1; text-align: center;">
-                    <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                    <datalist id="medicine_name_suggestions">
-                        {% for medicine in medicines_list %}
-                            <option value="{{ medicine }}">{{ medicine }}</option>
-                        {% endfor %}
-                    </datalist>
-                </div>
-                
-                <div style="flex: 1; text-align: center;">
-                    <select class="dosage-input" name="dosage" id="dosage_input">
-                        <option value="" selected disabled>Select Dosage</option>
-                    </select>
-                </div>
-                <div style="flex: 1; text-align: center;">
-                    
-                    <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
-                </div>
-                <div>
-                    <div style="flex: 1; text-align: center;">
-                        <div style="text-align: center;">
-                            <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
-                            <label for="morning-checkbox">Morning</label>
-                        </div>
-                        <div style="text-align: center;">
-                            <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
-                            <label for="afternoon-checkbox">Afternoon</label>
-                        </div>
-                        <div style="text-align: center;">
-                            <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
-                            <label for="evening-checkbox">Evening</label>
-                        </div>
-                    </div>
-                </div>
-                <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
-            `;
-
-            // Append the new row to the medications container
-            medicationListContainer.appendChild(newRow);
-            populateDosageDropdown();
-            changeRouteDropdown();
-        });
-        
-
-        var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
-    console.log(pharmacyLists);  // Print pharmacy_lists to the console
-
-    // Add your additional JavaScript code here
-    const medicineNameInput = document.getElementById('medicine_name_input');
-    const dosageInput = document.getElementById('dosage_input');
-    const routeInput = document.getElementById('route_input');
-
-    medicineNameInput.addEventListener('input', populateDosageDropdown);
-
-    dosageInput.addEventListener('change', changeRouteDropdown);
-
-    function populateDosageDropdown() {
-        const selectedMedicine = medicineNameInput.value.trim();
-        dosageInput.innerHTML = '<option value="" selected disabled>Select Dosage</option>'; // Reset dosage dropdown
-        
-        // Populate dosage dropdown based on selected medicine
-        pharmacyLists.forEach(function(pharmacy) {
-            if (pharmacy.Drug.trim() === selectedMedicine) { // Ensure consistent comparison
-                const option = document.createElement('option');
-                option.text = pharmacy.Strength;
-                option.value = pharmacy.Strength;
-                dosageInput.appendChild(option);
-            }
-        });
-
-        // Trigger the change event on dosage dropdown to update the route dropdown
-        dosageInput.dispatchEvent(new Event('change'));
-    }
-
-    function changeRouteDropdown() {
-        const selectedStrength = dosageInput.value.trim();
-        
-        // Change route dropdown based on selected strength
-        pharmacyLists.forEach(function(pharmacy) {
-            if (pharmacy.Strength.trim() === selectedStrength) { // Ensure consistent comparison
-                routeInput.value = pharmacy.Route;
-            }
-        });
-    }
-
-
         // Adjust age months if negative
         if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
             ageYear--;
@@ -398,25 +374,6 @@
             selectAllCheckboxes();
         });
     
-        document.getElementById("remove-medication-button").addEventListener("click", function(event) {
-            event.preventDefault(); // Prevent default behavior of the link
-            var medicationListContainer = document.getElementById("medication-list-container");
-            var tableBodies = medicationListContainer.querySelectorAll("#table-body");
-        
-            tableBodies.forEach(function(tableBody) {
-                if (tableBody.querySelector(".remove-checkbox").checked) {
-                    medicationListContainer.removeChild(tableBody);
-                }
-            });
-        });
-        function selectAllCheckboxes() {
-            var checkboxes = document.getElementsByClassName("remove-checkbox");
-            var selectAllCheckbox = document.getElementById("select-all-checkbox");
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = selectAllCheckbox.checked;
-            }
-        }
-
         document.getElementById('submit-medication-button').addEventListener('click', function () {
             alert('Successfully Added a Medication Order/Prescription!');
         });

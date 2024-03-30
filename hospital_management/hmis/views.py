@@ -1414,26 +1414,6 @@ def patient_personal_information_inpatient(request):
             db.child('testrequest').child(chosenPatient).set(data)
 
 
-        # if 'endAppointment' in request.POST:
-        #     appointment_id = request.POST.get('endAppointment')
-
-
-
-
-
-            
-        #     # Check if the follow-up checkbox is checked
-        #     if 'followupCheckbox' in request.POST:
-        #         followup_appointment()
-        #         print('PASS')
-            
-        #     # Update the appointment status to 'Finished' in the database
-        #     db.child("appointments").child(endAppointment).update({'status': 'Finished'})
-            
-        #     # Redirect to the DoctorDashboard
-        #     return redirect('DoctorDashboard')
-
-
         if 'discharge_patient' in request.POST:
             numOfDays = request.POST.getlist('days') 
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  
@@ -1452,6 +1432,8 @@ def patient_personal_information_inpatient(request):
             print(todaydate, chosenPatient, medicine_name, dosage, route, frequency, additional_remarks)
             selected_time = request.POST.get('selected_time')
 
+            
+
             followUpDays = 0
             if selected_time == 'one_week':
                 followUpDays = 7
@@ -1464,36 +1446,6 @@ def patient_personal_information_inpatient(request):
             
             endDate = todaydate_datetime + timedelta(days=followUpDays)
             endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
-
-            for freq in frequency:
-                if freq == "Once Daily":
-                    times_list.extend(request.POST.getlist('times-once-daily[]'))
-                elif freq == "Twice Daily":
-                    times_list.append(', '.join(request.POST.getlist('times-twice-daily[]')))
-                elif freq == "Thrice Daily":
-                    times_list.append("Morning, Afternoon, Evening")
-
-            for freq in frequency:
-                if freq == "Once Daily":
-                    occurence = 1
-                elif freq == "Twice Daily":
-                    occurence = 2
-                elif freq == "Thrice Daily":
-                    occurence = 3
-
-            data = {
-                'patient_id': chosenPatient,
-                'prescriptionsoderUID': qid,
-                'todaydate': todaydate,
-                'endDate': endDate_str,
-                'times': times_list,
-                'medicine_name': medicine_name,
-                'dosage': dosage,
-                'route': route,
-                'frequency': frequency,
-                'additional_remarks': additional_remarks,
-                'status': 'Ongoing'
-            }
 
             
             appID = str(uuid.uuid1())
@@ -1516,7 +1468,6 @@ def patient_personal_information_inpatient(request):
                 db.child('appointments').child(appID).set(data1)
 
             
-
             if medicine_name:
                 db.child('prescriptionsorders').child(chosenPatient).child(todaydate).set(data)
             
@@ -1532,47 +1483,11 @@ def patient_personal_information_inpatient(request):
                             db.child("rooms").child(room_id).update({'patients': room_patients})
                             break
 
-
             db.child("patientdata").child(chosenPatient).update({
-                        'status': 'Outpatient',
-                        'disease': None,
-                        'room': None,
-                        'lastVisited': date1
-                    })
-
-            for index in range(len(medicine_name)):
-                    
-                medicine = medicine_name[index]
-                dosage_value = dosage[index]
-                route_value = route[index]
-                additional_remarks_value = additional_remarks[index]
-                times_value = times_list[index]
-                days = int(days[index])
-
-                times_split = times_value.split(', ')
-                counter = len(times_split)
-
-                total = counter * days
-                for i in range(total):
-                    pid = str(uuid.uuid1())
-                    for j in range(len(times_split)):
-                        data = {
-                            'date': endDate_str,
-                            'prescriptionsoderUID': id,
-                            'medicine_name': medicine,
-                            'dosage': dosage_value,
-                            'route': route_value,
-                            'additional_remarks': additional_remarks_value,
-                            'patient_id': patient_id,
-                            'todaydate': todaydate,
-                            'status': 'Ongoing',
-                            'days': days,
-                            'times': times[i].strip(),  # Save each time separately
-                            'total': total  # Total for this prescription
-                        }
-                        # Save to database
-                        db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
-                
+                                    'status': 'Outpatient',
+                                    'room': None,
+                                    'lastVisited': date1
+                                })    
             new_id = str(uuid.uuid1())
             uid1 = request.session['uid'] 
             discharge_day = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -1584,7 +1499,6 @@ def patient_personal_information_inpatient(request):
             today_days_stay = request.POST.get('today_days_stay')
             selected_time = request.POST.get('selected_appointment_date')
             followup_time1 = request.POST.get('followup_time1')
-            print('FOLLOW UP TIME', followup_time1)
             date_obj = datetime.strptime(selected_time, '%B %d, %Y')
 
             # Format the datetime object to the desired format (yyyy-mm-dd)
@@ -1655,65 +1569,7 @@ def patient_personal_information_inpatient(request):
                 times_str = ', '.join(times)
                 times_list.append(times_str)
 
-            try:
-                id = str(uuid.uuid1())
-                status = 'Ongoing'  # Default status
-
-                # Check if endDate is reached
-                if datetime.now() > endDate:
-                    status = 'Finished'
-
-                data = {
-                    'prescriptionsoderUID': id,
-                    'days': days,
-                    'medicine_name': medicine_name,
-                    'dosage': dosage,
-                    'route': route,
-                    #'frequency': occurence,
-                    'times': times_list,
-                    'additional_remarks': additional_remarks,
-                    'patient_id': patient_id,
-                    'todaydate': todaydate,
-                    'endDate': endDate_str,
-                    'status': status
-                }
-                db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
-                
-                for index in range(len(medicine_name)):
-                    
-                    medicine = medicine_name[index]
-                    dosage_value = dosage[index]
-                    route_value = route[index]
-                    additional_remarks_value = additional_remarks[index]
-                    times_value = times_list[index]
-                    days = int(days[index])
-
-                    times_split = times_value.split(', ')
-                    counter = len(times_split)
-
-                    total = counter * days
-                    for i in range(total):
-                        pid = str(uuid.uuid1())
-                        for j in range(len(times_split)):
-                            data = {
-                                'date': endDate_str,
-                                'prescriptionsoderUID': id,
-                                'medicine_name': medicine,
-                                'dosage': dosage_value,
-                                'route': route_value,
-                                'additional_remarks': additional_remarks_value,
-                                'patient_id': patient_id,
-                                'todaydate': todaydate,
-                                'status': 'Ongoing',
-                                'days': days,
-                                'times': times[i].strip(),  # Save each time separately
-                                'total': total  # Total for this prescription
-                            }
-                            # Save to database
-                            db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
-
-            except Exception as e:
-                messages.error(request, f'Error: {str(e)}')
+            return redirect(reverse('outpatient_medication_order') + f'?chosenPatient={chosenPatient}' + f'&diagnosis={currdiagnosis}')
  
         if 'admitButton' in request.POST:
 
@@ -2233,6 +2089,123 @@ def outpatient_medication_order(request):
 
 
 def save_prescriptions(request):
+    patient_uid = request.GET.get('chosenPatient')
+    patientdata = db.child("patientdata").child(patient_uid).get().val()
+
+    if request.method == 'POST':
+
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        days = request.POST.get('days')
+        numOfDays = max(map(int, days), default=0)
+
+        todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
+        endDate = todaydate_datetime + timedelta(days=numOfDays)
+        endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+
+        patient_id = patient_uid 
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        medicine_names = request.POST.getlist('medicine_name[]')
+        dosages = request.POST.getlist('dosage[]')
+        days = request.POST.getlist('days[]')
+        routes = request.POST.getlist('route[]')
+        remarks = request.POST.getlist('remarks[]')
+        times = request.POST.getlist('times[]')
+
+        # Generate unique ID for the prescription
+        prescription_id = str(uuid.uuid1())
+
+        # Set default status
+        status = 'Ongoing' if datetime.now() < endDate else 'Finished'
+
+        # Construct prescription data
+        prescription_data = {
+            'prescriptionsoderUID': prescription_id,
+            'days': days,
+            'medicine_name': medicine_names,
+            'dosage': dosages,
+            'route': routes,
+            'times': times,
+            'additional_remarks': remarks,
+            'patient_id': patient_id,
+            'todaydate': todaydate,
+            'endDate': endDate_str,
+            'status': status
+        }
+        # Save prescription data to the database
+        db.child('prescriptionsorders').child(patient_id).child(todaydate).set(prescription_data)
+        
+        if patientdata['status'] == 'Inpatient':
+            for index in range(len(medicine_names)):
+                medicine = medicine_names[index]
+                dosage_value = dosages[index]
+                route_value = routes[index]
+                additional_remarks_value = remarks[index]
+                times_value = times[index]
+                days_value = int(days[index])
+                times_split = times_value.split(', ')
+                counter = len(times_split)
+                total = counter * days_value
+                for time_value in times_split:
+                    pid = str(uuid.uuid1())
+                    
+                    data = {
+                        'date': endDate_str,
+                        'prescriptionsoderUID': id,
+                        'medicine_name': medicine,
+                        'dosage': dosage_value,
+                        'route': route_value,
+                        'additional_remarks': additional_remarks_value,
+                        'patient_id': patient_id,
+                        'todaydate': todaydate,
+                        'status': 'Ongoing',
+                        'days': days_value,
+                        'times': time_value.strip(),  # Save each time separately
+                        'total': total  # Total for this prescription
+                    }
+                        # Save to database
+                        # Remove non-serializable values from the data dictionary
+                    serializable_data = {key: value for key, value in data.items() if isinstance(value, (str, int, float, list, dict, tuple))}
+                    db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(serializable_data)
+
+
+        elif patientdata['status'] == 'Outpatient':
+            for index in range(len(medicine_names)):
+                medicine = medicine_names[index]
+                dosage_value = dosages[index]
+                route_value = routes[index]
+                additional_remarks_value = remarks[index]
+                times_value = times[index]
+                days_value = int(days[index])
+                times_split = times_value.split(', ')
+                counter = len(times_split)
+                total = counter * days_value
+                for time_value in times_split:
+                    pid = str(uuid.uuid1())
+                    
+                    data = {
+                        'date': endDate_str,
+                        'prescriptionsoderUID': id,
+                        'medicine_name': medicine,
+                        'dosage': dosage_value,
+                        'route': route_value,
+                        'additional_remarks': additional_remarks_value,
+                        'patient_id': patient_id,
+                        'todaydate': todaydate,
+                        'status': 'Ongoing',
+                        'days': days_value,
+                        'times': time_value.strip(),  # Save each time separately
+                        'total': total  # Total for this prescription
+                    }
+                        # Save to database
+                        # Remove non-serializable values from the data dictionary
+                    serializable_data = {key: value for key, value in data.items() if isinstance(value, (str, int, float, list, dict, tuple))}
+                    db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(serializable_data)
+
+
+    return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
+
+def save_to_list (request):
     if request.method == 'POST':
         patient_uid = request.GET.get('chosenPatient')
         patientdata = db.child("patientdata").child(patient_uid).get().val()
@@ -2273,14 +2246,6 @@ def save_prescriptions(request):
             times = request.POST.getlist('times-daily[]')
             times_str = ', '.join(times)
             times_list.append(times_str)
-        # occurence = 0
-        # for time in times:
-        #     if time == 'Morning':
-        #         occurence += 1
-        #     if time == 'Afternoon':
-        #         occurence += 1
-        #     if time == 'Evening':
-        #         occurence += 1
 
         try:
             id = str(uuid.uuid1())
@@ -2296,7 +2261,6 @@ def save_prescriptions(request):
                 'medicine_name': medicine_name,
                 'dosage': dosage,
                 'route': route,
-                #'frequency': occurence,
                 'times': times_list,
                 'additional_remarks': additional_remarks,
                 'patient_id': patient_id,
@@ -2304,83 +2268,7 @@ def save_prescriptions(request):
                 'endDate': endDate_str,
                 'status': status
             }
-            db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
-            print('STATUS ', patientdata['status'])
-            if patientdata['status'] == 'Inpatient':
-                for index in range(len(medicine_name)):
-                    
-                    medicine = medicine_name[index]
-                    dosage_value = dosage[index]
-                    route_value = route[index]
-                    additional_remarks_value = additional_remarks[index]
-                    times_value = times_list[index]
-                    days = int(days[index])
-
-                    times_split = times_value.split(', ')
-                    counter = len(times_split)
-
-                    total = counter * days
-                    for i in range(total):
-                        pid = str(uuid.uuid1())
-                        for j in range(len(times_split)):
-                            data = {
-                                'date': endDate_str,
-                                'prescriptionsoderUID': id,
-                                'medicine_name': medicine,
-                                'dosage': dosage_value,
-                                'route': route_value,
-                                'additional_remarks': additional_remarks_value,
-                                'patient_id': patient_id,
-                                'todaydate': todaydate,
-                                'status': 'Ongoing',
-                                'days': days,
-                                'times': times[i].strip(),  # Save each time separately
-                                'total': total  # Total for this prescription
-                            }
-                            # Save to database
-                            db.child('doctorsorders').child(patient_id).child(todaydate).child(pid).set(data)
-
-
-            elif patientdata['status'] == 'Outpatient':
-                for index in range(len(medicine_name)):
-                    
-                    medicine = medicine_name[index]
-                    dosage_value = dosage[index]
-                    route_value = route[index]
-                    additional_remarks_value = additional_remarks[index]
-                    times_value = times_list[index]
-                    days = int(days[index])
-
-                    # Calculate counter based on the number of times
-                    times_split = times_value.split(', ')
-                    counter = len(times_split)
-
-                    # Calculate total by multiplying counter with days
-                    total = counter * days
-                    # Save prescriptions for each time separately
-                    for i in range(total):
-                        pid = str(uuid.uuid1())
-                        for j in range(len(times_split)):
-                            data = {
-                                'date': endDate_str,
-                                'prescriptionsoderUID': id,
-                                'medicine_name': medicine,
-                                'dosage': dosage_value,
-                                'route': route_value,
-                                'additional_remarks': additional_remarks_value,
-                                'patient_id': patient_id,
-                                'todaydate': todaydate,
-                                'status': 'Ongoing',
-                                'days': days,
-                                'times': times[i].strip(),  # Save each time separately
-                                'total': total  # Total for this prescription
-                            }
-                            print('DATA is ', data)
-                            # Save to database
-                            db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(data)
-
-                prescription = generate_prescription_pdf(patient_uid, medicine_name, dosage, route, days, additional_remarks, times_list)
-                return HttpResponse(prescription, content_type='application/pdf')
+            db.child('medicine_cart').child(patient_id).set(data)            
 
             messages.success(request, 'Prescription saved successfully!')
             return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')

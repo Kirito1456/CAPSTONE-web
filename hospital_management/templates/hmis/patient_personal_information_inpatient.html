@@ -1262,7 +1262,7 @@
             {% endfor %}
             
             <hr>
-            <div style="margin: 5px; font-weight: bold;">Prescriptions</div>
+            {% comment %} <div style="margin: 5px; font-weight: bold;">Prescriptions</div>
 
             <input type="checkbox" id="prescriptionCheckbox" name="prescriptionCheckbox" value="{{ chosenPatientData_id }}" style="margin-top: 10px;">Add Prescription</input>
 
@@ -1323,9 +1323,13 @@
                 </div>
             
             </div>
-            <button name="discharge_patient" style="background-color: green;">Discharge Patient</button>
-            </div>
             
+            </div> {% endcomment %}
+
+           
+            <button name="discharge_patient" style="background-color: green;">
+                Create Prescription and Discharge Patient
+            </button>
         </form>
     </div>
 </div>

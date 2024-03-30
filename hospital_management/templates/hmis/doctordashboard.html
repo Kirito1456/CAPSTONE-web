@@ -119,7 +119,7 @@
                         {% for patient_id, patient_data in patients.items %}
                         <tr>
                             {% for inpatient_id, inpatient_data in inpatients.items %}
-                                {% if patient_data.uid == inpatient_data.patientid %}
+                                {% if patient_id == inpatient_id %}
                                     <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}">
                                         {{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
                                         <td><label class="accountT_lbl">

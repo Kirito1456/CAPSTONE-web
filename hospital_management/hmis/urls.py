@@ -45,6 +45,7 @@ urlpatterns = [
     path('patient_medication_table/', views.patient_medication_table, name = 'patient_medication_table'),
     path('outpatient_medication_order/', views.outpatient_medication_order, name = 'outpatient_medication_order'),
     path('save_prescriptions/', views.save_prescriptions, name = 'save_prescriptions'),
+    path('save_to_list/', views.save_to_list, name = 'save_to_list'),
     path('inpatient_medication_order/', views.inpatient_medication_order, name = 'inpatient_medication_order'),
     path('perform_ocr/', views.perform_ocr, name='perform_ocr'),
     path('test/', views.pharmacy_drugs, name='pharmacy_drugs'),

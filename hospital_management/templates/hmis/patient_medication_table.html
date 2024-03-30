@@ -97,24 +97,25 @@
             {% endfor %}
             <hr>
             <div id="medications-container">
-                <div id="head">Medications List</div>
+                <div id="head">Medications History</div>
                 <div id="medication-list-container">
-                    <div id="table-header" style="font-size: 14px;">
-                        <div style="flex: 1; text-align: center;">Date</div>
+                    <div id="table-header" style="font-size: 14px; display: flex; padding: 10px;flex-direction: row; background-color: #334A7C; color: white;">
+                        <div style="flex: 1; text-align: center;">Date Created</div>
                         <div style="flex: 1; text-align: center;">Prescribed Medication</div>
                     </div>
                     <div id="table-body" style="font-size: 14px; display: flex; flex-direction: column;">
                         {% for po_date, po_data in prescriptionsorders_ref.items %}
                             <div style="display: flex; flex-direction: row;" id="table-row">
-                                <div style="flex: 1; text-align: center;">
+                                <div style="flex: 1; text-align: center; padding: 10px;">
                                     <span class="po-date"
                                         data-medication="{{ po_data.medicine_name|join:' ' }}"
                                         data-dosage="{{ po_data.dosage|join:' ' }}"
-                                        data-route="{{ po_data.route|join:' ' }}">
+                                        data-route="{{ po_data.route|join:' ' }}"
+                                        data-times="{{ po_data.times|join:' ' }}">
                                         {{ po_date }}
                                     </span>
                                 </div>
-                                <div style="flex: 1; text-align: center;">
+                                <div style="flex: 1; text-align: center; padding: 10px;">
                                     {% if po_data.medicine_name|length > 1 %}
                                         {{ po_data.medicine_name|join:', ' }}
                                     {% else %}
@@ -148,15 +149,14 @@
     // Get the <span> element that closes the modal
     var span = document.getElementsByClassName("close")[0];
 
-    // When the user clicks on a po_date, open the modal
-    // When the user clicks on a po_date, open the modal
+
     var poDates = document.getElementsByClassName("po-date");
     Array.from(poDates).forEach(function(date) {
         date.addEventListener('click', function() {
             var medication = this.dataset.medication;
             var dosage = this.dataset.dosage;
             var route = this.dataset.route;
-            var frequency = this.dataset.frequency;
+            var times = this.dataset.times;
             
             // Construct HTML for the medication details table
             var tableHTML = "<table>" +
@@ -164,11 +164,13 @@
                     "<th>Medicine Name</th>" +
                     "<th>Dosage</th>" +
                     "<th>Route</th>" +
+                    "<th>Times</th>" +
                 "</tr>" +
                 "<tr>" +
                     "<td>" + medication + "</td>" +
                     "<td>" + dosage + "</td>" +
                     "<td>" + route + "</td>" +
+                    "<td>" + times + "</td>" +
                 "</tr>" +
             "</table>";
 
