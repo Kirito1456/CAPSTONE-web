@@ -36,8 +36,8 @@
                 <div id="information">
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                            <div id="role"> {{ doctor_data.specialization}}</div>
+                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
                         {% endif %}
                     {% endfor %}
                 </div>

@@ -21,8 +21,8 @@
                         <div id="information">
                             {% for doctor_id, doctor_data in doctors.items %}
                                 {% if doctor_data.uid == uid %}
-                                    <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                                    <div id="role"> {{ doctor_data.specialization}}</div>
+                                    <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                                    <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -31,9 +31,7 @@
                         <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
                         <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
                         <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                        <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
-                        <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
-                        <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                        
                         <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
 
                     </div>
@@ -52,7 +50,7 @@
                 {% endfor %}
                 <div id = "information-table">
                     <table id = "user-information" style="border-bottom: 1px #85AA9B solid;">
-                        <tr id = "head" style="border-bottom: 1px #85AA9B solid;">
+                        <tr id = "head" style="background-color: #334a7c; color: white; border-bottom: 1px #85AA9B solid;">
                             <th class = "tableheader">Date</th>
                             <th class = "tableheader">Temperature</th>
                             <th class = "tableheader">Blood Pressure</th>

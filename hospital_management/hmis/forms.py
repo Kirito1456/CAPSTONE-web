@@ -7,6 +7,9 @@ from hmis.models import Patient, Staff, AppointmentSchedule, Medications
 class ImageUploadForm(forms.Form):
     image = forms.ImageField(label='Select an image')
 
+class UploadImageForm(forms.Form):
+    image = forms.ImageField(label='Upload Image')
+
 class AppointmentScheduleForm(forms.ModelForm):
     DAYS_CHOICES = [
         ('sunday', 'Sunday'),
@@ -82,10 +85,8 @@ class StaffRegistrationForm(forms.ModelForm):
 
     JOB_TITLE_CHOICES = (
         ('General Practitioner', 'General Practitioner'),
-        ('Dermatologist', 'Dermatologist'),
         ('Pediatrician', 'Pediatrician'),
         ('Charge Nurse', 'Charge Nurse'),
-        ('Bedside Nurse', 'Bedside Nurse'),
     )
 
     # DEPARTMENT_CHOICES = (

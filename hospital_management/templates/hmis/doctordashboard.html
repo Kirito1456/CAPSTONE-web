@@ -20,8 +20,8 @@
                 <div id="information">
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                            <div id="role"> {{ doctor_data.specialization}}</div>
+                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -72,16 +72,17 @@
                 {% comment %} Sample Task {% endcomment %}
                 {% for patients_id, patients_data in patients.items%}
                     {% for submittedTest_id, submittedTest_data in submittedTest.items%}
-                        {% if patients_id == submittedTest_id%}
-                            <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
-                                <p><i class="fas fa-notes-medical" style="margin-right: 5px;"></i> 
-                                    Patient {{ patients_data.fname}} {{ patients_data.lname}} sent back results
-                                    <button style="height: fit-content; background-color: #ADB8CE;">
-                                        <a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{patients_id}}">Go</a>
-                                    </button>
-                                </p>
-                                
-                            </div>
+                        {% if patients_id == submittedTest_id%} 
+                            {% if submittedTest_data.doctor == uid %}
+                                <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
+                                    <p><i class="fas fa-notes-medical" style="margin-right: 5px;"></i> 
+                                        Patient {{ patients_data.fname}} {{ patients_data.lname}} sent back results
+                                        <button style="height: fit-content; background-color: #ADB8CE;">
+                                            <a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{patients_id}}">Go</a>
+                                        </button>
+                                    </p>
+                                </div>
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
                 {% endfor %}

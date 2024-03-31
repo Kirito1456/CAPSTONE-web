@@ -334,8 +334,8 @@
                 <div id="information">
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                            <div id="role"> {{ doctor_data.specialization}}</div>
+                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -397,49 +397,49 @@
             {% csrf_token %}
             <div id="medical-history-table">
                 <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
-                    <div class="cell diagnosis">Diagnosis</div>
-                    <div class="cell date-illness">Date of Illness</div>
-                    <div class="cell treatment">Treatment</div>
-                    <div class="cell remarks">Remarks</div>
+                    <div class="cell diagnosis" style="flex: 1;">Diagnosis</div>
+                    <div class="cell date-illness" style="flex: 1;">Date of Illness</div>
+                    <div class="cell treatment" style="flex: 1;">Treatment</div>
+                    <div class="cell remarks" style="flex: 1;">Remarks</div>
                 </div>
 
                 {% for patientMedical_id, patientMedical_data in patientMedical.items %}
                     {% if patientMedical_id == chosenPatient %}
                         {% for surgical_id, surgical_data in patientMedical_data.items %}
-                            <div style="font-size: 14px;">
-                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
-                                    <div style="flex: 1; text-align: center; margin-left: -70px">
+                            <div style="font-size: 14px; width: 100%;">
+                                <div id="row" style="display: flex; margin-bottom: 5px; margin-right: 10px;">
+                                    <div style="flex: 1;">
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'diagnosis_surgical' %}
                                                 {% for diagnosis_surgical_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="flex: 1; text-align: center; margin-left: -80px;" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <div style="flex: 1; text-align: center; margin-left: -235px">
+                                    <div style="flex: 1;">
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'date_illness' %}
                                                 {% for date_illness_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="date" style="flex: 1; text-align: center; margin-left: -100px" name="date_illness" value="{{ date_illness_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="date" style="display:flex; justify-content: start;" name="date_illness" value="{{ date_illness_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <div style="flex: 1; text-align: center; margin-left: -155px">
+                                    <div style="flex: 1;">
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'treatment' %}
                                                 {% for treatment_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="margin-left: -115px; width: 80%" name="treatment" value="{{ treatment_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="treatment" value="{{ treatment_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <div style="flex: 1; text-align: center;">
+                                    <div style="flex: 1;">
                                         {% for item_key, item_value in surgical_data.items %}
                                             {% if item_key == 'remarks' %}
                                                 {% for remarks_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="width: 100%; margin-left: -105px" name="remarks" value="{{ remarks_item }}"><br> 
+                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="remarks" value="{{ remarks_item }}"><br> 
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -460,14 +460,9 @@
             </form>`;
 
             document.getElementById('save-medical-history-button').addEventListener('click', function () {
-                alert('Successfully Added a Medical/Surgical Record!');
+                alert('Successfully Added an Past Medical/Surgical Record!');
 
-                if (medicalHistoryLink) {
-                    console.log('Medical history link exists');
-                    medicalHistoryLink.click();
-                } else {
-                    console.log('Medical history link not found');
-                }
+                medicalHistoryLink.click();
             });
         
             // Add event listeners
@@ -493,20 +488,12 @@
                             
                 const newRow = document.createElement('div');
                 newRow.classList.add('row');
-                        
                 newRow.innerHTML = `
-                    <div class="cell diagnosis">
-                        <input type="text" name="diagnosis_surgical">
-                    </div>
-                    <div class="cell date-illness">
-                        <input type="date" name="date_illness">
-                    </div>
-                    <div class="cell treatment">
-                        <input type="text" style="width: 93%" name="treatment">
-                    </div>
-                    <div class="cell remarks">
-                        <input type="text" style="width: 116%" name="remarks">
-                    </div>`;
+                    <div class="cell diagnosis"><input type="text" name="diagnosis_surgical"></div>
+                    <div class="cell date-illness"><input type="date" name="date_illness"></div>
+                    <div class="cell treatment"><input type="text" name="treatment"></div>
+                    <div class="cell remarks"><input type="text" name="remarks"></div>`;
+                        
                         
                 const medicalHistoryTable = document.getElementById('medical-history-table');
                 medicalHistoryTable.appendChild(newRow);
@@ -558,7 +545,6 @@
                 });
             });
             
-            
             cancelMedicalHistoryButton.addEventListener('click', function() {
                 // Hide the Cancel button
                 cancelMedicalHistoryButton.style.display = 'none';
@@ -603,7 +589,7 @@
                     {% if patientMedical_id == chosenPatient %}
                         {% for allergy_id, allergy_data in patientMedical_data.items %}
                             <div style="font-size: 14px; width: 100%;">
-                                <div id="row" style="display: flex;  margin-bottom: 5px; margin-right: 10px;">
+                                <div id="row" style="display: flex; margin-bottom: 5px; margin-right: 10px;">
                                     <div style="flex: 1;">
                                         {% for item_key, item_value in allergy_data.items %}
                                             {% if item_key == 'allergen' %}
@@ -904,7 +890,10 @@
                                                         <option value="" disabled>Select Family Member</option>
                                                         <option value="Father" {% if family_member_item == 'Father' %} selected {% endif %}>Father</option>
                                                         <option value="Mother" {% if family_member_item == 'Mother' %} selected {% endif %}>Mother</option>
-                                                        <option value="Sibling" {% if family_member_item == 'Sibling' %} selected {% endif %}>Sibling</option>
+                                                        <option value="Brother" {% if family_member_item == 'Brother' %} selected {% endif %}>Brother</option>
+                                                        <option value="Sister" {% if family_member_item == 'Sister' %} selected {% endif %}>Sister</option>
+                                                        <option value="Grandmother" {% if family_member_item == 'Grandmother' %} selected {% endif %}>Grandmother</option>
+                                                        <option value="Grandfather" {% if family_member_item == 'Grandfather' %} selected {% endif %}>Grandfather</option>
                                                     </select><br>
                                                 {% endfor %}
                                             {% endif %}
@@ -1146,5 +1135,4 @@
     
     
 </script>
-<script src="{% static 'js/immunization.js' %}"></script>
 {% endblock %}

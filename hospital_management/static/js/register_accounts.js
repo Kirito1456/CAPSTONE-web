@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var othersFields = document.getElementById("othersFields");
     
     // Define the job titles for each role
-    const doctorJobTitles = ['General Practitioner', 'Dermatologist', 'Pediatrician'];
-    const nurseJobTitles = ['Head Nurse', 'Bedside Nurse'];
+    const doctorJobTitles = ['General Practitioner', 'Pediatrician'];
+    const nurseJobTitles = ['Charge Nurse'];
 
     // Function to update job titles based on selected role
     function updateJobTitles() {

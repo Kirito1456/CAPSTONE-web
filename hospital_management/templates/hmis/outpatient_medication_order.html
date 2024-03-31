@@ -68,9 +68,7 @@
                 <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
                 <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
                 <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
-                <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
-                <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                
                 <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
 
             </div>
@@ -192,28 +190,41 @@
     <div class="modal-content" style="background-color: white;">
         <span class="close">&times;</span>
         <h2>Uploading Photo</h2>
-        <div id = "uploading-header">Upload Handwritten Image</div>
+        <div id="uploading-header">Upload Handwritten Image</div>
         <form id="upload-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
+            {{ form.as_p }}
             <div id="upload">
-                <input type="file" id="file-input" style="display: none;" onchange="displayFileName(this)">
+                <input type="file" id="file-input" name="image" style="display: none;" onchange="displayFileName(this)">
                 <label for="file-input" id="file-label"><i class="fas fa-plus"></i>&nbsp; Choose Photo</label>
                 <span id="selected-file"></span>
                 <button id="remove-button" type="button" onclick="removeFile()" style="display: none;">Remove</button>
-                <button id="upload-button" type="submit" style="display: none;">Upload Photo</button>
+                {% for patients_id, patients_data in patients.items %}
+                {% if patients_data.uid == patient_uid %}
+                <button id="upload-button" type="submit" style="display: none;" >Upload Photo</button>
+                {% endif %}
+                {% endfor %}
             </div>
         </form>   
-        <div id="ocrResult" name="medName"></div>  
-        <div id="dosages" name="dosages"></div>  
-        <div id="routes" name="routes"></div>  
-        <div id="frequencies" name="frequencies"></div>  
-        <div id="days" name="days"></div>  
     </div>
 </div>
 
 <script src="{% static 'js/create-medication.js' %}"></script>
-<script src="{% static 'js/ocr12.js' %}"></script>
+{% comment %} <script src="{% static 'js/ocr12.js' %}"></script> {% endcomment %}
 <script>
+    function displayFileName(input) {
+        var fileName = input.files[0].name;
+        document.getElementById('selected-file').innerText = 'Selected File: ' + fileName;
+        document.getElementById('remove-button').style.display = 'inline-block';
+        document.getElementById('upload-button').style.display = 'inline-block';
+    }
+
+    function removeFile() {
+        document.getElementById('file-input').value = '';
+        document.getElementById('selected-file').innerText = '';
+        document.getElementById('remove-button').style.display = 'none';
+        document.getElementById('upload-button').style.display = 'none';
+    }
     document.getElementById("add-medication-button").addEventListener("click", function() {
         // Retrieve input values
         var days = document.getElementById("daysInput").value;
@@ -236,45 +247,50 @@
             document.createElement("div"),
             document.createElement("div"),
             document.createElement("div"),
-            document.createElement("div")
+            document.createElement("div"),
+            document.createElement("div") // For the Remove button
         ];
     
-        // Counter variable for numbering
-        var counter = document.querySelectorAll("#medicineList .row").length + 1;
+        // Set icon content
+        var icon = document.createElement("i");
+        icon.classList.add("fas", "fa-medkit"); 
+        icon.style.marginRight = "5px";
+        cells[0].appendChild(icon);
     
         // Set cell content with numbering
-        cells[0].innerHTML = "<span>" + counter + ". " + medicineName + " (" + dosage + ")</span>";
-        cells[1].innerHTML = "<span>Sig. Take every <strong>" + days + "</strong> days during ";
+        cells[1].innerHTML = "<span>" + medicineName + " (" + dosage + ")</span>";
+        cells[2].innerHTML = "<span>Sig. Take every <strong>" + days + "</strong> days during ";
     
-    
-      
         var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-
+    
         // Array to store checked times
         var checkedTimes = [];
-
+    
         // Loop through checked checkboxes and add their values to the array
         checkboxes.forEach(function(checkbox) {
             checkedTimes.push(checkbox.value);
         });
-
+    
         // Combine checked times into one string separated by commas
         var checkedTimesString = checkedTimes.join(", ");
-
+    
         // Append checked times string to the cell
-        cells[2].innerText = checkedTimesString;
-
+        cells[3].innerText = checkedTimesString;
+        cells[3].style.marginRight = "5px";
+    
         // Append cells to the new row
         cells.forEach(function(cell) {
             newRow.appendChild(cell);
         });
     
-        cells[3].innerHTML = "<span> through <strong>" + route + "</strong>. " + remarks + "</span>" ;
+        cells[4].innerHTML = "<span> through <strong>" + route + "</strong>. " + remarks + "</span>";
+
     
         // Append new row container to the medicine list
         document.getElementById("medicineList").appendChild(newRow);
+    
         var hiddenFieldsContainer = document.getElementById("hiddenFieldsContainer");
-
+    
         var hiddenFields = [
             { name: "medicine_name[]", value: medicineName },
             { name: "dosage[]", value: dosage },
@@ -283,7 +299,7 @@
             { name: "remarks[]", value: remarks },
             { name: "times[]", value: checkedTimesString }
         ];
-
+    
         hiddenFields.forEach(function(field) {
             var hiddenInput = document.createElement("input");
             hiddenInput.type = "hidden";
@@ -291,12 +307,7 @@
             hiddenInput.value = field.value;
             hiddenFieldsContainer.appendChild(hiddenInput);
         });
-
     });
-    
-    
-    
-    
     
 
     function openModal7() {

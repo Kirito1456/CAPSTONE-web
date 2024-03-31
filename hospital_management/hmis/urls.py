@@ -27,8 +27,6 @@ urlpatterns = [
     
     path('doctordashboard.html', views.DoctorDashboard, name='DoctorDashboard'),
 
-    path('Message.html', views.Message, name='Message'),
-    path('AppointmentCalendarRequestDetails.html', views.AppointmentCalendarRequestDetails, name='AppointmentCalendarRequestDetails'),
     path('delete_appointment/', views.delete_appointment, name='delete_appointment'),
     path('update_appointment/', views.update_appointment, name='update_appointment'),
     path('followup_appointment/', views.followup_appointment, name='followup_appointment'),
@@ -45,30 +43,13 @@ urlpatterns = [
     path('patient_medication_table/', views.patient_medication_table, name = 'patient_medication_table'),
     path('outpatient_medication_order/', views.outpatient_medication_order, name = 'outpatient_medication_order'),
     path('save_prescriptions/', views.save_prescriptions, name = 'save_prescriptions'),
-    path('save_to_list/', views.save_to_list, name = 'save_to_list'),
-    path('inpatient_medication_order/', views.inpatient_medication_order, name = 'inpatient_medication_order'),
     path('perform_ocr/', views.perform_ocr, name='perform_ocr'),
     path('test/', views.pharmacy_drugs, name='pharmacy_drugs'),
-    path('diagnostic_lab_reports/', views.diagnostic_lab_reports, name='diagnostic_lab_reports'),
     path('diagnostic_imagery_reports/', views.diagnostic_imagery_reports, name="diagnostic_imagery_reports"),
     path('patient_personal_information_inpatient/', views.patient_personal_information_inpatient, name="patient_personal_information_inpatient"),
     path('save_chiefComplaint/', views.save_chiefComplaint, name="save_chiefComplaint"),
     path('save_review_of_systems/', views.save_review_of_systems, name='save_review_of_systems'),
     path('save_diagnosis/', views.save_diagnosis, name='save_diagnosis'),
 
-
-    path('new_vital_sign_entry/', views.new_vital_sign_entry, name='new_vital_sign_entry'),
-    path('add_vitalsign_entry/', views.add_vitalsign_entry, name='add_vitalsign_entry'),
-    path('edit_medical_surgical_history/', views.edit_medical_surgical_history, name="edit_medical_surgical_history"),
-    path('edit_drug_history/', views.edit_drug_history, name='edit_drug_history'),
-    path('edit_allergy/', views.edit_allergy, name="edit_allergy"),
-    path('edit_immunization_history/', views.edit_immunization_history, name="edit_immunization_history"),
-    path('edit_family_history/', views.edit_family_history, name="edit_family_history"),
-    path('patient_medication_nurse/', views.patient_medication_nurse, name='patient_medication_nurse'),
-    
-    # path('view_image/<submitted_id>/', views.view_image, name='view_image'),
     path('upload/', upload_image, name='upload_image'),
-    # path('ocr/', views.ocr_view, name='ocr_view'),
-
-
 ]

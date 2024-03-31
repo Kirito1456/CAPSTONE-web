@@ -199,18 +199,21 @@
                         <div id = "image">
                             <img src="{% static 'logo-color.png' %}" id = "display-photo">
                         </div>
-                        <div id = "information">
-                            <div id = "name"> Jeonghan </div>
-                            <div id = "role"> General Practitioner</div>
+                        <div id="information">
+                            {% for doctor_id, doctor_data in doctors.items %}
+                                {% if doctor_data.uid == uid %}
+                                    <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                                    <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                     <div id="menu"> 
-                        <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="">Dashboard</a></div>
-                        <div id="a2"><i class="far fa-calendar-alt"></i> <a href="">Appointments</a></div>
+                        <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
+                        <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
                         <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                        <div id="a5"><i class="far fa-envelope"></i> <a href="">Message</a></div>
-                        <div id="a6"><i class="far fa-user-circle"></i> <a href="">Profile</a></div>
-                        <div id="a7"><i class="fas fa-cog"></i> <a href="">Settings</a></div>
+                    
+                        <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
                     </div>
                 </div>
             </div>
@@ -234,45 +237,46 @@
                                 {% for submittedTest_id, submittedTest_data in submittedTest.items %}
                                     {% if submittedTest_id == chosenPatient %}
                                         {% for submitted_id, submitted_data in submittedTest_data.items %}
-                                            <div class="report-item">
-                                                <div class="date">{{ submitted_data.date }}</div>
-                                                <div class="type">
-                                                    {% if submitted_data.testRequestKey == 'blood_test' %}
-                                                        Blood Test
-                                                    {% elif submitted_data.testRequestKey == 'urine_test' %}
-                                                        Urine Test
-                                                    {% elif submitted_data.testRequestKey == 'stool_test' %}
-                                                        Stool Test
-                                                    {% elif submitted_data.testRequestKey == 'tissue_biopsy' %}
-                                                        Tissue Biopsy
-                                                    {% elif submitted_data.testRequestKey == 'xray' %}
-                                                        X-ray
-                                                    {% elif submitted_data.testRequestKey == 'ct_scan' %}
-                                                        CT Scan
-                                                    {% elif submitted_data.testRequestKey == 'mri' %}
-                                                        MRI
-                                                    {% elif submitted_data.testRequestKey == 'ultrasound' %}
-                                                        Ultrasound
-                                                    {% elif submitted_data.testRequestKey == 'ecg' %}
-                                                        ECG
-                                                    {% elif submitted_data.testRequestKey == 'colonoscopy' %}
-                                                        Colonoscopy
-                                                    {% elif submitted_data.testRequestKey == 'bronchoscopy' %}
-                                                        Bronchoscopy
-                                                    {% elif submitted_data.testRequestKey == 'pet_scan' %}
-                                                        PET Scan
-                                                    {% endif %}
+                                        
+                                                <div class="report-item">
+                                                    <div class="date">{{ submitted_data.date }}</div>
+                                                    <div class="type">
+                                                        {% if submitted_data.testRequestKey == 'blood_test' %}
+                                                            Blood Test
+                                                        {% elif submitted_data.testRequestKey == 'urine_test' %}
+                                                            Urine Test
+                                                        {% elif submitted_data.testRequestKey == 'stool_test' %}
+                                                            Stool Test
+                                                        {% elif submitted_data.testRequestKey == 'tissue_biopsy' %}
+                                                            Tissue Biopsy
+                                                        {% elif submitted_data.testRequestKey == 'xray' %}
+                                                            X-ray
+                                                        {% elif submitted_data.testRequestKey == 'ct_scan' %}
+                                                            CT Scan
+                                                        {% elif submitted_data.testRequestKey == 'mri' %}
+                                                            MRI
+                                                        {% elif submitted_data.testRequestKey == 'ultrasound' %}
+                                                            Ultrasound
+                                                        {% elif submitted_data.testRequestKey == 'ecg' %}
+                                                            ECG
+                                                        {% elif submitted_data.testRequestKey == 'colonoscopy' %}
+                                                            Colonoscopy
+                                                        {% elif submitted_data.testRequestKey == 'bronchoscopy' %}
+                                                            Bronchoscopy
+                                                        {% elif submitted_data.testRequestKey == 'pet_scan' %}
+                                                            PET Scan
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="report">
+                                                        <a href="{{ submitted_data.downloadURL }}" class="view-image" style="color: blue;">View Image</a>
+                                                    </div>
                                                 </div>
-                                                <div class="report">
-                                                    <a href="{{ submitted_data.downloadURL }}" class="view-image" style="color: blue;">View Image</a>
-                                                </div>
-                                            </div>
+                                            
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
-
                             </div>
-
+                            
                         </div>
                     </div>
                 </div>

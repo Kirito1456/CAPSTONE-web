@@ -47,6 +47,10 @@ from firebase_admin import storage
 from django.shortcuts import render, redirect
 from .forms import ImageUploadForm
 
+from django.shortcuts import render
+from django.http import JsonResponse
+from paddleocr import PaddleOCR
+
 def upload_image(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
@@ -561,53 +565,6 @@ def followup_appointment(request):
         else:
             print('Save status to fonished!')
             # db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
-
-
-        # appID = request.POST.get('appID')
-        # # Get the date from the request.POST dictionary
-        # date_str = request.POST.get('three_days_after')
-
-        # # Convert the date string to a datetime object
-        # date_obj = datetime.strptime(date_str, '%B %d, %Y')
-
-        # # Format the datetime object to the desired format (yyyy-mm-dd)
-        # formatted_date = date_obj.strftime('%Y-%m-%d')
-
-        # new_time = request.POST.get('followup_time')
-        # doctor = request.session['uid']
-
-        # # Convert to datetime object
-        # time_obj = datetime.strptime(new_time, "%H:%M")
-
-        # # Convert to 12-hour format with AM/PM
-        # time_12h = time_obj.strftime("%I:%M %p")
-
-        # # Construct the path to the appointment data in Firebase
-        # appointment_path = f"/appointments/{id}"  # Adjust the path as per your Firebase structure
-
-        # # Update appointment data in Firebase
-        # # db.child(appointment_path).set({
-        # #     'doctorUID': doctor,
-        # #     'appointmentVisitType': "Follow-Up Visit",
-        # #     'appointmentDate': formatted_date,
-        # #     'appointmentTime': time_12h,
-        # #     'status': 'Ongoing',
-        # #     'patientName': appID
-        # # }) 
-        # data = {
-        #     'doctorUID': doctor,
-        #     'appointmentVisitType': "Follow-Up Visit",
-        #     'appointmentDate': formatted_date,
-        #     'appointmentTime': time_12h,
-        #     'status': 'Ongoing',
-        #     'patientName': chosenPatient
-        # }
-        # db.child("appointments").child(id).set(data)
-        # db.child("appointments").child(appID).update({'status': 'Finished'})
-
-        # except Exception as e:
-        #     messages.error(request, f'An error occurred: {str(e)}')
-
         return redirect('DoctorDashboard')  # Redirect to the appointments list page
 
     return render(request, 'hmis/AppointmentUpcoming.html', {'uid': uid,
@@ -679,13 +636,6 @@ def AppointmentCalendar(request):
     task_json = json.dumps(task)
     
     return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json})
-
-
-def Message(request):
-    return render(request, 'hmis/Message.html')
-
-def AppointmentCalendarRequestDetails(request):
-    return render(request, 'hmis/AppointmentCalendarRequestDetails.html')
 
 def AppointmentScheduling(request):
     doctors = db.child("doctors").get().val()
@@ -1277,7 +1227,7 @@ def patient_personal_information_inpatient(request):
                     status = 'Finished'
 
                 data = {
-                    'prescriptionsoderUID': id,
+                    'prescriptionsorderUID': id,
                     'days': days,
                     'medicine_name': medicine_name,
                     'dosage': dosage,
@@ -1311,7 +1261,7 @@ def patient_personal_information_inpatient(request):
                             for j in range(len(times_split)):
                                 data = {
                                     'date': endDate_str,
-                                    'prescriptionsoderUID': id,
+                                    'prescriptionsorderUID': id,
                                     'medicine_name': medicine,
                                     'dosage': dosage_value,
                                     'route': route_value,
@@ -1344,7 +1294,7 @@ def patient_personal_information_inpatient(request):
                             for j in range(len(times_split)):
                                 data = {
                                     'date': endDate_str,
-                                    'prescriptionsoderUID': id,
+                                    'prescriptionsorderUID': id,
                                     'medicine_name': medicine,
                                     'dosage': dosage_value,
                                     'route': route_value,
@@ -1832,8 +1782,6 @@ def new_vital_sign_entry(request):
 
     return render(request, 'hmis/new_vital_sign_entry.html', {'chosenPatientData': chosenPatientData, 'chosenPatientAge' : chosenPatientAge})
 
-def add_vitalsign_entry(request):
-    return render(request, 'hmis/add_vitalsign_entry.html')
 
 def patient_vital_signs_history(request):
     patients = db.child("patients").get().val()
@@ -1866,11 +1814,6 @@ def patient_vital_signs_history(request):
 def patient_medical_history(request):
     doctors = db.child("doctors").get().val()
     chosen_patient_uid = request.GET.get('chosenPatient', None)
-    patientmedicalhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('pastHistory').get().val()
-    patientAllergyHistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('allergyhistory').get().val()
-    patientImmunizationHistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('immunizationHistory').get().val()
-    patientFamilyhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('familyHistory').get().val()
-    patientSocialhistory = db.child("patientmedicalhistory").child(chosen_patient_uid).child('socialHistory').get().val()
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
     consulNotes = db.child("consultationNotes").get().val()
@@ -1878,14 +1821,14 @@ def patient_medical_history(request):
     patientMedical = db.child("patientmedicalhistory").get().val()
     if request.method == 'POST':
         if 'saveMedicalHistoryButton' in request.POST:
-            diagnosis = request.POST.getlist('diagnosis_surgical')
+            diagnosis_surgical = request.POST.getlist('diagnosis_surgical')
             date_illness = request.POST.getlist('date_illness')
             treatment = request.POST.getlist('treatment')
             remarks = request.POST.getlist('remarks')
             
             data = {
                 'patient_id': chosen_patient_uid,
-                'diagnosis_surgical': diagnosis,
+                'diagnosis_surgical': diagnosis_surgical,
                 'date_illness': date_illness,
                 'treatment': treatment,
                 'remarks': remarks
@@ -1938,12 +1881,7 @@ def patient_medical_history(request):
             }
             db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').update(data)
 
-    return render(request, 'hmis/patient_medical_history.html', {'patientmedicalhistory': patientmedicalhistory,
-                                                                 'patientAllergyHistory': patientAllergyHistory,
-                                                                 'patientImmunizationHistory': patientImmunizationHistory,
-                                                                 'patientFamilyhistory': patientFamilyhistory,
-                                                                 'patientSocialhistory': patientSocialhistory,
-                                                                 'doctors': doctors,
+    return render(request, 'hmis/patient_medical_history.html', {'doctors': doctors,
                                                                  'uid': uid,
                                                                  'patientMedical': patientMedical,
                                                                  'chosenPatient': chosenPatient,
@@ -2011,10 +1949,6 @@ def patient_medication_doctor(request):
     # Pass the combined data to the template
     return render(request, 'hmis/patient_medication_doctor.html', {'patients': patients, 'patientsdata': patientsdata})
 
-
-def patient_medication_nurse(request):
-    return render(request, 'hmis/patient_medication_nurse.html')
-
 def patient_medication_table(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
     prescriptionsorders = db.child("prescriptionorders").get().val()
@@ -2029,27 +1963,26 @@ def patient_medication_table(request):
                                                                   'doctors': doctors,
                                                                   'uid': uid})
 
-def inpatient_medication_order(request):
-    return render(request, 'hmis/inpatient_medication_order.html')
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from paddleocr import PaddleOCR
 
+@csrf_exempt
 def perform_ocr(request):
-    id = str(uuid.uuid1())
-    if request.method == 'POST' and request.FILES.get('image'):
-        uploaded_image = request.FILES['image']
-        img = Image.open(uploaded_image)
+    if request.method == 'POST' and request.FILES['image']:
+        try:
+            uploaded_image = request.FILES['image']
+            ocr = PaddleOCR(use_angle_cls=True, lang='en')
+            result = ocr.ocr(uploaded_image)
+            # Process OCR result
+            extracted_text = ' '.join([word[-1] for line in result for word in line])
+            return JsonResponse({'extracted_text': extracted_text})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'No image uploaded or invalid request'}, status=400)
 
-        # encoded_image = base64.b64encode(img.tobytes()).decode('utf-8')
-        # ref = f"/images/"
-        # db.child(ref).update({
-        #     'image_data': encoded_image
-        # }) 
-        # ref.push({'image_data': encoded_image})
-
-        text = pytesseract.image_to_string(img)
-        return HttpResponse(text)
-    
-    # Return a bad request response if no image is uploaded or if request method is not POST
-    return HttpResponse('No image uploaded or invalid request.')
 
 def pharmacy_drugs(request):
     #collection = connect_to_mongodb()
@@ -2120,7 +2053,7 @@ def save_prescriptions(request):
 
         # Construct prescription data
         prescription_data = {
-            'prescriptionsoderUID': prescription_id,
+            'prescriptionsorderUID': prescription_id,
             'days': days,
             'medicine_name': medicine_names,
             'dosage': dosages,
@@ -2151,7 +2084,7 @@ def save_prescriptions(request):
                     
                     data = {
                         'date': endDate_str,
-                        'prescriptionsoderUID': id,
+                        'prescriptionsorderUID': id,
                         'medicine_name': medicine,
                         'dosage': dosage_value,
                         'route': route_value,
@@ -2185,7 +2118,7 @@ def save_prescriptions(request):
                     
                     data = {
                         'date': endDate_str,
-                        'prescriptionsoderUID': id,
+                        'prescriptionsorderUID': id,
                         'medicine_name': medicine,
                         'dosage': dosage_value,
                         'route': route_value,
@@ -2205,173 +2138,12 @@ def save_prescriptions(request):
 
     return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
 
-def save_to_list (request):
-    if request.method == 'POST':
-        patient_uid = request.GET.get('chosenPatient')
-        patientdata = db.child("patientdata").child(patient_uid).get().val()
-        print(patientdata)
-        #numOfDays = int(request.POST.get('numOfDays'))
-        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        days = request.POST.getlist('days')
-        numOfDays = 0
-        for day in days:
-            try:
-                day_int = int(day)
-                if day_int > numOfDays:
-                    numOfDays = day_int
-            except ValueError:
-                pass 
-
-        # Calculate endDate
-        todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
-        endDate = todaydate_datetime + timedelta(days= numOfDays)
-        endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
-
-        patient_id = patient_uid 
-        medicine_name = request.POST.getlist('medicine_name')
-        dosage = request.POST.getlist('dosage')
-        route = request.POST.getlist('route')
-        
-        #frequency = request.POST.getlist('frequency')
-        
-        additional_remarks = request.POST.getlist('additionalremarks')
-        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        #times_list = []
-        times = request.POST.getlist('times-daily[]')
-        times_list = []
-
-        # Iterate through the days and construct the times_list
-        for day in days:
-            times = request.POST.getlist('times-daily[]')
-            times_str = ', '.join(times)
-            times_list.append(times_str)
-
-        try:
-            id = str(uuid.uuid1())
-            status = 'Ongoing'  # Default status
-
-            # Check if endDate is reached
-            if datetime.now() > endDate:
-                status = 'Finished'
-
-            data = {
-                'prescriptionsoderUID': id,
-                'days': days,
-                'medicine_name': medicine_name,
-                'dosage': dosage,
-                'route': route,
-                'times': times_list,
-                'additional_remarks': additional_remarks,
-                'patient_id': patient_id,
-                'todaydate': todaydate,
-                'endDate': endDate_str,
-                'status': status
-            }
-            db.child('medicine_cart').child(patient_id).set(data)            
-
-            messages.success(request, 'Prescription saved successfully!')
-            return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
-
-        except Exception as e:
-            messages.error(request, f'Error: {str(e)}')
-
-    return render(request, 'hmis/view_treatment_plan.html', {'patient_uid': patient_uid})
-
-
-def generate_prescription_pdf(patient_uid, medicine_name, dosage, route, frequency, additional_remarks, times_list):
-    context = {
-        'patient_uid': patient_uid,
-        'medicine_name': medicine_name,
-        'dosage': dosage,
-        'route': route,
-        'frequency': frequency,
-        'additional_remarks': additional_remarks,
-        'times_list': times_list
-    }
-    pdf = render_to_pdf('prescription_template.html', context)
-    if pdf:
-        return pdf
-    else:
-        # Handle PDF generation error
-        messages.error(request, 'Error generating prescription PDF.')
-        return None
-
-def render_to_pdf(template_path, context):
-    template = get_template(template_path)
-    html = template.render(context)
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-    if not pdf.err:
-        return result.getvalue()
-   
-
-
-def diagnostic_lab_reports(request):
-    return render(request, 'hmis/diagnostic_lab_reports.html')
-
 def diagnostic_imagery_reports(request):
     submittedTest = db.child("submittedTest").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid'] 
+
     
     chosenPatient = request.GET.get('chosenPatient', '')
-    return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient})
+    return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
 
-def edit_medical_surgical_history(request):
-    return render(request, 'hmis/edit_medical_surgical_history.html')
-
-def edit_drug_history(request):
-    return render(request, 'hmis/edit_drug_history.html')
-
-def edit_allergy(request):
-    return render(request, 'hmis/edit_allergy.html')
-
-def edit_immunization_history(request):
-    return render(request, 'hmis/edit_immunization_history.html')
-
-def edit_family_history(request):
-    if request.method == 'POST':
-        if 'saveFamilyHistory' in request.POST:
-            id = str(uuid.uuid1())
-            member = request.POST.get('member-input-1')
-            illness = request.POST.get('illness-input-1')
-            age = request.POST.get('age-data-input-1')
-
-            # Format the data as needed
-            data = {
-                'member': member,
-                'illness': illness,
-                'age': age
-            }
-            
-            db.child('patientmedicalhistory').child(id).child('familyhistory').set(data)
-
-    return render(request, 'hmis/edit_family_history.html')
-
-def view_image(request, submitted_id):
-    ref = db.reference('/images')  # Assuming images are stored under '/images' node in Firebase
-    snapshot = ref.order_by_key().equal_to(submitted_id).get()
-    
-    if snapshot:
-        image_data = snapshot[submitted_id]['image_data']
-        # Decode base64 image data
-        decoded_image = base64.b64decode(image_data)
-        
-        # Render the image in the template
-        return render(request, 'view_image.html', {'image_data': decoded_image})
-    else:
-        return HttpResponse('Image not found')
-    
-# def ocr_view(request):
-#     model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../models/gap-clas/CNN-CG.meta'))
-#     if request.method == 'POST':
-#         # Assume the image data is sent as form data in the POST request
-#         image_file = request.FILES.get('image')  # Get the uploaded image file
-        
-#         # Call the OCR function to process the image and extract text
-#         extracted_text = recognise(image_file)
-        
-#         # Return the extracted text as JSON response
-#         return JsonResponse({'extracted_text': extracted_text})
-#     else:
-#         # Render a template with a form to upload an image (optional)
-#         return render(request, 'yourapp/ocr_form.html')
