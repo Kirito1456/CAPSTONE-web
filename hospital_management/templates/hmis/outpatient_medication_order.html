@@ -191,7 +191,7 @@
         <span class="close">&times;</span>
         <h2>Uploading Photo</h2>
         <div id="uploading-header">Upload Handwritten Image</div>
-        <form id="upload-form" method="post" enctype="multipart/form-data">
+        <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'perform_ocr' %}?chosenPatient={{patient_uid}}">
             {% csrf_token %}
             {{ form.as_p }}
             <div id="upload">
