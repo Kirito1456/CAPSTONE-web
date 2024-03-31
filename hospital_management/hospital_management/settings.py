@@ -16,6 +16,7 @@ import firebase_admin
 from firebase_admin import credentials
 import pyrebase
 import pytesseract
+from paddleocr import PaddleOCR
 from hmis.database import connect_to_mongodb
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

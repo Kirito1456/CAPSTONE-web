@@ -76,7 +76,7 @@
             </thead>
             <tbody>
                 {% if appointments %}
-                {% for appointment_id, appointment_data in appointments.items %}
+                    {% for appointment_id, appointment_data in appointments.items %}
                     <tr>
                         <form method="post" >
                             {% csrf_token %}
@@ -143,6 +143,8 @@
                         </div>
                     </tr>
                 {% endfor %}
+            {% else %}
+            <p>No upcoming appointments!</p>
             {% endif %}
 
             </tbody>

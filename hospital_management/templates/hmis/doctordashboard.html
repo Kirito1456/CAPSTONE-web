@@ -69,29 +69,30 @@
             </div>
             <div style="flex: 1; background-color: white; height: 300px; margin: 10px; margin-bottom: 5px; border: 1px solid #ccc; overflow: auto">
                 <p style="margin-left: 15px; font-weight: bold;">Tasks</p>
-                {% comment %} Sample Task {% endcomment %}
-                {% for patients_id, patients_data in patients.items%}
-                    {% for submittedTest_id, submittedTest_data in submittedTest.items%}
-                        {% if patients_id == submittedTest_id%} 
-                            {% if submittedTest_data.doctor == uid %}
-                                <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
-                                    <p><i class="fas fa-notes-medical" style="margin-right: 5px;"></i> 
-                                        Patient {{ patients_data.fname}} {{ patients_data.lname}} sent back results
-                                        <button style="height: fit-content; background-color: #ADB8CE;">
-                                            <a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{patients_id}}">Go</a>
-                                        </button>
-                                    </p>
-                                </div>
+                
+                    {% for patients_id, patients_data in patients.items%}
+                        {% for submittedTest_id, submittedTest_data in submittedTest.items%}
+                            {% if patients_id == submittedTest_id%} 
+                                    <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
+                                        <p><i class="fas fa-notes-medical" style="margin-right: 5px;"></i> 
+                                            Patient {{ patients_data.fname}} {{ patients_data.lname}} sent back results
+                                            <button style="height: fit-content; background-color: #ADB8CE;">
+                                                <a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{patients_id}}">Go</a>
+                                            </button>
+                                        </p>
+                                    </div>
+                            
                             {% endif %}
-                        {% endif %}
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-                {% comment %} Pop up every 4 hours, patients = inpatient under the doctor {% endcomment %}
-                {% if inpatients %}
-                    <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
-                        <p><i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i> Reminder, You have Inpatients! Finish doctor rounds.</p>
-                    </div>
-                {% endif %}
+
+                    {% if inpatients %}
+                        <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
+                            <p><i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i> Reminder, You have Inpatients! Finish doctor rounds.</p>
+                        </div>
+                    {% else %}
+                        <p>No rounds for the day! </p>
+                    {% endif %}
             </div>
         </div>
         <br>

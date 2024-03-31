@@ -51,5 +51,5 @@ urlpatterns = [
     path('save_review_of_systems/', views.save_review_of_systems, name='save_review_of_systems'),
     path('save_diagnosis/', views.save_diagnosis, name='save_diagnosis'),
 
-    path('upload/', upload_image, name='upload_image'),
+   
 ]

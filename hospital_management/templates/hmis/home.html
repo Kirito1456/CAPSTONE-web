@@ -179,14 +179,14 @@
         <img src="{%static 'logo-color.png'%}" id = "logo-picture">
     </div>
     
-    {% if messages %}
+    {% comment %} {% if messages %}
         <ul>
             {% for message in messages %}
                 <div id = "message" style="display: none;">{{ message }}</div>
                 <script>alert(document.getElementById("message"))</script>
             {% endfor %}
         </ul>
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     
 </div>

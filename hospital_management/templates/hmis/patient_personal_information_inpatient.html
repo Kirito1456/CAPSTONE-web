@@ -571,9 +571,9 @@
 
                         <div id="appModal" class="modalFinish" style="display: none;">
                             <h2>Finish Appointment</h2>
-                            <form id="reschedule-form{{ appointment_id }}" method="post" action="{% url 'followup_appointment' %}">
+                            <form id="reschedule-form{{ endAppointment }}" method="post" action="{% url 'followup_appointment' %}">
                                 {% csrf_token %}
-                                <input type="checkbox" id="followupCheckbox" name="followupCheckbox" value="{{ chosenPatientData_id }}" onchange="toggleFollowup('{{ appointment_id }}')">
+                                <input type="checkbox" id="followupCheckbox" name="followupCheckbox" value="{{ chosenPatientData_id }}" onchange="toggleFollowup('{{ endAppointment }}')">
                                 <label for="followupCheckbox">Follow-Up Checkup</label>
                                 <div id="followupDiv" style="display: none;">
                                     {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
@@ -593,10 +593,13 @@
                                                     </select><br>
                                                 </div>
                                             </div>
+                                            
                                         {% endif %}
+                                        
                                     {% endfor %}
+                                    
                                 </div><br>
-                                <button type="submit" class="endtheappointment" id="endAppointment" name="endAppointment" value="{{ appointment_id }}">End Appointment</button>
+                                <button type="submit" class="endtheappointment" id="endAppointment" name="endAppointment" value="{{ endAppointment }}">End Appointment</button>
                             </form>
                         <button class="canceltest" onclick="closeModalApp()">Cancel</button>
                             
@@ -998,8 +1001,8 @@
                                             <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
                                                 <datalist id="disease_name_suggestion">
                                                     <option value="">-- Select Disease --</option>
-                                                    {% for medicine in medicines_list %}
-                                                        <option value="{{ medicine }}">{{ medicine }}</option>
+                                                    {% for disease in disease_list %}
+                                                        <option value="{{ disease }}">{{ disease }}</option>
                                                     {% endfor %}
                                                 </datalist>
                                             </select>
