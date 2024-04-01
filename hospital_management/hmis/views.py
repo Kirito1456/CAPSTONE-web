@@ -1547,7 +1547,7 @@ def patient_personal_information_inpatient(request):
  
         if 'admitButton' in request.POST:
 
-            currdiagnosis = request.POST.get("diagnosis")
+            # currdiagnosis = request.POST.get("diagnosis")
              # Check if the patient is already an inpatient
             patient_data = db.child("patientdata").child(chosenPatient).get().val()
             if patient_data and patient_data.get('status') == 'Outpatient':
@@ -1570,7 +1570,6 @@ def patient_personal_information_inpatient(request):
 
                     db.child("patientdata").child(chosenPatient).update({
                         'status': 'Inpatient',
-                        'disease': currdiagnosis,
                         'room': chosen_room_id
                     })
 
