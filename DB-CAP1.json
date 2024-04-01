@@ -1,0 +1,836 @@
+{
+  "admissionHistory": {
+    "Vwx5tuPcpARe8bLJJFUwxW1jW7l1": {
+      "2024-04-01 14:57:14": {
+        "attending_physician": "Mary Garcia",
+        "bday": "2000-05-20",
+        "diagnosis": "Hypertension",
+        "discharge_day": "2024-04-01 14:57:14",
+        "doctorid": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+        "gender": "Male",
+        "patientid": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+        "pname": "Benjamin Jones"
+      }
+    }
+  },
+  "appointments": {
+    "09e7c627-aad7-48ae-b001-b7d888766019": {
+      "appointmentDate": "2024-04-11",
+      "appointmentTime": "10:00 AM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+      "status": "Ongoing"
+    },
+    "0bc4303e-e93e-4256-a74c-29f9b5b6bbd9": {
+      "appointmentDate": "2024-04-05",
+      "appointmentTime": "9:30 AM",
+      "appointmentVisitType": "New Visit",
+      "doctorUID": "DAvR9vCUvJQBmzUlDrTOWyAklIE3",
+      "patientName": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+      "status": "Ongoing"
+    },
+    "125a406e-eff5-11ee-a2ed-eb89aa20aa52": {
+      "appointmentDate": "2024-04-09",
+      "appointmentTime": "09:00 AM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+      "status": "Ongoing"
+    },
+    "14879e7b-efe8-11ee-8fa3-e02b7163b893": {
+      "appointmentDate": "2024-04-01",
+      "appointmentTime": "02:00 PM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Ongoing"
+    },
+    "335117d7-c748-428b-bfb5-c69ad7943191": {
+      "appointmentDate": "2024-02-16",
+      "appointmentTime": "9:30 AM",
+      "appointmentVisitType": "Routine Check-Up",
+      "doctorUID": "DAvR9vCUvJQBmzUlDrTOWyAklIE3",
+      "patientName": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+      "status": "Finished"
+    },
+    "3585d82e-efed-11ee-adca-e02b7163b893": {
+      "appointmentDate": "2024-04-01",
+      "appointmentTime": "02:30 PM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Finished"
+    },
+    "5eb1a53c-5695-4e89-907c-f6f0bab615f3": {
+      "appointmentDate": "2024-03-01",
+      "appointmentTime": "3:30 PM",
+      "appointmentVisitType": "New Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Finished"
+    },
+    "67182083-10c6-4dd8-aa84-5d15094645c3": {
+      "appointmentDate": "2024-03-14",
+      "appointmentTime": "2:30 PM",
+      "appointmentVisitType": "New Visit",
+      "doctorUID": "DAvR9vCUvJQBmzUlDrTOWyAklIE3",
+      "patientName": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Finished"
+    },
+    "7308d262-f24c-418c-9a33-8ab495a21846": {
+      "appointmentDate": "2024-04-10",
+      "appointmentTime": "9:00 AM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "DAvR9vCUvJQBmzUlDrTOWyAklIE3",
+      "patientName": "FXHrmseMLdfDl1VMQ7tGXehg2WY2",
+      "status": "Ongoing"
+    },
+    "7490e1c4-f91f-40e3-90ab-5bc8d1555b30": {
+      "appointmentDate": "2024-03-13",
+      "appointmentTime": "2:30 PM",
+      "appointmentVisitType": "New Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+      "status": "Finished"
+    },
+    "7a02d533-4b3f-4bff-928d-9b546a2e9aef": {
+      "appointmentDate": "2024-04-12",
+      "appointmentTime": "9:30 AM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "DAvR9vCUvJQBmzUlDrTOWyAklIE3",
+      "patientName": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+      "status": "Ongoing"
+    },
+    "9b2794ab-2416-4375-8c55-d6b530eca9c4": {
+      "appointmentDate": "2024-02-09",
+      "appointmentTime": "8:00 AM",
+      "appointmentVisitType": "Routine Check-Up",
+      "doctorUID": "DAvR9vCUvJQBmzUlDrTOWyAklIE3",
+      "patientName": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+      "status": "Finished"
+    },
+    "cbe6da05-a7f8-43d2-9002-875e55135308": {
+      "appointmentDate": "2024-02-09",
+      "appointmentTime": "2:00 PM",
+      "appointmentVisitType": "Routine Check-Up",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Finished"
+    },
+    "e022bfdf-fcbd-49ce-9765-ee53f131b346": {
+      "appointmentDate": "2024-04-11",
+      "appointmentTime": "2:00 PM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+      "status": "Ongoing"
+    },
+    "e7bed0d5-b7aa-44da-a7c0-8bbbedd1ff17": {
+      "appointmentDate": "2024-02-20",
+      "appointmentTime": "9:00 AM",
+      "appointmentVisitType": "New Visit",
+      "doctorUID": "DAvR9vCUvJQBmzUlDrTOWyAklIE3",
+      "patientName": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+      "status": "Finished"
+    },
+    "f5d72065-0c38-4843-8e78-e0e643783bb5": {
+      "appointmentDate": "2024-04-01",
+      "appointmentTime": "4:30 PM",
+      "appointmentVisitType": "New Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Finished"
+    },
+    "f7b8cb3e-fc92-413f-9f4c-7d01bb7b0a7e": {
+      "appointmentDate": "2024-04-01",
+      "appointmentTime": "10:00 AM",
+      "appointmentVisitType": "Follow-Up Visit",
+      "doctorUID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "patientName": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Ongoing"
+    }
+  },
+  "appointmentschedule": {
+    "DAvR9vCUvJQBmzUlDrTOWyAklIE3": {
+      "afternoon_end": "15:00",
+      "afternoon_start": "14:00",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "morning_end": "10:00",
+      "morning_start": "08:00",
+      "uid": "DAvR9vCUvJQBmzUlDrTOWyAklIE3"
+    },
+    "jzOTtfia9HRRmbrXZFRGdnsixgh1": {
+      "afternoon_end": "17:00",
+      "afternoon_start": "14:00",
+      "days": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday"
+      ],
+      "morning_end": "11:00",
+      "morning_start": "09:00",
+      "uid": "jzOTtfia9HRRmbrXZFRGdnsixgh1"
+    }
+  },
+  "clinics": {
+    "ff91d04a-efdb-11ee-b8d9-e02b7163b893": {
+      "fnumber": "6",
+      "name": "Harmony Health Center",
+      "onumber": "8-2345678",
+      "rnumber": "601",
+      "uid": "ff91d04a-efdb-11ee-b8d9-e02b7163b893"
+    }
+  },
+  "consultationNotes": {
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "2024-04-01": {
+        "chiefComplaint": "Patient felt head ache in the lower left of her head",
+        "diagnosis": "Pain",
+        "doctorID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+        "patientID": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+        "review_of_systems": {
+          "head": [
+            "Headaches"
+          ]
+        }
+      }
+    },
+    "Vwx5tuPcpARe8bLJJFUwxW1jW7l1": {
+      "2024-04-01": {
+        "diagnosis": "Hypertension",
+        "doctorID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+        "patientID": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1"
+      }
+    },
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "2024-04-01": {
+        "diagnosis": "Asthma",
+        "doctorID": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+        "patientID": "tAXrD7LdswYFpiG06WvZbaPAdYu1"
+      }
+    }
+  },
+  "doctors": {
+    "DAvR9vCUvJQBmzUlDrTOWyAklIE3": {
+      "clinic": "ff91d04a-efdb-11ee-b8d9-e02b7163b893",
+      "email": "robertsantos@gmail.com",
+      "fname": "Robert",
+      "lname": "Santos",
+      "role": "Doctor",
+      "sex": "Male",
+      "specialization": "General Practitioner",
+      "uid": "DAvR9vCUvJQBmzUlDrTOWyAklIE3"
+    },
+    "jzOTtfia9HRRmbrXZFRGdnsixgh1": {
+      "clinic": "ff91d04a-efdb-11ee-b8d9-e02b7163b893",
+      "email": "marygarcia@gmail.com",
+      "fname": "Mary",
+      "lname": "Garcia",
+      "role": "Doctor",
+      "sex": "Female",
+      "specialization": "General Practitioner",
+      "uid": "jzOTtfia9HRRmbrXZFRGdnsixgh1"
+    },
+    "sSLmz6dQPuV4LQSaQxd3t4gNBAr1": {
+      "clinic": "ff91d04a-efdb-11ee-b8d9-e02b7163b893",
+      "email": "sandrali@gmail.com",
+      "fname": "Sandra",
+      "lname": "Li",
+      "role": "Doctor",
+      "sex": "Female",
+      "specialization": "Pediatrician",
+      "uid": "sSLmz6dQPuV4LQSaQxd3t4gNBAr1"
+    }
+  },
+  "doctorsorders": {
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "2024-04-01 15:04:36": {
+        "1984ee12-eff6-11ee-9673-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-06 15:04:36",
+          "days": 5,
+          "dosage": "10mg",
+          "medicine_name": "Prednisolone",
+          "patient_id": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Morning",
+          "todaydate": "2024-04-01 15:04:36",
+          "total": 5
+        }
+      }
+    }
+  },
+  "nurses": {
+    "BK4N6JeEEpaQU6P2J8hbbSISMrz2": {
+      "email": "jamespark@gmail.com",
+      "fname": "James",
+      "lname": "Park",
+      "role": "Nurse",
+      "sex": "Male",
+      "shift": "graveyard",
+      "specialization": "Bedside Nurse",
+      "uid": "BK4N6JeEEpaQU6P2J8hbbSISMrz2"
+    },
+    "CHZMZq5wLRgXBdIotEjVU3mm0OR2": {
+      "email": "davidthompson@gmail.com",
+      "fname": "David",
+      "lname": "Thompson",
+      "role": "Nurse",
+      "sex": "Male",
+      "shift": "afternoon",
+      "specialization": "Bedside Nurse",
+      "uid": "CHZMZq5wLRgXBdIotEjVU3mm0OR2"
+    },
+    "QtjJznA8dfNQkLCFHxyK0cuSM7n2": {
+      "email": "rachelcarter@gmail.com",
+      "fname": "Rachel",
+      "lname": "Carter",
+      "role": "Nurse",
+      "sex": "Female",
+      "shift": "graveyard",
+      "specialization": "Bedside Nurse",
+      "uid": "QtjJznA8dfNQkLCFHxyK0cuSM7n2"
+    },
+    "cTlEkrtgWrVzF0eExrrRo1DMpRi1": {
+      "email": "meganmitchell@gmail.com",
+      "fname": "Megan",
+      "lname": "Mitchell",
+      "role": "Nurse",
+      "sex": "Female",
+      "shift": "morning",
+      "specialization": "Bedside Nurse",
+      "uid": "cTlEkrtgWrVzF0eExrrRo1DMpRi1"
+    },
+    "lJGA2bkJjCMUHqnwAkcH2nfMi7J3": {
+      "email": "caseytan@gmail.com",
+      "fname": "Casey",
+      "lname": "Tan",
+      "role": "Nurse",
+      "sex": "Female",
+      "shift": "",
+      "specialization": "Charge Nurse",
+      "uid": "lJGA2bkJjCMUHqnwAkcH2nfMi7J3"
+    },
+    "zWyKErZH6WNFSP9TjLVYZlpnnh92": {
+      "email": "jonathanparker@gmail.com",
+      "fname": "Jonathan",
+      "lname": "Parker",
+      "role": "Nurse",
+      "sex": "Male",
+      "shift": "afternoon",
+      "specialization": "Bedside Nurse",
+      "uid": "zWyKErZH6WNFSP9TjLVYZlpnnh92"
+    }
+  },
+  "patientdata": {
+    "E5wI1LB9UtOvgf8j1O4J3y3x6mN2": {
+      "patientID": "E5wI1LB9UtOvgf8j1O4J3y3x6mN2",
+      "status": "Outpatient",
+      "uid": "E5wI1LB9UtOvgf8j1O4J3y3x6mN2"
+    },
+    "FXHrmseMLdfDl1VMQ7tGXehg2WY2": {
+      "bloodType": "O+",
+      "height": 165,
+      "patientID": "FXHrmseMLdfDl1VMQ7tGXehg2WY2",
+      "status": "Outpatient",
+      "uid": "FXHrmseMLdfDl1VMQ7tGXehg2WY2",
+      "weight": 55
+    },
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "bloodType": "AB+",
+      "disease": "Pain",
+      "height": 170,
+      "patientID": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "status": "Outpatient",
+      "uid": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "weight": 62
+    },
+    "Vwx5tuPcpARe8bLJJFUwxW1jW7l1": {
+      "lastVisited": "2024-04-01",
+      "patientID": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+      "status": "Outpatient",
+      "uid": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1"
+    },
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "disease": "Asthma",
+      "patientID": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+      "room": "94864fc172994e268d9a8b30cfeab34e",
+      "status": "Inpatient",
+      "uid": "tAXrD7LdswYFpiG06WvZbaPAdYu1"
+    }
+  },
+  "patientmedicalhistory": {
+    "FXHrmseMLdfDl1VMQ7tGXehg2WY2": {
+      "allergyhistory": {
+        "allergen": [
+          "Peanuts"
+        ],
+        "patient_id": "FXHrmseMLdfDl1VMQ7tGXehg2WY2",
+        "severity": [
+          "Mild"
+        ]
+      },
+      "socialHistory": {
+        "alcohol": "Yes"
+      }
+    },
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "allergyhistory": {
+        "allergen": [
+          "Fish",
+          "Peanuts"
+        ],
+        "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+        "severity": [
+          "Severe",
+          "Mild"
+        ]
+      },
+      "familyHistory": {
+        "age": [
+          "45"
+        ],
+        "diagnosis": [
+          "Diabetes"
+        ],
+        "member": [
+          ""
+        ],
+        "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2"
+      },
+      "immunizationHistory": {
+        "date": [
+          "2022-05-06"
+        ],
+        "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+        "vaccine": [
+          "COVID-19 (PFIZER)"
+        ]
+      },
+      "socialHistory": {
+        "alcohol": "Yes",
+        "smoking": "Yes"
+      }
+    },
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "allergyhistory": {
+        "allergen": [
+          "Chocolate"
+        ],
+        "patient_id": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+        "severity": [
+          "Moderate"
+        ]
+      }
+    }
+  },
+  "patients": {
+    "E5wI1LB9UtOvgf8j1O4J3y3x6mN2": {
+      "bday": "1978-02-4",
+      "email": "jessicabrown@gmail.com",
+      "fname": "Jessica",
+      "gender": "Female",
+      "lname": "Brown",
+      "role": "patient",
+      "status": "Outpatient",
+      "uid": "E5wI1LB9UtOvgf8j1O4J3y3x6mN2"
+    },
+    "FXHrmseMLdfDl1VMQ7tGXehg2WY2": {
+      "bday": "2004-07-8",
+      "email": "samanthawilliams@gmail.com",
+      "fname": "Samantha",
+      "gender": "Female",
+      "lname": "Williams",
+      "role": "patient",
+      "status": "Outpatient",
+      "uid": "FXHrmseMLdfDl1VMQ7tGXehg2WY2"
+    },
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "bday": "1990-05-15",
+      "email": "emilyjohnson@gmail.com",
+      "fname": "Emily",
+      "gender": "Female",
+      "lname": "Johnson",
+      "role": "patient",
+      "status": "Outpatient",
+      "uid": "NV8TfasUPCdgpYpIZqDEusY9Rsx2"
+    },
+    "Vwx5tuPcpARe8bLJJFUwxW1jW7l1": {
+      "bday": "2000-05-20",
+      "email": "benjaminjones@gmail.com",
+      "fname": "Benjamin",
+      "gender": "Male",
+      "lname": "Jones",
+      "role": "patient",
+      "status": "Outpatient",
+      "uid": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1"
+    },
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "bday": "1993-11-12",
+      "email": "michaelsmith@gmail.com",
+      "fname": "Michael",
+      "gender": "Male",
+      "lname": "Smith",
+      "role": "patient",
+      "status": "Outpatient",
+      "uid": "tAXrD7LdswYFpiG06WvZbaPAdYu1"
+    }
+  },
+  "patientsorders": {
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "2024-04-01 14:22:29": {
+        "376060f7-eff0-11ee-a2eb-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-04 14:22:29",
+          "days": 3,
+          "dosage": "500mg",
+          "medicine_name": "Paracetamol",
+          "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Morning",
+          "todaydate": "2024-04-01 14:22:29",
+          "total": 9
+        },
+        "3767642a-eff0-11ee-a2d0-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-04 14:22:29",
+          "days": 3,
+          "dosage": "500mg",
+          "medicine_name": "Paracetamol",
+          "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Afternoon",
+          "todaydate": "2024-04-01 14:22:29",
+          "total": 9
+        },
+        "376e1748-eff0-11ee-8cd9-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-04 14:22:29",
+          "days": 3,
+          "dosage": "500mg",
+          "medicine_name": "Paracetamol",
+          "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Evening",
+          "todaydate": "2024-04-01 14:22:29",
+          "total": 9
+        },
+        "37751a8b-eff0-11ee-b475-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-04 14:22:29",
+          "days": 3,
+          "dosage": "200mg",
+          "medicine_name": "Ibuprofen",
+          "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Morning",
+          "todaydate": "2024-04-01 14:22:29",
+          "total": 9
+        },
+        "377cb5e3-eff0-11ee-b8ef-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-04 14:22:29",
+          "days": 3,
+          "dosage": "200mg",
+          "medicine_name": "Ibuprofen",
+          "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Afternoon",
+          "todaydate": "2024-04-01 14:22:29",
+          "total": 9
+        },
+        "3783d5a0-eff0-11ee-b67f-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-04 14:22:29",
+          "days": 3,
+          "dosage": "200mg",
+          "medicine_name": "Ibuprofen",
+          "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Evening",
+          "todaydate": "2024-04-01 14:22:29",
+          "total": 9
+        }
+      }
+    },
+    "Vwx5tuPcpARe8bLJJFUwxW1jW7l1": {
+      "2024-04-01 14:57:34": {
+        "1e0cff4b-eff5-11ee-8eea-eb89aa20aa52": {
+          "additional_remarks": "",
+          "date": "2024-04-04 14:57:34",
+          "days": 3,
+          "dosage": "100mg",
+          "medicine_name": "Losartan",
+          "patient_id": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+          "route": "Oral",
+          "status": "Ongoing",
+          "times": "Evening",
+          "todaydate": "2024-04-01 14:57:34",
+          "total": 3
+        }
+      }
+    }
+  },
+  "prescriptionsorders": {
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "2024-04-01 14:22:29": {
+        "additional_remarks": [
+          "",
+          ""
+        ],
+        "days": [
+          "3",
+          "3"
+        ],
+        "dosage": [
+          "500mg",
+          "200mg"
+        ],
+        "endDate": "2024-04-04 14:22:29",
+        "medicine_name": [
+          "Paracetamol",
+          "Ibuprofen"
+        ],
+        "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+        "prescriptionsorderUID": "37599962-eff0-11ee-8a4d-eb89aa20aa52",
+        "route": [
+          "Oral",
+          "Oral"
+        ],
+        "status": "Ongoing",
+        "times": [
+          "Morning, Afternoon, Evening",
+          "Morning, Afternoon, Evening"
+        ],
+        "todaydate": "2024-04-01 14:22:29"
+      }
+    },
+    "Vwx5tuPcpARe8bLJJFUwxW1jW7l1": {
+      "2024-04-01 14:57:34": {
+        "additional_remarks": [
+          ""
+        ],
+        "days": [
+          "3"
+        ],
+        "dosage": [
+          "100mg"
+        ],
+        "endDate": "2024-04-04 14:57:34",
+        "medicine_name": [
+          "Losartan"
+        ],
+        "patient_id": "Vwx5tuPcpARe8bLJJFUwxW1jW7l1",
+        "prescriptionsorderUID": "1e05615f-eff5-11ee-8a08-eb89aa20aa52",
+        "route": [
+          "Oral"
+        ],
+        "status": "Ongoing",
+        "times": [
+          "Evening"
+        ],
+        "todaydate": "2024-04-01 14:57:34"
+      }
+    },
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "2024-04-01 15:04:36": {
+        "additional_remarks": [
+          ""
+        ],
+        "days": [
+          "5"
+        ],
+        "dosage": [
+          "10mg"
+        ],
+        "endDate": "2024-04-06 15:04:36",
+        "medicine_name": [
+          "Prednisolone"
+        ],
+        "patient_id": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+        "prescriptionsorderUID": "197bb5e0-eff6-11ee-b59c-eb89aa20aa52",
+        "route": [
+          "Oral"
+        ],
+        "status": "Ongoing",
+        "times": [
+          "Morning"
+        ],
+        "todaydate": "2024-04-01 15:04:36"
+      }
+    }
+  },
+  "progressnotes": {
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "61b4470e-87b1-4e7e-8489-308a5927777d": {
+        "date": "2024-04-01",
+        "focus": "Asthma exacerbation",
+        "notes": "D: Patient complained of shortness of breath, A: Administered nebulizer treatment per hospital protocol, R: Patient's respiratory distress improved following initial treatment",
+        "nurseID": "zWyKErZH6WNFSP9TjLVYZlpnnh92",
+        "time": "3:08 PM"
+      }
+    }
+  },
+  "rooms": {
+    "0728980959f74793bf47617354a15a24": {
+      "fnumber": 2,
+      "max_occupants": 1,
+      "nurse_assigned": {
+        "afternoon": "CHZMZq5wLRgXBdIotEjVU3mm0OR2",
+        "graveyard": "BK4N6JeEEpaQU6P2J8hbbSISMrz2",
+        "morning": ""
+      },
+      "patients": [
+        "",
+        ""
+      ],
+      "rnumber": 201,
+      "uid": "0728980959f74793bf47617354a15a24"
+    },
+    "0728980959f74793bf47617354a15a28": {
+      "fnumber": 2,
+      "max_occupants": 2,
+      "nurse_assigned": {
+        "afternoon": "zWyKErZH6WNFSP9TjLVYZlpnnh92",
+        "graveyard": "QtjJznA8dfNQkLCFHxyK0cuSM7n2",
+        "morning": "cTlEkrtgWrVzF0eExrrRo1DMpRi1"
+      },
+      "patients": [
+        "",
+        ""
+      ],
+      "rnumber": 205,
+      "uid": "0728980959f74793bf47617354a15a28"
+    },
+    "19bfb63dadac4486bf1e3fb078b32940": {
+      "fnumber": 2,
+      "max_occupants": 3,
+      "nurse_assigned": {
+        "afternoon": "CHZMZq5wLRgXBdIotEjVU3mm0OR2",
+        "graveyard": "BK4N6JeEEpaQU6P2J8hbbSISMrz2",
+        "morning": ""
+      },
+      "patients": [
+        "",
+        ""
+      ],
+      "rnumber": 203,
+      "uid": "19bfb63dadac4486bf1e3fb078b32940"
+    },
+    "3db7d3909f9e454491ab6135fea367ff": {
+      "fnumber": 2,
+      "max_occupants": 2,
+      "nurse_assigned": {
+        "afternoon": "CHZMZq5wLRgXBdIotEjVU3mm0OR2",
+        "graveyard": "BK4N6JeEEpaQU6P2J8hbbSISMrz2",
+        "morning": ""
+      },
+      "patients": [
+        "",
+        ""
+      ],
+      "rnumber": 202,
+      "uid": "3db7d3909f9e454491ab6135fea367ff"
+    },
+    "5706425413394e0b8216f8d885484383": {
+      "fnumber": 2,
+      "max_occupants": 1,
+      "nurse_assigned": {
+        "afternoon": "zWyKErZH6WNFSP9TjLVYZlpnnh92",
+        "graveyard": "QtjJznA8dfNQkLCFHxyK0cuSM7n2",
+        "morning": "cTlEkrtgWrVzF0eExrrRo1DMpRi1"
+      },
+      "patients": [
+        ""
+      ],
+      "rnumber": 204,
+      "uid": "5706425413394e0b8216f8d885484383"
+    },
+    "94864fc172994e268d9a8b30cfeab34e": {
+      "fnumber": 2,
+      "max_occupants": 3,
+      "nurse_assigned": {
+        "afternoon": "zWyKErZH6WNFSP9TjLVYZlpnnh92",
+        "graveyard": "QtjJznA8dfNQkLCFHxyK0cuSM7n2",
+        "morning": "cTlEkrtgWrVzF0eExrrRo1DMpRi1"
+      },
+      "patients": [
+        "tAXrD7LdswYFpiG06WvZbaPAdYu1"
+      ],
+      "rnumber": 206,
+      "uid": "94864fc172994e268d9a8b30cfeab34e"
+    }
+  },
+  "submittedTest": {
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "blood_test": {
+        "date": "2024-04-01 15:18:17.504037",
+        "doctor": "",
+        "downloadURL": "https://firebasestorage.googleapis.com/v0/b/hmis-a3bbe.appspot.com/o/NV8TfasUPCdgpYpIZqDEusY9Rsx2%2FsubmittedTest%2F1711955894292.png?alt=media&token=1dcfb29e-3960-4a2f-987b-56a56dc93c2e",
+        "testRequestKey": "blood_test"
+      }
+    }
+  },
+  "testrequest": {
+    "NV8TfasUPCdgpYpIZqDEusY9Rsx2": {
+      "blood_test": "false",
+      "bronchoscopy": false,
+      "colonoscopy": false,
+      "ct_scan": false,
+      "datetime": "2024-04-01 15:16:26",
+      "doctor_id": "jzOTtfia9HRRmbrXZFRGdnsixgh1",
+      "ecg": false,
+      "mri": false,
+      "patient_id": "NV8TfasUPCdgpYpIZqDEusY9Rsx2",
+      "pet_scan": false,
+      "status": "Ongoing",
+      "stool_test": false,
+      "tissue_biopsy": false,
+      "ultrasound": false,
+      "urine_test": false,
+      "xray": false
+    }
+  },
+  "vitalsigns": {
+    "tAXrD7LdswYFpiG06WvZbaPAdYu1": {
+      "66c11d3c-f550-4c53-bdb6-7167befc48ba": {
+        "bloodpressure": "118/78",
+        "date": "2024-04-01",
+        "painindex": "1",
+        "patientid": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+        "pulse": "63",
+        "respiration": "16",
+        "temperature": "36.7",
+        "time": "3:02 PM",
+        "uid": "tAXrD7LdswYFpiG06WvZbaPAdYu1"
+      },
+      "d7e0a974-04cc-48d8-acc2-b5a1fa3b0762": {
+        "bloodpressure": "120/80",
+        "date": "2024-04-01",
+        "painindex": "1",
+        "patientid": "tAXrD7LdswYFpiG06WvZbaPAdYu1",
+        "pulse": "66",
+        "respiration": "15",
+        "temperature": "37",
+        "time": "3:02 PM",
+        "uid": "tAXrD7LdswYFpiG06WvZbaPAdYu1"
+      }
+    }
+  }
+}
