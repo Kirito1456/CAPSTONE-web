@@ -80,7 +80,7 @@ def home(request):
             user = firebase_auth.sign_in_with_email_and_password(email, password)
             session_id = user['localId']
             request.session['uid'] = str(session_id)
-            print(request.session['uid'])
+            # print(request.session['uid'])
 
             #db.child('sessions').child(user['localId']).set(user)
 
@@ -550,15 +550,15 @@ def followup_appointment(request):
     if request.method == 'POST':
         endAppointmentPatientID = request.POST.get('followupCheckbox')
         endAppointmentAPP = request.POST.get('endAppointment')
-        print('endAppointmentAPP IS ', endAppointmentAPP)
+        # print('endAppointmentAPP IS ', endAppointmentAPP)
         if endAppointmentPatientID:
             id=str(uuid.uuid1())
             endAppointment = request.POST.get('past-appointment-id')
         
             new_time = request.POST.get('new_appointment_time1')
             new_date = request.POST.get('selected_appointment_date1')
-            print('new_time is ', new_time)
-            print('new_date is ', new_date)
+            # print('new_time is ', new_time)
+            # print('new_date is ', new_date)
             data = {
                 'appointmentDate': new_date,
                 'appointmentTime': new_time,
@@ -790,7 +790,7 @@ def ChargeNurseDashboard(request):
                 morning = request.POST.get(f'morning_{room_id}')  
                 afternoon = request.POST.get(f'afternoon_{room_id}')
                 graveyard = request.POST.get(f'graveyard_{room_id}')
-                print(room_id)
+                # print(room_id)
                 data = {
                     'nurse_assigned': {
                         'morning': morning,
@@ -1027,7 +1027,7 @@ def patient_personal_information_inpatient(request):
         }
         
         three_days_after = find_nearest_date(three_days, list_final)
-        print('three_days_after', three_days_after)
+        # print('three_days_after', three_days_after)
 
         # Define time slots for morning
         morning_start_str = appointmentschedule_data.get("morning_start")
@@ -1204,7 +1204,7 @@ def patient_personal_information_inpatient(request):
         if 'submitMedOrder' in request.POST:
             patient_uid = request.GET.get('chosenPatient')
             patientdata = db.child("patientdata").child(patient_uid).get().val()
-            print(patientdata)
+            # print(patientdata)
             #numOfDays = int(request.POST.get('numOfDays'))
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             days = request.POST.getlist('days')
@@ -1265,7 +1265,7 @@ def patient_personal_information_inpatient(request):
                     'status': status
                 }
                 db.child('prescriptionsorders').child(patient_id).child(todaydate).set(data)
-                print('STATUS ', patientdata['status'])
+                # print('STATUS ', patientdata['status'])
                 if patientdata['status'] == 'Inpatient':
                     for index in range(len(medicine_name)):
                     
@@ -1403,7 +1403,7 @@ def patient_personal_information_inpatient(request):
             frequency = request.POST.getlist('frequency1')
             additional_remarks = request.POST.getlist('remarks1')  
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(todaydate, chosenPatient, medicine_name, dosage, route, frequency, additional_remarks)
+            # print(todaydate, chosenPatient, medicine_name, dosage, route, frequency, additional_remarks)
             selected_time = request.POST.get('selected_time')
 
             
@@ -1505,7 +1505,7 @@ def patient_personal_information_inpatient(request):
 
             patient_uid = request.GET.get('chosenPatient')
             patientdata = db.child("patientdata").child(patient_uid).get().val()
-            print(patientdata)
+            # print(patientdata)
             #numOfDays = int(request.POST.get('numOfDays'))
             todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             days = request.POST.getlist('days')
@@ -1547,8 +1547,7 @@ def patient_personal_information_inpatient(request):
  
         if 'admitButton' in request.POST:
 
-            currdiagnosis = request.POST.get("currdiagnosis")
-            # print(currdiagnosis)
+            currdiagnosis = request.POST.get("diagnosis")
              # Check if the patient is already an inpatient
             patient_data = db.child("patientdata").child(chosenPatient).get().val()
             if patient_data and patient_data.get('status') == 'Outpatient':
@@ -1563,7 +1562,6 @@ def patient_personal_information_inpatient(request):
             # If there are available rooms, assign the patient to a random available room
                 if available_rooms:
                     chosen_room_id = random.choice(available_rooms)
-                    print(chosen_room_id)
                     room_data = rooms[chosen_room_id]
                     room_patients = room_data.get('patients', [])
                     room_patients.append(chosenPatient)
@@ -1649,12 +1647,12 @@ def patient_personal_information_inpatient(request):
     progressnotes = db.child("progressnotes").get().val()
     nurses = db.child("nurses").get().val()
 
-    print('SORTED APPOINTMENTS ARE ', sorted_appointments)
+    # print('SORTED APPOINTMENTS ARE ', sorted_appointments)
     
     first_appointment = next(iter(sorted_appointments.values()), None)
-    print('FIRST APPOINTMENTS IS ', first_appointment)
+    # print('FIRST APPOINTMENTS IS ', first_appointment)
     first_appointment_date = first_appointment['appointmentDate'] if first_appointment else None
-    print('CONVERTED FIRST DATE IS ', first_appointment_date)
+    # print('CONVERTED FIRST DATE IS ', first_appointment_date)
     if first_appointment_date is None:
         num_days = 0
     else:
@@ -1788,7 +1786,7 @@ def save_diagnosis(request):
 
 def calculate_age(birthday):
     today = datetime.today()
-    print(today)
+    # print(today)
     birthdate = datetime.strptime(birthday, '%Y-%m-%d').date()
     return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
@@ -1934,11 +1932,11 @@ def view_treatment_plan_all(request):
             dates.append(order_date)
     
     sorted_dates = sorted(dates, reverse=True)
-    print(sorted_dates)
+    # print(sorted_dates)
     
     # Get the latest date
     latest_date = sorted_dates[0] if sorted_dates else None
-    print(latest_date)
+    # print(latest_date)
 
     chosenPatientTreatmentPlan = {}
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid)
@@ -1947,7 +1945,7 @@ def view_treatment_plan_all(request):
     if consulnotes_data:
         chosenPatientTreatmentPlan[chosen_patient_uid] = consulnotes_data
     
-    print(chosenPatientTreatmentPlan)
+    # print(chosenPatientTreatmentPlan)
     return render(request, 'hmis/view_treatment_plan.html', {
         'chosen_patient_uid': chosen_patient_uid,
         'patients': patients,
@@ -2228,7 +2226,7 @@ def pharmacy_drugs(request):
 
     # Convert the cursor to a list of dictionaries
     data = list(cursor)
-    print(data)
+    # print(data)
 
     # Pass the data to the template for rendering
     return render(request, 'hmis/test.html', {'data': data})
@@ -2284,8 +2282,8 @@ def save_prescriptions(request):
         routes = request.POST.getlist('route[]')
         remarks = request.POST.getlist('remarks[]')
         times = request.POST.getlist('times[]')
-        print('routes is ', routes)
-        print('dosages is ', dosages)
+        # print('routes is ', routes)
+        # print('dosages is ', dosages)
 
         # Generate unique ID for the prescription
         prescription_id = str(uuid.uuid1())
@@ -2324,8 +2322,8 @@ def save_prescriptions(request):
                 times_split = times_value.split(', ')
                 counter = len(times_split)
                 total = counter * days_value
-                print('route_value is ', route_value)
-                print('dosage_value is ', dosage_value)
+                # print('route_value is ', route_value)
+                # print('dosage_value is ', dosage_value)
                 for time_value in times_split:
                     pid = str(uuid.uuid1())
                     
