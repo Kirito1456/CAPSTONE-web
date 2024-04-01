@@ -414,22 +414,25 @@ def AppointmentUpcoming(request):
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
-    for appointment_id, appointment_data in upcomings.items():
-        if appointment_data["doctorUID"] == uid:
-            appointment_date_str = appointment_data.get("appointmentDate", "")
-            appointment_time_str = appointment_data.get("appointmentTime", "")
-        
-            if appointment_date_str and appointment_time_str:
-                # Convert appointment date string to datetime object
-                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+    if upcomings:
+        for appointment_id, appointment_data in upcomings.items():
+            if appointment_data["doctorUID"] == uid:
+                appointment_date_str = appointment_data.get("appointmentDate", "")
+                appointment_time_str = appointment_data.get("appointmentTime", "")
             
-                # Check if appointment date is in the future
-                if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Ongoing":
-                    upcoming_appointments[appointment_id] = appointment_data
+                if appointment_date_str and appointment_time_str:
+                    # Convert appointment date string to datetime object
+                    appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                
+                    # Check if appointment date is in the future
+                    if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Ongoing":
+                        upcoming_appointments[appointment_id] = appointment_data
 
-    # Sort appointments by date
-    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
-    
+        # Sort appointments by date
+        sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    else:
+        sorted_upcoming_appointments = {}
+
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
     if appointmentschedule_data:
         available_days_str = appointmentschedule_data.get("days", "")
@@ -589,24 +592,24 @@ def AppointmentPast(request):
     # Filter and sort upcoming appointments
     past_appointments = {}
     notes = {}
-    for appointment_id, appointment_data in pasts.items():
-        if appointment_data["doctorUID"] == uid:
-            appointment_date_str = appointment_data.get("appointmentDate", "")
-            appointment_time_str = appointment_data.get("appointmentTime", "")
-        
-            if appointment_date_str and appointment_time_str:
-            # Convert appointment date string to datetime object
-                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+    if pasts:
+        for appointment_id, appointment_data in pasts.items():
+            if appointment_data["doctorUID"] == uid:
+                appointment_date_str = appointment_data.get("appointmentDate", "")
+                appointment_time_str = appointment_data.get("appointmentTime", "")
             
-            # Check if appointment date is in the future
-                if appointment_datetime < date.datetime.now() or appointment_data["status"] == "Finished":
-                    past_appointments[appointment_id] = appointment_data
+                if appointment_date_str and appointment_time_str:
+                # Convert appointment date string to datetime object
+                    appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                
+                # Check if appointment date is in the future
+                    if appointment_datetime < date.datetime.now() or appointment_data["status"] == "Finished":
+                        past_appointments[appointment_id] = appointment_data
 
-    
-
-    # Sort appointments by date
-    sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
-
+        # Sort appointments by date
+        sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    else:
+        sorted_past_appointments = {}
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
                                                          'uid': uid, 'doctors': doctors})
@@ -624,19 +627,22 @@ def AppointmentCalendar(request):
     appointments = db.child("appointments").get().val()
 
     task = []
-    for appointment_id, appointment_data in appointments.items():
-        if appointment_data.get('doctorUID') == id:
-            hdate = appointment_data.get('appointmentDate')
-            appointment_time = appointment_data.get('appointmentTime')
-            patient_uid = appointment_data.get('patientName')
-        
-            for patient_id, patient_data in patients.items():
-                if patient_uid == patient_id:
-                    patient_name = patient_data.get('fname') +  ' ' + patient_data.get('lname')
-                    task_item = {'hdate': hdate, 'task':f"{appointment_time} {patient_name}"}
-                    task.append(task_item)
+    if appointments:
+        for appointment_id, appointment_data in appointments.items():
+            if appointment_data.get('doctorUID') == id:
+                hdate = appointment_data.get('appointmentDate')
+                appointment_time = appointment_data.get('appointmentTime')
+                patient_uid = appointment_data.get('patientName')
+            
+                for patient_id, patient_data in patients.items():
+                    if patient_uid == patient_id:
+                        patient_name = patient_data.get('fname') +  ' ' + patient_data.get('lname')
+                        task_item = {'hdate': hdate, 'task':f"{appointment_time} {patient_name}"}
+                        task.append(task_item)
 
-    task_json = json.dumps(task)
+        task_json = json.dumps(task)
+    else:
+        task_json = ''
     
     return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json})
 
@@ -724,41 +730,46 @@ def DoctorDashboard(request):
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
     inpatients = {}
-    for appointment_id, appointment_data in upcomings.items():
-        if appointment_data["doctorUID"] == uid:
-            appointment_date_str = appointment_data.get("appointmentDate", "")
-            appointment_time_str = appointment_data.get("appointmentTime", "")
-        
-            if appointment_date_str and appointment_time_str:
-                # Convert appointment date string to datetime object
-                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+    if upcomings:
+        for appointment_id, appointment_data in upcomings.items():
+            if appointment_data["doctorUID"] == uid:
+                appointment_date_str = appointment_data.get("appointmentDate", "")
+                appointment_time_str = appointment_data.get("appointmentTime", "")
             
-                # Check if appointment date is in the future
-                if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)) and appointment_data["status"] == "Ongoing":
-                    upcoming_appointments[appointment_id] = appointment_data
+                if appointment_date_str and appointment_time_str:
+                    # Convert appointment date string to datetime object
+                    appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                
+                    # Check if appointment date is in the future
+                    if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)) and appointment_data["status"] == "Ongoing":
+                        upcoming_appointments[appointment_id] = appointment_data
 
-            for patient_id, patient_data in patients.items():
-                if appointment_data["patientName"] == patient_id:
-                    for patientdata_id, patientdata_data in patientdatas.items():
-                        if patientdata_data["status"] == 'Inpatient' and patientdata_id == appointment_data["patientName"]:
-                        # if patientdata_data["status"] == 'Inpatient' and patientdata_data['patientid'] == appointment_data["patientName"]:
-                            inpatients[patientdata_id] = patientdata_data       
+                for patient_id, patient_data in patients.items():
+                    if appointment_data["patientName"] == patient_id:
+                        for patientdata_id, patientdata_data in patientdatas.items():
+                            if patientdata_data["status"] == 'Inpatient' and patientdata_id == appointment_data["patientName"]:
+                            # if patientdata_data["status"] == 'Inpatient' and patientdata_data['patientid'] == appointment_data["patientName"]:
+                                inpatients[patientdata_id] = patientdata_data       
 
-    # Sort appointments by date
-    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
-
+        # Sort appointments by date
+        sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    else:
+        sorted_upcoming_appointments = {}
 
     chosenPatients= {}
-    for patients_id, patients_data in patients.items():
-        for appointment_id, appointment_data in appointments.items():
-            if appointment_data['doctorUID'] == uid and patients_id == appointment_data['patientName']:
-                chosenPatients[patients_id] = patients_data
+    if patients:
+        for patients_id, patients_data in patients.items():
+            for appointment_id, appointment_data in appointments.items():
+                if appointment_data['doctorUID'] == uid and patients_id == appointment_data['patientName']:
+                    chosenPatients[patients_id] = patients_data
+
 
     chosenPatientData= {}
-    for patientsdata_id, patientsdata_data in patientsdata.items():
-        for appointment_id, appointment_data in appointments.items():
-            if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
-                chosenPatientData[patientsdata_id] = patientsdata_data
+    if patientsdata:
+        for patientsdata_id, patientsdata_data in patientsdata.items():
+            for appointment_id, appointment_data in appointments.items():
+                if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
+                    chosenPatientData[patientsdata_id] = patientsdata_data
 
 
     # Pass the combined data to the template
@@ -836,16 +847,18 @@ def patient_data_doctor_view(request):
     rooms = db.child("rooms").get().val()
 
     chosenPatients= {}
-    for patients_id, patients_data in patients.items():
-        for appointment_id, appointment_data in appointments.items():
-            if appointment_data['doctorUID'] == uid and patients_id == appointment_data['patientName']:
-                chosenPatients[patients_id] = patients_data
+    if patients:
+        for patients_id, patients_data in patients.items():
+            for appointment_id, appointment_data in appointments.items():
+                if appointment_data['doctorUID'] == uid and patients_id == appointment_data['patientName']:
+                    chosenPatients[patients_id] = patients_data
 
     chosenPatientData= {}
-    for patientsdata_id, patientsdata_data in patientsdata.items():
-        for appointment_id, appointment_data in appointments.items():
-            if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
-                chosenPatientData[patientsdata_id] = patientsdata_data
+    if patientsdata:
+        for patientsdata_id, patientsdata_data in patientsdata.items():
+            for appointment_id, appointment_data in appointments.items():
+                if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
+                    chosenPatientData[patientsdata_id] = patientsdata_data
 
     # Pass the patients data to the template
     return render(request, 'hmis/patient_data_doctor_view.html', {'patients': chosenPatients, 
@@ -1109,13 +1122,15 @@ def patient_personal_information_inpatient(request):
 
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
-    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
-        if chosenPatient == vitalsigns_id:
-            for vsid, vsdata in vitalsigns_data.items():
-                chosenPatientVitalEntryData[vsid] = vsdata
-    
-    sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
-    
+    if vitalsigns:
+        for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+            if chosenPatient == vitalsigns_id:
+                for vsid, vsdata in vitalsigns_data.items():
+                    chosenPatientVitalEntryData[vsid] = vsdata
+        
+        sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
+    else:
+        sorted_vital_signs = {}
 
     chosenPatientConsulNotes = {}
 
@@ -1597,12 +1612,13 @@ def patient_personal_information_inpatient(request):
 
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
-    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
-        if chosenPatient == vitalsigns_id:
-            for vsid, vsdata in vitalsigns_data.items():
-                chosenPatientVitalEntryData[vsid] = vsdata
-    
-    sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
+    if vitalsigns:
+        for vitalsigns_id, vitalsigns_data in vitalsigns.items():
+            if chosenPatient == vitalsigns_id:
+                for vsid, vsdata in vitalsigns_data.items():
+                    chosenPatientVitalEntryData[vsid] = vsdata
+        
+        sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
 
     chosenPatientConsulNotes = {}
     # for consulnotes_id, consulnotes_data in consulnotes.items():
@@ -1994,7 +2010,7 @@ def extract_number_of_days(result):
             
     return None
 
-# Function to extract the dosage
+
 def extract_dosage(result):
     for sublist in result:
         if isinstance(sublist, list):
@@ -2003,12 +2019,16 @@ def extract_dosage(result):
                 return dosage
         elif isinstance(sublist, tuple):
             word = sublist[0]
-            # Use regular expression to find numerical value followed by "mg" or "mL"
-            dosage_match = re.search(r'\d+\s*(mg|mL|%cream)', word, flags=re.IGNORECASE)
+            # Use regular expression to find numerical value followed by "mg" or "mL" or "%cream"
+            dosage_match = re.search(r'(\d+)\s*(mg|mL|%cream)', word, flags=re.IGNORECASE)
             if dosage_match:
-                dosage_value = int(re.findall(r'\d+', dosage_match.group())[0])
-                return dosage_value
+                dosage_value = dosage_match.group(1)
+                dosage_unit = dosage_match.group(2)
+                # Combine dosage value and unit into a single string
+                dosage = f"{dosage_value}{dosage_unit}"
+                return dosage
     return None
+
 
 # Function to extract the medicine names
 def extract_medicine_names(result, medicine_names):
@@ -2022,6 +2042,25 @@ def extract_medicine_names(result, medicine_names):
                 if medicine.lower() in word.lower():
                     extracted_medicines.append(medicine)
     return extracted_medicines
+
+
+def extract_routes_and_frequency(result):
+    extracted_frequency = None
+    for sublist in result:
+        if isinstance(sublist, list):
+            frequency = extract_routes_and_frequency(sublist)
+            if frequency:  # Check if frequency is already extracted
+                extracted_frequency = frequency
+        elif isinstance(sublist, tuple):
+            word = sublist[0]
+            # Extract frequency
+            if re.search(r'\bq\.d\.?\b', word, re.IGNORECASE):
+                extracted_frequency = "Morning"
+            elif re.search(r'\bb\.i\.d\.?\b', word, re.IGNORECASE):
+                extracted_frequency = "Morning, Evening"
+            elif re.search(r'\bt\.i\.d\.?\b', word, re.IGNORECASE):
+                extracted_frequency = "Morning, Afternoon, Evening"
+    return extracted_frequency
 
 
 def extract_routes(result, routes):
@@ -2042,72 +2081,145 @@ def extract_routes(result, routes):
     return extracted_routes, routeFinal
 
 def perform_ocr(request):
-    patient_uid = request.GET.get('chosenPatient')
-    if request.method == 'POST' and 'image' in request.FILES:
-        try:
-            ocr = PaddleOCR(lang='en')
-            # image = request.FILES['image']
-            image ='/static/amoxicillin.png'
-            result = ocr.ocr(image)
+    if request.method == 'POST' and request.FILES['image']:
+        patient_uid = request.GET.get('chosenPatient')
+        image = request.FILES['image'].read()
 
-            for line in result:
-                for word_info in line:
-                    print(word_info[1], end=" ")
-                print() 
+        # Initialize PaddleOCR with the desired language model
+        ocr = PaddleOCR(use_angle_cls=True, lang='en')
+
+        # Perform OCR on the image
+        result = ocr.ocr(image, cls=True)
+
+        # Extract the recognized text from the OCR result
+        # recognized_text = '\n'.join([line[1][0] for line in result])
+
+        for line in result:
+            for word_info in line:
+                print(word_info[1], end=" ")
+            print() 
 
 
-            medicine_names = [
-                "Rosuvastatin", "Atorvastatin", "Amoxicillin", "Cefoxitin sodium",
-                "Prednisolone", "Alprazolam", "HCTZ", "Metformin", "Glipizide",
-                "Diclofenac", "Paracetamol", "Loratadine", "Montelukast", "Salbutamol",
-                "Sitagliptin", "Clindamycin", "Hydroxyzine", "Diphenhydramine Hydrochloride",
-                "Alvesco", "Glimepiride", "Co-Amoxiclav", "Propranolol", "Linagliptin",
-                "Cetirizine", "Levocetirizine", "Desloratadine", "Ibuprofen", "Probucol",
-                "Enalapril", "Diazepam", "Azithromycin", "Celecoxib", "Levofloxacin",
-                "Ketoconazole", "Lorazepam", "Guaifenesin", "Clotrimazole", "Losartan",
-                "Doxycycline", "Piroxicam"
-            ]
+        medications_cursor = collection.find({}, {"_id": 0, "Drug": 1,})
+        medicines_set = {medication['Drug'] for medication in medications_cursor}
+        medicine_names = list(medicines_set)
 
-            routes = ["Tablet", "Oral", "Pills", "Capsule", "tasbels", "tablels"]
+        # medicine_names = [
+        #     "Rosuvastatin", "Atorvastatin", "Amoxicillin", "Cefoxitin sodium",
+        #     "Prednisolone", "Alprazolam", "HCTZ", "Metformin", "Glipizide",
+        #     "Diclofenac", "Paracetamol", "Loratadine", "Montelukast", "Salbutamol",
+        #     "Sitagliptin", "Clindamycin", "Hydroxyzine", "Diphenhydramine Hydrochloride",
+        #     "Alvesco", "Glimepiride", "Co-Amoxiclav", "Propranolol", "Linagliptin",
+        #     "Cetirizine", "Levocetirizine", "Desloratadine", "Ibuprofen", "Probucol",
+        #     "Enalapril", "Diazepam", "Azithromycin", "Celecoxib", "Levofloxacin",
+        #     "Ketoconazole", "Lorazepam", "Guaifenesin", "Clotrimazole", "Losartan",
+        #     "Doxycycline", "Piroxicam"
+        # ]
 
-            # Extract the number of days, dosage, and medicine names from OCR result
-            days_value = extract_number_of_days(result)
-            dosage_value = extract_dosage(result)
-            medicine_names_extracted = extract_medicine_names(result, medicine_names)
-            routes_extracted, routeFinal = extract_routes(result, routes)
+        routes = ["Tablet", "Oral", "Pills", "Capsule", "tasbels", "tablels", "P.O.", "p.o."]
 
-            # Print the extracted values
-            print("Number of Days:", days_value)
-            print("Dosage (mg):", dosage_value)
-            print("Medicine Names:", medicine_names_extracted)
-            print("Final Route:", routeFinal)
+        days_value = extract_number_of_days(result)
+        dosage_value = extract_dosage(result)
+        medicine_names_extracted = extract_medicine_names(result, medicine_names)
+        extracted_frequency = extract_routes_and_frequency(result)
+        extracted_routes, routeFinal = extract_routes(result, routes)
 
-            id=str(uuid.uuid1())
+        # Print the extracted values
+        print("Number of Days:", days_value)
+        print("Dosage (mg):", dosage_value)
+        print("Medicine Names:", medicine_names_extracted)
+        print("Final Route:", routeFinal)
+        print("Final Frequency:", extracted_frequency)
 
-            todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        id=str(uuid.uuid1())
 
-            todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
-            endDate = todaydate_datetime + timedelta(days=days_value)
-            endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            data = {
-                'days': [days_value],
-                'dosage': [dosage_value],
-                'medicine_name': medicine_names_extracted,
-                'routes': [routeFinal],
-                'todaydate': todaydate,
-                'prescriptionsorderUID': id,
-                'status': 'Ongoing',
-                'endDate': endDate_str,
-            }
+        todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
+        endDate = todaydate_datetime + timedelta(days=days_value)
+        endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+        days_str = str(days_value)
 
-            db.child('prescriptionsorders').child(patient_uid).child(todaydate).set(data)
+        data = {
+            'days': [days_str],
+            'dosage': [dosage_value],
+            'medicine_name': medicine_names_extracted,
+            'route': [routeFinal],
+            'todaydate': todaydate,
+            'prescriptionsorderUID': id,
+            'status': 'Ongoing',
+            'endDate': endDate_str,
+            'times': [extracted_frequency],
+            'patient_id': patient_uid
+        }
 
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'No image uploaded or invalid request'}, status=400)
+        db.child('prescriptionsorders').child(patient_uid).child(todaydate).set(data)
+        dosage_value = dosage_value
+        route_value = routeFinal
+        days = int(days_str)
 
+        # Split the times_value into individual frequencies
+        times_split = extracted_frequency.split(', ')
+
+        # Calculate the total number of doses
+        total_doses = len(times_split) * days
+
+        for medicine in medicine_names_extracted:
+            # Generate a unique prescription ID for each medicine
+            
+
+            # Iterate over each frequency (time) for the medicine
+            for time_value in times_split:
+                pid = str(uuid.uuid1())
+                data = {
+                    'date': endDate_str,
+                    'prescriptionsorderUID': pid,
+                    'medicine_name': medicine,
+                    'dosage': dosage_value,
+                    'route': route_value,
+                    'patient_id': patient_uid,
+                    'todaydate': todaydate,
+                    'status': 'Ongoing',
+                    'days': days,
+                    'times': time_value.strip(),  # Save each time separately
+                    'total': total_doses  # Total for this prescription
+                }
+
+                # Save to the database under the patient's orders
+                db.child('patientsorders').child(patient_uid).child(todaydate).child(pid).set(data)
+
+
+    return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
+
+# from PIL import Image, ImageDraw, ImageFont
+
+# def generate_prescription(doctor_name, patient_name, medication, dosage):
+#     # Open prescription pad template
+#     prescription_pad = Image.open('prescription_pad_template.png')
+
+#     # Initialize drawing context
+#     draw = ImageDraw.Draw(prescription_pad)
+
+#     # Load font
+#     font = ImageFont.truetype('arial.ttf', size=12)
+
+#     # Define text and positions
+#     doctor_text = f"Doctor: {doctor_name}"
+#     patient_text = f"Patient: {patient_name}"
+#     medication_text = f"Medication: {medication}"
+#     dosage_text = f"Dosage: {dosage}"
+
+#     # Draw text on the prescription pad
+#     draw.text((50, 50), doctor_text, fill='black', font=font)
+#     draw.text((50, 70), patient_text, fill='black', font=font)
+#     draw.text((50, 90), medication_text, fill='black', font=font)
+#     draw.text((50, 110), dosage_text, fill='black', font=font)
+
+#     # Save the generated prescription
+#     prescription_pad.save('generated_prescription.png')
+
+# Example usage
+# generate_prescription("Dr. Smith", "John Doe", "Aspirin", "Take one tablet daily")
 
 
 def pharmacy_drugs(request):
@@ -2153,6 +2265,7 @@ def save_prescriptions(request):
     patientdata = db.child("patientdata").child(patient_uid).get().val()
 
     if request.method == 'POST':
+        uid = request.session['uid'] 
 
         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         days = request.POST.get('days')
@@ -2171,6 +2284,8 @@ def save_prescriptions(request):
         routes = request.POST.getlist('route[]')
         remarks = request.POST.getlist('remarks[]')
         times = request.POST.getlist('times[]')
+        print('routes is ', routes)
+        print('dosages is ', dosages)
 
         # Generate unique ID for the prescription
         prescription_id = str(uuid.uuid1())
@@ -2190,12 +2305,15 @@ def save_prescriptions(request):
             'patient_id': patient_id,
             'todaydate': todaydate,
             'endDate': endDate_str,
-            'status': status
+            'status': status,
         }
         # Save prescription data to the database
         db.child('prescriptionsorders').child(patient_id).child(todaydate).set(prescription_data)
+
+        # generate_prescription(uid, patient_id, medicine_names, dosages)
         
         if patientdata['status'] == 'Inpatient':
+            
             for index in range(len(medicine_names)):
                 medicine = medicine_names[index]
                 dosage_value = dosages[index]
@@ -2206,6 +2324,8 @@ def save_prescriptions(request):
                 times_split = times_value.split(', ')
                 counter = len(times_split)
                 total = counter * days_value
+                print('route_value is ', route_value)
+                print('dosage_value is ', dosage_value)
                 for time_value in times_split:
                     pid = str(uuid.uuid1())
                     

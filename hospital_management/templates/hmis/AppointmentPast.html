@@ -59,6 +59,7 @@
                 </tr>
             </thead>
             <tbody>
+                {% if appointments %}
                 {% for appointment_id, appointment_data in appointments.items %}
                 <tr>
                     <td><label id="accountT_date" class="accountT_lbl">{{ appointment_data.appointmentDate }}</label></td>
@@ -91,6 +92,9 @@
                     </td>
                 </tr>
                 {% endfor %}
+                {% else %}
+            <td colspan="5">No past appointments!</td>
+            {% endif %}
             </tbody>
         </table>
     </div>

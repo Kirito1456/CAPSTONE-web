@@ -57,7 +57,7 @@
                         <th id = "room">Room</th>
                         <th id = "status">Status</th>
                     </tr>
-                    <!--add if statement for inpatient or outpatient-->
+                    {% if patients %}
                     {% for patients_id, patients_data in patients.items %}
                     <tr id = "patient-info">
                         <td>
@@ -90,6 +90,9 @@
                         {% endfor %}
                     </tr>
                     {% endfor %}
+                    {% else %}
+                    <td colspan="6" style="padding: 5px;">No current patients!</td>
+                    {% endif %}
                 </table>
                 <div class="pagination">
                     <a href="#">&laquo;</a>

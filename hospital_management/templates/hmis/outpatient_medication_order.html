@@ -58,8 +58,8 @@
                 <div id="information">
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-                            <div id="name"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                            <div id="role"> {{ doctor_data.specialization}}</div>
+                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -128,7 +128,7 @@
                                 <div style="flex: 1; text-align: center;">Additional Remarks</div>
                             </div>
                             <div id="table-body">
-                                <div style="flex: 1; text-align: center;"><input type="number" name="days" id="daysInput"></div>
+                                <div style="flex: 1; text-align: center;"><input type="number" name="days" id="daysInput" placeholder="Enter number of days"></div>
                                 <div style="flex: 1; text-align: center;">
                                     <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
                                     <datalist id="medicine_name_suggestions">
@@ -233,6 +233,17 @@
         var route = document.getElementById("route_input").value;
         var remarks = document.getElementById("remarksInput").value;
     
+        
+    
+        // Check if medicine with the same name already exists
+        var existingMedicines = document.querySelectorAll('.medicine-name');
+        for (var i = 0; i < existingMedicines.length; i++) {
+            if (existingMedicines[i].innerText === medicineName) {
+                alert("Medicine with the same name already exists.");
+                return;
+            }
+        }
+    
         // Create a new row container
         var newRow = document.createElement("div");
         newRow.classList.add("row");
@@ -258,6 +269,7 @@
         cells[0].appendChild(icon);
     
         // Set cell content with numbering
+        cells[1].classList.add("medicine-name"); // Add class for medicine name
         cells[1].innerHTML = "<span>" + medicineName + " (" + dosage + ")</span>";
         cells[2].innerHTML = "<span>Sig. Take every <strong>" + days + "</strong> days during ";
     
@@ -284,7 +296,6 @@
         });
     
         cells[4].innerHTML = "<span> through <strong>" + route + "</strong>. " + remarks + "</span>";
-
     
         // Append new row container to the medicine list
         document.getElementById("medicineList").appendChild(newRow);
@@ -300,6 +311,17 @@
             { name: "times[]", value: checkedTimesString }
         ];
     
+        var removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.classList.add("remove-button");
+        cells[6].appendChild(removeButton);
+    
+        removeButton.addEventListener("click", function() {
+            newRow.remove(); // Remove the row from the DOM
+    
+           
+        });
+    
         hiddenFields.forEach(function(field) {
             var hiddenInput = document.createElement("input");
             hiddenInput.type = "hidden";
@@ -308,6 +330,7 @@
             hiddenFieldsContainer.appendChild(hiddenInput);
         });
     });
+    
     
 
     function openModal7() {
