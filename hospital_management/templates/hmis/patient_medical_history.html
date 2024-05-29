@@ -130,63 +130,6 @@
         font-weight: bold;
     }
 
-    #immunization-table {
-        width: 100%;
-        border-radius: 5px;
-    }
-    
-    #immunization-table .row {
-        display: flex;
-        width: 100%;
-    }
-    
-    #immunization-table .row.header {
-        background-color: #f4f4f4;
-        font-weight: bold;
-    }
-    
-    #immunization-table .cell {
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
-        text-align: left;
-    }
-    
-    #immunization-table .cell.vaccine {
-        flex-basis: 50%;
-    }
-    
-    #immunization-table .cell.date {
-        flex-basis: 50%;
-    }
-    
-    #immunization-table .row:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    
-    #immunization-table .row:hover {
-        background-color: #eaeaea;
-    }
-    
-    #edit-immunization {
-        margin: 10px;
-    }
-    
-    #edit-immunization-button, #save-immunization-button, #add-new-immunization-button, #cancel-immunization-button {
-        color: black;
-        cursor: pointer;
-        padding: 5px;
-        background-color: #D9D9D9;
-        width: fit-content;
-        height: max-content;
-        text-align: center;
-        margin-right: 20px;
-        border-radius: 5px;
-    }
-    
-    #edit-immunization-button:hover, #save-immunization-button:hover, #add-new-immunization-button:hover, #cancel-immunization-button:hover {
-        font-weight: bold;
-    }
-
     #family-history-table {
         width: 100%;
         border-radius: 5px;
@@ -357,9 +300,8 @@
         </div>
         <div id="menu-history-bar">
             <ul>
-                <li><a id="medical-history-link" href="#">Past Medical/Surgical History</a></li>
+                <li><a id="medical-history-link" href="#">Other Relevant Medical Conditions</a></li>
                 <li><a id="allergies-link" href="#">Allergies</a></li>
-                <li><a id="immunization-link" href="#">Immunization</a></li>
                 <li><a id="family-history-link" href="#">Family History</a></li>
                 <li><a id="social-history-link" href="#">Social History</a></li>
                 <li><a id="consultation-history-link" href="#">Past Consultation Notes</a></li>
@@ -376,7 +318,6 @@
         // Get references to menu items
         const medicalHistoryLink = document.getElementById('medical-history-link');
         const allergiesLink = document.getElementById('allergies-link');
-        const immunizationLink = document.getElementById('immunization-link');
         const familyHistoryLink = document.getElementById('family-history-link');
         const socialHistoryLink = document.getElementById('social-history-link');
         const consultationHistoryLink = document.getElementById('consultation-history-link');
@@ -743,126 +684,6 @@
             
             
         });
-
-        
-        immunizationLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            contentContainer.innerHTML = `
-            <form method="post">
-            {% csrf_token %}
-            <div id="immunization-table">
-                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
-                    <div class="cell vaccine">Vaccine Name</div>
-                    <div class="cell date">Date Administered</div>
-                </div>
-
-                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
-                    {% if patientMedical_id == chosenPatient %}
-                        {% for immunization_id, immunization_data in patientMedical_data.items %}
-                            <div style="font-size: 14px; width: 100%;">
-                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in immunization_data.items %}
-                                            {% if item_key == 'vaccine' %}
-                                                {% for vaccine_item in item_value %}
-                                                    <input type="text" name="vaccine" value="{{ vaccine_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br> 
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in immunization_data.items %}
-                                            {% if item_key == 'date' %}
-                                                {% for severity_item in item_value %}
-                                                    <input type="date" name="date" value="{{ severity_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br>
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-
-                </div>
-                <div id="edit-immunization" style="display: flex; justify-content: center;">
-                    <button id="edit-immunization-button">Edit</button>
-                    <button id="save-immunization-button" name="saveImmunizationButton" value={{ chosenPatientData_id }}>Save</button>
-                    <button id="cancel-immunization-button" style="display: none;">Cancel</button>
-                    <button id="add-new-immunization-button">Add New Row</button>
-                </div>            
-            </form>`;
-
-            document.getElementById('save-immunization-button').addEventListener('click', function () {
-                alert('Successfully Added an Immunization Record!');
-            });
-
-            // Add event listeners
-            const editImmunizationButton = document.getElementById('edit-immunization-button');
-            const cancelImmunizationButton = document.getElementById('cancel-immunization-button');
-            const addNewImmunizationButton = document.getElementById('add-new-immunization-button');
-
-            addNewImmunizationButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-                            
-                const newRow = document.createElement('div');
-                newRow.classList.add('row');
-                        
-                newRow.innerHTML = `
-                    <div class="cell vaccine">
-                        <input type="text" name="vaccine">
-                    </div>
-                    <div class="cell date">
-                        <input type="date" name="date">
-                    </div>`;
-                        
-                const immunizationTable = document.getElementById('immunization-table');
-                immunizationTable.appendChild(newRow);
-            });
-            
-            editImmunizationButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-                
-                // Show the Cancel button
-                cancelImmunizationButton.style.display = 'inline-block';
-                
-                // Get all rows excluding the header row
-                const rows = document.querySelectorAll('.row:not(.header)');
-                
-                // Iterate over each row
-                rows.forEach(row => {
-                    // Get the vaccine cell of the row
-                    const vaccineCell = row.querySelector('.cell.vaccine');
-                    
-                    // Replace text content with input box
-                    vaccineCell.innerHTML = '<input type="text" name="vaccine">';
-                    
-                    // Get the date cell of the row
-                    const dateCell = row.querySelector('.cell.date');
-                    
-                    // Replace text content with date input
-                    dateCell.innerHTML = '<input type="date" name="date">';
-                });
-            });
-            
-            
-            cancelImmunizationButton.addEventListener('click', function() {
-                // Hide the Cancel button
-                cancelImmunizationButton.style.display = 'none';
-                        
-                // Get all rows excluding the header row
-                const rows = document.querySelectorAll('.row:not(.header)');
-                        
-                // Iterate over each row
-                rows.forEach(row => {
-                    // Restore original content
-                    row.querySelector('.cell.vaccine').innerHTML = '';
-                    row.querySelector('.cell.date').innerHTML = '';
-                });
-            });
-        });
-
 
         familyHistoryLink.addEventListener('click', function(event) {
             event.preventDefault();
