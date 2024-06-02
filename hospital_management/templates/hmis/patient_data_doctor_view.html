@@ -52,10 +52,7 @@
                     <tr id = "head" style="border-bottom: 1px #334a7c solid;">
                         <th id = "uname">Name</th>
                         <th id = "gender">Sex</th>
-                        <th id = "disease">Disease</th>
                         <th id = "last-visit">Last Visited</th>
-                        <th id = "room">Room</th>
-                        <th id = "status">Status</th>
                     </tr>
                     {% if patients %}
                     {% for patients_id, patients_data in patients.items %}
@@ -69,25 +66,7 @@
                             </a>
                         </td>
                         <td>{{ patients_data.gender }}</td>
-                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                            {% if patients_id == chosenPatientData_data.patientid or patients_id == chosenPatientData_data.patientID %}
-                                {% if chosenPatientData_data.status == "Inpatient" %}
-                                    <td>{{ chosenPatientData_data.disease }}</td>
-                                    <td>-</td>
-                                    {% for room_id, room_data in rooms.items %}
-                                        {% if chosenPatientData_data.room == room_id %}
-                                            <td>{{ room_data.rnumber }}</td>
-                                        {% endif %}
-                                    {% endfor %}
-                                    <td>{{ chosenPatientData_data.status }}</td>
-                                {% elif chosenPatientData_data.status == "Outpatient" %}
-                                    <td>-</td>
-                                    <td>{{ chosenPatientData_data.lastVisited }}</td>
-                                    <td>-</td>
-                                    <td>{{ chosenPatientData_data.status }}</td>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
+                        <td>{{ chosenPatientData_data.lastVisited }}</td>
                     </tr>
                     {% endfor %}
                     {% else %}

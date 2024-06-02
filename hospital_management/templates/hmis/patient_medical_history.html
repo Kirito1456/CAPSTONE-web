@@ -300,11 +300,11 @@
         </div>
         <div id="menu-history-bar">
             <ul>
-                <li><a id="medical-history-link" href="#">Other Relevant Medical Conditions</a></li>
-                <li><a id="allergies-link" href="#">Allergies</a></li>
+                <!-- <li><a id="allergies-link" href="#">Allergies</a></li> -->
                 <li><a id="family-history-link" href="#">Family History</a></li>
                 <li><a id="social-history-link" href="#">Social History</a></li>
                 <li><a id="consultation-history-link" href="#">Past Consultation Notes</a></li>
+                <li><a id="medical-history-link" href="#">Past Medical/Surgical History</a></li>
             </ul>
         </div>
         <div id="content-container">
@@ -317,7 +317,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Get references to menu items
         const medicalHistoryLink = document.getElementById('medical-history-link');
-        const allergiesLink = document.getElementById('allergies-link');
+        // const allergiesLink = document.getElementById('allergies-link');
         const familyHistoryLink = document.getElementById('family-history-link');
         const socialHistoryLink = document.getElementById('social-history-link');
         const consultationHistoryLink = document.getElementById('consultation-history-link');
@@ -430,10 +430,10 @@
                 const newRow = document.createElement('div');
                 newRow.classList.add('row');
                 newRow.innerHTML = `
-                    <div class="cell diagnosis"><input type="text" name="diagnosis_surgical"></div>
-                    <div class="cell date-illness"><input type="date" name="date_illness"></div>
-                    <div class="cell treatment"><input type="text" name="treatment"></div>
-                    <div class="cell remarks"><input type="text" name="remarks"></div>`;
+                    <div class="cell diagnosis" style="flex: 1;"><input type="text" name="diagnosis_surgical"></div>
+                    <div class="cell date-illness" style="flex: 1;"><input type="date" name="date_illness"></div>
+                    <div class="cell treatment" style="flex: 1;"><input type="text" name="treatment"></div>
+                    <div class="cell remarks" style="flex: 1;"><input type="text" name="remarks"></div>`;
                         
                         
                 const medicalHistoryTable = document.getElementById('medical-history-table');
@@ -516,174 +516,174 @@
         });
         
 
-        allergiesLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            contentContainer.innerHTML = `
-            <form method="post">
-            {% csrf_token %}
-            <div id="allergy-table">
-                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
-                    <div class="cell allergen">Allergen</div>
-                    <div class="cell severity">Severity</div>
-                </div>
-                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
-                    {% if patientMedical_id == chosenPatient %}
-                        {% for allergy_id, allergy_data in patientMedical_data.items %}
-                            <div style="font-size: 14px; width: 100%;">
-                                <div id="row" style="display: flex; margin-bottom: 5px; margin-right: 10px;">
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in allergy_data.items %}
-                                            {% if item_key == 'allergen' %}
-                                                {% for allergen_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="allergen" value="{{ allergen_item }}"><br> 
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in allergy_data.items %}
-                                            {% if item_key == 'severity' %}
-                                                {% for severity_item in item_value %}
-                                                    <select name="severity" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">
-                                                        <option value="" disabled>Select Severity</option>
-                                                        <option value="Mild" {% if severity_item == 'Mild' %} selected {% endif %}>Mild</option>
-                                                        <option value="Moderate" {% if severity_item == 'Moderate' %} selected {% endif %}>Moderate</option>
-                                                        <option value="Severe" {% if severity_item == 'Severe' %} selected {% endif %}>Severe</option>
-                                                    </select><br>
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-                <div id="edit-allergy" style="display: flex; justify-content: center;">
-                    <button id="edit-allergy-button">Edit</button>
-                    <button id="save-allergy-button" style="display: none; border: 0px; backgroung-color: green; color: white;" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
-                    <button id="cancel-allergy-button" style="display: none; border: 0px; backgroung-color: red; color: white;">Cancel</button>
-                    <button id="add-new-button">Add New Row</button>
-                </div>            
-            </form>`;
+        // allergiesLink.addEventListener('click', function(event) {
+        //     event.preventDefault();
+        //     contentContainer.innerHTML = `
+        //     <form method="post">
+        //     {% csrf_token %}
+        //     <div id="allergy-table">
+        //         <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
+        //             <div class="cell allergen">Allergen</div>
+        //             <div class="cell severity">Severity</div>
+        //         </div>
+        //         {% for patientMedical_id, patientMedical_data in patientMedical.items %}
+        //             {% if patientMedical_id == chosenPatient %}
+        //                 {% for allergy_id, allergy_data in patientMedical_data.items %}
+        //                     <div style="font-size: 14px; width: 100%;">
+        //                         <div id="row" style="display: flex; margin-bottom: 5px; margin-right: 10px;">
+        //                             <div style="flex: 1;">
+        //                                 {% for item_key, item_value in allergy_data.items %}
+        //                                     {% if item_key == 'allergen' %}
+        //                                         {% for allergen_item in item_value %}
+        //                                             <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="allergen" value="{{ allergen_item }}"><br> 
+        //                                         {% endfor %}
+        //                                     {% endif %}
+        //                                 {% endfor %}
+        //                             </div>
+        //                             <div style="flex: 1;">
+        //                                 {% for item_key, item_value in allergy_data.items %}
+        //                                     {% if item_key == 'severity' %}
+        //                                         {% for severity_item in item_value %}
+        //                                             <select name="severity" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">
+        //                                                 <option value="" disabled>Select Severity</option>
+        //                                                 <option value="Mild" {% if severity_item == 'Mild' %} selected {% endif %}>Mild</option>
+        //                                                 <option value="Moderate" {% if severity_item == 'Moderate' %} selected {% endif %}>Moderate</option>
+        //                                                 <option value="Severe" {% if severity_item == 'Severe' %} selected {% endif %}>Severe</option>
+        //                                             </select><br>
+        //                                         {% endfor %}
+        //                                     {% endif %}
+        //                                 {% endfor %}
+        //                             </div>
+        //                         </div>
+        //                     </div>
+        //                 {% endfor %}
+        //             {% endif %}
+        //         {% endfor %}
+        //     </div>
+        //         <div id="edit-allergy" style="display: flex; justify-content: center;">
+        //             <button id="edit-allergy-button">Edit</button>
+        //             <button id="save-allergy-button" style="display: none; border: 0px; backgroung-color: green; color: white;" name="saveAllergyButton" value={{ chosenPatientData_id }}>Save</button>
+        //             <button id="cancel-allergy-button" style="display: none; border: 0px; backgroung-color: red; color: white;">Cancel</button>
+        //             <button id="add-new-button">Add New Row</button>
+        //         </div>            
+        //     </form>`;
 
-            document.getElementById('save-allergy-button').addEventListener('click', function () {
-                alert('Successfully Added an Allergy Record!');
+        //     document.getElementById('save-allergy-button').addEventListener('click', function () {
+        //         alert('Successfully Added an Allergy Record!');
 
-                allergiesLink.click();
-            });
+        //         allergiesLink.click();
+        //     });
         
-            // Add event listeners
-            const editAllergyButton = document.getElementById('edit-allergy-button');
-            const cancelAllergyButton = document.getElementById('cancel-allergy-button');
-            const addNewButton = document.getElementById('add-new-button');
-            const saveAllergyButton = document.getElementById('save-allergy-button');
+        //     // Add event listeners
+        //     const editAllergyButton = document.getElementById('edit-allergy-button');
+        //     const cancelAllergyButton = document.getElementById('cancel-allergy-button');
+        //     const addNewButton = document.getElementById('add-new-button');
+        //     const saveAllergyButton = document.getElementById('save-allergy-button');
         
-            addNewButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
+        //     addNewButton.addEventListener('click', function(event) {
+        //         event.preventDefault(); // Prevent form submission
 
-                // Show the Cancel button
-                cancelAllergyButton.style.display = 'inline-block';
+        //         // Show the Cancel button
+        //         cancelAllergyButton.style.display = 'inline-block';
 
-                // Show the Cancel button
-                saveAllergyButton.style.display = 'inline-block';
+        //         // Show the Cancel button
+        //         saveAllergyButton.style.display = 'inline-block';
 
-                // Hide the Cancel button
-                editAllergyButton.style.display = 'none';
+        //         // Hide the Cancel button
+        //         editAllergyButton.style.display = 'none';
 
-                // Hide the Cancel button
-                addNewButton.style.display = 'none';
+        //         // Hide the Cancel button
+        //         addNewButton.style.display = 'none';
                             
-                const newRow = document.createElement('div');
-                newRow.classList.add('row');
+        //         const newRow = document.createElement('div');
+        //         newRow.classList.add('row');
                         
-                newRow.innerHTML = `
-                    <div class="cell allergen"><input type="text" name="allergen"></div>
-                    <div class="cell severity">
-                        <select name="severity">
-                            <option value="" selected disabled>Select Severity</option>
-                            <option value="Mild">Mild</option>
-                            <option value="Moderate">Moderate</option>
-                            <option value="Severe">Severe</option>
-                        </select>
-                    </div>`;
+        //         newRow.innerHTML = `
+        //             <div class="cell allergen"><input type="text" name="allergen"></div>
+        //             <div class="cell severity">
+        //                 <select name="severity">
+        //                     <option value="" selected disabled>Select Severity</option>
+        //                     <option value="Mild">Mild</option>
+        //                     <option value="Moderate">Moderate</option>
+        //                     <option value="Severe">Severe</option>
+        //                 </select>
+        //             </div>`;
                         
-                const allergyTable = document.getElementById('allergy-table');
-                allergyTable.appendChild(newRow);
-            });
+        //         const allergyTable = document.getElementById('allergy-table');
+        //         allergyTable.appendChild(newRow);
+        //     });
             
-            editAllergyButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
+        //     editAllergyButton.addEventListener('click', function(event) {
+        //         event.preventDefault(); // Prevent form submission
                 
-                // Show the Cancel button
-                cancelAllergyButton.style.display = 'inline-block';
+        //         // Show the Cancel button
+        //         cancelAllergyButton.style.display = 'inline-block';
 
-                // Show the Cancel button
-                saveAllergyButton.style.display = 'inline-block';
+        //         // Show the Cancel button
+        //         saveAllergyButton.style.display = 'inline-block';
 
-                // Hide the Cancel button
-                editAllergyButton.style.display = 'none';
+        //         // Hide the Cancel button
+        //         editAllergyButton.style.display = 'none';
 
-                // Hide the Cancel button
-                addNewButton.style.display = 'none';
+        //         // Hide the Cancel button
+        //         addNewButton.style.display = 'none';
                 
-                // Get all rows excluding the header row
-                const rows = document.querySelectorAll('.row:not(.header)');
+        //         // Get all rows excluding the header row
+        //         const rows = document.querySelectorAll('.row:not(.header)');
                 
-                // Iterate over each row
-                rows.forEach(row => {
-                    // Get the allergen cell of the row
-                    const allergenCell = row.querySelector('.cell.allergen');
+        //         // Iterate over each row
+        //         rows.forEach(row => {
+        //             // Get the allergen cell of the row
+        //             const allergenCell = row.querySelector('.cell.allergen');
                     
-                    // Replace text content with input box
-                    allergenCell.innerHTML = '<input type="text" name="allergen">';
+        //             // Replace text content with input box
+        //             allergenCell.innerHTML = '<input type="text" name="allergen">';
                     
-                    // Get the severity cell of the row
-                    const severityCell = row.querySelector('.cell.severity');
+        //             // Get the severity cell of the row
+        //             const severityCell = row.querySelector('.cell.severity');
                     
-                    // Replace text content with dropdown menu
-                    severityCell.innerHTML = `
-                        <select name="severity">
-                            <option value="" selected disabled>Select Severity</option>
-                            <option value="Mild">Mild</option>
-                            <option value="Moderate">Moderate</option>
-                            <option value="Severe">Severe</option>
-                        </select>`;
-                });
-            });
+        //             // Replace text content with dropdown menu
+        //             severityCell.innerHTML = `
+        //                 <select name="severity">
+        //                     <option value="" selected disabled>Select Severity</option>
+        //                     <option value="Mild">Mild</option>
+        //                     <option value="Moderate">Moderate</option>
+        //                     <option value="Severe">Severe</option>
+        //                 </select>`;
+        //         });
+        //     });
             
             
-            cancelAllergyButton.addEventListener('click', function() {
-                // Hide the Cancel button
-                cancelAllergyButton.style.display = 'none';
+        //     cancelAllergyButton.addEventListener('click', function() {
+        //         // Hide the Cancel button
+        //         cancelAllergyButton.style.display = 'none';
 
-                // Hide the Cancel button
-                saveAllergyButton.style.display = 'none';
+        //         // Hide the Cancel button
+        //         saveAllergyButton.style.display = 'none';
 
-                // Show the Cancel button
-                editAllergyButton.style.display = 'inline-block';
+        //         // Show the Cancel button
+        //         editAllergyButton.style.display = 'inline-block';
 
-                // Show the Cancel button
-                addNewButton.style.display = 'inline-block';
+        //         // Show the Cancel button
+        //         addNewButton.style.display = 'inline-block';
                         
-                // Get all rows excluding the header row
-                const rows = document.querySelectorAll('.row:not(.header)');
+        //         // Get all rows excluding the header row
+        //         const rows = document.querySelectorAll('.row:not(.header)');
                         
-                // Iterate over each row
-                rows.forEach(row => {
-                    // Get the severity cell of the row
-                    const severityCell = row.querySelector('.cell.severity');
+        //         // Iterate over each row
+        //         rows.forEach(row => {
+        //             // Get the severity cell of the row
+        //             const severityCell = row.querySelector('.cell.severity');
                         
-                    // Restore original text content
-                    severityCell.innerHTML = severityCell.querySelector('select').value;
-                });
+        //             // Restore original text content
+        //             severityCell.innerHTML = severityCell.querySelector('select').value;
+        //         });
 
-                allergiesLink.click();
-            });
+        //         allergiesLink.click();
+        //     });
             
             
-        });
+        // });
 
         familyHistoryLink.addEventListener('click', function(event) {
             event.preventDefault();
@@ -846,10 +846,11 @@
                 {% csrf_token %}
                 <div id="social-history-table">
 
-                    <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
+                    <div class="row header" style="display: flex; background-color: #334A7C; color: white; justify-content: center; align-items: center;">
                         <div class="cell">
-                            <input type="checkbox" id="smoking" name="smoking" value="Yes">
+                            <input type="checkbox" id="isSmokingChecked" name="isSmokingChecked" value="Yes">
                             <label for="smoking">Smoking</label>
+                            <p id="smokingyears" style="display:none">Checkbox is CHECKED!</p>
                         </div>
                         <div class="cell">
                             <input type="checkbox" id="alcohol" name="alcohol" value="Yes">
@@ -904,6 +905,17 @@
                 smokingNo.disabled = true;
                 alcoholYes.disabled = true;
                 alcoholNo.disabled = true;
+            });
+
+            // Event listener for years of smoking textbox
+            editSocialHistoryButton.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent form submission
+                
+                if (isSmokingChecked.checked == true){
+                    smokingyears.style.display = "block";
+                } else if (isSmokingChecked.checked == false) {
+                    smokingyears.style.display = "none";
+                }
             });
         }
         
