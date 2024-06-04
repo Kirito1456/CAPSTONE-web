@@ -85,7 +85,6 @@
     
     .cell {
         padding: 10px;
-        border-bottom: 1px solid #ccc;
         text-align: left;
     }
     
@@ -848,9 +847,9 @@
 
                     <div class="row header" style="display: flex; background-color: #334A7C; color: white; justify-content: center; align-items: center;">
                         <div class="cell">
-                            <input type="checkbox" id="isSmokingChecked" name="isSmokingChecked" value="Yes">
+                            <input type="checkbox" id="smoking" onclick="checkSmokingCheckbox()">
                             <label for="smoking">Smoking</label>
-                            <p id="smokingyears" style="display:none">Checkbox is CHECKED!</p>
+                            <input type="number" id="smokingyears" name="smokingyears" placeholder="Years of Smoking" style="width: 132px; height: 26px; font-size:14px; text-align:center; position: relative; bottom:10px;">
                         </div>
                         <div class="cell">
                             <input type="checkbox" id="alcohol" name="alcohol" value="Yes">
@@ -858,7 +857,9 @@
                         </div>
                     </div>
                 </div>
-                <button style="margin: 10px; background-color: #334A7C; color: white;" type="submit" name="saveSocialHistoryButton">Save</button>
+                <div style="display: flex; justify-content: center;">
+                    <button style="padding: 4px; font-size:16px; margin: 10px; background-color: #334A7C; color: white;" type="submit" name="saveSocialHistoryButton">Save</button>
+                </div>
             </form>
             
             `;
@@ -907,18 +908,19 @@
                 alcoholNo.disabled = true;
             });
 
-            // Event listener for years of smoking textbox
-            editSocialHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-                
+            document.getElementById('smoking').addEventListener('click', function (event) {
+                // For years of smoking textbox
+                var isSmokingChecked = document.getElementById('smoking');
+                var smokingyears = document.getElementById('smokingyears');
+
                 if (isSmokingChecked.checked == true){
-                    smokingyears.style.display = "block";
-                } else if (isSmokingChecked.checked == false) {
-                    smokingyears.style.display = "none";
+                    smokingyears.style.display = 'block';
+                } else {
+                    smokingyears.style.display = 'none';
                 }
             });
         }
-        
+
         socialHistoryLink.addEventListener('click', function(event) {
             event.preventDefault();
             displaySocialHistoryForm();
