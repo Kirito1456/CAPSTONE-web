@@ -838,7 +838,11 @@
             });
 
         });
-
+        
+        //<div class="cell">
+        //    <input type="checkbox" id="alcohol" name="alcohol" value="Yes">
+        //    <label for="alcohol">Alcohol</label>
+        //</div>
         function displaySocialHistoryForm() {
             contentContainer.innerHTML = `
             <form method="post">
@@ -847,24 +851,24 @@
 
                     <div class="row header" style="display: flex; background-color: #334A7C; color: white; justify-content: center; align-items: center;">
                         <div class="cell">
-                            <input type="checkbox" id="smoking" onclick="checkSmokingCheckbox()">
-                            <label for="smoking">Smoking</label>
-                            <input type="number" id="smokingyears" name="smokingyears" placeholder="Years of Smoking" style="width: 132px; height: 26px; font-size:14px; text-align:center; position: relative; bottom:10px;">
+                            <label for="smoking" >Smoking</label>
+                            <input type="checkbox" id="smoking" name="smoking" onclick="checkSmokingCheckbox()" style="text-align:center;">
+                            <input type="number" id="smokingyears" name="smokingyears" placeholder="Years of Smoking" 
+                                style="width: 132px; height: 26px; font-size:14px; text-align:center; bottom:10px; display:none;">
                         </div>
-                        <div class="cell">
-                            <input type="checkbox" id="alcohol" name="alcohol" value="Yes">
-                            <label for="alcohol">Alcohol</label>
-                        </div>
+                        
                     </div>
                 </div>
                 <div style="display: flex; justify-content: center;">
-                    <button style="padding: 4px; font-size:16px; margin: 10px; background-color: #334A7C; color: white;" type="submit" name="saveSocialHistoryButton">Save</button>
+                    <button type="submit" name="saveSocialHistoryButton" id="saveSocialHistoryButton" 
+                        style="padding: 4px; font-size:16px; margin: 10px; background-color: #334A7C; color: white;" >Save</button>
                 </div>
             </form>
             
             `;
 
-            // Add event listeners
+
+            {% comment %} // Add event listeners
             const editSocialHistoryButton = document.getElementById('edit-social-history-button');
             const cancelSocialHistoryButton = document.getElementById('cancel-social-history-button');
 
@@ -906,7 +910,7 @@
                 smokingNo.disabled = true;
                 alcoholYes.disabled = true;
                 alcoholNo.disabled = true;
-            });
+            }); {% endcomment %}
 
             document.getElementById('smoking').addEventListener('click', function (event) {
                 // For years of smoking textbox
@@ -918,6 +922,10 @@
                 } else {
                     smokingyears.style.display = 'none';
                 }
+            });
+
+            document.getElementById('saveSocialHistoryButton').addEventListener('click', function () {
+                alert('Successfully Added Social History Record!');
             });
         }
 

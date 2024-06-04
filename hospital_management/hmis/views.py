@@ -1896,12 +1896,14 @@ def patient_medical_history(request):
 
         if 'saveSocialHistoryButton' in request.POST:
             smoking = request.POST.get('smoking')
-            alcohol = request.POST.get('alcohol')
-            
+            yearsSmoking = request.POST.get('smokingyears')
+            #alcohol = request.POST.get('alcohol')
+            print(smoking)
             data = {
                 'patient_id': chosen_patient_uid,
                 'smoking': smoking,
-                'alcohol': alcohol
+                'yearsSmoking': yearsSmoking
+                #'alcohol': alcohol
             }
             db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').update(data)
 
