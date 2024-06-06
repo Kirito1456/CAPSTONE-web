@@ -2238,9 +2238,8 @@ def generate_unique_id():
 def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
     patient_uid = request.GET.get('chosenPatient')
-    diagnosis = request.GET.get('diagnosis')
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2,})
-    medicines_set = {medication['Drug'] for medication in medications_cursor if medication['Disease'] == diagnosis}
+    medicines_set = {medication['Drug'] for medication in medications_cursor}
     medicines_list = list(medicines_set)
     cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
     pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
