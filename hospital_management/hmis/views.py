@@ -2392,3 +2392,6 @@ def diagnostic_imagery_reports(request):
     chosenPatient = request.GET.get('chosenPatient', '')
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
 
+
+def requestTest(request):
+     return render(request, 'hmis/requestTest.html')
