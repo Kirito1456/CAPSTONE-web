@@ -9,18 +9,17 @@
         background-color: darkgreen;
         color: #fff;
         border: 0px;
-
         padding: 5 10;
     }
 
     .endtheappointment:hover{
         font-weight: bold;
     }
+    
     .canceltest{
         background-color: red;
         color: #fff;
         border: 0px;
-
         padding: 5 10;
     }
 
@@ -40,7 +39,7 @@
     }
     h2 {
         color: #334A7C; 
-        font-size: 24px;
+        font-size: 29px;
         margin-bottom: 10px;
         text-transform: uppercase; 
         border-bottom: 2px solid #334A7C;
@@ -82,12 +81,23 @@
         padding: 10px;
         border-radius: 10px; 
     } 
-    #contact-details, #biometric-info {
+
+    #biometric-info, #contact-details {
         border: 1px solid #ccc;
         width: fit-content;
+        position: static;
         padding: 10px;
-        margin-top: 10px;
+        margin: 10px;
         border-radius: 10px; 
+    }
+
+    #fname-label, #gender-label, #bday-label, #status-label{
+        font-size: 21px;
+        font-weight: bold;
+    }
+
+    #fname, #gender-view, #birthday, #status{
+        font-size: 17px;
     }
 
     .buttons_info {
@@ -99,6 +109,7 @@
         color: black;
         cursor: pointer; 
         margin-right:10px;
+        font-size: 15px;
     }
     
     .buttons_info:hover {
@@ -112,7 +123,7 @@
         position: absolute;
         top: 10px;
         right: 10px;
-        font-size: 20px;
+        font-size: 25px;
         cursor: pointer;
     }
     
@@ -131,7 +142,7 @@
         color: white;
         padding: 3px;
         border-radius: 5px;
-        font-size: 12px;
+        font-size: 19px;
     }
     
     #add-medication-button a, #submit-medication-button a {
@@ -139,7 +150,7 @@
         color: white;
         padding: 3px;
         border-radius: 5px;
-        font-size: 12px;
+        font-size: 19px;
     }
     
     #table-header{
@@ -173,7 +184,7 @@
     #view-notes-history, #view-vitalsigns-history {
         display: inline-block;
         padding: 5px;
-        font-size: 12px;
+        font-size: 19px;
         background-color: #4280c7;
         color: #fff;
         text-decoration: none;
@@ -190,7 +201,7 @@
     .button_patient {
         display: inline-block;
         padding: 5px;
-        font-size: 12px;
+        font-size: 19px;
         background-color: #4280c7;
         color: #fff;
         text-decoration: none;
@@ -218,15 +229,26 @@
         flex-wrap: wrap; 
     }
 
+    .container-big-dt {
+        align-items: top; 
+    }
+
     .container-small {
         background-color: #f9f9f9;
         border: 1px solid #ddd;
         margin-bottom: 30px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 350px;
     }
 
     .container-inside {
         padding: 10px;
+    }
+
+    .container-inside-diagnostic {
+        padding: 10px;
+        padding-bottom: 20px;
+        text-align: center;
     }
     
     #patient-info, #consultation-notes-container, #diagnostic-tests-container, #vital-signs-container, #progress-notes-container {
@@ -245,8 +267,8 @@
 
     #info_container{
         display: flex;
+        height: 270px;
     }
-
     #progress-note{
         justify-content: space-between;
         padding: 10px;
@@ -267,7 +289,7 @@
         text-align: center;
         font-weight: bold;
     
-        font-size: 14px;
+        font-size: 22px;
     
         padding-bottom: 5px;
         padding-top: 5px;
@@ -276,7 +298,6 @@
     
         margin-bottom: 10px;
     }
-
     #vital-signs-box {
         background-color: #f9f9f9;
         border: 1px solid #ddd;
@@ -301,21 +322,6 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         
         margin-right: 1%;
-    }
-    
-    
-    #head-personal-information {
-        text-align: center;
-        font-weight: bold;
-
-        font-size: 14px;
-
-        padding-bottom: 5px;
-        padding-top: 5px;
-        background-color: #334A7C;
-        color: #fff;
-
-        margin-bottom: 10px;
     }
 
     .modalFinish {
@@ -448,7 +454,7 @@
     .close1 {
         color: #aaa;
         float: right;
-        font-size: 28px;
+        font-size: 33px;
         font-weight: bold;
     }
     
@@ -499,8 +505,8 @@
                 <div id="information">
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-                            <div id="name" style="font-size: 22;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                            <div id="role" style="font-size: 16;"> {{ doctor_data.specialization}}</div>
+                            <div id="name" style="font-size: 27;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <div id="role" style="font-size: 21;"> {{ doctor_data.specialization}}</div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -524,7 +530,7 @@
         <div id = "patient-info">
             {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
             <div id = "personal-information">
-                <div id = "head-personal-information">Personal Information</div>
+                <div class="head">Personal Information</div>
                 <div id="info_container">
                     <div id="info_box">
                         <div id = "first">
@@ -544,9 +550,9 @@
 
                         {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
                             <div id="last">
-                                <div id="lname-label">Status:</div>
-                                <div id="lname">{{ chosenPatientDatas_data.status }}</div>
-                            </div>
+                                <div id="status-label">&nbsp;Status:&nbsp;</div>
+                                <div id="status">{{ chosenPatientDatas_data.status }}</div>
+                            </div><br>
                             
                             {% if chosenPatientDatas_data.status == 'Outpatient' %}
                                 <button id="endtransaction" onclick="openAppointmentModal('{{ appointmentID }}')" class="buttons_info">Finish Appointment</button>
@@ -582,7 +588,7 @@
                                                 <div class="form-group">
                                                     <div style="display: flex; align-items: center; margin-bottom: 10px;">
                                                         <label for="suggested-date" style="margin-right: 10px; margin-top: 10px;">Suggested Schedule:</label>
-                                                        <input type="text" id="selected_appointment_date" name="selected_appointment_date1" value={{ next_available_date_str1 }} style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                                        <input type="text" id="selected_appointment_date" name="selected_appointment_date1" value={{ next_available_date_str1 }} style="font-size: 19px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                                                         </input>
                                                     </div>
                                                     <label for="suggested-time">Suggested Time: </label>
@@ -635,6 +641,8 @@
                         {% endfor %}
 
                         <button onclick="toggleBiometricInfo()" class="buttons_info">Biometric Information</button>
+                        <button onclick="toggleContactInfo()" class="buttons_info">Contact Information</button>
+
                         <div id="biometric-info" style="display: none;">
                             {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
                             <div id = "blood-type">
@@ -651,7 +659,6 @@
                             {% endfor %}
                         </div>
 
-                        <button onclick="toggleContactInfo()" class="buttons_info">Contact Information</button>
                         <div id="contact-details" style="display: none;">
                             <div id="address">
                                 <div id="address-label">Address:</div>
@@ -679,7 +686,7 @@
             {% comment %} Consultation Notes {% endcomment %}
                 <div class = "container-big" style="margin-right: 30px;">
                     {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <div class = "container-small" style="width: 300px;">
+                    <div class = "container-small">
                         <div class="head">Consultation Notes</div >
                             <div class="container-inside">
                                 <button class="buttons_info" id="chiefComplaintButton">Chief Complaint</button>
@@ -1025,12 +1032,13 @@
                     </div>
                     {% endfor %}
                 </div>
+
                 {% comment %} Diagnostic Test {% endcomment %}
-                <div class = "container-big">
+                <div class = "container-big-dt">
                     {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <div class = "container-small" style="width: 300px;">
+                    <div class = "container-small">
                         <div class = "head">Diagnostic Tests</div>
-                            <div class="container-inside">
+                            <div class="container-inside-diagnostic">
                                 <button class="buttons_info"><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
                                 <button  class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}">Request New Test</a></button>
                                 {% comment %} <div id="newLabTestModal" class="modal2" style="display: none;">
@@ -1073,106 +1081,7 @@
                     </div>
                     {% endfor %}
                 </div>
-
-            <div id="right-container"  style="width: 100%;">
-            {% comment %} Progess Notes {% endcomment %}
-                <div class = "container-big">
-                    <div class = "container-small" style="width: 100%;">
-                        <div class = "head">Progress Notes</div>
-                            <div id = "progress-notes">
-                                <div id = "progress-note" style="height: 150px; overflow-y: auto;">
-                                    {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
-                                        {% if chosenPatientDatas_data.status == 'Inpatient' %}
-                                            <table>
-                                                <tr>
-                                                    <th>Last Updated</th>
-                                                    <th>Nurse</th>
-                                                    <th>Focus</th>
-                                                    <th>Notes</th>
-                                                </tr>
-                                                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                                    {% for progressnotes_id, progressnotes_data in progressnotes.items %}
-                                                        {% if progressnotes_id == chosenPatientData_data.uid %}
-                                                            {% for id, data in progressnotes_data.items %}
-                                                                <tr>
-                                                                    <td style="text-align: center;">{{ data.date }} {{ data.time }}</td>
-                                                                    <td style="text-align: center;">
-                                                                        {% for nurse_id, nurse_data in nurses.items %}
-                                                                            {% if nurse_id == data.nurseID %}
-                                                                                {{ nurse_data.fname }} {{ nurse_data.lname }}
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </td>
-                                                                    <td style="text-align: center;">{{ data.focus }}</td>
-                                                                    <td style="text-align: center;">{{ data.notes }}</td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% endfor %}
-                                            </table>
-                                        {% else %}
-                                            <p style="font-size: 14px; font-weight: normal;"><em>Not available for Outpatients</em></p>
-                                        {% endif %}
-                                    {% endfor %}
-                                    
-                                </div>
-                            </div>
-                    </div>
-                </div>
-
-                {% comment %} Vital Signs {% endcomment %}
-                <div class = "container-big">
-                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                        <div class = "container-small"  style="width: 100%;">
-                            <div class="head">Latest Vital Signs</div>
-                            {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
-                                        {% if chosenPatientDatas_data.status == 'Inpatient' %}
-
-                            <div id="vital-signs-table">
-                                <table id="vital-signs">
-                                    <tr id="label">
-                                        <th>Date and Time</th>
-                                        <th>Temperature</th>
-                                        <th>Blood Pressure</th>
-                                        <th>Pulse</th>
-                                        <th>Respiration</th>
-                                        <th>Pain Index</th>
-                                        {% comment %} <th>Stool</th>
-                                        <th>Fluid Output</th>
-                                        <th>Fluid Intake</th> {% endcomment %}
-                                    </tr>
-                                    {% for sorted_vital_signs_id, sorted_vital_signs_data in sorted_vital_signs.items %}
-                                        {% if forloop.counter <= 2 %}
-                                            <tr>
-                                                <td>{{ sorted_vital_signs_data.date }} {{ sorted_vital_signs_data.time }}</td>
-                                                <td>{{ sorted_vital_signs_data.temperature }} °C</td>
-                                                <td>{{ sorted_vital_signs_data.bloodpressure }}</td>
-                                                <td>{{ sorted_vital_signs_data.pulse }} bpm</td>
-                                                <td>{{ sorted_vital_signs_data.respiration }}</td>
-                                                <td>{{ sorted_vital_signs_data.painindex }}/10</td>
-                                                {% comment %} <td><input type="checkbox" disabled></td>
-                                                <td><input type="checkbox" disabled></td>
-                                                <td> ml</td> {% endcomment %}
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                </table>
-                                    <a href="{% url 'patient_vital_signs_history' %}?chosenPatient={{ chosenPatientData_data.uid }}" id="view-vitalsigns-history">View History</a>
-                                </div>
-                            </div>
-                                {% else %}
-                                    <p style="margin-left: 10px; font-size: 14px; font-weight: normal;"><em>Not available for Outpatients</em></p>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                </div>
             </div>
-        </div>
-
-        
-
         </div>
     </div>
 </div>
@@ -1631,21 +1540,15 @@
         var statusElement = document.getElementById("lname");
         var status = statusElement.textContent.trim();
     
-        // Get the containers for progress notes, vital signs, consultation notes, and diagnostic tests
-        var progressNotesContainer = document.getElementById("progress-notes-container");
-        var vitalSignsContainer = document.getElementById("vital-signs-container");
+        // Get the containers for consultation notes, and diagnostic tests
         var consultationNotesContainer = document.getElementById("consultation-notes-container");
         var diagnosticTestsContainer = document.getElementById("diagnostic-tests-container");
     
         // Show/hide containers based on patient status
         if (status === "Inpatient") {
-            progressNotesContainer.style.display = "block";
-            vitalSignsContainer.style.display = "block";
             consultationNotesContainer.style.display = "none";
             diagnosticTestsContainer.style.display = "block";
         } else if (status === "Outpatient") {
-            progressNotesContainer.style.display = "none";
-            vitalSignsContainer.style.display = "none";
             consultationNotesContainer.style.display = "block";
             diagnosticTestsContainer.style.display = "block";
         }

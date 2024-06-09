@@ -87,6 +87,11 @@
         padding: 10px;
         text-align: left;
     }
+
+    .cell-smoking {
+        padding: 10px;
+        text-align: center;
+    }
     
     .cell.allergen {
         flex-basis: 50%;
@@ -850,13 +855,12 @@
                 <div id="social-history-table">
 
                     <div class="row header" style="display: flex; background-color: #334A7C; color: white; justify-content: center; align-items: center;">
-                        <div class="cell">
-                            <label for="smoking" >Smoking</label>
-                            <input type="checkbox" id="smoking" name="smoking" onclick="checkSmokingCheckbox()" style="text-align:center;">
+                        <div class="cell-smoking">
+                            <label for="smoking">Smoking</label>
+                            <input type="checkbox" id="smoking" name="smoking" onclick="checkSmokingCheckbox()" style="margin-left:18px;">
+                        </div>
                             <input type="number" id="smokingyears" name="smokingyears" placeholder="Years of Smoking" 
                                 style="width: 132px; height: 26px; font-size:14px; text-align:center; bottom:10px; display:none;">
-                        </div>
-                        
                     </div>
                 </div>
                 <div style="display: flex; justify-content: center;">
@@ -868,49 +872,49 @@
             `;
 
 
-            {% comment %} // Add event listeners
-            const editSocialHistoryButton = document.getElementById('edit-social-history-button');
-            const cancelSocialHistoryButton = document.getElementById('cancel-social-history-button');
+            // // Add event listeners
+            // const editSocialHistoryButton = document.getElementById('edit-social-history-button');
+            // const cancelSocialHistoryButton = document.getElementById('cancel-social-history-button');
 
-            // Event listener for editing social history
-            editSocialHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
+            // // Event listener for editing social history
+            // editSocialHistoryButton.addEventListener('click', function(event) {
+            //     event.preventDefault(); // Prevent form submission
                 
-                // Show the Cancel button
-                cancelSocialHistoryButton.style.display = 'inline-block';
+            //     // Show the Cancel button
+            //     cancelSocialHistoryButton.style.display = 'inline-block';
                 
-                // Get all radio buttons
-                const smokingYes = document.getElementById('smoking-yes');
-                const smokingNo = document.getElementById('smoking-no');
-                const alcoholYes = document.getElementById('alcohol-yes');
-                const alcoholNo = document.getElementById('alcohol-no');
+            //     // Get all radio buttons
+            //     const smokingYes = document.getElementById('smoking-yes');
+            //     const smokingNo = document.getElementById('smoking-no');
+            //     const alcoholYes = document.getElementById('alcohol-yes');
+            //     const alcoholNo = document.getElementById('alcohol-no');
                 
-                // Enable radio buttons for editing
-                smokingYes.disabled = false;
-                smokingNo.disabled = false;
-                alcoholYes.disabled = false;
-                alcoholNo.disabled = false;
-            });
+            //     // Enable radio buttons for editing
+            //     smokingYes.disabled = false;
+            //     smokingNo.disabled = false;
+            //     alcoholYes.disabled = false;
+            //     alcoholNo.disabled = false;
+            // });
             
-            // Event listener for canceling social history edit
-            cancelSocialHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
+            // // Event listener for canceling social history edit
+            // cancelSocialHistoryButton.addEventListener('click', function(event) {
+            //     event.preventDefault(); // Prevent form submission
                 
-                // Hide the Cancel button
-                cancelSocialHistoryButton.style.display = 'none';
+            //     // Hide the Cancel button
+            //     cancelSocialHistoryButton.style.display = 'none';
                 
-                // Get all radio buttons
-                const smokingYes = document.getElementById('smoking-yes');
-                const smokingNo = document.getElementById('smoking-no');
-                const alcoholYes = document.getElementById('alcohol-yes');
-                const alcoholNo = document.getElementById('alcohol-no');
+            //     // Get all radio buttons
+            //     const smokingYes = document.getElementById('smoking-yes');
+            //     const smokingNo = document.getElementById('smoking-no');
+            //     const alcoholYes = document.getElementById('alcohol-yes');
+            //     const alcoholNo = document.getElementById('alcohol-no');
                 
-                // Disable radio buttons
-                smokingYes.disabled = true;
-                smokingNo.disabled = true;
-                alcoholYes.disabled = true;
-                alcoholNo.disabled = true;
-            }); {% endcomment %}
+            //     // Disable radio buttons
+            //     smokingYes.disabled = true;
+            //     smokingNo.disabled = true;
+            //     alcoholYes.disabled = true;
+            //     alcoholNo.disabled = true;
+            // });
 
             document.getElementById('smoking').addEventListener('click', function (event) {
                 // For years of smoking textbox
