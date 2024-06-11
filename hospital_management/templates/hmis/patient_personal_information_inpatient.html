@@ -91,29 +91,31 @@
         border-radius: 10px; 
     }
 
-    #fname-label, #gender-label, #bday-label, #status-label{
+    #fname-label, #gender-label, #bday-label, #status-label, #diagnosis-label{
         font-size: 21px;
         font-weight: bold;
     }
 
-    #fname, #gender-view, #birthday, #status{
+    #fname, #gender-view, #birthday, #status, #diagnosis-label2{
+        margin-top: 3px;
         font-size: 17px;
     }
 
     .buttons_info {
         padding: 5px;
         margin: 5px; 
-        border: none; 
-        border-radius: 4px; 
-        background-color: #ADB8CE; 
+        border: solid 2px #334A7C; 
+        background-color: white; 
         color: black;
         cursor: pointer; 
         margin-right:10px;
         font-size: 15px;
+        font-weight: bold;
     }
     
     .buttons_info:hover {
-        font-weight: bold;
+        background-color: #334A7C; 
+        color:white;
     }
 
     body {
@@ -192,10 +194,6 @@
         border-radius: 5px; 
         cursor: pointer;
         margin: 10px;
-    }
-    
-    #view-notes-history:hover, #view-vitalsigns-history:hover {
-        background-color: #0056b3;
     }
 
     .button_patient {
@@ -277,6 +275,10 @@
     #info_box{
         padding: 10px;
         flex: 1;
+    }
+
+    #info_container{
+        width: 900px;
     }
  
     #button_box{
@@ -547,31 +549,17 @@
                             <div id = "bday-label">Birthday:</div>
                             <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
                         </div>
-
-                        {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                             <div id="last">
-                                <div id="status-label">&nbsp;Status:&nbsp;</div>
-                                <div id="status">{{ chosenPatientDatas_data.status }}</div>
-                            </div><br>
-                            
-                            {% if chosenPatientDatas_data.status == 'Outpatient' %}
-                                <button id="endtransaction" onclick="openAppointmentModal('{{ appointmentID }}')" class="buttons_info">Finish Appointment</button>
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" id="admitButton" name="admitButton" onclick="confirmAdmit()" class="buttons_info">Admit Patient</button>
-                                </form>
-                            {% elif chosenPatientDatas_data.status == 'Inpatient' %}
-                                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                    <div id="last">
-                                        <div id="lname-label">Diagnosis:</div>
-                                        <div id="lname">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
-                                    </div>
-                                {% endfor %}
-                                <button id="endtransaction" onclick="openDischargeModal()" class="buttons_info">Discharge</button>
-                            {% endif %}
-
+                                <div id="diagnosis-label">&nbsp;Diagnosis:</div>
+                                <div id="diagnosis-label2">&nbsp;{{ chosenPatientConsulNotes_data.diagnosis }}</div><br>
+                            </div>
                         {% endfor %}
-
+                        <br>
+                        <button onclick="toggleBiometricInfo()" class="buttons_info">Biometric Information</button>
+                        <button onclick="toggleContactInfo()" class="buttons_info">Contact Information</button>
+                        <br><br><br>
+                        <button id="endtransaction" onclick="openDischargeModal()" class="buttons_info">Discharge</button>
                     </div>
                     <div id="button-box">
 
@@ -636,12 +624,9 @@
 
                         {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                             {% if chosenPatientConsulNotes_data.diagnosis %}
-                                <button  class="buttons_info"><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Order</a></button>
+                                <button  class="buttons_info"><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Medication Order</a></button>
                             {% endif %}
                         {% endfor %}
-
-                        <button onclick="toggleBiometricInfo()" class="buttons_info">Biometric Information</button>
-                        <button onclick="toggleContactInfo()" class="buttons_info">Contact Information</button>
 
                         <div id="biometric-info" style="display: none;">
                             {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
@@ -1040,7 +1025,7 @@
                         <div class = "head">Diagnostic Tests</div>
                             <div class="container-inside-diagnostic">
                                 <button class="buttons_info"><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
-                                <button  class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}">Request New Test</a></button>
+                                <button class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}">Request New Test</a></button>
                                 {% comment %} <div id="newLabTestModal" class="modal2" style="display: none;">
                                     <div class="modal-content2">
                                         <h2>Request New Test</h2>
@@ -1427,11 +1412,6 @@
             otherDiagnosis.style.display = "none";
         }
     });
-
-    // Pressing Admit Button
-    function confirmAdmit() {
-        alert("Patient admitted successfully!");
-    }
     
     // Get the button and modal
     var reviewOfSystemsButton = document.getElementById("reviewOfSystemsButton");
