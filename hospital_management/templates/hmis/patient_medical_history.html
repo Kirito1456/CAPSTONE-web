@@ -727,7 +727,11 @@
                                     </div>
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in consulNotes_data.items %}
+                                           {% if item_value.chiefComplaint is None %}
+                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; height: 16px; border-radius: 10px;"></div>
+                                           {% else %}
                                            <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">{{ item_value.chiefComplaint }}</div>
+                                           {% endif %}
                                         {% endfor %}
                                     </div>
                                     <div style="flex: 1; text-align: center;">
