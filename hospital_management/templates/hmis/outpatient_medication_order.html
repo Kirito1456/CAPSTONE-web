@@ -32,17 +32,37 @@
         color: #fff;   
     }
 
-    .buttons_info {
+    #patient-information{
+        margin-left: 5px;
+    }
+
+    .buttons_info, #backButton {
         padding: 5px;
-        margin: 5px; 
-        border: none; 
-        border-radius: 4px; 
-        background-color: #ADB8CE; 
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 12px; 
+        border: solid 2px #334A7C; 
+        background-color: white; 
         color: black;
         cursor: pointer; 
         margin-right:10px;
+        font-size: 15px;
+        font-weight: bold;
+
+    }
+    
+    .buttons_info:hover, #backButton:hover {
+        background-color: #334A7C; 
+        color:white;
     }
 
+    #fname-label, #gender-label, #bday-label, #age-label, #today-label {
+        font-size: 16px;
+    }
+
+    #medicine_name_input, #daysInput, #dosage_input, #route_input, #remarksInput{
+        font-size: 15px;
+    }
 
 </style>
 {% endblock styles%}
@@ -117,9 +137,9 @@
             <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                 {% csrf_token %}
                     <div id="medications-container">
-                        <div style="margin-top: 20px; margin-bottom: 10px; font-size: 15px;" id="head">Add Medicine Here</div>
+                        <div style="margin-top: 20px; margin-bottom: 10px; font-size: 17px;" id="head">Add Medicine Here</div>
                         <div id="medication-list-container">
-                            <div id="table-header" style="background-color: #334A7C; display: flex; color: white; padding: 10px;">
+                            <div id="table-header" style="background-color: #334A7C; display: flex; color: white; padding: 10px; font-size: 17px; font-weight: bold;">
                                 <div style="flex: 1; text-align: center;">Days</div>
                                 <div style="flex: 1; text-align: center;">Medicine Name</div>
                                 <div style="flex: 1; text-align: center;">Dosage</div>
@@ -171,7 +191,7 @@
                 
                 <hr>
                 
-                <div style="margin-top: 20px; margin-bottom: 10px; margin-left: 10px; font-size: 15px;" id="head">Medicine List</div>
+                <div style="margin-top: 20px; margin-bottom: 10px; margin-left: 10px; font-size: 17px;" id="head">Medicine List</div>
                 <div id="medication_cart">
                     
                     <div id="medicineList" name="medicineList" style="align-items: center;"></div>

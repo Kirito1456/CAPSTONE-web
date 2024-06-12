@@ -263,6 +263,10 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    #chiefComplaintText, #health-conditions{
+        font-size: 16px;
+    }
+
     #info_container{
         display: flex;
         height: 270px;
@@ -293,19 +297,16 @@
     
         font-size: 22px;
     
-        padding-bottom: 5px;
-        padding-top: 5px;
+        padding-bottom: 7px;
+        padding-top: 7px;
         background-color: #334A7C;
         color: #fff;
     
         margin-bottom: 10px;
     }
-    #vital-signs-box {
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        margin-bottom: 20px;
-        width: 100%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    #blood-type-view, #height-view, #weight-view, #address-view, #phone-number, #e-mail{
+        font-size: 16px;
     }
     
     #consultation-notes{
@@ -551,7 +552,7 @@
                         </div>
                         {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                             <div id="last">
-                                <div id="diagnosis-label">&nbsp;Diagnosis:</div>
+                                <div id="diagnosis-label">&thinsp;Diagnosis:</div>
                                 <div id="diagnosis-label2">&nbsp;{{ chosenPatientConsulNotes_data.diagnosis }}</div><br>
                             </div>
                         {% endfor %}
@@ -668,7 +669,7 @@
 
         <div id="whole-container" style="display: flex; flex-direction: row">
             <div id="left-container">
-            {% comment %} Consultation Notes {% endcomment %}
+                {% comment %} Consultation Notes {% endcomment %}
                 <div class = "container-big" style="margin-right: 30px;">
                     {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
                     <div class = "container-small">
@@ -1017,55 +1018,55 @@
                     </div>
                     {% endfor %}
                 </div>
+            </div>
 
-                {% comment %} Diagnostic Test {% endcomment %}
-                <div class = "container-big-dt">
-                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <div class = "container-small">
-                        <div class = "head">Diagnostic Tests</div>
-                            <div class="container-inside-diagnostic">
-                                <button class="buttons_info"><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
-                                <button class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}">Request New Test</a></button>
-                                {% comment %} <div id="newLabTestModal" class="modal2" style="display: none;">
-                                    <div class="modal-content2">
-                                        <h2>Request New Test</h2>
-                                        <form method="post" id="newLabTestForm">
-                                            {% csrf_token %}
-                                            <input type="checkbox" id="bloodTestCheckbox" name="bloodTestCheckbox">
-                                            <label for="bloodTestCheckbox">Blood Test</label><br>
-                                            <input type="checkbox" id="urineTestCheckbox" name="urineTestCheckbox">
-                                            <label for="urineTestCheckbox">Urine Test</label><br>
-                                            <input type="checkbox" id="stoolTestCheckbox" name="stoolTestCheckbox">
-                                            <label for="stoolTestCheckbox">Stool Test</label><br>
-                                            <input type="checkbox" id="tissueBiopsyCheckbox" name="tissueBiopsyCheckbox">
-                                            <label for="tissueBiopsyCheckbox">Tissue Biopsy</label><br>
-                                            <input type="checkbox" id="xrayCheckbox" name="xrayCheckbox">
-                                            <label for="xrayCheckbox">X-rays</label><br>
-                                            <input type="checkbox" id="ctScanCheckbox" name="ctScanCheckbox">
-                                            <label for="ctScanCheckbox">Computed Tomography/CT Scan</label><br>
-                                            <input type="checkbox" id="mriCheckbox" name="mriCheckbox">
-                                            <label for="mriCheckbox">Magnetic Resonance Imaging/MRI</label><br>
-                                            <input type="checkbox" id="ultrasoundCheckbox" name="ultrasoundCheckbox">
-                                            <label for="ultrasoundCheckbox">Ultrasound</label><br>
-                                            <input type="checkbox" id="ecgCheckbox" name="ecgCheckbox">
-                                            <label for="ecgCheckbox">Electrocardiogram/ECG/EKG</label><br>
-                                            <input type="checkbox" id="colonoscopyCheckbox" name="colonoscopyCheckbox">
-                                            <label for="colonoscopyCheckbox">Colonoscopy</label><br>
-                                            <input type="checkbox" id="bronchoscopyCheckbox" name="bronchoscopyCheckbox">
-                                            <label for="bronchoscopyCheckbox">Bronchoscopy</label><br>
-                                            <input type="checkbox" id="petScanCheckbox" name="petScanCheckbox">
-                                            <label for="petScanCheckbox">Positron Emission Tomography (PET) Scan</label><br>
-                                            <button id="submittest" type="submit" name="submitLabTestRequest">Submit</button>
-                                            
-                                        </form>
-                                        <button class="canceltest" id="closeModalTest">Cancel</button>
-                                    </div> {% endcomment %}
-                                </div>
+            {% comment %} Diagnostic Test {% endcomment %}
+            <div class = "container-big-dt">
+                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                <div class = "container-small">
+                    <div class = "head">Diagnostic Tests</div>
+                        <div class="container-inside-diagnostic">
+                            <button class="buttons_info"><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
+                            <button class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}">Request New Test</a></button>
+                            {% comment %} <div id="newLabTestModal" class="modal2" style="display: none;">
+                                <div class="modal-content2">
+                                    <h2>Request New Test</h2>
+                                    <form method="post" id="newLabTestForm">
+                                        {% csrf_token %}
+                                        <input type="checkbox" id="bloodTestCheckbox" name="bloodTestCheckbox">
+                                        <label for="bloodTestCheckbox">Blood Test</label><br>
+                                        <input type="checkbox" id="urineTestCheckbox" name="urineTestCheckbox">
+                                        <label for="urineTestCheckbox">Urine Test</label><br>
+                                        <input type="checkbox" id="stoolTestCheckbox" name="stoolTestCheckbox">
+                                        <label for="stoolTestCheckbox">Stool Test</label><br>
+                                        <input type="checkbox" id="tissueBiopsyCheckbox" name="tissueBiopsyCheckbox">
+                                        <label for="tissueBiopsyCheckbox">Tissue Biopsy</label><br>
+                                        <input type="checkbox" id="xrayCheckbox" name="xrayCheckbox">
+                                        <label for="xrayCheckbox">X-rays</label><br>
+                                        <input type="checkbox" id="ctScanCheckbox" name="ctScanCheckbox">
+                                        <label for="ctScanCheckbox">Computed Tomography/CT Scan</label><br>
+                                        <input type="checkbox" id="mriCheckbox" name="mriCheckbox">
+                                        <label for="mriCheckbox">Magnetic Resonance Imaging/MRI</label><br>
+                                        <input type="checkbox" id="ultrasoundCheckbox" name="ultrasoundCheckbox">
+                                        <label for="ultrasoundCheckbox">Ultrasound</label><br>
+                                        <input type="checkbox" id="ecgCheckbox" name="ecgCheckbox">
+                                        <label for="ecgCheckbox">Electrocardiogram/ECG/EKG</label><br>
+                                        <input type="checkbox" id="colonoscopyCheckbox" name="colonoscopyCheckbox">
+                                        <label for="colonoscopyCheckbox">Colonoscopy</label><br>
+                                        <input type="checkbox" id="bronchoscopyCheckbox" name="bronchoscopyCheckbox">
+                                        <label for="bronchoscopyCheckbox">Bronchoscopy</label><br>
+                                        <input type="checkbox" id="petScanCheckbox" name="petScanCheckbox">
+                                        <label for="petScanCheckbox">Positron Emission Tomography (PET) Scan</label><br>
+                                        <button id="submittest" type="submit" name="submitLabTestRequest">Submit</button>
+                                        
+                                    </form>
+                                    <button class="canceltest" id="closeModalTest">Cancel</button>
+                                </div> {% endcomment %}
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>

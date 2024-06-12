@@ -14,16 +14,40 @@
         padding: 5px; 
         margin: 5px; 
         margin-right: 10px;
+        border-width: 3px;
      }
-     .buttons_info {
+
+    .buttons_info, #backButton {
         padding: 5px;
-        margin: 10px; 
-        border: none; 
-        border-radius: 4px; 
-        background-color: #ADB8CE; 
+        border: solid 2px #334A7C; 
+        background-color: white; 
         color: black;
         cursor: pointer; 
         margin-right:10px;
+        font-size: 15px;
+        font-weight: bold;
+        margin-left: 14px;
+    }
+
+    .buttons_info{
+        margin-top: 22px;
+    }
+    
+    .buttons_info:hover, #backButton:hover {
+        background-color: #334A7C; 
+        color:white;
+    }
+
+    #fname-label, #gender-label, #bday-label, #age-label, #today-label {
+        font-size: 16px;
+    }
+
+    #head{
+        font-size: 20px;
+    }
+
+    #table-header{
+        font-size: 16px;
     }
 </style>
 {% endblock styles%}
@@ -67,7 +91,7 @@
                 {% if patients_data.uid == chosen_patient_uid %}
                     <div id = "patient-information">
                         <button class="buttons_info">
-                            <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication history</a>
+                            <a href="{% url 'patient_medication_table' %}?chosenPatient={{patients_data.uid}}">View Medication History</a>
                         </button>
                         <div id = "first">
                             <div id = "fname-label">Name of Patient</div>
@@ -102,7 +126,7 @@
             <div id="medications-container">
                 <div id="head">Current Medication</div>
                     <div id="medication-list-container">
-                        <div id="table-header" style="font-size: 14px;">
+                        <div id="table-header">
                             <div style="flex: 1; text-align: center;">Medication Name</div>
                             <div style="flex: 1; text-align: center;">Dosage</div>
                             <div style="flex: 1; text-align: center;">Route</div>
@@ -111,7 +135,7 @@
                             <div style="flex: 1; text-align: center;">Additional Remarks</div>
                         </div>
                         {% for prescriptionorders_id, prescriptionorders_data in prescriptionsorders.items %}
-                            <div style="font-size: 14px;">
+                            <div style="font-size: 15px;">
                                 <div id="table-body" style="display: flex; justify-content: center; margin-bottom: 5px;">
                                     <div style="flex: 1; text-align: center;">
                                         {% for item_key, item_value in prescriptionorders_data.items %}
