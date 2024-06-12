@@ -5,7 +5,29 @@
 <link rel="stylesheet" href="{% static 'css/patient_personal_informations.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+
 <style>
+    #table-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #table-body > div {
+        flex: 1;
+        text-align: center;
+        padding: 5px; /* Add padding for better spacing */
+    }
+
+    #table-body input,
+    #table-body select {
+        width: 90%; /* Adjust width to fit the container */
+        margin: 0 auto; /* Center the input elements */
+    }
+
+    #table-body .dosage-input {
+        width: 100%;
+    }
     body {
         padding: 0;
         margin: 0;
@@ -25,7 +47,7 @@
         background: white;
     }
     .prescription {
-        width: 720px;
+        width: 1200px;
         height: 960px;
         margin: 0 auto;
         border: 1px solid lightgrey;
@@ -200,9 +222,9 @@
         margin: 20px 5px;
         flex-grow: 1;
     }
-    #add_med {
+    {% comment %} #add_med {
         animation: shake 1.5s linear infinite;
-    }
+    } {% endcomment %}
     
     @keyframes shake {
         10%,
@@ -370,16 +392,8 @@
             </td>
           </tr>
           <tr>
-            <td width="40%">
+            <td width="20%">
               <div class="desease_details">
-                <div class="symptoms">
-                  <h4 class="d-header">Symptoms</h4>
-                  <ul class="symp" data-toggle="tooltip" data-placement="bottom" title="Click to edit." contenteditable="true"></ul>
-                  <div class="symp_action">
-                    <button class="btn btn-sm btn-success save" id="symp_save" data-prescription_id="{{ prescription_id }}">Save</button>
-                    <button class="btn btn-sm btn-danger cancel-btn">Cancel</button>
-                  </div>
-                </div>
                 <div class="tests">
                   <h4 class="d-header">Tests</h4>
                   <ul class="tst" data-toggle="tooltip" data-placement="bottom" title="Click to edit." contenteditable="true"></ul>
@@ -388,22 +402,116 @@
                     <button class="btn btn-sm btn-danger cancel-btn">Cancel</button>
                   </div>
                 </div>
-                <div class="advice">
+                {% comment %} <div class="advice">
                   <h4 class="d-header">Advice</h4>
                   <p class="adv_text" style="outline: 0" data-toggle="tooltip" data-placement="bottom" title="Click to edit." contenteditable="true"></p>
                   <div class="adv_action">
                     <button class="btn btn-sm btn-success save" id="adv_save" data-prescription_id="{{ prescription_id }}">Save</button>
                     <button class="btn btn-sm btn-danger cancel-btn">Cancel</button>
                   </div>
-                </div>
+                </div> {% endcomment %}
               </div>
             </td>
             <td width="60%" valign="top"><span style="font-size: 2em">R<sub>x</sub></span>
               <hr/>
               <div class="medicine">
                 <section class="med_list"></section>
-                <div id="add_med" data-toggle="tooltip" data-placement="right" title="Click anywhere on the blank space to add more.">Click to add...</div>
-              </div>
+                {% comment %} <div id="add_med" data-toggle="tooltip" data-placement="right" title="Click anywhere on the blank space to add more." contenteditable="true">Click to add...</div> {% endcomment %}
+                <div id="treatment-plan">
+                    {% for patients_id, patients_data in patients.items %}
+                        {% if patients_data.uid == patient_uid %}
+                            <div id="patient-information">
+                                <div id="first">
+                                    <div id="fname-label">Name of Patient</div>
+                                    <div id="fname">{{patients_data.fname}} {{patients_data.lname}}</div>
+                                </div>
+                                <div id="gender">
+                                    <div id="gender-label">Gender</div>
+                                    <div id="gender-view">{{ patients_data.gender }}</div>
+                                </div>
+                                <div id="bday">
+                                    <div id="bday-label">Date of Birth</div>
+                                    <div id="birthday-view">{{ patients_data.bday }}</div>
+                                </div>
+                                <div id="age">
+                                    <div id="age-label">Age</div>
+                                    <div id="age-view"></div>
+                                </div>   
+                                
+                                <div id="today">
+                                    <div id="today-label">Date of Prescription</div>
+                                    <div id="today-view">{{latest_date}}</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <hr>
+                    <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
+                        {% csrf_token %}
+                        <div id="medications-container">
+                            <div id="head" style="margin-top: 20px; margin-bottom: 10px; font-size: 15px;">Add Medicine Here</div>
+                            <div id="medication-list-container">
+                                <div id="table-header" style="background-color: #334A7C; display: flex; color: white; padding: 10px;">
+                                    <div style="flex: 1; text-align: center;">Days</div>
+                                    <div style="flex: 1; text-align: center;">Medicine Name</div>
+                                    <div style="flex: 1; text-align: center;">Dosage</div>
+                                    <div style="flex: 1; text-align: center;">Route</div>
+                                    <div style="flex: 1; text-align: center;">Frequency</div>
+                                    <div style="flex: 1; text-align: center;">Additional Remarks</div>
+                                </div>
+                                <div id="table-body">
+                                    <div style="flex: 1; text-align: center;">
+                                        <input type="number" name="days" id="daysInput" placeholder="Enter number of days">
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                                        <datalist id="medicine_name_suggestions">
+                                            {% for medicine in medicines_list %}
+                                                <option value="{{ medicine }}">{{ medicine }}</option>
+                                            {% endfor %}
+                                        </datalist>
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        <select class="dosage-input" name="dosage" id="dosage_input">
+                                            <option value="" selected disabled>Select Dosage</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        <div style="display: flex; justify-content: center;">
+                                            <div>
+                                                <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
+                                                <label for="morning-checkbox">Morning</label>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
+                                                <label for="afternoon-checkbox">Afternoon</label>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
+                                                <label for="evening-checkbox">Evening</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="flex: 1; text-align: center;">
+                                        <input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks" id="remarksInput">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="buttons_info" id="add-medication-button" type="button">Add</button>
+                        </div>
+                        <hr>
+                        <div id="head" style="margin-top: 20px; margin-bottom: 10px; margin-left: 10px; font-size: 15px;">Medicine List</div>
+                        <div id="medication_cart">
+                            <div id="medicineList" name="medicineList" style="align-items: center;"></div>
+                            <input type="hidden" id="hiddenFieldsContainer" name="hiddenFieldsContainer">
+                            <button class="buttons_info" name="submitorders" style="margin-left: 16px;" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
             </td>
           </tr>
         </tbody>
@@ -413,6 +521,184 @@
     </div>
   </div>
 
+  <script>
+    document.getElementById("add-medication-button").addEventListener("click", function() {
+        // Retrieve input values
+        var days = document.getElementById("daysInput").value;
+        var medicineName = document.getElementById("medicine_name_input").value;
+        var dosage = document.getElementById("dosage_input").value;
+        var route = document.getElementById("route_input").value;
+        var remarks = document.getElementById("remarksInput").value;
+    
+        
+    
+        // Check if medicine with the same name already exists
+        var existingMedicines = document.querySelectorAll('.medicine-name');
+        for (var i = 0; i < existingMedicines.length; i++) {
+            if (existingMedicines[i].innerText === medicineName) {
+                alert("Medicine with the same name already exists.");
+                return;
+            }
+        }
+    
+        // Create a new row container
+        var newRow = document.createElement("div");
+        newRow.classList.add("row");
+        newRow.style.display = "flex";
+        newRow.style.padding = "10px";
+        newRow.style.alignItems = "center";
+    
+        // Create cells for each value
+        var cells = [
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div") // For the Remove button
+        ];
+    
+        // Set icon content
+        var icon = document.createElement("i");
+        icon.classList.add("fas", "fa-medkit"); 
+        icon.style.marginRight = "5px";
+        cells[0].appendChild(icon);
+    
+        // Set cell content with numbering
+        cells[1].classList.add("medicine-name"); // Add class for medicine name
+        cells[1].innerHTML = "<span>" + medicineName + " (" + dosage + ")</span>";
+        cells[2].innerHTML = "<span>Sig. Take for <strong>" + days + "</strong> days during ";
+    
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    
+        // Array to store checked times
+        var checkedTimes = [];
+    
+        // Loop through checked checkboxes and add their values to the array
+        checkboxes.forEach(function(checkbox) {
+            checkedTimes.push(checkbox.value);
+        });
+    
+        // Combine checked times into one string separated by commas
+        var checkedTimesString = checkedTimes.join(", ");
+    
+        // Append checked times string to the cell
+        cells[3].innerText = checkedTimesString;
+        cells[3].style.marginRight = "5px";
+    
+        // Append cells to the new row
+        cells.forEach(function(cell) {
+            newRow.appendChild(cell);
+        });
+    
+        cells[4].innerHTML = "<span> through <strong>" + route + "</strong>. " + remarks + "</span>";
+    
+        // Append new row container to the medicine list
+        document.getElementById("medicineList").appendChild(newRow);
+    
+        var hiddenFieldsContainer = document.getElementById("hiddenFieldsContainer");
+    
+        var hiddenFields = [
+            { name: "medicine_name[]", value: medicineName },
+            { name: "dosage[]", value: dosage },
+            { name: "days[]", value: days },
+            { name: "route[]", value: route },
+            { name: "remarks[]", value: remarks },
+            { name: "times[]", value: checkedTimesString }
+        ];
+    
+        var removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.classList.add("remove-button");
+        cells[6].appendChild(removeButton);
+    
+        removeButton.addEventListener("click", function() {
+            newRow.remove(); // Remove the row from the DOM
+    
+           
+        });
+    
+        hiddenFields.forEach(function(field) {
+            var hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = field.name;
+            hiddenInput.value = field.value;
+            hiddenFieldsContainer.appendChild(hiddenInput);
+        });
+    });
+    
+    // Retrieve pharmacy_lists from the template
+    var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
+    console.log(pharmacyLists);  // Print pharmacy_lists to the console
+
+    // Add your additional JavaScript code here
+    const medicineNameInput = document.getElementById('medicine_name_input');
+    const dosageInput = document.getElementById('dosage_input');
+    const routeInput = document.getElementById('route_input');
+
+    medicineNameInput.addEventListener('input', populateDosageDropdown);
+
+    dosageInput.addEventListener('change', changeRouteDropdown);
+
+    function populateDosageDropdown() {
+        const selectedMedicine = medicineNameInput.value.trim();
+        dosageInput.innerHTML = '<option value="" selected disabled>Select Dosage</option>'; // Reset dosage dropdown
+        
+        // Populate dosage dropdown based on selected medicine
+        pharmacyLists.forEach(function(pharmacy) {
+            if (pharmacy.Drug.trim() === selectedMedicine) { // Ensure consistent comparison
+                const option = document.createElement('option');
+                option.text = pharmacy.Strength;
+                option.value = pharmacy.Strength;
+                dosageInput.appendChild(option);
+            }
+        });
+
+        // Trigger the change event on dosage dropdown to update the route dropdown
+        dosageInput.dispatchEvent(new Event('change'));
+    }
+
+    function changeRouteDropdown() {
+        const selectedStrength = dosageInput.value.trim();
+        
+        // Change route dropdown based on selected strength
+        pharmacyLists.forEach(function(pharmacy) {
+            if (pharmacy.Strength.trim() === selectedStrength) { // Ensure consistent comparison
+                routeInput.value = pharmacy.Route;
+            }
+        });
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        var birthdayString = document.getElementById("birthday-view").innerText;
+        var birthday = new Date(birthdayString);
+        var today = new Date();
+        var ageYear = today.getFullYear() - birthday.getFullYear();
+        var ageMonth = today.getMonth() - birthday.getMonth();
+        const backButton = document.getElementById('backButton');
+
+        // Adjust age months if negative
+        if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
+            ageYear--;
+            ageMonth += 12;
+        }
+
+        document.getElementById("age-view").innerText = ageYear + " years and " + ageMonth + " months";
+
+        backButton.addEventListener('click', function() {
+            window.history.back();
+        });
+
+        document.getElementById("select-all-checkbox").addEventListener("change", function() {
+            selectAllCheckboxes();
+        });
+    
+        document.getElementById('submit-medication-button').addEventListener('click', function () {
+            alert('Successfully Added a Medication Order/Prescription!');
+        });
+        
+    });
+  </script>
 
   <script id="new_medicine" type="text/template">
     <div class="med">&#x26AB;
