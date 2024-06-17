@@ -124,7 +124,8 @@
 {% endblock styles%}
 
 {% block content %}
-
+<form method="post">
+    {% csrf_token %}
 <div class="prescription-pad">
     <div class="header">
         <div class="logo"><img src="https://seeklogo.com/images/H/hospital-clinic-plus-logo-7916383C7A-seeklogo.com.png" alt="Clinic Logo"/></div>
@@ -169,8 +170,7 @@
                         <option value="b.i.d.">b.i.d. (twice daily)</option>
                         <option value="t.i.d.">t.i.d. (three times daily)</option>
                         <option value="q.i.d.">q.i.d. (four times daily)</option>
-                        <option value="q.a.m.
-.">q.a.m. (every morning)</option>
+                        <option value="q.a.m.">q.a.m. (every morning)</option>
                         <option value="q.p.m.">q.p.m. (every evening)</option>
                         <option value="q.h.s.">q.h.s. (at bedtime)</option>
                         <option value="q.o.d.">q.o.d. (every other day)</option>
@@ -196,6 +196,7 @@
         <p>PTR No.: ________________________</p>
     </div>
 </div>
+</form>
 
 <script>
     function addMedicineRow() {

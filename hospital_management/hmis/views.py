@@ -2394,4 +2394,52 @@ def diagnostic_imagery_reports(request):
 
 
 def requestTest(request):
-     return render(request, 'hmis/requestTest.html')
+    patient_uid = request.GET.get('chosenPatient')
+    
+    patientdata = db.child("patientdata").child(patient_uid).get().val()
+
+    if request.method == 'POST':
+
+        uid = request.session['uid'] 
+        # Generate unique ID for the prescription
+        prescription_id = str(uuid.uuid1())
+
+        # Set default status
+        #status = 'Ongoing' if datetime.now() < endDate else 'Finished'
+
+        patient_name = request.POST.get('patient_name')
+        patient_age = request.POST.get('patient_age')
+        date = request.POST.get('date')
+        medicines = request.POST.getlist('medicine-name')
+        dosages = request.POST.getlist('dosage')
+        routes = request.POST.getlist('route')
+        times = request.POST.getlist('times')
+        days = request.POST.getlist('days')
+
+        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        prescription_data = {
+            'prescriptionsorderUID': prescription_id,
+            'patient_id': patient_uid,
+            'patient_name': patient_name,
+            'patient_age': patient_age,
+            'date': date,
+            'medicines': [],
+            #'status': status,
+        }
+
+        for i in range(len(medicines)):
+            medicine_info = {
+                'name': medicines[i],
+                'dosage': dosages[i],
+                'route': routes[i],
+                'times': times[i],
+                'days': days[i],
+            }
+            prescription_data['medicines'].append(medicine_info)
+
+        # Save the prescription data to Firebase
+        db.child('prescriptionsorders').child(patient_uid).child(todaydate).set(prescription_data)
+        
+        return redirect('prescription_success')
+    return render(request, 'hmis/requestTest.html')

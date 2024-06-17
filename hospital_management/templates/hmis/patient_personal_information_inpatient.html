@@ -793,7 +793,7 @@
                         <div class = "head">Diagnostic Tests</div>
                             <div class="container-inside-diagnostic">
                                 <button class="buttons_info"><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
-                                <button class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}">Request New Test</a></button>
+                                <button class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}">Request New Test</a></button>
                                 {% comment %} <div id="newLabTestModal" class="modal2" style="display: none;">
                                     <div class="modal-content2">
                                         <h2>Request New Test</h2>
