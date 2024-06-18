@@ -2443,3 +2443,74 @@ def requestTest(request):
         
         return redirect('prescription_success')
     return render(request, 'hmis/requestTest.html')
+
+# def create_prescription_pdf(data):
+#     pdf = FPDF()
+#     pdf.add_page()
+#     pdf.set_font("Arial", size=12)
+    
+#     pdf.cell(200, 10, txt="Prescription", ln=True, align="C")
+#     pdf.cell(200, 10, txt=f"Patient Name: {data['patient_name']}", ln=True)
+#     pdf.cell(200, 10, txt=f"Patient Age: {data['patient_age']}", ln=True)
+#     pdf.cell(200, 10, txt=f"Date: {data['date']}", ln=True)
+    
+#     pdf.cell(200, 10, txt="Medicines:", ln=True)
+#     for medicine in data['medicines']:
+#         pdf.cell(200, 10, txt=f"Medicine Name: {medicine['name']}", ln=True)
+#         pdf.cell(200, 10, txt=f"Dosage: {medicine['dosage']}", ln=True)
+#         pdf.cell(200, 10, txt=f"Route: {medicine['route']}", ln=True)
+#         pdf.cell(200, 10, txt=f"Times: {medicine['times']}", ln=True)
+#         pdf.cell(200, 10, txt=f"Days: {medicine['days']}", ln=True)
+#         pdf.cell(0, 10, '', 0, 1)  # Add a blank line
+    
+#     temp_file_path = os.path.join(os.path.dirname(__file__), 'temp_prescription.pdf')
+#     pdf.output(temp_file_path)
+
+#     return temp_file_path
+
+# def upload_pdf_to_firebase(file_path, storage_path):
+#     firebase_storage.child(storage_path).put(file_path)
+
+# def requestTest(request):
+#     if request.method == 'POST':
+#         data = {
+#             'patient_name': request.POST.get('patient_name', 'N/A'),
+#             'patient_age': request.POST.get('patient_age', 'N/A'),
+#             'date': request.POST.get('date', 'N/A'),
+#             'medicines': [
+#                 {
+#                     'name': request.POST.get('medicine_name', 'N/A'),
+#                     'dosage': request.POST.get('dosage', 'N/A'),
+#                     'route': request.POST.get('route', 'N/A'),
+#                     'times': request.POST.get('times', 'N/A'),
+#                     'days': request.POST.get('days', 'N/A'),
+#                 }
+#             ]
+#         }
+
+#         # Debugging: Print data types and values
+#         print("Data Received:", data)
+#         for medicine in data['medicines']:
+#             print("Medicine Data:", medicine)
+
+#         # Create the PDF
+#         temp_file_path = create_prescription_pdf(data)
+
+#         try:
+#             # Upload the PDF to Firebase
+#             storage_path = 'prescriptions/prescription.pdf'
+#             upload_pdf_to_firebase(temp_file_path, storage_path)
+
+#             # Success message
+#             return HttpResponse("Prescription created and uploaded successfully.")
+#         except Exception as e:
+#             print(f"Error uploading to Firebase: {e}")
+#             return HttpResponse(f"An error occurred: {e}")
+#         finally:
+#             # Ensure the temporary file is deleted
+#             if os.path.exists(temp_file_path):
+#                 os.remove(temp_file_path)
+#                 print(f"Deleted temporary file: {temp_file_path}")
+
+#     return render(request, 'hmis/requestTest.html')
+
