@@ -2473,70 +2473,82 @@ def create_prescription_pdf(data, filename):
     margin = 0.5 * inch
 
     # Draw header
+    c.setFont("Helvetica-Bold", 30)
+    c.drawCentredString(width / 2, height - margin - 0.5 * inch, data['doctor'] + ", M.D.")
+    c.setFont("Helvetica-Bold", 18)
+    c.drawCentredString(width / 2, height - margin - 0.8 * inch, data['specialization'])
+    c.setFont("Helvetica", 12)
+    c.drawCentredString(width / 2, height - margin - 1.1 * inch, "09168794532")
+    c.drawCentredString(width / 2, height - margin - 1.3 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
+    c.drawCentredString(width / 2, height - margin - 1.5 * inch, "              Sunday          | By Appointment")
+
+    # Add a break line before the line
+    c.line(margin, height - margin - 1.8 * inch, width - margin, height - margin - 1.8 * inch)
+
+     # Draw patient details
+    c.setFont("Helvetica-Bold", 12)
+    patient_info_y = height - 2.5 * inch
+    c.drawString(margin, patient_info_y, "Patient Name:")
+    c.setFont("Helvetica", 12)
+    c.drawString(margin + 1.25 * inch, patient_info_y, data['patient_name'])
+    
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(3.5 * inch + 0.5 * inch, patient_info_y, "Age:")
+    c.setFont("Helvetica", 12)
+    c.drawString(3.5 * inch + 1.0 * inch, patient_info_y, data['patient_age'])
+    
+    c.setFont("Helvetica-Bold", 12)
+    c.drawRightString(width - margin - 1.7 * inch, patient_info_y, "Gender:")
+    c.setFont("Helvetica", 12)
+    c.drawRightString(width - margin - 1.0 * inch, patient_info_y, data['patient_gender'])
+
+    patient_info_y -= 0.25 * inch
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(margin, patient_info_y, "Address:")
+    c.setFont("Helvetica", 12)
+    c.drawString(margin + 1.25 * inch, patient_info_y, data['patient_address'])
+    
+    c.setFont("Helvetica-Bold", 12)
+    c.drawRightString(width - margin - 1.9 * inch, patient_info_y, "Date:")
+    c.setFont("Helvetica", 12)
+    c.drawRightString(width - margin - 0.7 * inch, patient_info_y, data['date'])
+
+    # Draw logo below the address
     logo_url = 'https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png'
     logo_path = download_image(logo_url, 'logo.png')
     if logo_path:
-        logo_size = 1.5 * inch
-        c.drawImage(logo_path, margin, height - logo_size - margin, width=logo_size, height=logo_size, preserveAspectRatio=True, mask='auto')
+        logo_size = 0.8 * inch
+        c.drawImage(logo_path, (width - logo_size) / 10, height - 4.0 * inch, width=logo_size, height=logo_size, preserveAspectRatio=True, mask='auto')
         os.remove(logo_path)
-    
-    c.setFont("Helvetica-Bold", 30)
-    c.drawString(2.5 * inch, height - margin - 0.5 * inch, "SANTOS GENERAL CLINIC")
-    c.setFont("Helvetica", 12)
-    c.drawString(2.5 * inch, height - margin - 0.7 * inch, "Brgy. San Jose, San Francisco, California")
-    c.drawString(2.5 * inch, height - margin - 0.9 * inch, "09168794532")
-    c.drawString(2.5 * inch, height - margin - 1.1 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
-    c.drawString(2.5 * inch, height - margin - 1.3 * inch, "              Sunday          | By Appointment")
-
-    # Add a break line before the line
-    c.line(margin, height - margin - 1.6 * inch, width - margin, height - margin - 1.6 * inch)
-
-
-    # Draw patient details
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(margin, height - 2.5 * inch, "Patient Name: " + data['patient_name'])
-    c.drawString(4 * inch, height - 2.5 * inch, "Patient Age: " + data['patient_age'])
-    c.drawRightString(width - margin, height - 2.5 * inch, "Gender: " + data['patient_age'])
-
-    c.drawString(margin, height - 2.75 * inch, "Address: " + data['patient_age'])
-    c.drawRightString(width - margin, height - 2.75 * inch, "Date: " + data['date'])
-
-    # Draw Rx symbol
-    # c.setFont("Helvetica-Bold", 20)
-    # c.drawString(margin, height - 3.2 * inch, "R")
-    # c.setFont("Helvetica", 12)
-    # c.drawString(margin + 0.3 * inch, height - 3.2 * inch, "x")
 
     # Draw prescription details
-    y_position = height - 3.5 * inch
-    indent = margin + 0.5 * inch
+    y_position = height - 4.0 * inch
+    indent = margin + 2.0 * inch
     for name, dosage, route, times, days in zip(data['medicines']['name'], 
                                                 data['medicines']['dosage'], 
                                                 data['medicines']['route'], 
                                                 data['medicines']['times'], 
                                                 data['medicines']['days']):
-        c.setFont("Helvetica", 12)
-        c.drawString(indent, y_position, f"Medicine Name: {name}")
-        y_position -= 0.2 * inch
-        c.drawString(indent, y_position, f"Dosage: {dosage}")
+        c.setFont("Helvetica", 13)
+        c.drawString(indent , y_position, f"Medicine Name: {name}")
+        c.drawString(indent + 3.0 * inch, y_position, f"Dosage: {dosage}")
         y_position -= 0.2 * inch
         c.drawString(indent, y_position, f"Route: {route}")
-        y_position -= 0.2 * inch
-        c.drawString(indent, y_position, f"Times: {times}")
-        y_position -= 0.2 * inch
-        c.drawString(indent, y_position, f"Days: {days}")
+        c.drawString(indent + 1.5 * inch, y_position, f"Times: {times}")
+        c.drawString(indent + 3.0 * inch, y_position, f"Days: {days}")
         y_position -= 0.4 * inch  # Extra space between different medicines
-    
+
     # Add two break lines before the footer
     y_position -= 0.6 * inch
 
     # Draw footer (right-aligned)
     footer_text = [
-        "Dr. Robert Santos, M.D.",
+        "Doctor's Signature: ___________",
         "License No.: ________________________",
         "PTR No.: ________________________"
     ]
     for i, text in enumerate(footer_text):
+        c.setFont("Helvetica", 12)
         c.drawRightString(width - margin, y_position - (i + 1) * 0.3 * inch, text)
 
     c.showPage()
@@ -2547,18 +2559,49 @@ def upload_pdf_to_firebase(file_path, storage_path):
 
 @csrf_exempt
 def requestTest(request):
+    patient_uid = request.GET.get('chosenPatient')
+    patients = db.child("patients").get().val()
+    #patientdata = db.child("patientdata").child(patient_uid).get().val()
+    todaydate = datetime.now().strftime("%Y-%m-%d")
+    doctors = db.child('doctors').get().val()
+    uid = request.session['uid'] 
+    clinics = db.child("clinics").get().val()
+
+    patientData = {}
+    for patients_id, patients_data in patients.items():
+        if patient_uid == patients_data["uid"]:
+            patientData[patients_id] = patients_data
+
+    patientName = patientData[patient_uid].get('fname','N/A') + ' ' + patientData[patient_uid].get('lname','N/A')
+    patientGender = patientData[patient_uid].get('gender','N/A')
+    patientAddress = patientData[patient_uid].get('address','N/A')
+
+    for doctor_id, doctor_data in doctors.items():
+        if uid == doctor_data["uid"]:
+            doctorName = doctor_data["fname"] + ' ' + doctor_data["lname"]
+            specialization = doctor_data["specialization"] 
+
+
     if request.method == 'POST':
+
+        # Generate unique ID for the prescription
+        prescription_id = str(uuid.uuid1())
+
         data = {
-            'patient_name': request.POST.get('patient_name', 'N/A'),
+            'patient_name': patientName,
             'patient_age': request.POST.get('patient_age', 'N/A'),
-            'date': request.POST.get('date', 'N/A'),
+            'patient_gender': patientGender,
+            'patient_address': patientAddress,
+            'date': todaydate,
             'medicines': {
                 'name': request.POST.getlist('medicine_name'),
                 'dosage': request.POST.getlist('dosage'),
                 'route': request.POST.getlist('route'),
                 'times': request.POST.getlist('times'),
                 'days': request.POST.getlist('days'),
-            }
+            },
+            'doctor': doctorName,
+            'specialization': specialization,
         }
 
         print(data)
@@ -2581,4 +2624,9 @@ def requestTest(request):
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
 
-    return render(request, 'hmis/requestTest.html')
+    return render(request, 'hmis/requestTest.html' , {'patientData': patientData,
+                                                        'patient_uid': patient_uid,
+                                                        'doctors': doctors,
+                                                        'clinics': clinics,
+                                                        'uid': uid,
+                                                        'todaydate': todaydate})
