@@ -1,188 +1,497 @@
-{% extends 'hmis/base.html' %}
-{% load static %}
+{%load static%}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Patient Data{% endblock %}</title>
+    <!-- plugins:css -->
+     
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-{% block title %}Doctor Dashboard{% endblock %}
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- endinject -->
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    {% endblock styles%}
+  </head>
 
-{% block styles %} 
-<!-- Stylesheet for the program -->
-<link rel="stylesheet" href="{% static 'css/style-appointmentss.css' %}">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-{% endblock styles %}
-
-{% block content %}
-<div id="whole-screen">
-    <div id="side-menu" style="background-color: #334a7c;">
-        <div id="all-info">
-            <div id="user-info"> 
-                <div id = "image">
-                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
-                </div>
-                <div id="information">
-                    {% for doctor_id, doctor_data in doctors.items %}
+  {% block content %}
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <b>MediMatrix</b>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Good Morning, 
+                {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                            <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
+                        <span class="text-black fw-bold"> {{ doctor_data.fname }} {{ doctor_data.lname }}</span>
+                        {% endif %}
+                    {% endfor %}
+                
+            </h1>
+              <h3 class="welcome-sub-text">Placeholder Text</h3>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            {% comment %} Notifs {% endcomment %}
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                <i class="icon-bell"></i>
+                <span class="count"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+                <a class="dropdown-item py-3 border-bottom">
+                  <p class="mb-0 fw-medium float-start">You have 4 new notifications </p>
+                  <span class="badge badge-pill badge-primary float-end">View all</span>
+                </a>
+                <a class="dropdown-item preview-item py-3">
+                  <div class="preview-thumbnail">
+                    <i class="mdi mdi-alert m-auto text-primary"></i>
+                  </div>
+                  <div class="preview-item-content">
+                    <h6 class="preview-subject fw-normal text-dark mb-1">Emilia Johnson sent back results</h6>
+                    <p class="fw-light small-text mb-0"> Just now </p>
+                  </div>
+                </a>
+              </div>
+            </li>
+            {% comment %} Messages Notif {% endcomment %}
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="icon-mail icon-lg"></i>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
+                <a class="dropdown-item py-3">
+                  <p class="mb-0 fw-medium float-start">You have 7 unread mails </p>
+                  <span class="badge badge-pill badge-primary float-end">View all</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="{% static 'doctorjane.jpg' %}" alt="image" class="img-sm profile-pic">
+                  </div>
+                  <div class="preview-item-content flex-grow py-2">
+                    <p class="preview-subject ellipsis fw-medium text-dark">Another Doctor </p>
+                    <p class="fw-light small-text mb-0"> Can you... </p>
+                  </div>
+                </a>
+              </div>
+            </li>
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
                         {% endif %}
                     {% endfor %}
                 </div>
-            </div>
-            <div id="menu"> 
-                <div id="a1" style="font-weight: bold;"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
-                <div id="a2"><i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
-                <div id="a3"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                
-                <div id="a4"><i class="fas fa-sign-out-alt"></i><a href="{% url 'logout' %}">Logout</a></div>
-            </div>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
         </div>
-    </div>
-    
-    <div id="appointment-screen">
-        <div style="display: flex; flex-direction: row">
-            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; margin-bottom: 5px; border: 1px solid #ccc">
-                <p style="margin-left: 15px; font-weight: bold;">Appointments for Today</p>
-                {% if appointments %}
-                    <table class="clients_table">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for appointment_id, appointment_data in appointments.items %}
-                            <tr>
-                                <td><label class="accountT_lbl">{{ appointment_data.appointmentTime }}</label></td>
-                                {% for patient_id, patient_data in patients.items %}
-                                    {% if patient_data.uid == appointment_data.patientName %}
-                                        <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}"
-                                            >{{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
-                                    {% endif %}
-                                {% endfor %}
-                                </td>  
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p style="margin-left: 15px;">No Upcoming Appointments for Today</p>
-                {% endif %}
-            </div>
-            <div style="flex: 1; background-color: white; height: 300px; margin: 10px; margin-bottom: 5px; border: 1px solid #ccc; overflow: auto">
-                <p style="margin-left: 15px; font-weight: bold;">Tasks</p>
-                
-                    {% for patients_id, patients_data in patients.items%}
-                        {% for submittedTest_id, submittedTest_data in submittedTest.items%}
-                            {% if patients_id == submittedTest_id%} 
-                                    <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
-                                        <p><i class="fas fa-notes-medical" style="margin-right: 5px;"></i> 
-                                            Patient {{ patients_data.fname}} {{ patients_data.lname}} sent back results
-                                            <button style="height: fit-content; background-color: #ADB8CE;">
-                                                <a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{patients_id}}">Go</a>
-                                            </button>
-                                        </p>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Menu</li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Appointments</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Patients</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="home-tab">
+                  <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#audiences" role="tab" aria-selected="false">Analytics</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#demographics" role="tab" aria-selected="false">Demographics</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="tab-content tab-content-basic">
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Monitor Patients</h4>
+                                      <p class="card-subtitle card-subtitle-dash">Track xx, yy, and zz here</p>
                                     </div>
-                            
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
-
-                    {% if inpatients %}
-                        <div id="doctortask" style="background-color: #334A7C; margin: 15px; padding: 2px 10px; color: white; border-radius: 20px; font-size: 14px; width: fit-content;">
-                            <p><i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i> Reminder, You have Inpatients! Finish doctor rounds.</p>
+                                  </div>
+                                  <div class="table-responsive  mt-1">
+                                    <table class="table select-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Patient Name</th>
+                                          <th>Company</th>
+                                          <th>Progress</th>
+                                          <th>Status</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td>
+                                            <div class="d-flex ">
+                                              <div>
+                                                <h6>Brandon Washington</h6>
+                                                <p>Head admin</p>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <h6>Company name 1</h6>
+                                            <p>company type</p>
+                                          </td>
+                                          <td>
+                                            <div>
+                                              <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                <p class="text-success">79%</p>
+                                                <p>85/162</p>
+                                              </div>
+                                              <div class="progress progress-md">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="badge badge-opacity-warning">In progress</div>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>
+                                            <div class="d-flex">
+                                              <div>
+                                                <h6>Wayne Murphy</h6>
+                                                <p>Head admin</p>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <h6>Company name 1</h6>
+                                            <p>company type</p>
+                                          </td>
+                                          <td>
+                                            <div>
+                                              <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                <p class="text-success">65%</p>
+                                                <p>85/162</p>
+                                              </div>
+                                              <div class="progress progress-md">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 38%" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100"></div>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="badge badge-opacity-warning">In progress</div>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>
+                                            <div class="d-flex">
+                                              <div>
+                                                <h6>Matthew Bailey</h6>
+                                                <p>Head admin</p>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <h6>Company name 1</h6>
+                                            <p>company type</p>
+                                          </td>
+                                          <td>
+                                            <div>
+                                              <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                <p class="text-success">65%</p>
+                                                <p>85/162</p>
+                                              </div>
+                                              <div class="progress progress-md">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="badge badge-opacity-danger">Pending</div>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>
+                                            <div class="d-flex">
+                                              <div>
+                                                <h6>Katherine Butler</h6>
+                                                <p>Head admin</p>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <h6>Company name 1</h6>
+                                            <p>company type</p>
+                                          </td>
+                                          <td>
+                                            <div>
+                                              <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                <p class="text-success">65%</p>
+                                                <p>85/162</p>
+                                              </div>
+                                              <div class="progress progress-md">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                              </div>
+                                            </div>
+                                          </td>
+                                          <td>
+                                            <div class="badge badge-opacity-success">Completed</div>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                    {% else %}
-                        <p style="margin-left: 15px;">No tasks for the day! </p>
-                    {% endif %}
-            </div>
-        </div>
-        <br>
-        {% if inpatients %}
-        <div id = "inpatient">
-            <div id = "top">
-                <p style="margin-left: 15px; font-weight: bold; width: fit-content;">Inpatients Assigned</p>
-                <div class="search-bar side">
-                    <input type="text" id="searchInput" placeholder="Search...">
-                    <button id="searchButton">Search</button>
+                        <div class="col-lg-4 d-flex flex-column">
+                            <div class="row flex-grow">
+                                <div class="col-12 grid-margin stretch-card">
+                                  <div class="card card-rounded">
+                                    <div class="card-body">
+                                      <div class="row">
+                                        <div class="col-lg-12">
+                                          <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div>
+                                              <h4 class="card-title card-title-dash">Appointments for Today</h4>
+                                            </div>
+                                          </div>
+                                          <div class="mt-3">
+                                            <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
+                                              <div class="d-flex">
+                                                <img class="img-sm rounded-10" src="{% static 'emily.png' %}" alt="profile">
+                                                <div class="wrapper ms-3">
+                                                    {% if appointments %}
+                                                        {% for appointment_id, appointment_data in appointments.items %}
+                                                            {% for patient_id, patient_data in patients.items %}
+                                                            {% if patient_data.uid == appointment_data.patientName %}
+                                                            <p class="ms-1 mb-1 fw-bold">{{ patient_data.lname }}, {{ patient_data.fname }}</p>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            <small class="text-muted mb-0">{{ appointment_data.appointmentTime }}</small>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                    <p class="ms-1 mb-1 fw-bold">No Upcoming Appointments for Today</p>
+                                                    {% endif %}
+                                                </div>
+                                              </div>
+                                              <div class="text-muted text-small"> In 1hr </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-lg-12">
+                                      <div class="d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title card-title-dash">Todo list</h4>
+                                        <div class="add-items d-flex mb-0">
+                                          <!-- <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?"> -->
+                                          <button class="add btn btn-icons btn-rounded btn-primary todo-list-add-btn text-white me-0 pl-12p"><i class="mdi mdi-plus"></i></button>
+                                        </div>
+                                      </div>
+                                      <div class="list-wrapper">
+                                        <ul class="todo-list todo-list-rounded">
+                                          <li class="d-block">
+                                            <div class="form-check w-100">
+                                              <label class="form-check-label">
+                                                <input class="checkbox" type="checkbox"> Emilia Johnson sent back results <i class="input-helper rounded"></i>
+                                              </label>
+                                              <div class="d-flex mt-2">
+                                                <div class="ps-4 text-small me-3">24 June 2020</div>
+                                                <div class="badge badge-opacity-warning me-3">Due tomorrow</div>
+                                                <i class="mdi mdi-flag ms-2 flag-color"></i>
+                                              </div>
+                                            </div>
+                                          </li>
+                                          <li>
+                                            <div class="form-check w-100">
+                                              <label class="form-check-label">
+                                                <input class="checkbox" type="checkbox"> Emilia Johnson sent back results <i class="input-helper rounded"></i>
+                                              </label>
+                                              <div class="d-flex mt-2">
+                                                <div class="ps-4 text-small me-3">24 June 2020</div>
+                                                <div class="badge badge-opacity-success me-3">Done</div>
+                                              </div>
+                                            </div>
+                                          </li>
+                                          <li class="border-bottom-0">
+                                            <div class="form-check w-100">
+                                              <label class="form-check-label">
+                                                <input class="checkbox" type="checkbox"> Emilia Johnson sent back results <i class="input-helper rounded"></i>
+                                              </label>
+                                              <div class="d-flex mt-2">
+                                                <div class="ps-4 text-small me-3">24 June 2020</div>
+                                                <div class="badge badge-opacity-danger me-3">Expired</div>
+                                              </div>
+                                            </div>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Performance Line Chart</h4>
+                                      <h5 class="card-subtitle card-subtitle-dash">Lorem Ipsum is simply dummy text of the printing</h5>
+                                    </div>
+                                    <div id="performanceLine-legend"></div>
+                                  </div>
+                                  <div class="chartjs-wrapper mt-4">
+                                    <canvas id="performanceLine" width=""></canvas>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-            <div id = "inpatient-table">
-                
-                <table class="inpatients_table">
-                    <thead>
-                        <tr>
-                            <th id="patient-name">Name</th>
-                            <th id="disease">Disease</th>
-                            <th id="roomno">Room Number</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for patient_id, patient_data in patients.items %}
-                        <tr>
-                            {% for inpatient_id, inpatient_data in inpatients.items %}
-                                {% if patient_id == inpatient_id %}
-                                    <td><label class="accountT_lbl"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}">
-                                        {{ patient_data.lname }}, {{ patient_data.fname }}</a></label></td>
-                                        <td><label class="accountT_lbl">
-                                            {{ inpatient_data.disease }}</label></td>
-                                            
-                                        {% for room_id, room_data in rooms.items %}
-                                            {% if inpatient_data.room == room_id %}
-                                                <td><label class="accountT_lbl">
-                                                    {{ room_data.rnumber }}</label></td>
-                                            {% endif %}
-                                        {% endfor %}
-                                {% endif %}
-                                
-                            {% endfor %}
-                            </td>  
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
+              <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright © 2023. All rights reserved.</span>
             </div>
+          </footer>
+          <!-- partial -->
         </div>
-        {% endif %}
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
     </div>
-</div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+<script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
+<script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="{% static 'assets/js/off-canvas.js' %}"></script>
+<script src="{% static 'assets/js/template.js' %}"></script>
+<script src="{% static 'assets/js/settings.js' %}"></script>
+<script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+<script src="{% static 'assets/js/todolist.js' %}"></script>
+<!-- endinject -->
+<!-- Custom js for this page-->
+<script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/js/dashboard.js' %}"></script>
 
-<script src="{% static 'js/doctordashboard.js' %}"></script>
-<script>
-    // JavaScript for Notification Popup
-document.addEventListener("DOMContentLoaded", function() {
-    var notificationIcon = document.getElementById("notification-icon");
-    var notificationPopup = document.getElementById("notification-popup");
-    var notificationList = document.getElementById("notification-list");
-
-    // Dummy data for notifications
-    var dummyNotifications = [
-        "New appointment scheduled",
-        "Reminder: Follow up with patient #1234",
-        "Daily report is available"
-    ];
-
-    // Function to populate the notification list
-    function populateNotifications() {
-        notificationList.innerHTML = ""; // Clear existing list
-
-        dummyNotifications.forEach(function(notification) {
-            var listItem = document.createElement("li");
-            listItem.textContent = notification;
-            notificationList.appendChild(listItem);
-        });
-    }
-
-    // Initial population of notifications
-    populateNotifications();
-
-    notificationIcon.addEventListener("click", function() {
-        // Toggle the display of notification popup
-        if (notificationPopup.style.display === "none" || notificationPopup.style.display === "") {
-            notificationPopup.style.display = "block";
-        } else {
-            notificationPopup.style.display = "none";
-        }
-    });
-});
-
-</script>
-{% endblock %}
+    <!-- <script src="assets/js/Chart.roundedBarCharts.js"></script> -->
+    <!-- End custom js for this page-->
+  </body>
+  {% endblock %}
