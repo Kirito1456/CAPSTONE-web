@@ -52,6 +52,19 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from paddleocr import PaddleOCR
 
+import requests
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch, cm
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+import os
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
 def upload_image(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
@@ -2393,124 +2406,179 @@ def diagnostic_imagery_reports(request):
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
 
 
-def requestTest(request):
-    patient_uid = request.GET.get('chosenPatient')
-    
-    patientdata = db.child("patientdata").child(patient_uid).get().val()
-
-    if request.method == 'POST':
-
-        uid = request.session['uid'] 
-        # Generate unique ID for the prescription
-        prescription_id = str(uuid.uuid1())
-
-        # Set default status
-        #status = 'Ongoing' if datetime.now() < endDate else 'Finished'
-
-        patient_name = request.POST.get('patient_name')
-        patient_age = request.POST.get('patient_age')
-        date = request.POST.get('date')
-        medicines = request.POST.getlist('medicine-name')
-        dosages = request.POST.getlist('dosage')
-        routes = request.POST.getlist('route')
-        times = request.POST.getlist('times')
-        days = request.POST.getlist('days')
-
-        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        prescription_data = {
-            'prescriptionsorderUID': prescription_id,
-            'patient_id': patient_uid,
-            'patient_name': patient_name,
-            'patient_age': patient_age,
-            'date': date,
-            'medicines': [],
-            #'status': status,
-        }
-
-        for i in range(len(medicines)):
-            medicine_info = {
-                'name': medicines[i],
-                'dosage': dosages[i],
-                'route': routes[i],
-                'times': times[i],
-                'days': days[i],
-            }
-            prescription_data['medicines'].append(medicine_info)
-
-        # Save the prescription data to Firebase
-        db.child('prescriptionsorders').child(patient_uid).child(todaydate).set(prescription_data)
-        
-        return redirect('prescription_success')
-    return render(request, 'hmis/requestTest.html')
-
-# def create_prescription_pdf(data):
-#     pdf = FPDF()
-#     pdf.add_page()
-#     pdf.set_font("Arial", size=12)
-    
-#     pdf.cell(200, 10, txt="Prescription", ln=True, align="C")
-#     pdf.cell(200, 10, txt=f"Patient Name: {data['patient_name']}", ln=True)
-#     pdf.cell(200, 10, txt=f"Patient Age: {data['patient_age']}", ln=True)
-#     pdf.cell(200, 10, txt=f"Date: {data['date']}", ln=True)
-    
-#     pdf.cell(200, 10, txt="Medicines:", ln=True)
-#     for medicine in data['medicines']:
-#         pdf.cell(200, 10, txt=f"Medicine Name: {medicine['name']}", ln=True)
-#         pdf.cell(200, 10, txt=f"Dosage: {medicine['dosage']}", ln=True)
-#         pdf.cell(200, 10, txt=f"Route: {medicine['route']}", ln=True)
-#         pdf.cell(200, 10, txt=f"Times: {medicine['times']}", ln=True)
-#         pdf.cell(200, 10, txt=f"Days: {medicine['days']}", ln=True)
-#         pdf.cell(0, 10, '', 0, 1)  # Add a blank line
-    
-#     temp_file_path = os.path.join(os.path.dirname(__file__), 'temp_prescription.pdf')
-#     pdf.output(temp_file_path)
-
-#     return temp_file_path
-
-# def upload_pdf_to_firebase(file_path, storage_path):
-#     firebase_storage.child(storage_path).put(file_path)
-
 # def requestTest(request):
+#     patient_uid = request.GET.get('chosenPatient')
+    
+#     patientdata = db.child("patientdata").child(patient_uid).get().val()
+
 #     if request.method == 'POST':
-#         data = {
-#             'patient_name': request.POST.get('patient_name', 'N/A'),
-#             'patient_age': request.POST.get('patient_age', 'N/A'),
-#             'date': request.POST.get('date', 'N/A'),
-#             'medicines': [
-#                 {
-#                     'name': request.POST.get('medicine_name', 'N/A'),
-#                     'dosage': request.POST.get('dosage', 'N/A'),
-#                     'route': request.POST.get('route', 'N/A'),
-#                     'times': request.POST.get('times', 'N/A'),
-#                     'days': request.POST.get('days', 'N/A'),
-#                 }
-#             ]
+
+#         uid = request.session['uid'] 
+#         # Generate unique ID for the prescription
+#         prescription_id = str(uuid.uuid1())
+
+#         # Set default status
+#         #status = 'Ongoing' if datetime.now() < endDate else 'Finished'
+
+#         patient_name = request.POST.get('patient_name')
+#         patient_age = request.POST.get('patient_age')
+#         date = request.POST.get('date')
+#         medicines = request.POST.getlist('medicine-name')
+#         dosages = request.POST.getlist('dosage')
+#         routes = request.POST.getlist('route')
+#         times = request.POST.getlist('times')
+#         days = request.POST.getlist('days')
+
+#         todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+#         prescription_data = {
+#             'prescriptionsorderUID': prescription_id,
+#             'patient_id': patient_uid,
+#             'patient_name': patient_name,
+#             'patient_age': patient_age,
+#             'date': date,
+#             'medicines': [],
+#             #'status': status,
 #         }
 
-#         # Debugging: Print data types and values
-#         print("Data Received:", data)
-#         for medicine in data['medicines']:
-#             print("Medicine Data:", medicine)
+#         for i in range(len(medicines)):
+#             medicine_info = {
+#                 'name': medicines[i],
+#                 'dosage': dosages[i],
+#                 'route': routes[i],
+#                 'times': times[i],
+#                 'days': days[i],
+#             }
+#             prescription_data['medicines'].append(medicine_info)
 
-#         # Create the PDF
-#         temp_file_path = create_prescription_pdf(data)
-
-#         try:
-#             # Upload the PDF to Firebase
-#             storage_path = 'prescriptions/prescription.pdf'
-#             upload_pdf_to_firebase(temp_file_path, storage_path)
-
-#             # Success message
-#             return HttpResponse("Prescription created and uploaded successfully.")
-#         except Exception as e:
-#             print(f"Error uploading to Firebase: {e}")
-#             return HttpResponse(f"An error occurred: {e}")
-#         finally:
-#             # Ensure the temporary file is deleted
-#             if os.path.exists(temp_file_path):
-#                 os.remove(temp_file_path)
-#                 print(f"Deleted temporary file: {temp_file_path}")
-
+#         # Save the prescription data to Firebase
+#         db.child('prescriptionsorders').child(patient_uid).child(todaydate).set(prescription_data)
+        
+#         return redirect('prescription_success')
 #     return render(request, 'hmis/requestTest.html')
 
+def download_image(url, file_path):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(file_path, 'wb') as f:
+            f.write(response.content)
+        return file_path
+    return None
+
+def create_prescription_pdf(data, filename):
+    c = canvas.Canvas(filename, pagesize=letter)
+    width, height = letter
+
+    # Set the margins
+    margin = 0.5 * inch
+
+    # Draw header
+    logo_url = 'https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png'
+    logo_path = download_image(logo_url, 'logo.png')
+    if logo_path:
+        logo_size = 1.5 * inch
+        c.drawImage(logo_path, margin, height - logo_size - margin, width=logo_size, height=logo_size, preserveAspectRatio=True, mask='auto')
+        os.remove(logo_path)
+    
+    c.setFont("Helvetica-Bold", 30)
+    c.drawString(2.5 * inch, height - margin - 0.5 * inch, "SANTOS GENERAL CLINIC")
+    c.setFont("Helvetica", 12)
+    c.drawString(2.5 * inch, height - margin - 0.7 * inch, "Brgy. San Jose, San Francisco, California")
+    c.drawString(2.5 * inch, height - margin - 0.9 * inch, "09168794532")
+    c.drawString(2.5 * inch, height - margin - 1.1 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
+    c.drawString(2.5 * inch, height - margin - 1.3 * inch, "              Sunday          | By Appointment")
+
+    # Add a break line before the line
+    c.line(margin, height - margin - 1.6 * inch, width - margin, height - margin - 1.6 * inch)
+
+
+    # Draw patient details
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(margin, height - 2.5 * inch, "Patient Name: " + data['patient_name'])
+    c.drawString(4 * inch, height - 2.5 * inch, "Patient Age: " + data['patient_age'])
+    c.drawRightString(width - margin, height - 2.5 * inch, "Gender: " + data['patient_age'])
+
+    c.drawString(margin, height - 2.75 * inch, "Address: " + data['patient_age'])
+    c.drawRightString(width - margin, height - 2.75 * inch, "Date: " + data['date'])
+
+    # Draw Rx symbol
+    # c.setFont("Helvetica-Bold", 20)
+    # c.drawString(margin, height - 3.2 * inch, "R")
+    # c.setFont("Helvetica", 12)
+    # c.drawString(margin + 0.3 * inch, height - 3.2 * inch, "x")
+
+    # Draw prescription details
+    y_position = height - 3.5 * inch
+    indent = margin + 0.5 * inch
+    for name, dosage, route, times, days in zip(data['medicines']['name'], 
+                                                data['medicines']['dosage'], 
+                                                data['medicines']['route'], 
+                                                data['medicines']['times'], 
+                                                data['medicines']['days']):
+        c.setFont("Helvetica", 12)
+        c.drawString(indent, y_position, f"Medicine Name: {name}")
+        y_position -= 0.2 * inch
+        c.drawString(indent, y_position, f"Dosage: {dosage}")
+        y_position -= 0.2 * inch
+        c.drawString(indent, y_position, f"Route: {route}")
+        y_position -= 0.2 * inch
+        c.drawString(indent, y_position, f"Times: {times}")
+        y_position -= 0.2 * inch
+        c.drawString(indent, y_position, f"Days: {days}")
+        y_position -= 0.4 * inch  # Extra space between different medicines
+    
+    # Add two break lines before the footer
+    y_position -= 0.6 * inch
+
+    # Draw footer (right-aligned)
+    footer_text = [
+        "Dr. Robert Santos, M.D.",
+        "License No.: ________________________",
+        "PTR No.: ________________________"
+    ]
+    for i, text in enumerate(footer_text):
+        c.drawRightString(width - margin, y_position - (i + 1) * 0.3 * inch, text)
+
+    c.showPage()
+    c.save()
+
+def upload_pdf_to_firebase(file_path, storage_path):
+    firebase_storage.child(storage_path).put(file_path)
+
+@csrf_exempt
+def requestTest(request):
+    if request.method == 'POST':
+        data = {
+            'patient_name': request.POST.get('patient_name', 'N/A'),
+            'patient_age': request.POST.get('patient_age', 'N/A'),
+            'date': request.POST.get('date', 'N/A'),
+            'medicines': {
+                'name': request.POST.getlist('medicine_name'),
+                'dosage': request.POST.getlist('dosage'),
+                'route': request.POST.getlist('route'),
+                'times': request.POST.getlist('times'),
+                'days': request.POST.getlist('days'),
+            }
+        }
+
+        print(data)
+
+        # Create the PDF
+        temp_file_path = os.path.join(os.path.dirname(__file__), 'temp_prescription.pdf')
+        create_prescription_pdf(data, temp_file_path)
+
+        try:
+            # Upload the PDF to Firebase
+            storage_path = 'prescriptions/prescription.pdf'
+            upload_pdf_to_firebase(temp_file_path, storage_path)
+
+            # Success message
+            return HttpResponse("Prescription created and uploaded successfully.")
+        except Exception as e:
+            return HttpResponse(f"An error occurred: {e}")
+        finally:
+            # Ensure the temporary file is deleted
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+
+    return render(request, 'hmis/requestTest.html')
