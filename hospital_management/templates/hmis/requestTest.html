@@ -25,6 +25,14 @@
     .prescription-content {
         margin-bottom: 20px;
     }
+    .prescription-content p {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .prescription-content .right-aligned {
+        white-space: nowrap;
+    }
     .prescription-details {
         margin-bottom: 20px;
     }
@@ -41,34 +49,42 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        text-align: center;
     }
     .logo {
         flex: 1;
     }
     .logo img {
-        width: 120px;
-        height: 120px;
+        width: 50px;
+        height: 50px;
         float: left;
     }
     .credentials {
         flex: 1;
     }
-    .credentials h4 {
+    .credentials h1 {
         line-height: 1em;
         letter-spacing: 1px;
         font-weight: 700;
         margin: 0px;
         padding: 0px;
     }
+    .credentials h3 {
+        line-height: 1em;
+        letter-spacing: 1px;
+        font-weight: 700;
+        margin: 5px;
+        padding: 2px;
+    }
     .credentials p {
-        margin: 0 0 5px 0;
-        padding: 3px 0px;
+        margin: 10px 0 0 0;
+        padding: 1px 0px;
     }
     .credentials small {
         margin: 0;
         padding: 0;
         letter-spacing: 1px;
-        padding-right: 80px;
+        padding: 80px;
     }
     .medicine p {
         margin: 5px 0;
@@ -128,17 +144,49 @@
     {% csrf_token %}
     <div class="prescription-pad">
     <div class="header">
-        <div class="logo"><img src="https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png" alt="Clinic Logo"/></div>
         <div class="credentials">
-            <h4>Doctor Name</h4>
-            <p>Chamber Name</p><small>Address</small><br/><small>Mb. 0XXXXXXXXX</small>
+            {% for doctor_id, doctor_data in doctors.items %}
+                {% if doctor_data.uid == uid %}
+                    <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
+                    <h3>{{ doctor_data.specialization }}</h3>
+                    {% for doctorClinic in doctor_data.clinic %}
+                        {% for clinic_id, clinic_data in clinics.items %}  
+                            {% if clinic_data.uid == doctorClinic %}
+                                <p>{{ clinic_data.name }}</p>
+                                <small>{{ clinic_data.address }}</small><br/>
+                                <small>{{ clinic_data.onumber }}</small><br/>
+                                <small>Mb. 0XXXXXXXXX</small>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
+
+    <hr>
+
     <div class="prescription-content">
-        <p><strong>Patient Name:</strong></p>
-        <p><strong>Patient Age:</strong></p>
-        <p><strong>Date:</strong></p>
+        {% for patientData_id, patientData_data in patientData.items %}
+        <p>
+            <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
+            <span><strong>Age:</strong> {{ patientData_data.age }}</span>
+            <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
+        </p>
+        <p>
+            <span><strong>Address:</strong> {{ patientData_data.address }} </span>
+            <span class="right-aligned"><strong>Date:</strong> {{ todaydate }} </span>
+        </p>
+    {% endfor %}
     </div>
+
+    <br>
+    <div class="logo"><img src="https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png" alt="Clinic Logo"/></div>
+
+    <br>
+    <br>
+    <br>
+    <br>
 
     <div class="prescription-details">
         <div id="medicine-container">
@@ -190,9 +238,13 @@
     </div>
 
     <div class="prescription-footer">
-        <p>Doctor's Signature: ________________________</p>
-        <p>License No.: ________________________</p>
-        <p>PTR No.: ________________________</p>
+        {% for doctor_id, doctor_data in doctors.items %}
+            {% if doctor_data.uid == uid %}
+                <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
+                <p style="font-size: 16;">License No.: ________________________</p>
+                <p style="font-size: 16;">PTR No.: ________________________</p>
+            {% endif %}
+        {% endfor %}
     </div>
     </div>
     <button type="submit" class="submit-medicine-btn">Submit</button>
