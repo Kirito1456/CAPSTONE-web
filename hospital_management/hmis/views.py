@@ -2337,7 +2337,7 @@ def save_prescriptions(request):
 
     try:
         # Upload the PDF to Firebase
-        storage_path = 'prescriptions/prescription.pdf'
+        storage_path = patient_uid + '/prescriptions/' + todaydate +'-prescription.pdf'
         upload_pdf_to_firebase(temp_file_path, storage_path)
 
         # Success message
@@ -2575,7 +2575,6 @@ def requestTest(request):
 
 
     if request.method == 'POST':
-
         # Generate unique ID for the prescription
         prescription_id = str(uuid.uuid1())
 
@@ -2585,13 +2584,7 @@ def requestTest(request):
             'patient_gender': patientGender,
             'patient_address': patientAddress,
             'date': todaydate,
-            'medicines': {
-                'name': request.POST.getlist('medicine_name'),
-                'dosage': request.POST.getlist('dosage'),
-                'route': request.POST.getlist('route'),
-                'times': request.POST.getlist('times'),
-                'days': request.POST.getlist('days'),
-            },
+            'tests': request.POST.getlist('test'),
             'doctor': doctorName,
             'specialization': specialization,
             'license': license,
@@ -2602,15 +2595,15 @@ def requestTest(request):
 
         # Create the PDF
         temp_file_path = os.path.join(os.path.dirname(__file__), 'temp_prescription.pdf')
-        create_prescription_pdf(data, temp_file_path)
+        create_tests_pdf(data, temp_file_path)
 
         try:
             # Upload the PDF to Firebase
-            storage_path = 'prescriptions/prescription.pdf'
+            storage_path = patient_uid + '/testRequests/' + todaydate +'-testRequest.pdf'
             upload_pdf_to_firebase(temp_file_path, storage_path)
 
             # Success message
-            return HttpResponse("Prescription created and uploaded successfully.")
+            return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
         except Exception as e:
             return HttpResponse(f"An error occurred: {e}")
         finally:
@@ -2624,3 +2617,86 @@ def requestTest(request):
                                                         'clinics': clinics,
                                                         'uid': uid,
                                                         'todaydate': todaydate})
+
+def create_tests_pdf(data, filename):
+    c = canvas.Canvas(filename, pagesize=letter)
+    width, height = letter
+
+    # Set the margins
+    margin = 0.5 * inch
+
+    # Draw header
+    c.setFont("Helvetica-Bold", 30)
+    c.drawCentredString(width / 2, height - margin - 0.5 * inch, data['doctor'] + ", M.D.")
+    c.setFont("Helvetica-Bold", 18)
+    c.drawCentredString(width / 2, height - margin - 0.8 * inch, data['specialization'])
+    c.setFont("Helvetica", 12)
+    c.drawCentredString(width / 2, height - margin - 1.1 * inch, "09168794532")
+    c.drawCentredString(width / 2, height - margin - 1.3 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
+    c.drawCentredString(width / 2, height - margin - 1.5 * inch, "              Sunday          | By Appointment")
+
+    # Add a break line before the line
+    c.line(margin, height - margin - 1.8 * inch, width - margin, height - margin - 1.8 * inch)
+
+     # Draw patient details
+    c.setFont("Helvetica-Bold", 12)
+    patient_info_y = height - 2.5 * inch
+    c.drawString(margin, patient_info_y, "Patient Name:")
+    c.setFont("Helvetica", 12)
+    c.drawString(margin + 1.25 * inch, patient_info_y, data['patient_name'])
+    
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(3.5 * inch + 0.5 * inch, patient_info_y, "Age:")
+    c.setFont("Helvetica", 12)
+    c.drawString(3.5 * inch + 1.0 * inch, patient_info_y, data['patient_age'])
+    
+    c.setFont("Helvetica-Bold", 12)
+    c.drawRightString(width - margin - 1.7 * inch, patient_info_y, "Gender:")
+    c.setFont("Helvetica", 12)
+    c.drawRightString(width - margin - 1.0 * inch, patient_info_y, data['patient_gender'])
+
+    patient_info_y -= 0.25 * inch
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(margin, patient_info_y, "Address:")
+    c.setFont("Helvetica", 12)
+    c.drawString(margin + 1.25 * inch, patient_info_y, data['patient_address'])
+    
+    c.setFont("Helvetica-Bold", 12)
+    c.drawRightString(width - margin - 1.9 * inch, patient_info_y, "Date:")
+    c.setFont("Helvetica", 12)
+    c.drawRightString(width - margin - 0.7 * inch, patient_info_y, data['date'])
+
+    # Draw logo below the address
+    logo_url = 'https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png'
+    logo_path = download_image(logo_url, 'logo.png')
+    if logo_path:
+        logo_size = 0.8 * inch
+        c.drawImage(logo_path, (width - logo_size) / 10, height - 4.0 * inch, width=logo_size, height=logo_size, preserveAspectRatio=True, mask='auto')
+        os.remove(logo_path)
+
+    # Draw prescription details
+    y_position = height - 4.0 * inch
+    indent = margin + 2.0 * inch
+    c.setFont("Helvetica", 13)
+    c.drawString(indent , y_position, "Request for:")
+    y_position -= 0.2 * inch
+    for test in data['tests']:
+        c.setFont("Helvetica", 13)
+        c.drawString(indent + 1.25 * inch, y_position, test)
+        y_position -= 0.3 * inch  # Extra space between different medicines
+
+    # Add two break lines before the footer
+    y_position -= 0.6 * inch
+
+    # Draw footer (right-aligned)
+    footer_text = [
+        "Doctor's Signature: ___________",
+        "License No.: " + data['license'],
+        "PTR No.: " +  data['ptr'],
+    ]
+    for i, text in enumerate(footer_text):
+        c.setFont("Helvetica", 12)
+        c.drawRightString(width - margin, y_position - (i + 1) * 0.3 * inch, text)
+
+    c.showPage()
+    c.save()

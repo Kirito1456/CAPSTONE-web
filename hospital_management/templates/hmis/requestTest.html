@@ -140,169 +140,105 @@
 {% endblock styles%}
 
 {% block content %}
-<form method="post">
-    {% csrf_token %}
-    <div class="prescription-pad">
-    <div class="header">
-        <div class="credentials">
+    <form method="post">
+        {% csrf_token %}
+        <div class="prescription-pad">
+        <div class="header">
+            <div class="credentials">
+                {% for doctor_id, doctor_data in doctors.items %}
+                    {% if doctor_data.uid == uid %}
+                        <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
+                        <h3>{{ doctor_data.specialization }}</h3>
+                        {% for doctorClinic in doctor_data.clinic %}
+                            {% for clinic_id, clinic_data in clinics.items %}  
+                                {% if clinic_data.uid == doctorClinic %}
+                                    <p>{{ clinic_data.name }}</p>
+                                    <small>{{ clinic_data.address }}</small><br/>
+                                    <small>{{ clinic_data.onumber }}</small><br/>
+                                    <small>Mb. 0XXXXXXXXX</small>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="prescription-content">
+            {% for patientData_id, patientData_data in patientData.items %}
+            <p>
+                <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
+                <span><strong>Age:</strong> {{ patientData_data.age }}</span>
+                <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
+            </p>
+            <p>
+                <span><strong>Address:</strong> {{ patientData_data.address }} </span>
+                <span class="right-aligned"><strong>Date:</strong> {{ todaydate }} </span>
+            </p>
+        {% endfor %}
+        </div>
+
+        <br>
+        <div class="logo"><img src="https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png" alt="Clinic Logo"/></div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <div class="prescription-details">
+            <div id="medicine-container">
+                <div class="medicine">
+                    <div class="medicine-row">
+                        <label for="medicine-name"><strong>Test Name:</strong></label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="test" value="Spirometry">
+                        <label>Spirometry</label><br>
+
+                        <input type="checkbox" name="test" value="Peak flow monitor">
+                        <label>Peak flow monitor</label><br>
+
+                        <input type="checkbox" name="test" value="Arterial blood gas">
+                        <label>Arterial blood gas</label><br>
+
+                        <input type="checkbox" name="test" value="Pulse oximetry">
+                        <label>Pulse oximetry</label><br>
+
+                        <input type="checkbox" name="test" value="Chest X-ray">
+                        <label>Chest X-ray</label><br>
+
+                        <input type="checkbox" name="test" value="CT scan">
+                        <label>CT scan</label><br>
+
+                        <input type="checkbox" name="test" value="High-resolution computed tomography">
+                        <label>High-resolution computed tomography</label><br>
+
+                        <input type="checkbox" name="test" value="Sputum examination">
+                        <label>Sputum examination</label><br>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            
+            <button type="button" class="print-medicine-btn" onclick="window.print()">Print</button>
+        </div>
+
+        <div class="prescription-footer">
             {% for doctor_id, doctor_data in doctors.items %}
                 {% if doctor_data.uid == uid %}
-                    <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
-                    <h3>{{ doctor_data.specialization }}</h3>
-                    {% for doctorClinic in doctor_data.clinic %}
-                        {% for clinic_id, clinic_data in clinics.items %}  
-                            {% if clinic_data.uid == doctorClinic %}
-                                <p>{{ clinic_data.name }}</p>
-                                <small>{{ clinic_data.address }}</small><br/>
-                                <small>{{ clinic_data.onumber }}</small><br/>
-                                <small>Mb. 0XXXXXXXXX</small>
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
+                    <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
+                    <p style="font-size: 16;">License No.: {{ doctor_data.license }}</p>
+                    <p style="font-size: 16;">PTR No.: {{ doctor_data.ptr}}</p>
                 {% endif %}
             {% endfor %}
         </div>
-    </div>
-
-    <hr>
-
-    <div class="prescription-content">
-        {% for patientData_id, patientData_data in patientData.items %}
-        <p>
-            <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
-            <span><strong>Age:</strong> {{ patientData_data.age }}</span>
-            <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
-        </p>
-        <p>
-            <span><strong>Address:</strong> {{ patientData_data.address }} </span>
-            <span class="right-aligned"><strong>Date:</strong> {{ todaydate }} </span>
-        </p>
-    {% endfor %}
-    </div>
-
-    <br>
-    <div class="logo"><img src="https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png" alt="Clinic Logo"/></div>
-
-    <br>
-    <br>
-    <br>
-    <br>
-
-    <div class="prescription-details">
-        <div id="medicine-container">
-            <div class="medicine">
-                <div class="medicine-row">
-                    <label for="medicine-name"><strong>Medicine Name:</strong></label>
-                    <input type="text" name="medicine_name">
-                    <label for="dosage"><strong>Dosage:</strong></label>
-                    <select name="dosage">
-                        <option value="5mg">5mg</option>
-                        <option value="10mg">10mg</option>
-                        <option value="15mg">15mg</option>
-                        <option value="20mg">20mg</option>
-                    </select>
-                    <button type="button" class="remove-medicine-btn" onclick="removeMedicineRow(this)">Remove</button>
-                </div>
-                <p>
-                    Sig.: take through
-                    <select name="route">
-                        <option value="oral">oral</option>
-                        <option value="intravenous">intravenous</option>
-                        <option value="topical">topical</option>
-                        <option value="inhalation">inhalation</option>
-                    </select>
-                    every
-                    <select id="times" name="times">
-                        <option value="q.d.">q.d. (once daily)</option>
-                        <option value="b.i.d.">b.i.d. (twice daily)</option>
-                        <option value="t.i.d.">t.i.d. (three times daily)</option>
-                        <option value="q.i.d.">q.i.d. (four times daily)</option>
-                        <option value="q.a.m.">q.a.m. (every morning)</option>
-                        <option value="q.p.m.">q.p.m. (every evening)</option>
-                        <option value="q.h.s.">q.h.s. (at bedtime)</option>
-                        <option value="q.o.d.">q.o.d. (every other day)</option>
-                        <option value="PRN">PRN (as needed)</option>
-                        <option value="AC">AC (before meals)</option>
-                        <option value="PC">PC (after meals)</option>
-                    </select>
-                    times for
-                    <input type="text" name="days" size="2">
-                    days
-                    <hr>
-                </p>
-            </div>
         </div>
-        <button type="button" class="add-medicine-btn" onclick="addMedicineRow()">Add Medicine</button>
-        
-        <button type="button" class="print-medicine-btn" onclick="window.print()">Print</button>
-    </div>
-
-    <div class="prescription-footer">
-        {% for doctor_id, doctor_data in doctors.items %}
-            {% if doctor_data.uid == uid %}
-                <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
-                <p style="font-size: 16;">License No.: {{ doctor_data.license }}</p>
-                <p style="font-size: 16;">PTR No.: {{ doctor_data.ptr}}</p>
-            {% endif %}
-        {% endfor %}
-    </div>
-    </div>
-    <button type="submit" class="submit-medicine-btn">Submit</button>
-</form>
+        <button type="submit" class="submit-medicine-btn">Submit</button>
+    </form>
 
 <script>
-    function addMedicineRow() {
-        const medicineContainer = document.getElementById('medicine-container');
-        const medicineRow = document.createElement('div');
-        medicineRow.className = 'medicine';
-
-        medicineRow.innerHTML = `
-            <div class="medicine-row">
-                <label for="medicine-name"><strong>Medicine Name:</strong></label>
-                <input type="text" name="medicine_name">
-                <label for="dosage"><strong>Dosage:</strong></label>
-                <select name="dosage">
-                    <option value="5mg">5mg</option>
-                    <option value="10mg">10mg</option>
-                    <option value="15mg">15mg</option>
-                    <option value="20mg">20mg</option>
-                </select>
-                <button type="button" class="remove-medicine-btn" onclick="removeMedicineRow(this)">Remove</button>
-            </div>
-            <p>
-                Sig.: take through
-                <select name="route">
-                    <option value="oral">oral</option>
-                    <option value="intravenous">intravenous</option>
-                    <option value="topical">topical</option>
-                    <option value="inhalation">inhalation</option>
-                </select>
-                every
-                <select id="times" name="times">
-                    <option value="q.d.">q.d. (once daily)</option>
-                    <option value="b.i.d.">b.i.d. (twice daily)</option>
-                    <option value="t.i.d.">t.i.d. (three times daily)</option>
-                    <option value="q.i.d.">q.i.d. (four times daily)</option>
-                    <option value="q.a.m.">q.a.m. (every morning)</option>
-                    <option value="q.p.m.">q.p.m. (every evening)</option>
-                    <option value="q.h.s.">q.h.s. (at bedtime)</option>
-                    <option value="q.o.d.">q.o.d. (every other day)</option>
-                    <option value="PRN">PRN (as needed)</option>
-                    <option value="AC">AC (before meals)</option>
-                    <option value="PC">PC (after meals)</option>
-                </select>
-                times for
-                <input type="text" name="days" size="2">
-                days
-                <hr>
-            </p>
-        `;
-
-        medicineContainer.appendChild(medicineRow);
-    }
-
-    function removeMedicineRow(button) {
-        button.closest('.medicine').remove();
-    }
 </script>
 {% endblock %}
