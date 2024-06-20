@@ -221,17 +221,16 @@
                 <div class="row">
                 {% for doctors_id, doctors_data in doctors.items %}
                 {% for doctorClinic in doctors_data.clinic %}
+                {% for clinic_id, clinic_data in clinics.items%}
+                {% if clinic_id == doctorClinic %}
                 <div class="col-12 grid-margin stretch-card">
                     <div class="card">
                       <div class="card-body">
-                            {% for clinic_id, clinic_data in clinics.items%}
-                                {% if clinic_id == doctorClinic %}
+                          
                                     <h4 class="card-title">{{ clinic_data.name }}</h4>
                                     <p class="card-description"> {{ clinic_data.address }} </p>
                                     <p class="card-description"> {{ clinic_data.onumber }} </p>
-                                {% endif %}
-                            {% endfor %}
-                            
+                                
                             <form method="post" action="{% url 'AppointmentScheduling' %}">
                                 {% csrf_token %}
                                     <label style="font-weight: bold;">Select Days:</label>
@@ -289,6 +288,8 @@
                       </div>
                     </div>
                   </div>
+                  {% endif %}
+                  {% endfor %}
                   {% endfor %}
                   {% endfor %}
                 </div>

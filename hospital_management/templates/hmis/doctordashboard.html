@@ -64,19 +64,23 @@
                   <a class="dropdown-item py-3">
                     <p class="mb-0 fw-medium float-start">Select clinic</p>
                   </a>
+                  
                   <div class="dropdown-divider"></div>
+                  {% for doctors_id, doctors_data in doctors.items %}
+                  {% for doctorClinic in doctors_data.clinic %}
+                  {% for clinic_id, clinic_data in clinics.items%}
+                  {% if clinic_id == doctorClinic %}
                   <a class="dropdown-item preview-item">
                     <div class="preview-item-content flex-grow py-2">
-                      <p class="preview-subject ellipsis fw-medium text-dark">Clinic Name 1 </p>
-                      <p class="fw-light small-text mb-0">Clinic Address Lorem Ipsum</p>
+                      <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
+                      <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
+                      <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
                     </div>
                   </a>
-                  <a class="dropdown-item preview-item">
-                    <div class="preview-item-content flex-grow py-2">
-                      <p class="preview-subject ellipsis fw-medium text-dark">Clinic Name 2 </p>
-                      <p class="fw-light small-text mb-0">Clinic Address Lorem Ipsum</p>
-                    </div>
-                  </a>
+                  {% endif %}
+                  {% endfor %}
+                  {% endfor %}
+                  {% endfor %}
                 </div>
               </li>
             {% comment %} Notifs {% endcomment %}
@@ -199,7 +203,7 @@
                         <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#audiences" role="tab" aria-selected="false">Analytics</a>
+                        <a class="nav-link" id="analytics-tab" data-bs-toggle="tab" href="#analytics" role="tab" aria-selected="false">Analytics</a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#demographics" role="tab" aria-selected="false">Demographics</a>
@@ -207,6 +211,32 @@
                     </ul>
                   </div>
                   <div class="tab-content tab-content-basic">
+
+                    <div class="tab-pane fade show" id="analytics" role="tabpanel" aria-labelledby="analytics">
+                    <div class="row">
+                      <div class="col-lg-8 d-flex flex-column">
+                        <div class="row flex-grow">
+                          <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                              <div class="card-body">
+                                <div class="d-sm-flex justify-content-between align-items-start">
+                                  <div>
+                                    <h4 class="card-title card-title-dash">Patient Health Outcome</h4>
+                                    <h5 class="card-subtitle card-subtitle-dash">Monitor patient health outcomes here</h5>
+                                  </div>
+                                  <div id="performanceLine-legend"></div>
+                                </div>
+                                <div class="chartjs-wrapper mt-4">
+                                  <canvas id="performanceLine" width=""></canvas>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
                       <div class="row">
                         <div class="col-lg-8 d-flex flex-column">
@@ -364,26 +394,28 @@
                                             </div>
                                           </div>
                                           <div class="mt-3">
+                                            {% if appointments %}
+                                              {% for appointment_id, appointment_data in appointments.items %}
+                                                  {% for patient_id, patient_data in patients.items %}
+                                                  {% if patient_data.uid == appointment_data.patientName %}
                                             <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
                                               <div class="d-flex">
                                                 <img class="img-sm rounded-10" src="{% static 'emily.png' %}" alt="profile">
                                                 <div class="wrapper ms-3">
-                                                    {% if appointments %}
-                                                        {% for appointment_id, appointment_data in appointments.items %}
-                                                            {% for patient_id, patient_data in patients.items %}
-                                                            {% if patient_data.uid == appointment_data.patientName %}
-                                                            <p class="ms-1 mb-1 fw-bold">{{ patient_data.lname }}, {{ patient_data.fname }}</p>
-                                                            {% endif %}
-                                                            {% endfor %}
-                                                            <small class="text-muted mb-0">{{ appointment_data.appointmentTime }}</small>
-                                                        {% endfor %}
-                                                    {% else %}
-                                                    <p class="ms-1 mb-1 fw-bold">No Upcoming Appointments for Today</p>
-                                                    {% endif %}
+                                                  <p class="ms-1 mb-1 fw-bold"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></p>
+                                                  <small class="text-muted mb-0">{{ appointment_data.appointmentTime }}</small>
                                                 </div>
                                               </div>
-                                              <div class="text-muted text-small"> In 1hr </div>
+                                              <div class="text-muted text-small"> 1h ago </div>
                                             </div>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% endfor %}
+                                            {% else %}
+                                            <p class="ms-1 mb-1 fw-bold">No Upcoming Appointments for Today</p>
+                                            {% endif %}
+
+                                            
                                           </div>
                                         </div>
                                       </div>
@@ -450,28 +482,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-lg-8 d-flex flex-column">
-                          <div class="row flex-grow">
-                            <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
-                              <div class="card card-rounded">
-                                <div class="card-body">
-                                  <div class="d-sm-flex justify-content-between align-items-start">
-                                    <div>
-                                      <h4 class="card-title card-title-dash">Performance Line Chart</h4>
-                                      <h5 class="card-subtitle card-subtitle-dash">Lorem Ipsum is simply dummy text of the printing</h5>
-                                    </div>
-                                    <div id="performanceLine-legend"></div>
-                                  </div>
-                                  <div class="chartjs-wrapper mt-4">
-                                    <canvas id="performanceLine" width=""></canvas>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      
                     </div>
                   </div>
                 </div>

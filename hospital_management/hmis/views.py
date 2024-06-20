@@ -740,6 +740,7 @@ def DoctorDashboard(request):
     rooms = db.child("rooms").get().val()
     submittedTest = db.child("submittedTest").get().val()
     appointments = db.child("appointments").get().val()
+    clinics = db.child("clinics").get().val()
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -790,7 +791,8 @@ def DoctorDashboard(request):
     return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors,
                                                              'inpatients':inpatients, 'rooms': rooms, 'chosenPatientData': chosenPatientData,
-                                                             'submittedTest':submittedTest,'patients1': chosenPatients}) 
+                                                             'submittedTest':submittedTest,'patients1': chosenPatients,
+                                                             'clinics': clinics}) 
 
 def ChargeNurseDashboard(request):
     nurses = db.child("nurses").get().val()
