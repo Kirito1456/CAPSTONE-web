@@ -661,6 +661,7 @@ def AppointmentCalendar(request):
 
 def AppointmentScheduling(request):
     doctors = db.child("doctors").get().val()
+    clinics = db.child("clinics").get().val()
     uid = request.session.get('uid')
     schedule = db.child("appointmentschedule").get().val()
 
@@ -707,7 +708,7 @@ def AppointmentScheduling(request):
             afternoon_start = ''
             afternoon_end = ''
 
-    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'selected_days': selected_days, 'morning_start': morning_start, 'morning_end': morning_end, 'afternoon_start': afternoon_start, 'afternoon_end': afternoon_end})
+    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'clinics': clinics, 'selected_days': selected_days, 'morning_start': morning_start, 'morning_end': morning_end, 'afternoon_start': afternoon_start, 'afternoon_end': afternoon_end})
 def NurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 
