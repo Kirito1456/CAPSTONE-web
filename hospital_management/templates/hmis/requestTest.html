@@ -148,7 +148,6 @@
             {% for doctor_id, doctor_data in doctors.items %}
                 {% if doctor_data.uid == uid %}
                     <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
-                    <h3>{{ doctor_data.specialization }}</h3>
                     {% for doctorClinic in doctor_data.clinic %}
                         {% for clinic_id, clinic_data in clinics.items %}  
                             {% if clinic_data.uid == doctorClinic %}

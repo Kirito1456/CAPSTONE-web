@@ -126,20 +126,10 @@ def home(request):
             nurse_found = False
             chargenurse_found = False
             for account in accounts.values():
-                if account["role"] == "Doctor" and account["email"] == email:
-                    doctor_found = True
-                elif account["role"] == "Nurse" and account["email"] == email:
-                    nurse_found = True
-                    if account["specialization"] == "Charge Nurse" and account["email"] == email:
-                        chargenurse_found = True
-                    break
+                doctor_found = True
 
             if doctor_found:
                 return redirect('DoctorDashboard')
-            elif nurse_found and chargenurse_found:
-                return redirect('ChargeNurseDashboard')
-            elif nurse_found and chargenurse_found == False:
-                return redirect('NurseDashboard')
             else:
                 return redirect('register')
                 
@@ -285,31 +275,12 @@ def create(request):
                     'fname': cleaned_data['fname'],
                     'lname': cleaned_data['lname'],
                     'sex': cleaned_data['sex'],
-                    'role': cleaned_data['role'],
-                    'specialization': cleaned_data['specialization'],
                     #'department': cleaned_data['department'],
                     'clinic': clinic,
                     'email': email,
                 }
 
-                data2 = {
-                    'uid': user['localId'],
-                    'fname': cleaned_data['fname'],
-                    'lname': cleaned_data['lname'],
-                    'sex': cleaned_data['sex'],
-                    'role': cleaned_data['role'],
-                    'specialization': cleaned_data['specialization'],
-                    'shift': '',
-                    #'department': cleaned_data['department'],
-                    #'clinic': clinic,
-                    'email': email,
-                }
-
-
-                if (cleaned_data['role'] == 'Doctor'):
-                    db.child('doctors').child(user['localId']).set(data)
-                else:
-                    db.child('nurses').child(user['localId']).set(data2)
+                db.child('doctors').child(user['localId']).set(data)
                                
                 messages.success(request, 'Registration successful! Please log in.')
                 return redirect('home')
@@ -379,19 +350,12 @@ def update_profile (request):
             uid = request.POST.get('update')
             onumber = request.POST.get('cnumber')
             department = request.POST.get('department')
-            role = request.POST.get('rselected')
             clinicname = request.POST.get('clinicname')
             clinicaddress = request.POST.get('clinicaddress')
             #print(uid)
-            #print(role)
-
-            db_path = ""
 
             # Construct the path to the appointment data in Firebase
-            if role == 'Doctor':
-                db_path = f"/doctors/{uid}"
-            elif role == 'Nurse':
-                db_path = f"/nurses/{uid}"  # Adjust the path as per your Firebase structure
+            db_path = f"/doctors/{uid}"
 
             # Update appointment data in Firebase
             db.child(db_path).update({
@@ -2302,7 +2266,6 @@ def save_prescriptions(request):
     for doctor_id, doctor_data in doctors.items():
         if uid == doctor_data["uid"]:
             doctorName = doctor_data["fname"] + ' ' + doctor_data["lname"]
-            specialization = doctor_data["specialization"] 
             license = str(doctor_data["license"])
             ptr = str(doctor_data["ptr"])
 
@@ -2324,7 +2287,6 @@ def save_prescriptions(request):
             'days': request.POST.getlist('days'),
         },
         'doctor': doctorName,
-        'specialization': specialization,
         'license': license,
         'ptr': ptr,
     }
@@ -2466,7 +2428,6 @@ def create_prescription_pdf(data, filename):
     c.setFont("Helvetica-Bold", 30)
     c.drawCentredString(width / 2, height - margin - 0.5 * inch, data['doctor'] + ", M.D.")
     c.setFont("Helvetica-Bold", 18)
-    c.drawCentredString(width / 2, height - margin - 0.8 * inch, data['specialization'])
     c.setFont("Helvetica", 12)
     c.drawCentredString(width / 2, height - margin - 1.1 * inch, "09168794532")
     c.drawCentredString(width / 2, height - margin - 1.3 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
@@ -2569,7 +2530,6 @@ def requestTest(request):
     for doctor_id, doctor_data in doctors.items():
         if uid == doctor_data["uid"]:
             doctorName = doctor_data["fname"] + ' ' + doctor_data["lname"]
-            specialization = doctor_data["specialization"] 
             license = str(doctor_data["license"])
             ptr = str(doctor_data["ptr"])
 
@@ -2593,7 +2553,6 @@ def requestTest(request):
                 'days': request.POST.getlist('days'),
             },
             'doctor': doctorName,
-            'specialization': specialization,
             'license': license,
             'ptr': ptr,
         }
