@@ -2269,6 +2269,7 @@ def save_prescriptions(request):
     for doctor_id, doctor_data in doctors.items():
         if uid == doctor_data["uid"]:
             doctorName = doctor_data["fname"] + ' ' + doctor_data["lname"]
+            specialization = doctor_data['specialization']
             license = str(doctor_data["license"])
             ptr = str(doctor_data["ptr"])
 
@@ -2290,6 +2291,7 @@ def save_prescriptions(request):
             'days': request.POST.getlist('days'),
         },
         'doctor': doctorName,
+        'specialization': specialization,
         'license': license,
         'ptr': ptr,
     }
@@ -2405,11 +2407,8 @@ def diagnostic_imagery_reports(request):
     submittedTest = db.child("submittedTest").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
-
-    
     chosenPatient = request.GET.get('chosenPatient', '')
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
-
 
 
 def download_image(url, file_path):
@@ -2533,13 +2532,15 @@ def requestTest(request):
     for doctor_id, doctor_data in doctors.items():
         if uid == doctor_data["uid"]:
             doctorName = doctor_data["fname"] + ' ' + doctor_data["lname"]
+            specialization = doctor_data['specialization']
             license = str(doctor_data["license"])
             ptr = str(doctor_data["ptr"])
+            doctor_uid = doctor_id
 
 
     if request.method == 'POST':
         # Generate unique ID for the prescription
-        prescription_id = str(uuid.uuid1())
+        testRequest_id = str(uuid.uuid1())
 
         data = {
             'patient_name': patientName,
@@ -2549,9 +2550,21 @@ def requestTest(request):
             'date': todaydate,
             'tests': request.POST.getlist('test'),
             'doctor': doctorName,
+            'specialization':specialization,
             'license': license,
             'ptr': ptr,
         }
+
+        # Construct the path to the appointment data in Firebase
+        db_path = f"/testrequest/{uid}/{testRequest_id}"
+
+        db.child(db_path).update( {
+            'patient_id': patient_uid,
+            'doctor': doctor_uid,
+            'dateCreated': todaydate,
+            'tests': request.POST.getlist('test'),
+            'status': "Ongoing",
+        })
 
         print(data)
 
@@ -2636,7 +2649,7 @@ def create_tests_pdf(data, filename):
         c.drawImage(logo_path, (width - logo_size) / 10, height - 4.0 * inch, width=logo_size, height=logo_size, preserveAspectRatio=True, mask='auto')
         os.remove(logo_path)
 
-    # Draw prescription details
+    # Draw test details
     y_position = height - 4.0 * inch
     indent = margin + 2.0 * inch
     c.setFont("Helvetica", 13)
