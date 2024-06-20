@@ -6,64 +6,138 @@
 <link rel="stylesheet" href="{% static 'css/view_treatment_plan.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-***" crossorigin="anonymous" />
 <style>
-    body{
-        font-family: 'Arial', sans-serif;
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
     }
-    #medication-table{
-        width: 90%;
-    
-        border-bottom: #334A7C solid 1px;
+    .prescription-pad {
+        width: 600px;
+        margin: 0 auto;
+        border: 2px solid #000;
+        padding: 20px;
+        background-color: white; /* Set background color to white */
     }
-    
-    .row span {
-        display: inline-block;
-        margin-right: 10px; /* Add margin to separate cells */
-    }
-    
-    th{
+    .prescription-header {
         text-align: center;
+        margin-bottom: 20px;
+    }
+    .prescription-header h1 {
+        margin: 0;
+    }
+    .prescription-content {
+        margin-bottom: 20px;
+    }
+    .prescription-content p {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .prescription-content .right-aligned {
+        white-space: nowrap;
+    }
+    .prescription-details {
+        margin-bottom: 20px;
+    }
+    .prescription-footer {
+        text-align: right;
+    }
+    .rx-sign {
+        font-size: 24px;
         font-weight: bold;
-    
-        font-size: 14px;
-    
-        padding: 5px;
-    
-        background-color: #334A7C;
-        color: #fff;   
     }
-
-    #patient-information{
-        margin-left: 5px;
+    .header {
+        color: #333;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
     }
-
-    .buttons_info, #backButton {
-        padding: 5px;
-        margin-top: 5px;
-        margin-bottom: 5px;
-        margin-left: 12px; 
-        border: solid 2px #334A7C; 
-        background-color: white; 
-        color: black;
-        cursor: pointer; 
-        margin-right:10px;
-        font-size: 15px;
-        font-weight: bold;
-
+    .logo {
+        flex: 1;
     }
-    
-    .buttons_info:hover, #backButton:hover {
-        background-color: #334A7C; 
-        color:white;
+    .logo img {
+        width: 50px;
+        height: 50px;
+        float: left;
     }
-
-    #fname-label, #gender-label, #bday-label, #age-label, #today-label {
-        font-size: 16px;
+    .credentials {
+        flex: 1;
     }
-
-    #medicine_name_input, #daysInput, #dosage_input, #route_input, #remarksInput{
-        font-size: 15px;
+    .credentials h1 {
+        line-height: 1em;
+        letter-spacing: 1px;
+        font-weight: 700;
+        margin: 0px;
+        padding: 0px;
     }
-
+    .credentials h3 {
+        line-height: 1em;
+        letter-spacing: 1px;
+        font-weight: 700;
+        margin: 5px;
+        padding: 2px;
+    }
+    .credentials p {
+        margin: 10px 0 0 0;
+        padding: 1px 0px;
+    }
+    .credentials small {
+        margin: 0;
+        padding: 0;
+        letter-spacing: 1px;
+        padding: 80px;
+    }
+    .medicine p {
+        margin: 5px 0;
+    }
+    .medicine select, .medicine input {
+        margin-right: 10px;
+    }
+    .medicine-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .medicine-row label {
+        margin-right: 10px;
+    }
+    .medicine-row button {
+        margin-left: 10px;
+    }
+    .add-medicine-btn,
+    .submit-medicine-btn,
+    .print-medicine-btn {
+        display: block;
+        margin-top: 10px;
+    }
+    .print-only {
+        display: none;
+    }
+    @media print {
+        .print-only {
+            display: block;
+        }
+        .add-medicine-btn,
+        .remove-medicine-btn,
+        .submit-medicine-btn,
+        .print-medicine-btn {
+            display: none;
+        }
+    }
+    @media print {
+        input[type="text"],
+        select {
+            border: none;
+            background-color: transparent;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            box-shadow: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    }
 </style>
 {% endblock styles%}
 
@@ -79,7 +153,6 @@
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
                             <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                            <div id="role" style="font-size: 16px;"> {{ doctor_data.specialization}}</div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -101,10 +174,116 @@
                 <button id="backButton">Back</button>
             </div>
         </div>
+            <form method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
+            {% csrf_token %}
+            <div class="prescription-pad">
+            <div class="header">
+                <div class="credentials">
+                    {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
+                            {% for doctorClinic in doctor_data.clinic %}
+                                {% for clinic_id, clinic_data in clinics.items %}  
+                                    {% if clinic_data.uid == doctorClinic %}
+                                        <p>{{ clinic_data.name }}</p>
+                                        <small>{{ clinic_data.address }}</small><br/>
+                                        <small>{{ clinic_data.onumber }}</small><br/>
+                                        <small>Mb. 0XXXXXXXXX</small>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        
+            <hr>
+        
+            <div class="prescription-content">
+                {% for patientData_id, patientData_data in patientData.items %}
+                <p>
+                    <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
+                    <span><strong>Age:</strong> {{ patientData_data.age }}</span>
+                    <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
+                </p>
+                <p>
+                    <span><strong>Address:</strong> {{ patientData_data.address }} </span>
+                    <span class="right-aligned"><strong>Date:</strong> {{ todaydate }} </span>
+                </p>
+            {% endfor %}
+            </div>
+        
+            <br>
+            <div class="logo"><img src="https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png" alt="Clinic Logo"/></div>
+        
+            <br>
+            <br>
+            <br>
+            <br>
+        
+            <div class="prescription-details">
+                <div id="medicine-container">
+                    <div class="medicine">
+                        <div class="medicine-row">
+                            <label for="medicine-name"><strong>Medicine Name:</strong></label>
+                            <input type="text" name="medicine_name">
+                            <label for="dosage"><strong>Dosage:</strong></label>
+                            <select name="dosage">
+                                <option value="5mg">5mg</option>
+                                <option value="10mg">10mg</option>
+                                <option value="15mg">15mg</option>
+                                <option value="20mg">20mg</option>
+                            </select>
+                            <button type="button" class="remove-medicine-btn" onclick="removeMedicineRow(this)">Remove</button>
+                        </div>
+                        <p>
+                            Sig.: take through
+                            <select name="route">
+                                <option value="oral">oral</option>
+                                <option value="intravenous">intravenous</option>
+                                <option value="topical">topical</option>
+                                <option value="inhalation">inhalation</option>
+                            </select>
+                            every
+                            <select id="times" name="times">
+                                <option value="q.d.">q.d. (once daily)</option>
+                                <option value="b.i.d.">b.i.d. (twice daily)</option>
+                                <option value="t.i.d.">t.i.d. (three times daily)</option>
+                                <option value="q.i.d.">q.i.d. (four times daily)</option>
+                                <option value="q.a.m.">q.a.m. (every morning)</option>
+                                <option value="q.p.m.">q.p.m. (every evening)</option>
+                                <option value="q.h.s.">q.h.s. (at bedtime)</option>
+                                <option value="q.o.d.">q.o.d. (every other day)</option>
+                                <option value="PRN">PRN (as needed)</option>
+                                <option value="AC">AC (before meals)</option>
+                                <option value="PC">PC (after meals)</option>
+                            </select>
+                            times for
+                            <input type="text" name="days" size="2">
+                            days
+                            <hr>
+                        </p>
+                    </div>
+                </div>
+                <button type="button" class="add-medicine-btn" onclick="addMedicineRow()">Add Medicine</button>
+                
+                <button type="button" class="print-medicine-btn" onclick="window.print()">Print</button>
+            </div>
+        
+            <div class="prescription-footer">
+                {% for doctor_id, doctor_data in doctors.items %}
+                    {% if doctor_data.uid == uid %}
+                        <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
+                        <p style="font-size: 16;">License No.: {{ doctor_data.license }}</p>
+                        <p style="font-size: 16;">PTR No.: {{ doctor_data.ptr}}</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            </div>
+            <button type="submit" class="submit-medicine-btn">Submit</button>
+        </form>
 
-        <div id = "treatment-plan">
-
-            {% for patients_id, patients_data in patients.items %}
+            {% comment %} {% for patients_id, patients_data in patients.items %}
                 {% if patients_data.uid == patient_uid %}
                     <div id = "patient-information">
                         <div id = "first">
@@ -132,9 +311,8 @@
                         </div>
                     </div>
                 {% endif %}
-            {% endfor %}
-                <hr>
-            <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
+            {% endfor %} {% endcomment %}
+            {% comment %} <form id="medication-form" method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                 {% csrf_token %}
                     <div id="medications-container">
                         <div style="margin-top: 20px; margin-bottom: 10px; font-size: 17px;" id="head">Add Medicine Here</div>
@@ -227,142 +405,65 @@
             </div>
         </form>   
     </div>
-</div>
+</div> {% endcomment %}
 
 <script src="{% static 'js/create-medication.js' %}"></script>
-{% comment %} <script src="{% static 'js/ocr12.js' %}"></script> {% endcomment %}
 <script>
-    function displayFileName(input) {
-        var fileName = input.files[0].name;
-        document.getElementById('selected-file').innerText = 'Selected File: ' + fileName;
-        document.getElementById('remove-button').style.display = 'inline-block';
-        document.getElementById('upload-button').style.display = 'inline-block';
+    function addMedicineRow() {
+        const medicineContainer = document.getElementById('medicine-container');
+        const medicineRow = document.createElement('div');
+        medicineRow.className = 'medicine';
+
+        medicineRow.innerHTML = `
+            <div class="medicine-row">
+                <label for="medicine-name"><strong>Medicine Name:</strong></label>
+                <input type="text" name="medicine_name">
+                <label for="dosage"><strong>Dosage:</strong></label>
+                <select name="dosage">
+                    <option value="5mg">5mg</option>
+                    <option value="10mg">10mg</option>
+                    <option value="15mg">15mg</option>
+                    <option value="20mg">20mg</option>
+                </select>
+                <button type="button" class="remove-medicine-btn" onclick="removeMedicineRow(this)">Remove</button>
+            </div>
+            <p>
+                Sig.: take through
+                <select name="route">
+                    <option value="oral">oral</option>
+                    <option value="intravenous">intravenous</option>
+                    <option value="topical">topical</option>
+                    <option value="inhalation">inhalation</option>
+                </select>
+                every
+                <select id="times" name="times">
+                    <option value="q.d.">q.d. (once daily)</option>
+                    <option value="b.i.d.">b.i.d. (twice daily)</option>
+                    <option value="t.i.d.">t.i.d. (three times daily)</option>
+                    <option value="q.i.d.">q.i.d. (four times daily)</option>
+                    <option value="q.a.m.">q.a.m. (every morning)</option>
+                    <option value="q.p.m.">q.p.m. (every evening)</option>
+                    <option value="q.h.s.">q.h.s. (at bedtime)</option>
+                    <option value="q.o.d.">q.o.d. (every other day)</option>
+                    <option value="PRN">PRN (as needed)</option>
+                    <option value="AC">AC (before meals)</option>
+                    <option value="PC">PC (after meals)</option>
+                </select>
+                times for
+                <input type="text" name="days" size="2">
+                days
+                <hr>
+            </p>
+        `;
+
+        medicineContainer.appendChild(medicineRow);
     }
 
-    function removeFile() {
-        document.getElementById('file-input').value = '';
-        document.getElementById('selected-file').innerText = '';
-        document.getElementById('remove-button').style.display = 'none';
-        document.getElementById('upload-button').style.display = 'none';
+    function removeMedicineRow(button) {
+        button.closest('.medicine').remove();
     }
-    document.getElementById("add-medication-button").addEventListener("click", function() {
-        // Retrieve input values
-        var days = document.getElementById("daysInput").value;
-        var medicineName = document.getElementById("medicine_name_input").value;
-        var dosage = document.getElementById("dosage_input").value;
-        var route = document.getElementById("route_input").value;
-        var remarks = document.getElementById("remarksInput").value;
-    
-        
-    
-        // Check if medicine with the same name already exists
-        var existingMedicines = document.querySelectorAll('.medicine-name');
-        for (var i = 0; i < existingMedicines.length; i++) {
-            if (existingMedicines[i].innerText === medicineName) {
-                alert("Medicine with the same name already exists.");
-                return;
-            }
-        }
-    
-        // Create a new row container
-        var newRow = document.createElement("div");
-        newRow.classList.add("row");
-        newRow.style.display = "flex";
-        newRow.style.padding = "10px";
-        newRow.style.alignItems = "center";
-    
-        // Create cells for each value
-        var cells = [
-            document.createElement("div"),
-            document.createElement("div"),
-            document.createElement("div"),
-            document.createElement("div"),
-            document.createElement("div"),
-            document.createElement("div"),
-            document.createElement("div") // For the Remove button
-        ];
-    
-        // Set icon content
-        var icon = document.createElement("i");
-        icon.classList.add("fas", "fa-medkit"); 
-        icon.style.marginRight = "5px";
-        cells[0].appendChild(icon);
-    
-        // Set cell content with numbering
-        cells[1].classList.add("medicine-name"); // Add class for medicine name
-        cells[1].innerHTML = "<span>" + medicineName + " (" + dosage + ")</span>";
-        cells[2].innerHTML = "<span>Sig. Take for <strong>" + days + "</strong> days during ";
-    
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    
-        // Array to store checked times
-        var checkedTimes = [];
-    
-        // Loop through checked checkboxes and add their values to the array
-        checkboxes.forEach(function(checkbox) {
-            checkedTimes.push(checkbox.value);
-        });
-    
-        // Combine checked times into one string separated by commas
-        var checkedTimesString = checkedTimes.join(", ");
-    
-        // Append checked times string to the cell
-        cells[3].innerText = checkedTimesString;
-        cells[3].style.marginRight = "5px";
-    
-        // Append cells to the new row
-        cells.forEach(function(cell) {
-            newRow.appendChild(cell);
-        });
-    
-        cells[4].innerHTML = "<span> through <strong>" + route + "</strong>. " + remarks + "</span>";
-    
-        // Append new row container to the medicine list
-        document.getElementById("medicineList").appendChild(newRow);
-    
-        var hiddenFieldsContainer = document.getElementById("hiddenFieldsContainer");
-    
-        var hiddenFields = [
-            { name: "medicine_name[]", value: medicineName },
-            { name: "dosage[]", value: dosage },
-            { name: "days[]", value: days },
-            { name: "route[]", value: route },
-            { name: "remarks[]", value: remarks },
-            { name: "times[]", value: checkedTimesString }
-        ];
-    
-        var removeButton = document.createElement("button");
-        removeButton.textContent = "Remove";
-        removeButton.classList.add("remove-button");
-        cells[6].appendChild(removeButton);
-    
-        removeButton.addEventListener("click", function() {
-            newRow.remove(); // Remove the row from the DOM
-    
-           
-        });
-    
-        hiddenFields.forEach(function(field) {
-            var hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = field.name;
-            hiddenInput.value = field.value;
-            hiddenFieldsContainer.appendChild(hiddenInput);
-        });
-    });
-    
-    
-
-    function openModal7() {
-        var modal = document.getElementById('myModal');
-        modal.style.display = "block";
-    }
-
-    // Function to close the modal
-    function closeModal() {
-        var modal = document.getElementById('myModal');
-        modal.style.display = "none";
-    }
+</script>
+<script>
     // Retrieve pharmacy_lists from the template
     var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
     console.log(pharmacyLists);  // Print pharmacy_lists to the console
@@ -422,14 +523,6 @@
 
         backButton.addEventListener('click', function() {
             window.history.back();
-        });
-
-        document.getElementById("select-all-checkbox").addEventListener("change", function() {
-            selectAllCheckboxes();
-        });
-    
-        document.getElementById('submit-medication-button').addEventListener('click', function () {
-            alert('Successfully Added a Medication Order/Prescription!');
         });
         
     });
