@@ -52,7 +52,6 @@
                     <th>Last Name</th>
                     <th>Sex</th>
                     <!--<th>Department</th>-->
-                    <th>Specialization</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,9 +65,7 @@
                     {% else %}
                         <td><label id="accountT_sex" class="accountT_lbl">F</label></td>
                     {% endif %}
-                    <td style="display: none;"><label id="accountT_role" class="accountT_lbl">{{ account_data.role }}</label></td>
                     <!--<td><label id="accountT_department" class="accountT_lbl">{{ account_data.department }}</label></td>-->
-                    <td><label id="accountT_jobTitle" class="accountT_lbl">{{ account_data.specialization }}</label></td>
                 </tr>
                 {% endfor %}
             </tbody>
