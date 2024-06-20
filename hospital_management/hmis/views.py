@@ -2427,6 +2427,7 @@ def create_prescription_pdf(data, filename):
     c.setFont("Helvetica-Bold", 30)
     c.drawCentredString(width / 2, height - margin - 0.5 * inch, data['doctor'] + ", M.D.")
     c.setFont("Helvetica-Bold", 18)
+    c.drawCentredString(width / 2, height - margin - 0.8 * inch, data['specialization'])
     c.setFont("Helvetica", 12)
     c.drawCentredString(width / 2, height - margin - 1.1 * inch, "09168794532")
     c.drawCentredString(width / 2, height - margin - 1.3 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
