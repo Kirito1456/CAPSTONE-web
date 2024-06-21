@@ -2295,9 +2295,19 @@ def save_prescriptions(request):
 
     print(data)
 
+     # Handle file upload
+    signature = request.FILES.get('signature')
+    print(signature)
+    signature_path = None
+    if signature:
+        signature_path = 'static/signature.png'
+        with open(signature_path, 'wb+') as destination:
+            for chunk in signature.chunks():
+                destination.write(chunk)
+
     # Create the PDF
     temp_file_path = os.path.join(os.path.dirname(__file__), 'temp_prescription.pdf')
-    create_prescription_pdf(data, temp_file_path)
+    create_prescription_pdf(data, temp_file_path, signature_path)
 
     try:
         # Upload the PDF to Firebase
@@ -2313,6 +2323,8 @@ def save_prescriptions(request):
         # Ensure the temporary file is deleted
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
+        if signature_path and os.path.exists(signature_path):
+            os.remove(signature_path)
 
     # patient_uid = request.GET.get('chosenPatient')
     
@@ -2416,7 +2428,7 @@ def download_image(url, file_path):
         return file_path
     return None
 
-def create_prescription_pdf(data, filename):
+def create_prescription_pdf(data, filename, signature_path=None):
     c = canvas.Canvas(filename, pagesize=letter)
     width, height = letter
 
@@ -2482,11 +2494,12 @@ def create_prescription_pdf(data, filename):
                                                 data['medicines']['days']):
         c.setFont("Helvetica", 13)
         c.drawString(indent , y_position, f"Medicine Name: {name}")
-        c.drawString(indent + 3.0 * inch, y_position, f"Dosage: {dosage}")
         y_position -= 0.2 * inch
-        c.drawString(indent, y_position, f"Route: {route}")
-        c.drawString(indent + 1.5 * inch, y_position, f"Times: {times}")
-        c.drawString(indent + 3.0 * inch, y_position, f"Days: {days}")
+        c.drawString(indent, y_position, f"Dosage: {dosage}")
+        c.drawString(indent + 1.5 * inch, y_position, f"Route: {route}")
+        y_position -= 0.2 * inch
+        c.drawString(indent, y_position, f"Times: {times}")
+        c.drawString(indent + 1.5 * inch, y_position, f"Days: {days}")
         y_position -= 0.4 * inch  # Extra space between different medicines
 
     # Add two break lines before the footer
@@ -2494,13 +2507,21 @@ def create_prescription_pdf(data, filename):
 
     # Draw footer (right-aligned)
     footer_text = [
-        "Doctor's Signature: ___________",
+        "Doctor's Signature: ",
         "License No.: " + data['license'],
         "PTR No.: " +  data['ptr'],
     ]
-    for i, text in enumerate(footer_text):
+    # Draw the signature text and image
+    c.setFont("Helvetica", 12)
+    c.drawRightString(width - margin - 2.0 * inch, y_position, footer_text[0])
+    if signature_path and os.path.exists(signature_path):
+        signature_width = 1.8 * inch
+        signature_height = 0.5 * inch
+        c.drawImage(signature_path, width - margin - signature_width, y_position - signature_height + 15, width=signature_width, height=signature_height, mask='auto')
+    
+    for i, text in enumerate(footer_text[1:]):
         c.setFont("Helvetica", 12)
-        c.drawRightString(width - margin, y_position - (i + 1) * 0.3 * inch, text)
+        c.drawRightString(width - margin - 2.05 * inch, y_position - (i + 1) * 0.3 * inch, text)
 
     c.showPage()
     c.save()
@@ -2566,9 +2587,19 @@ def requestTest(request):
 
         print(data)
 
+        # Handle file upload
+        signature = request.FILES.get('signature')
+        print(signature)
+        signature_path = None
+        if signature:
+            signature_path = 'static/signature.png'
+            with open(signature_path, 'wb+') as destination:
+                for chunk in signature.chunks():
+                    destination.write(chunk)
+
         # Create the PDF
         temp_file_path = os.path.join(os.path.dirname(__file__), 'temp_prescription.pdf')
-        create_tests_pdf(data, temp_file_path)
+        create_tests_pdf(data, temp_file_path, signature_path)
 
         try:
             # Upload the PDF to Firebase
@@ -2583,6 +2614,8 @@ def requestTest(request):
             # Ensure the temporary file is deleted
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
+            if signature_path and os.path.exists(signature_path):
+                os.remove(signature_path)
 
     return render(request, 'hmis/requestTest.html' , {'patientData': patientData,
                                                         'patient_uid': patient_uid,
@@ -2591,7 +2624,7 @@ def requestTest(request):
                                                         'uid': uid,
                                                         'todaydate': todaydate})
 
-def create_tests_pdf(data, filename):
+def create_tests_pdf(data, filename, signature_path=None):
     c = canvas.Canvas(filename, pagesize=letter)
     width, height = letter
 
@@ -2663,13 +2696,21 @@ def create_tests_pdf(data, filename):
 
     # Draw footer (right-aligned)
     footer_text = [
-        "Doctor's Signature: ___________",
+        "Doctor's Signature: ",
         "License No.: " + data['license'],
         "PTR No.: " +  data['ptr'],
     ]
-    for i, text in enumerate(footer_text):
+    # Draw the signature text and image
+    c.setFont("Helvetica", 12)
+    c.drawRightString(width - margin - 2.0 * inch, y_position, footer_text[0])
+    if signature_path and os.path.exists(signature_path):
+        signature_width = 1.8 * inch
+        signature_height = 0.5 * inch
+        c.drawImage(signature_path, width - margin - signature_width, y_position - signature_height + 15, width=signature_width, height=signature_height, mask='auto')
+    
+    for i, text in enumerate(footer_text[1:]):
         c.setFont("Helvetica", 12)
-        c.drawRightString(width - margin, y_position - (i + 1) * 0.3 * inch, text)
+        c.drawRightString(width - margin - 2.05 * inch, y_position - (i + 1) * 0.3 * inch, text)
 
     c.showPage()
     c.save()
