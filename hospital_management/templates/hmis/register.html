@@ -267,7 +267,28 @@
                 </div>
             </div>
 
-            <div class="clinic" id="doctorClinic" style="display: none;">
+            <div id = "row">
+                {% comment %} <div class="role">
+                    <label class="signup_lbl">Role <span class="red-asterisk">*</span></label>
+                    <select class="signup_dd-jobtitle" name="role" id="roleSelect" required>
+                        <option value="">- Select Role -</option>
+                        <option value="Doctor">Doctor</option>
+                        <option value="Nurse">Nurse</option>
+                    </select>
+                </div>
+                 {% endcomment %}
+                <div class="specialization">
+                    <label class="signup_lbl">Specialization <span class="red-asterisk">*</span></label>
+                    <select class="signup_dd-jobtitle specialization-choice" name="specialization" id="jobTitleSelect" required>
+                        <option value="">- Select Specialization -</option>
+                        <option value="General Practitioner">General Practitioner</option>
+                        <option value="Pulmonologist">Pulmonologist</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                    </select>
+                </div>
+            </div>
+
+            {% comment %} <div class="clinic" id="doctorClinic" style="display: none;">
                 <label class="signup_lbl">Clinic Name <span class="red-asterisk">*</span></label>
                 <select class="signup_dd-jobtitle" name="clinic" id="clinicSelect">
                     <option value="">- Select Clinic -</option>
@@ -299,7 +320,7 @@
                         <input class="signup_txtboxname roomno" type="number" name="rnumber" placeholder="Room Number">
                     </div>
                 </div>
-            </div>
+            </div> {% endcomment %}
             
             
             <div id = "passwords">
@@ -328,5 +349,5 @@
     </ul>
 {% endif %}
 
-<script src="{% static 'js/register_accounts.js' %}"></script>
+<!--<script src="{% static 'js/register_accounts.js' %}"></script>-->
 {% endblock %}

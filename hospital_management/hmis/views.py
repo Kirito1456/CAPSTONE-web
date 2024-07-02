@@ -125,14 +125,21 @@ def home(request):
             doctor_found = False
             nurse_found = False
             chargenurse_found = False
-            for account in accounts.values():
-                doctor_found = True
+            complete = False
+            for doctor_id, doctor_data in doctors.items():
+                if session_id == doctor_id:
+                    print(doctor_id)
+                    doctor_found = True
+                    if doctor_data.get('license'):
+                        complete = True
 
-            if doctor_found:
+            if doctor_found and complete == True:
                 return redirect('DoctorDashboard')
+            elif doctor_found and complete == False:
+                return redirect('newuser')
             else:
                 return redirect('register')
-                
+
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
 
@@ -168,8 +175,6 @@ def dashboard(request):
     else:
         # Handle GET request or other cases where no POST data is available
         return render(request, 'hmis/dashboard.html', {})
-
-
 
 
 def clinics(request):
@@ -209,14 +214,34 @@ def nursesAdmin(request):
 
 def register(request):
     
-    clinics = db.child("clinics").get().val()
+    # clinics = db.child("clinics").get().val()
 
-    # Combine doctors and nurses data into one dictionary
-    accounts = {}
-    if clinics:
-        accounts.update(clinics)
+    # # Combine doctors and nurses data into one dictionary
+    # accounts = {}
+    # if clinics:
+    #     accounts.update(clinics)
     
-    return render(request, 'hmis/register.html', {'accounts': accounts})
+    return render(request, 'hmis/register.html')
+
+def newuser(request):
+
+    if request.method == 'POST':
+        license = request.POST.get('license')
+        ptr = request.POST.get('ptr')
+        uid = request.session.get('uid')
+        doctors = db.child("doctors").get().val()
+
+        for doctor_id, doctor_data in doctors.items():
+            if doctor_id == uid:
+                data = {
+                    'license': license,
+                    'ptr': ptr,
+                }
+
+                db.child('doctors').child(uid).update(data)
+                return redirect('DoctorDashboard')
+
+    return render(request, 'hmis/newuser.html')
 
 def create(request):
     if request.method == 'POST':
@@ -246,37 +271,17 @@ def create(request):
                 return redirect('register')
 
             try:
-                clinic = request.POST.get('clinic')
-                
-                # Check if clinic data is provided
-                id = str(uuid.uuid1())
-                clinic_data = {
-                    'name': request.POST.get('newclinic'),
-                    'fnumber': request.POST.get('fnumber'),
-                    'onumber': request.POST.get('onumber'),
-                    'rnumber': request.POST.get('rnumber'),
-                    'uid': id
-                }
-
-                #print(clinic_data)
-
-                if clinic_data['name']:
-                    # Save new clinic data
-                    clinic_ref =  db.child('clinics').child(id).set(clinic_data)
-                    #clinic_id = clinic_ref.key  # Get the unique key of the pushed clinic
-                    clinic = id
-
                 # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
-
                 
                 data = {
                     'uid': user['localId'],
                     'fname': cleaned_data['fname'],
                     'lname': cleaned_data['lname'],
                     'sex': cleaned_data['sex'],
+                    'specialization': cleaned_data['specialization'],
                     #'department': cleaned_data['department'],
-                    'clinic': clinic,
+                    #'clinic': clinic,
                     'email': email,
                 }
 
