@@ -54,5 +54,6 @@ urlpatterns = [
 
     path('requestTest/', views.requestTest, name='requestTest'),
 
+    path('newuser/', views.newuser, name='newuser'),
    
 ]

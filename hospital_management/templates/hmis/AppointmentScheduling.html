@@ -159,12 +159,8 @@
                 <div class="dropdown-header text-center">
                   {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-<<<<<<< HEAD
                             <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
                             <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-=======
-                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
->>>>>>> dbf870cee38831a52439490211f9b18d8127d83f
                         {% endif %}
                     {% endfor %}
                 </div>

@@ -1,1448 +1,389 @@
 {%load static%}
-<title>{% block title %}Patient Data{% endblock %}</title>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Patient Data{% endblock %}</title>
+    <!-- plugins:css -->
+     
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-{% block styles%} 
-<link rel="stylesheet" href="{% static 'css/patient_personal_informations.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<style>
-    .endtheappointment{
-        background-color: darkgreen;
-        color: #fff;
-        border: 0px;
-        padding: 5 10;
-    }
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/select2/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
 
-    .endtheappointment:hover{
-        font-weight: bold;
-    }
-    
-    .canceltest{
-        background-color: red;
-        color: #fff;
-        border: 0px;
-        padding: 5 10;
-    }
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- endinject -->
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    <style>
+        .detail-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .detailname {
+            margin-right: 4px; 
+        }
+        #health-conditions {
+            margin-bottom: 15px;
+        }
+    </style>
+    {% endblock styles%}
+  </head>
 
-    .canceltest:hover{
-        font-weight: bold;
-    }
-    #submitdiagnosis, #submittest{
-        background-color: darkgreen;
-        color: #fff;
-        border: 0px;
-
-        padding: 5 10;
-    }
-
-    #submitdiagnosis:hover, #submittest:hover{
-        font-weight: bold;
-    }
-    h2 {
-        color: #334A7C; 
-        font-size: 29px;
-        margin-bottom: 10px;
-        text-transform: uppercase; 
-        border-bottom: 2px solid #334A7C;
-        padding-bottom: 5px; 
-    }
-    
-    .name_ros{
-        border: 1px solid #ccc;
-        padding: 8px;
-        width: fit-content;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    #rightbox, #middlebox, #leftbox  {
-        float: left;
-        padding: 5px;
-    }
-
-    #rightbox{
-        margin-top: 15px;
-    }
-
-    #other-side{
-        z-index: 0;
-        position: relative;
-    }
-
-    .modal-content-ros {
-        background-color: #fff;
-        margin-top: -11%;
-        margin-left: 14%;
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        height: fit-content;
-        width: 500px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-
-        z-index: 1;
-        position: absolute;
-    }
-    
-    .column {
-        float: left;
-        padding: 10px;
-    }
-    
-    .diagnosis_box{
-        border: 1px solid #ccc;
-        width: fit-content;
-        padding: 10px;
-        border-radius: 10px; 
-    } 
-
-    #biometric-info, #contact-details {
-        border: 1px solid #ccc;
-        width: fit-content;
-        position: static;
-        padding: 10px;
-        margin: 10px;
-        border-radius: 10px; 
-    }
-
-    #fname-label, #gender-label, #bday-label, #status-label, #diagnosis-label{
-        font-size: 21px;
-        font-weight: bold;
-    }
-
-    #fname, #gender-view, #birthday, #status, #diagnosis-label2{
-        margin-top: 3px;
-        font-size: 17px;
-    }
-
-    .buttons_info {
-        padding: 5px;
-        margin: 5px; 
-        border: solid 2px #334A7C; 
-        background-color: white; 
-        color: black;
-        cursor: pointer; 
-        margin-right:10px;
-        font-size: 15px;
-        font-weight: bold;
-    }
-    
-    .buttons_info:hover {
-        background-color: #334A7C; 
-        color:white;
-    }
-
-    body {
-        font-family: 'Arial', sans-serif;
-    }
-    .close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 25px;
-        cursor: pointer;
-    }
-    
-    #update-with-new-order {
-        display: flex;
-        justify-content: space-between;
-        margin: 15px;
-    }
-    
-    #remove-medication-button {
-        margin-top: 10px;
-    }
-    
-    #remove-medication-button a {
-        background-color: red;
-        color: white;
-        padding: 3px;
-        border-radius: 5px;
-        font-size: 19px;
-    }
-    
-    #add-medication-button a, #submit-medication-button a {
-        background-color: green;
-        color: white;
-        padding: 3px;
-        border-radius: 5px;
-        font-size: 19px;
-    }
-    
-    #table-header{
-       font-weight: bold; 
-       background-color: #334A7C; 
-       color: white; 
-       padding: 5px;
-       margin: 5px;
-       border-radius: 5px;
-    }
-
-    #table-body{
-        padding: 5px;
-        margin: 5px;
-        border-radius: 5px;
-     }
-
-    #medication-list{
-        display: flex; 
-        flex-direction: column;
-    }
-    .form-row {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    
-    .form-group {
-        margin-right: 20px; /* Adjust spacing between form groups */
-    }
-    
-    #view-notes-history, #view-vitalsigns-history {
-        display: inline-block;
-        padding: 5px;
-        font-size: 19px;
-        background-color: #4280c7;
-        color: #fff;
-        text-decoration: none;
-        border: none;
-        border-radius: 5px; 
-        cursor: pointer;
-        margin: 10px;
-    }
-
-    .button_patient {
-        display: inline-block;
-        padding: 5px;
-        font-size: 19px;
-        background-color: #4280c7;
-        color: #fff;
-        text-decoration: none;
-        border: none;
-        border-radius: 5px; 
-        cursor: pointer;
-        margin: 10px;
-    }
-    
-    .button_patient:hover {
-        background-color: #0056b3;
-    }
-
-    .form_container{
-        border: 1px solid #ccc;
-        padding: 5px;
-        width: fit-content;
-        margin: 5px;
-        border-radius: 5px;
-    }
-
-    .container-big {
-        display: flex;
-        align-items: center; 
-        flex-wrap: wrap; 
-    }
-
-    .container-big-dt {
-        align-items: top; 
-    }
-
-    .container-small {
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        margin-bottom: 30px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        width: 350px;
-    }
-
-    .container-inside {
-        padding: 10px;
-    }
-
-    .container-inside-diagnostic {
-        padding: 10px;
-        padding-bottom: 20px;
-        text-align: center;
-    }
-    
-    #patient-info, #consultation-notes-container, #diagnostic-tests-container, #vital-signs-container, #progress-notes-container {
-        display: flex;
-        align-items: center; 
-        flex-wrap: wrap; 
-    }
-    
-    #personal-information, #progress-notes-box {
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        margin-bottom: 30px;
-        width: 100%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    #chiefComplaintText, #health-conditions{
-        font-size: 16px;
-    }
-
-    #info_container{
-        display: flex;
-        height: 270px;
-    }
-    #progress-note{
-        justify-content: space-between;
-        padding: 10px;
-    }
-
-    #info_box{
-        padding: 10px;
-        flex: 1;
-    }
-
-    #info_container{
-        width: 900px;
-    }
- 
-    #button_box{
-        padding: 10px;
-        flex: 1;
-        
-    }   
-
-    .head{
-        text-align: center;
-        font-weight: bold;
-    
-        font-size: 22px;
-    
-        padding-bottom: 7px;
-        padding-top: 7px;
-        background-color: #334A7C;
-        color: #fff;
-    
-        margin-bottom: 10px;
-    }
-
-    #blood-type-view, #height-view, #weight-view, #address-view, #phone-number, #e-mail{
-        font-size: 16px;
-    }
-    
-    #consultation-notes{
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        margin-bottom: 20px;
-        width: 100%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    #diagnostic-tests{
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        margin-bottom: 20px;
-        width: 90%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        
-        margin-right: 1%;
-    }
-
-    .modalFinish {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fefefe;
-        border: 1px solid #888;
-        width: 20%;
-        height: 25%;
-        padding: 20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-        overflow: auto;
-    }
-    .modalFinish1 {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fefefe;
-        border: 1px solid #888;
-        width: 60%;
-        height: 60%;
-        padding: 20px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-        overflow: auto;
-    }
-    .modal1 {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-    /* CSS for the modal */
-    .modal2 {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    }
-
-    /* Modal content */
-    .modal-content2 {
-        background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; /* Could be more or less, depending on screen size */
-        max-width: 600px; /* Set max width to prevent stretching */
-        border-radius: 5px;
-    }
-
-    #closeModal:hover,
-    #closeModal:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    .modal-content1 {
-        background-color: white;
-        margin: 20px;
-        padding: 20px;
-        border: 1px solid #888;
-        border-radius: 5px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 70%;
-        transform: translate(-50%, -50%);
-    }
-    
-    .modal-content1 h2 {
-        margin-top: 0;
-    }
-    
-    .modal-content1 label {
-        display: block;
-        margin-bottom: 5px;
-    }
-    
-    .modal-content1 textarea,
-    .modal-content1 input[type="text"] {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-    }
-    
-    .modal-content1 table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 10px;
-    }
-    
-    .modal-content1 table th,
-    .modal-content1 table td {
-        padding: 8px;
-        border: 1px solid #ccc;
-    }
-    
-    .modal-content1 button {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
-        margin-right: 10px;
-    }
-    
-    .modal-content1 button:last-child {
-        margin-right: 0;
-        background-color: #ccc;
-    }
-    
-    .close1 {
-        color: #aaa;
-        float: right;
-        font-size: 33px;
-        font-weight: bold;
-    }
-    
-    .close1:hover,
-    .close1:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    
-    .prescriptions-container {
-        display: grid;
-        display: flex; 
-        flex-direction: column;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 10px;
-        grid-auto-flow: row; /* Ensure rows are stacked */
-    }
-    
-    .prescription-row1 {
-        display: grid;
-        
-        grid-template-columns: repeat(6, 1fr);
-        border: 1px solid #ccc;
-    }
-    
-    .cell {
-        padding: 5px;
-        border: 1px solid #ccc;
-    }
-    
-    .header {
-        font-weight: bold;
-        background-color: #f0f0f0;
-    }
-
-    .rosSaveButton, .rosCloseButton {
-        margin-top: 25px;
-        padding: 5px;
-        border: solid 2px #334A7C; 
-        background-color: white; 
-        color: black;
-        cursor: pointer; 
-        font-size: 15px;
-        font-weight: bold;
-    }
-
-    .rosSaveButton {
-        margin-left: 200px;
-    }
-    
-</style>
-{% endblock styles%}
-
-{% block content %}
-<div id = "whole-screen">
-    <div id = "side-menu" style="background-color: #334a7c;">
-        <div id = "all-info">
-            <div id = "user-info"> 
-                <div id = "image">
-                    <img src="{% static 'logo-color.png' %}" id = "display-photo">
-                </div>
-                <div id="information">
-                    {% for doctor_id, doctor_data in doctors.items %}
-                        {% if doctor_data.uid == uid %}
-                            <div id="name" style="font-size: 27;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            <div id="menu"> 
-                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
-                <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
-                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                
-                <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
-
-            </div>
-        </div>
-    </div>
-    <div id = "other-side">
-        <div id = "title">
-            {% comment %} <div id = "left">
-                <button id="backButton">Back</button>
-            </div> {% endcomment %}
-        </div>
-        <div id = "patient-info">
-            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-            <div id = "personal-information">
-                <div class="head">Personal Information</div>
-                <div id="info_container">
-                    <div id="info_box">
-                        <div id = "first">
-                            <div id = "fname-label">Name:</div>
-                            <div id = "fname">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
-                        </div>
-                        
-                        <div id = "gender">
-                            <div id = "gender-label">Sex:</div>
-                            <div id = "gender-view">{{ chosenPatientData_data.gender }}</div>
-                        </div>
-
-                        <div id = "bday">
-                            <div id = "bday-label">Birthday:</div>
-                            <div id = "birthday">{{ chosenPatientData_data.bday }}</div>
-                        </div>
-                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                            <div id="last">
-                                <div id="diagnosis-label">&thinsp;Diagnosis:</div>
-                                <div id="diagnosis-label2">&nbsp;{{ chosenPatientConsulNotes_data.diagnosis }}</div><br>
-                            </div>
-                        {% endfor %}
-                        <br>
-                        <button onclick="toggleBiometricInfo()" class="buttons_info">Biometric Information</button>
-                        <button onclick="toggleContactInfo()" class="buttons_info">Contact Information</button>
-                        <br><br><br>
-                        <button id="endtransaction" onclick="openDischargeModal()" class="buttons_info">Discharge</button>
-                    </div>
-                    <div id="button-box">
-
-                        <div id="appModal" class="modalFinish" style="display: none;">
-                            <h2>Finish Appointment</h2>
-                            <form id="reschedule-form{{ endAppointment }}" method="post" action="{% url 'followup_appointment' %}">
-                                {% csrf_token %}
-                                <input type="checkbox" id="followupCheckbox" name="followupCheckbox" value="{{ chosenPatientData_id }}" onchange="toggleFollowup('{{ endAppointment }}')">
-                                <label for="followupCheckbox">Follow-Up Checkup</label>
-                                <div id="followupDiv" style="display: none;">
-                                    {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
-                                        {% if appointmentsched_data.uid == uid %}
-                                            <div class="form-row">
-                                                <div class="form-group">
-                                                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                                                        <label for="suggested-date" style="margin-right: 10px; margin-top: 10px;">Suggested Schedule:</label>
-                                                        <input type="text" id="selected_appointment_date" name="selected_appointment_date1" value={{ next_available_date_str1 }} style="font-size: 19px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                                        </input>
-                                                    </div>
-                                                    <label for="suggested-time">Suggested Time: </label>
-                                                    <select id="new_appointment_time" name="new_appointment_time1" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                                        {% for time_slots2 in time_slots1 %}
-                                                            <option value="{{ time_slots2 }}">{{ time_slots2 }}</option>
-                                                        {% endfor %}
-                                                    </select><br>
-                                                </div>
-                                            </div>
-                                            
-                                        {% endif %}
-                                        
-                                    {% endfor %}
-                                    
-                                </div><br>
-                                <button type="submit" class="endtheappointment" id="endAppointment" name="endAppointment" value="{{ endAppointment }}">End Appointment</button>
-                            </form>
-                        <button class="canceltest" onclick="closeModalApp()">Cancel</button>
-                            
-                        
-                            <div id="followupDropdown" style="display: none;">
-                                <div id="myModal" class="modalFinish1">
-                                    <div class="modal-content">
-                                        <span id="closeModalButton1">&times;</span>
-                                        <h2>Follow Up Appointment</h2>
-                                        <form id="reschedule-form" method="post" action="{% url 'followup_appointment' %}">
-                                            {% csrf_token %}
-                                            <label for="suggested-time">Suggested Schedule:</label>
-                                            <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                                <option value="one_week" name="selected_time">1 week</option>
-                                                <option value="two_weeks" name="selected_time">2 weeks</option>
-                                                <option value="three_weeks" name="selected_time">3 weeks</option>
-                                                <option value="one_month" name="selected_time">1 month</option>
-                                            </select><br>
-                                            <button type="submit" id="appID" name="appID" value="{{ chosenPatientData_id }}">Appointment Finished</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button class="buttons_info"><a href="{% url 'patient_medical_history' %}?chosenPatient={{chosenPatientData_data.uid}}">Medical History</a></button>
-                        <button class="buttons_info"><a href = "{% url 'view_treatment_plan_all' %}?chosenPatient={{chosenPatientData_data.uid}}">Treatment Plan</a></button>
-
-                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                            {% if chosenPatientConsulNotes_data.diagnosis %}
-                                <button  class="buttons_info"><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Medication Order</a></button>
-                            {% endif %}
-                        {% endfor %}
-
-                        <div id="biometric-info" style="display: none;">
-                            {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
-                            <div id = "blood-type">
-                                <div id = "blood-type-label">Blood Type:</div>
-                                <div id = "blood-type-view">{{ chosenPatientDatas_data.bloodType }}</div>
-                            </div>
-                            <div id = "height">
-                                <div id = "height-label">Height: </div>
-                                <div id = "height-view">{{ chosenPatientDatas_data.height }} cm</div>
-                            </div><div id = "weight">
-                                <div id = "weight-label">Weight:</div>
-                                <div id = "weight-view">{{ chosenPatientDatas_data.weight }} kg</div>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        <div id="contact-details" style="display: none;">
-                            <div id="address">
-                                <div id="address-label">Address:</div>
-                                <div id="address-view">{{ chosenPatientData_data.address }}</div>
-                            </div>
-                            <div id="phone">
-                                <div id="phone-number-label">Phone Number:</div>
-                                <div id="phone-number">{{ chosenPatientData_data.cnumber }}</div>
-                            </div>
-                            <div id="email">
-                                <div id="email-label">E-mail Address:</div>
-                                <div id="e-mail">{{ chosenPatientData_data.email }}</div>
-                            </div>
-                        </div>
-
-                    </div>
-                
-                </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <div id="whole-container" style="display: flex; flex-direction: row">
-            <div id="left-container">
-                {% comment %} Consultation Notes {% endcomment %}
-                <div class = "container-big" style="margin-right: 30px;">
-                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <div class = "container-small">
-                        <div class="head">Consultation Notes</div>
-                            <div class="container-inside">
-                                <button class="buttons_info" id="chiefComplaintButton">Chief Complaint</button>
-                                <form method='post'>
-                                    {% csrf_token %}
-                                    <div id="chiefComplaintArea" style="display: none;">
-                                        {% if chosenPatientConsulNotes %}
-                                            {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                                <textarea id="chiefComplaintText" rows="4" cols="35" placeholder="Enter chief complaint..." 
-                                                name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
-                                            {% endfor %}
-                                        {% else %}
-                                            <textarea id="chiefComplaintText" rows="4" cols="35" placeholder="Enter chief complaint..." 
-                                            name="chiefComplaint"></textarea>
-                                        {% endif %}
-                                        <button id="saveChiefComplaintButton" type="submit" name="complaintButton" value={{ chosenPatientData_id }} >Save</button>
-                                        <button id="cancelChiefComplaintButton">Cancel</button>
-                                    </div>
-                                </form>
-
-                                <div id="ros">
-                                    <button class="buttons_info" id="reviewOfSystemsButton">Review of Systems</button>
-                                    <div id="reviewOfSystemsModal" class="modal-content-ros" style="display: none;">                         
-                                        <h2>Review of Systems</h2> 
-                                        <form id="reviewOfSystemsForm" method='post' >
-                                            {% csrf_token %}
-                                            <button type="submit" name="rosButton" class="rosSaveButton" value={{ chosenPatientData_id }}>Save</button>
-                                            <button id="closeModalButton" class="rosCloseButton">Close</button>
-                                            <div id="leftbox">
-                                                <p class="name_ros">Respiratory/Cardiac</p>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Shortness of Breath"><label>Shortness of Breath</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Cough"><label>Cough</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Production of Phlegm"><label>Production of Phlegm</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Wheezing"><label>Wheezing</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Coughing up Blood"><label>Coughing up Blood</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Chest Pain"><label>Chest Pain</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Fever"><label>Fever</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Night Sweats"><label>Night Sweats</label><br>
-                                            </div>
-                                            <div id="rightbox">     
-                                                    <input type="checkbox" name="cardiac_conditions" value="BSE"><label>Swelling in Hands/Feet</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Swelling in Hands/Feet"><label>Blue Fingers/Toes</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="High Blood Pressure"><label>High Blood Pressure</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Heart Murmur"><label>Heart Murmur</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="HX of Heart Medication"><label>HX of Heart Medication</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Bronchities/Emphysema"><label>Bronchities/Emphysema</label><br>
-                                                    <input type="checkbox" name="cardiac_conditions" value="Rheumatic Heart Disease"><label>Rheumatic Heart Disease</label><br>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                
-                                <div id="diagnosisButton">
-                                    <button class="buttons_info" onclick="toggleDropdown()">Diagnosis</button>
-                                    <form id="diagnosis" method='post'>
-                                        {% csrf_token %}
-                                        <div id="diagnosisDropdown" class="dropdown-content" style="display: none;">
-                                            <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
-                                                <datalist id="disease_name_suggestion">
-                                                    <option value="">-- Select Disease --</option>
-                                                    {% for disease in disease_list %}
-                                                        <option value="{{ disease }}">{{ disease }}</option>
-                                                    {% endfor %}
-                                                </datalist>
-                                            </select>
-                                            <button id="submitdiagnosis" type="submit" name="diagnosisButton" value={{ chosenPatientData_id }}>Save</button>
-                                        </div></div>
-                                    </form>
-                                    {% if chosenPatientConsulNotes %}
-                                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                            {% if chosenPatientConsulNotes_data.diagnosis %}
-                                                <p class="diagnosis_box">Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</p>
-                                            {% else %} 
-                                                <p class="diagnosis_box">Diagnosis: No Current Diagnosis</p>
-                                            {% endif %} 
-                                        {% endfor %}   
-                                    {% else %} 
-                                        <p class="diagnosis_box">Diagnosis: No Current Diagnosis</p>
-                                    {% endif %} 
-                                </div> 
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                {% comment %} Diagnostic Test {% endcomment %}
-                <div class = "container-big-dt">
-                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <div class = "container-small">
-                        <div class = "head">Diagnostic Tests</div>
-                            <div class="container-inside-diagnostic">
-                                <button class="buttons_info"><a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Results</a></button>
-                                <button class="buttons_info" id="requestLabTestButton" ><a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}">Request New Test</a></button>
-                                {% comment %} <div id="newLabTestModal" class="modal2" style="display: none;">
-                                    <div class="modal-content2">
-                                        <h2>Request New Test</h2>
-                                        <form method="post" id="newLabTestForm">
-                                            {% csrf_token %}
-                                            <input type="checkbox" id="bloodTestCheckbox" name="bloodTestCheckbox">
-                                            <label for="bloodTestCheckbox">Blood Test</label><br>
-                                            <input type="checkbox" id="urineTestCheckbox" name="urineTestCheckbox">
-                                            <label for="urineTestCheckbox">Urine Test</label><br>
-                                            <input type="checkbox" id="stoolTestCheckbox" name="stoolTestCheckbox">
-                                            <label for="stoolTestCheckbox">Stool Test</label><br>
-                                            <input type="checkbox" id="tissueBiopsyCheckbox" name="tissueBiopsyCheckbox">
-                                            <label for="tissueBiopsyCheckbox">Tissue Biopsy</label><br>
-                                            <input type="checkbox" id="xrayCheckbox" name="xrayCheckbox">
-                                            <label for="xrayCheckbox">X-rays</label><br>
-                                            <input type="checkbox" id="ctScanCheckbox" name="ctScanCheckbox">
-                                            <label for="ctScanCheckbox">Computed Tomography/CT Scan</label><br>
-                                            <input type="checkbox" id="mriCheckbox" name="mriCheckbox">
-                                            <label for="mriCheckbox">Magnetic Resonance Imaging/MRI</label><br>
-                                            <input type="checkbox" id="ultrasoundCheckbox" name="ultrasoundCheckbox">
-                                            <label for="ultrasoundCheckbox">Ultrasound</label><br>
-                                            <input type="checkbox" id="ecgCheckbox" name="ecgCheckbox">
-                                            <label for="ecgCheckbox">Electrocardiogram/ECG/EKG</label><br>
-                                            <input type="checkbox" id="colonoscopyCheckbox" name="colonoscopyCheckbox">
-                                            <label for="colonoscopyCheckbox">Colonoscopy</label><br>
-                                            <input type="checkbox" id="bronchoscopyCheckbox" name="bronchoscopyCheckbox">
-                                            <label for="bronchoscopyCheckbox">Bronchoscopy</label><br>
-                                            <input type="checkbox" id="petScanCheckbox" name="petScanCheckbox">
-                                            <label for="petScanCheckbox">Positron Emission Tomography (PET) Scan</label><br>
-                                            <button id="submittest" type="submit" name="submitLabTestRequest">Submit</button>
-                                            
-                                        </form>
-                                        <button class="canceltest" id="closeModalTest">Cancel</button>
-                                    </div> {% endcomment %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="inpatientModal1" class="modal1" style="display: none; overflow-y: auto;">
-    <div class="modal-content1">
-        <span class="close" onclick="closeModal()">&times;</span> <!-- Close button -->
-
-        <h2>Discharge Instruction Form</h2>
-        <form id="dischargeForm1" method="post">
-            {% csrf_token %}
-            <div style="margin: 5px; font-weight: bold;">Patient Details</div>
-            <div class="form-row">
-                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <div class="form-group">
-                        <div style="margin: 5px; font-weight: bold;">Patient Name: </div>
-                        <input type="hidden" name="pname" value="{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}">
-
-                        <div class="form_container" value="{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}" name="pname">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</div>
-                    </div>
-                    <div class="form-group">
-                        <div style="margin: 5px; font-weight: bold;">Birthday: </div>
-                        <div class="form_container" value="{{ chosenPatientData_data.bday }}" name="bday">{{ chosenPatientData_data.bday }}</div>
-                        <input type="hidden" name="bday" value="{{ chosenPatientData_data.bday }}">
-
-                    </div>
-                    <div class="form-group">
-                        <div style="margin: 5px; font-weight: bold;">Gender: </div>
-                        <div class="form_container" value="{{ chosenPatientData_data.gender }}" name="gender">{{ chosenPatientData_data.gender }}</div>
-                        <input type="hidden" name="gender" value="{{ chosenPatientData_data.gender }}">
-
-                    </div>
-                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                        <div class="form-group">
-                            <div style="margin: 5px; font-weight: bold;">Diagnosis: </div>
-                            <div class="form_container" value="{{ chosenPatientConsulNotes_data.diagnosis }}" name="diagnosis">{{ chosenPatientConsulNotes_data.diagnosis }}</div>
-                            <input type="hidden" name="diagnosis" value="{{ chosenPatientConsulNotes_data.diagnosis }}">
-
-                        </div>
-                    {% endfor %}
-                    {% for doctor_id, doctor_data in doctors.items %}
-                        {% if doctor_data.uid == uid %}
-                            <div class="form-group">
-                                <div style="margin: 5px; font-weight: bold;">Attending Physician: </div>
-                                <div class="form_container" value="{{ doctor_data.fname }} {{ doctor_data.lname }}" name="attending_physician">{{ doctor_data.fname }} {{ doctor_data.lname }}</div>
-                                <input type="hidden" name="attending_physician" value="{{ doctor_data.fname }} {{ doctor_data.lname }}">
-
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    <div class="form-group">
-                        <div style="margin: 5px; font-weight: bold;">Total Days of Stay: </div>
-                        <div class="form_container" value="{{ num_days }}" name="today_days_stay">{{ num_days }}</div>
-                        <input type="hidden" name="num_days" value="{{ num_days }}">
-
-                    </div>
-                {% endfor %}
-            </div>
-            <hr>
-            <div style="margin: 5px; font-weight: bold;">Follow Up</div>
-            {% for appointmentsched_id, appointmentsched_data in appointmentschedule.items %}
-                {% if appointmentsched_data.uid == uid %}
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="suggested-date" style="margin: 5px; font-weight: bold;">Suggested Schedule:</label>
-                            <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                {% for key, value in nearest_dates.items %}
-                                    <option value="{{ value }}">
-                                        {% if key == 'one_week_from_now' %}
-                                            1 Week: {{ value }}
-                                        {% elif key == 'two_weeks_from_now' %}
-                                            2 Weeks: {{ value }}
-                                        {% elif key == 'three_weeks_from_now' %}
-                                            3 Weeks: {{ value }}
-                                        {% elif key == 'one_month_from_now' %}
-                                            1 Month: {{ value }}
-                                        {% endif %}
-                                    </option>
-                                {% endfor %}
-                            </select><br>
-                            <label for="suggested-time" style="margin: 5px; font-weight: bold; ">Suggested Time:</label>
-                            <div name="followup_time1" value={{ time_early }} style="margin-top: 5px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">{{ time_early }}</div><br>
-                            <input type="hidden" name="followup_time1" value={{ time_early }}>
-
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-            
-            <hr>
-            {% comment %} <div style="margin: 5px; font-weight: bold;">Prescriptions</div>
-
-            <input type="checkbox" id="prescriptionCheckbox" name="prescriptionCheckbox" value="{{ chosenPatientData_id }}" style="margin-top: 10px;">Add Prescription</input>
-
-            <div id="medications-container" style="display: none; width: 100%;">
-
-                <div id="table-header" style="display: flex; width: 100%; background-color: #334A7C;">
-                    <div style="flex: 1; text-align: center;"><input type="checkbox" id="select-all-checkbox"></div>
-                    <div style="flex: 1; text-align: center;">Days</div>
-                    <div style="flex: 1; text-align: center;">Medicine Name</div>
-                    <div style="flex: 1; text-align: center;">Dosage</div>
-                    <div style="flex: 1; text-align: center;">Route</div>
-                    <div style="flex: 1; text-align: center;">Frequency</div>
-                    <div style="flex: 1; text-align: center;">Additional Remarks</div>
-                </div>
-            
-                <div id="table-body" style="display: flex; width: 100%;">
-                    <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-                    <div style="flex: 1; text-align: center;"><input type="number" name="days" style="width: 100px;"></div>
-                    <div style="flex: 1; text-align: center;">
-                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                        <datalist id="medicine_name_suggestions">
-                            {% for medicines in medicines_list %}
-                                <option value="{{ medicines }}">{{ medicines }}</option>
-                            {% endfor %}
-                        </datalist>
-                    </div>
-                    
-                    <div style="flex: 1; text-align: center;">
-                        <select class="dosage-input" name="dosage" id="dosage_input">
-                            <option value="" selected disabled>Select Dosage</option>
-                        </select>
-                    </div>
-                    <div style="flex: 1; text-align: center;">
-                        <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
-                    </div>
-                    <div style="flex: 1; text-align: center;">
-                        <div style="text-align: center;">
-                            <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
-                            <label for="morning-checkbox">Morning</label>
-                        </div>
-                        <div style="text-align: center;">
-                            <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
-                            <label for="afternoon-checkbox">Afternoon</label>
-                        </div>
-                        <div style="text-align: center;">
-                            <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
-                            <label for="evening-checkbox">Evening</label>
-                        </div>
-                    </div>
-                    <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
-                </div>
-                
-                <div id="update-with-new-order" style="width: 100%;">
-                    <div id="buttons-container" style="width: 100%;">
-                        <div id="add-medication-button"><a href="#" id="add-medication-link">Add Medication</a></div>
-                        <div id="remove-medication-button"><a href="#" id="remove-medication-link">Remove Selected</a></div>
-                    </div>
-                </div>
-            
-            </div>
-            
-            </div> {% endcomment %}
-
-           
-            <button name="discharge_patient" style="background-color: green;">
-                Create Prescription and Discharge Patient
+  {% block content %}
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
             </button>
-        </form>
+          </div>
+          <div>
+            <b>MediMatrix</b>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Patient: 
+                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                    <span class="text-black fw-bold">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</span>
+                {% endfor %}
+                </h1>
+
+                {% if chosenPatientConsulNotes %}
+                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                        {% if chosenPatientConsulNotes_data.diagnosis %}
+                            <h3 class="welcome-sub-text">Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</h3>
+                        {% else %} 
+                            <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
+                        {% endif %} 
+                    {% endfor %}   
+                {% else %} 
+                    <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
+                {% endif %} 
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Menu</li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Appointments</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Patients</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="home-tab">
+                  <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="history-tab" data-bs-toggle="tab" href="#history" role="tab" aria-selected="false">Medical History</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="treatment-tab" data-bs-toggle="tab" href="#treatment" role="tab" aria-selected="false">Treatment Plan</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="tab-content tab-content-basic">
+
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                    <div class="d-sm-flex justify-content-between align-items-start">
+                                        <div>
+                                          <h4 class="card-title card-title-dash">Consultation Notes</h4>
+                                          <p class="card-subtitle card-subtitle-dash">Record your observations</p>
+                                        </div>
+                                      </div>
+                                    <div class="table-responsive mt-1">
+                                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                            <form method='post'>
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <select class="js-example-basic-multiple w-100" multiple="multiple">
+                                                    <option value="Shortness of Breath">Shortness of Breath</option>
+                                                    <option value="Cough">Cough</option>
+                                                    <option value="Production of Phlegm">Production of Phlegm</option>
+                                                    <option value="Wheezing">Wheezing</option>
+                                                    <option value="Coughing up Blood">Coughing up Blood</option>
+                                                    <option value="Chest Pain">Chest Pain</option>
+                                                    <option value="Fever">Fever</option>
+                                                    <option value="Heart Murmur">Heart Murmur</option>
+                                                    </select>
+                                                </div>
+
+                                                <div id="chiefComplaintArea" style="margin-bottom: 15px;"> 
+                                                    {% if chosenPatientConsulNotes %}
+                                                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                                            <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
+                                                            name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
+                                                        name="chiefComplaint"></textarea>
+                                                    {% endif %}
+                                                </div> 
+                                                
+                                                <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }}>
+                                                    <i class="fa fa-check"></i> Save </button>
+                                                
+                                                <button id="cancelChiefComplaintButton" type="button" class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-times"></i> Cancel </button>
+
+                                            </form>
+                                        {% endfor %}
+                                            
+                                        <form id="diagnosis" method='post'>
+                                            {% csrf_token %}
+                                            <div class="detail-wrapper">
+                                                <div class="detailname" style="font-weight: bold;">
+                                                    Diagnosis:
+                                                </div>
+
+                                                <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
+                                                    <datalist id="disease_name_suggestion">
+                                                        <option value="">--- Select Disease ---</option>
+                                                        {% for disease in disease_list %}
+                                                            <option value="{{ disease }}">{{ disease }}</option>
+                                                        {% endfor %}
+                                                    </datalist>
+                                                </select>
+
+                                            </div>
+
+                                            <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatientData_id }}>
+                                                <i class="fa fa-check"></i> Save </button>
+                                        </form>
+
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 d-flex flex-column">
+                            <div class="row flex-grow">
+                                <div class="col-12 grid-margin stretch-card">
+                                  <div class="card card-rounded">
+                                    <div class="card-body">
+                                      <div class="row">
+                                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                        <div class="col-lg-12">
+                                          <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <div class="d-sm-flex justify-content-between align-items-start">
+                                                <div>
+                                                  <h4 class="card-title card-title-dash">Diagnostic Tests</h4>
+                                                </div>
+                                              </div>
+                                          </div>
+                                          <div class="mt-3">
+                                            <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                                              <div class="d-flex">
+                                                <div class="wrapper ms-3">
+                                                    <button class="btn btn-inverse-success btn-sm">
+                                                        <i class="fa fa-folder-open"></i>
+                                                        <a href = "{% url 'diagnostic_imagery_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Test Results</a>
+                                                    </button>
+
+                                                    <button class="btn btn-inverse-success btn-sm" id="requestLabTestButton">
+                                                        <i class="fa fa-plus"></i>
+                                                        <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}">Request New Test</a>
+                                                    </button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        {% endfor %}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                          <div>
+                                            <h4 class="card-title card-title-dash fs-5">Personal Information</h4>
+                                          </div>
+                                        </div>
+                                        <div class="mt-1">
+                                          <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                                            <div class="d-flex">
+                                              <div class="wrapper ms-3">
+                                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Sex: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.gender }}</span><br>
+                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Birthday: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.bday }}</span><br>
+                                                  {% endfor %}
+
+                                                  {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Blood Type: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.bloodType }}</span><br>
+                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Height: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.height }} cm</span><br>
+                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Weight: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.weight }} kg</span><br>
+                                                  {% endfor %}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+
+
+                    <div class="tab-pane fade show" id="history" role="tabpanel" aria-labelledby="history">
+                        <div class="row">
+                          <div class="col-lg-8 d-flex flex-column">
+                            <div class="row flex-grow">
+                              <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                                <div class="card card-rounded">
+                                  <div class="card-body">
+                                    <div class="d-sm-flex justify-content-between align-items-start">
+                                      <div>
+                                        <h4 class="card-title card-title-dash">Patient Health Outcome</h4>
+                                        <h5 class="card-subtitle card-subtitle-dash">Monitor patient health outcomes here</h5>
+                                      </div>
+                                      <div id="performanceLine-legend"></div>
+                                    </div>
+                                    <div class="chartjs-wrapper mt-4">
+                                      <canvas id="performanceLine" width=""></canvas>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
     </div>
-</div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
+    <script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <script src="{% static 'assets/vendors/select2/select2.min.js' %}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/template.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script src="{% static 'assets/js/select2.js' %}"></script>
 
-<script>
-    
-    
-    var prescriptionCheckbox = document.getElementById("prescriptionCheckbox");
-    var prescriptionTable = document.getElementById("medications-container");
-
-    prescriptionCheckbox.addEventListener("change", function() {
-        if (prescriptionCheckbox.checked) {
-            prescriptionTable.style.display = "table"; // Show the table
-        } else {
-            prescriptionTable.style.display = "none"; // Hide the table
-        }
-    });
-
-    var pharmacyLists = JSON.parse('{{ pharmacy_lists|escapejs }}');
-    console.log(pharmacyLists);  // Print pharmacy_lists to the console
-
-    // Add your additional JavaScript code here
-    const medicineNameInput = document.getElementById('medicine_name_input');
-    const dosageInput = document.getElementById('dosage_input');
-    const routeInput = document.getElementById('route_input');
-
-    medicineNameInput.addEventListener('input', populateDosageDropdown);
-
-    dosageInput.addEventListener('change', changeRouteDropdown);
-
-    function populateDosageDropdown() {
-        const selectedMedicine = medicineNameInput.value.trim();
-        dosageInput.innerHTML = '<option value="" selected disabled>Select Dosage</option>'; // Reset dosage dropdown
-        
-        // Populate dosage dropdown based on selected medicine
-        pharmacyLists.forEach(function(pharmacy) {
-            if (pharmacy.Drug.trim() === selectedMedicine) { // Ensure consistent comparison
-                const option = document.createElement('option');
-                option.text = pharmacy.Strength;
-                option.value = pharmacy.Strength;
-                dosageInput.appendChild(option);
-            }
-        });
-
-        // Trigger the change event on dosage dropdown to update the route dropdown
-        dosageInput.dispatchEvent(new Event('change'));
-    }
-
-    function changeRouteDropdown() {
-        const selectedStrength = dosageInput.value.trim();
-        
-        // Change route dropdown based on selected strength
-        pharmacyLists.forEach(function(pharmacy) {
-            if (pharmacy.Strength.trim() === selectedStrength) { // Ensure consistent comparison
-                routeInput.value = pharmacy.Route;
-            }
-        });
-    }
-
-    // Get the add medication button
-    var addMedicationButton = document.getElementById("add-medication-link");
-
-    // Add event listener to the add medication button
-    addMedicationButton.addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default form submission behavior
-
-        // Get the table body
-        var tableBody = document.getElementById("table-body");
-
-        // Create a new row
-        var newRow = document.createElement("div");
-        newRow.setAttribute("style", "display: flex; width: 100%;");
-
-        // Add HTML content to the new row
-        var newRowHTML = `
-            <div style="flex: 1; text-align: center;"><input type="checkbox" class="remove-checkbox"></div>
-            <div style="flex: 1; text-align: center;"><input type="number" name="days" style="width: 100px;"></div>
-            <div style="flex: 1; text-align: center;">
-                <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                <datalist id="medicine_name_suggestions">
-                    {% for medicine in medicines_list %}
-                        <option value="{{ medicine }}">{{ medicine }}</option>
-                    {% endfor %}
-                </datalist>
-            </div>
-            <div style="flex: 1; text-align: center;">
-                <select class="dosage-input" name="dosage" id="dosage_input">
-                    <option value="" selected disabled>Select Dosage</option>
-                </select>
-            </div>
-            <div style="flex: 1; text-align: center;">
-                <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
-            </div>
-            <div style="flex: 1; text-align: center;">
-                <div style="text-align: center;">
-                    <input type="checkbox" name="times-daily[]" id="morning-checkbox" value="Morning">
-                    <label for="morning-checkbox">Morning</label>
-                </div>
-                <div style="text-align: center;">
-                    <input type="checkbox" name="times-daily[]" id="afternoon-checkbox" value="Afternoon">
-                    <label for="afternoon-checkbox">Afternoon</label>
-                </div>
-                <div style="text-align: center;">
-                    <input type="checkbox" name="times-daily[]" id="evening-checkbox" value="Evening">
-                    <label for="evening-checkbox">Evening</label>
-                </div>
-            </div>
-            <div style="flex: 1; text-align: center;"><input type="text" class="remarks-input" placeholder="Additional Remarks" name="additionalremarks"></div>
-        `;
-
-        // Append the new row to the end of the table body
-        tableBody.appendChild(newRow);
-    });
-
-    var reschedmodal = document.getElementById("myModal");
-    var span = document.getElementById("closeModalButton1");
-    
-    const backButton = document.getElementById('backButton');
-        
-    backButton.addEventListener('click', function() {
-        window.history.back();
-    });
-    function openModal(appointmentId) {
-    
-        reschedmodal.style.display = "block";
-
-        // Set the value of appID input in the modal
-        var appIDInput = document.getElementById('appID');
-        appIDInput.value = appointmentId;
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        reschedmodal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == reschedmodal) {
-            reschedmodal.style.display = "none";
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('addDischargePrescription').addEventListener('click', function () {
-            alert('Patient successfully discharged!');
-        });
-        document.getElementById('endAppointment').addEventListener('click', function () {
-            alert('Appointment with Patient Ended!');
-        });
-        document.getElementById('appID').addEventListener('click', function () {
-            var chosenPatientData_id = document.getElementById('appID').value;
-            alert('Appointment Ended with Patient, Successfully set up a follow-up appointment.');
-        });
-        document.querySelector('button[name="submitLabTestRequest"]').addEventListener('click', function () {
-            alert('Lab Test Request Submitted!');
-        });
-        document.getElementById('saveChiefComplaintButton').addEventListener('click', function () {
-            alert('Chief Complaint Saved!');
-        });
-        document.querySelector('button[name="rosButton"]').addEventListener('click', function () {
-            alert('Review of Systems Saved!');
-        });
-        document.querySelector('button[name="diagnosisButton"]').addEventListener('click', function () {
-            alert('Diagnosis Saved!');
-        });
-        
-    });
-</script>
-
-<script src="{% static 'js/patient_data.js' %}"></script>
-
-<script>
-    function closeModalApp() {
-        var modal = document.getElementById("appModal");
-        modal.style.display = "none";
-    }
-    var healthConditions = document.getElementById("health-conditions");
-    var otherDiagnosis = document.getElementById("otherDiagnosis");
-
-    healthConditions.addEventListener("change", function() {
-        if (this.value === "Others") {
-            otherDiagnosis.style.display = "block";
-        } else {
-            otherDiagnosis.style.display = "none";
-        }
-    });
-    
-    // Get the button and modal
-    var reviewOfSystemsButton = document.getElementById("reviewOfSystemsButton");
-    var reviewOfSystemsModal = document.getElementById("reviewOfSystemsModal");
-    var closeModalButton = document.getElementById("closeModalButton");
-    var requestLabTestButton = document.getElementById("requestLabTestButton");
-    var modal = document.getElementById("newLabTestModal");
-    var closeModalTest = document.getElementById("closeModalTest");
-
-    // Add event listener to the cancel button
-    closeModalTest.addEventListener("click", function() {
-        modal.style.display = "none"; // Hide the modal when cancel button is clicked
-    });
-
-    // ROS Modal
-    reviewOfSystemsButton.onclick = function() {
-        reviewOfSystemsModal.style.display = "block";
-        reviewOfSystemsModal.style.position = "fixed"; // Set modal position to fixed
-        reviewOfSystemsModal.style.top = "50%"; // Center vertically
-        reviewOfSystemsModal.style.left = "50%"; // Center horizontally
-        reviewOfSystemsModal.style.transform = "translate(-50%, -50%)"; // Center the modal
-    }
-
-    // When the user clicks on the close button, close the modal
-    closeModalButton.onclick = function() {
-        reviewOfSystemsModal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == reviewOfSystemsModal) {
-            reviewOfSystemsModal.style.display = "none";
-        }
-    }
-
-    // Test Request Modal
-    requestLabTestButton.onclick = function() {
-        newLabTestModal.style.display = "block";
-        newLabTestModal.style.position = "fixed"; 
-        newLabTestModal.style.top = "50%";
-        newLabTestModal.style.left = "50%";
-        newLabTestModal.style.transform = "translate(-50%, -50%)";
-    }
-
-
-    document.getElementById("closeModal").addEventListener("click", function() {
-        closeModal(); // Call the closeModal function when the cancel button is clicked
-    });
-    
-    function closeModal() {
-        // Close the modal or perform any other desired action
-        var modal = document.getElementById("newLabTestModal");
-        modal.style.display = "none"; // Assuming the modal is a div with id "newLabTestModal"
-    }
-
-    function closeModal() {
-        var modal = document.getElementById('inpatientModal1');
-        modal.style.display = 'none';
-    }
-    
-    // Get the close button inside the modal
-    var closeModalButton = document.getElementById("closeModal");
-
-    // When the user clicks on the close button, close the modal
-    closeModalButton.onclick = function() {
-        var reviewOfSystemsModal = document.getElementById("reviewOfSystemsModal");
-        reviewOfSystemsModal.style.display = "none";
-    }
-
-    // Opens Discharge Modal when "Discharge" is Clicked
-    function openDischargeModal() {
-        var modal = document.getElementById("inpatientModal1");
-        modal.style.display = "block";
-    }
-
-    function openAppointmentModal() {
-        var modal = document.getElementById("appModal");
-        modal.style.display = "block";
-    }
-
-    // Discharge Instruction Form JS Codes
-    var closeInpatientModalButton = document.getElementById("closeInpatientModal1");
-    var inpatientModal = document.getElementById("inpatientModal1");
-
-    closeInpatientModalButton.addEventListener("click", function() {
-        inpatientModal.style.display = "none";
-    });
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const addMedicineButton = document.getElementById("addMedicine1");
-        const removeSelectedRowsButton = document.getElementById("removeSelectedRows");
-        const closeInpatientModalButton = document.getElementById("closeInpatientModal1");
-        
-        addMedicineButton.addEventListener('click', function() {
-            addMedicineRow();
-        });
-        
-        removeSelectedRowsButton.addEventListener('click', function() {
-            removeSelectedRows();
-        });
-        
-        closeInpatientModalButton.addEventListener('click', function() {
-            document.getElementById("inpatientModal1").style.display = "none";
-        });
-        // Get the status of the patient
-        var statusElement = document.getElementById("lname");
-        var status = statusElement.textContent.trim();
-    
-        // Get the containers for consultation notes, and diagnostic tests
-        var consultationNotesContainer = document.getElementById("consultation-notes-container");
-        var diagnosticTestsContainer = document.getElementById("diagnostic-tests-container");
-    
-        // Show/hide containers based on patient status
-        if (status === "Inpatient") {
-            consultationNotesContainer.style.display = "none";
-            diagnosticTestsContainer.style.display = "block";
-        } else if (status === "Outpatient") {
-            consultationNotesContainer.style.display = "block";
-            diagnosticTestsContainer.style.display = "block";
-        }
-    });
-    
-    function addMedicineRow() {
-        const prescriptionsContainer = document.getElementById("prescriptionsContainer1");
-        const newRow = document.createElement("div");
-        newRow.classList.add("prescription-row1");
-    
-        newRow.innerHTML = `
-            <div class="cell"><input type="checkbox" name="selectMedicine[]" class="selectMedicine" /></div>
-            <div class="cell"><input type="text" name="medicineName1" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                <datalist id="medicine_name_suggestions">
-                    {% for medicine in medicines_list %}
-                        <option value="{{ medicine }}">
-                    {% endfor %}
-                </datalist></div>
-            <div class="cell"><input type="text" name="dosage1" /></div>
-            <div class="cell"><select class="route-dropdown" name="route1">
-                <option value="" selected disabled>Select Route</option>
-                <option value="Oral">Oral</option>
-                <option value="Injection">Injection</option>
-                <option value="Topical">Topical</option>
-            </select></div>
-            <div>
-                <div style="flex: 1; text-align: center;">
-                    <select class="frequency-dropdown" name="frequency1" id="frequency-dropdown">
-                        <option value="" selected disabled>Select Frequency</option>
-                        <option value="Once Daily">Once Daily</option>
-                        <option value="Twice Daily">Twice Daily</option>
-                        <option value="Thrice Daily">Thrice Daily</option>
-                    </select>
-                </div>
-                <div id="once-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
-                    <div style="text-align: center;">
-                        <input type="checkbox" name="times-once-daily[]" id="morning-checkbox" value="Morning">
-                        <label for="morning-checkbox">Morning</label>
-                    </div>
-                    <div style="text-align: center;">
-                        <input type="checkbox" name="times-once-daily[]" id="afternoon-checkbox" value="Afternoon">
-                        <label for="afternoon-checkbox">Afternoon</label>
-                    </div>
-                    <div style="text-align: center;">
-                        <input type="checkbox" name="times-once-daily[]" id="evening-checkbox" value="Evening">
-                        <label for="evening-checkbox">Evening</label>
-                    </div>
-                </div>
-                <div id="twice-daily-checkboxes" style="display: none; margin-top: 10px; flex-direction: column;">
-                    <div style="text-align: center;">
-                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-morning-checkbox" value="Morning">
-                        <label for="twice-daily-morning-checkbox">Morning</label>
-                    </div>
-                    <div style="text-align: center;">
-                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-afternoon-checkbox" value="Afternoon">
-                        <label for="twice-daily-afternoon-checkbox">Afternoon</label>
-                    </div>
-                    <div style="text-align: center;">
-                        <input type="checkbox" name="times-twice-daily[]" id="twice-daily-evening-checkbox" value="Evening">
-                        <label for="twice-daily-evening-checkbox">Evening</label>
-                    </div>     
-                </div>                    
-            </div>
-            <div class="cell"><input type="text" name="remarks1" /></div>
-        `;
-    
-        prescriptionsContainer.appendChild(newRow);
-        attachEventListenersToNewElements();
-    }
-
-    function attachEventListenersToNewElements() {
-        const frequencyDropdowns = document.querySelectorAll(".frequency-dropdown");
-        frequencyDropdowns.forEach(function(dropdown) {
-            dropdown.addEventListener("change", function() {
-                const selectedFrequency = dropdown.value;
-                const onceDailyCheckboxes = dropdown.parentElement.nextElementSibling.querySelector("#once-daily-checkboxes");
-                const twiceDailyCheckboxes = dropdown.parentElement.nextElementSibling.querySelector("#twice-daily-checkboxes");
-                if (selectedFrequency === "Once Daily") {
-                    onceDailyCheckboxes.style.display = "flex";
-                    twiceDailyCheckboxes.style.display = "none";
-                } else if (selectedFrequency === "Twice Daily") {
-                    onceDailyCheckboxes.style.display = "none";
-                    twiceDailyCheckboxes.style.display = "flex";
-                } else {
-                    onceDailyCheckboxes.style.display = "none";
-                    twiceDailyCheckboxes.style.display = "none";
-                }
-            });
-        });
-    }
-
-    // Call the function to attach event listeners to existing elements
-    attachEventListenersToNewElements();
-
-    const frequencyDropdown = document.getElementById("frequency-dropdown");
-    const onceDailyCheckboxes = document.getElementById("once-daily-checkboxes");
-    const twiceDailyCheckboxes = document.getElementById("twice-daily-checkboxes");
-    
-    frequencyDropdown.addEventListener("change", function() {
-        const selectedFrequency = frequencyDropdown.value;
-        if (selectedFrequency === "Once Daily") {
-            onceDailyCheckboxes.style.display = "flex";
-            twiceDailyCheckboxes.style.display = "none";
-        } else if (selectedFrequency === "Twice Daily") {
-            onceDailyCheckboxes.style.display = "none";
-            twiceDailyCheckboxes.style.display = "flex";
-        } else {
-            onceDailyCheckboxes.style.display = "none";
-            twiceDailyCheckboxes.style.display = "none";
-        }
-    });
-    
-    function removeSelectedRows() {
-        const selectedCheckboxes = document.querySelectorAll('.selectMedicine:checked');
-        selectedCheckboxes.forEach(function(checkbox) {
-            checkbox.closest('.prescription-row1').remove();
-        });
-    }
-
-    document.getElementById('medicineName1').addEventListener('input', function() {
-        var query = this.value;
-        var suggestions = Array.from(document.getElementById('medicine_name_suggestions').options)
-            .map(option => option.value)
-            .filter(medicine => medicine.toLowerCase().includes(query.toLowerCase()));
-    
-        displayAutocompleteSuggestions(suggestions);
-    });
-    
-    function displayAutocompleteSuggestions(suggestions) {
-        var dropdown = document.getElementById('medicine_name_suggestions');
-        dropdown.innerHTML = '';
-    
-        suggestions.forEach(function(suggestion) {
-            var option = document.createElement('option');
-            option.value = suggestion;
-            dropdown.appendChild(option);
-        });
-    }
-        function toggleFollowup() {
-            var followupDiv = document.getElementById("followupDiv");
-            var checkbox = document.getElementById("followupCheckbox");
-            
-            if (checkbox.checked) {
-                followupDiv.style.display = "block";
-            } else {
-                followupDiv.style.display = "none";
-            }
-        }
-</script>
-{% endblock %}
+    <!-- <script src="assets/js/Chart.roundedBarCharts.js"></script> -->
+    <!-- End custom js for this page-->
+  </body>
+  {% endblock %}

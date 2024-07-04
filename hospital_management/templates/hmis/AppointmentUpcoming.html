@@ -23,6 +23,45 @@
     <!-- End plugin css for this page -->
     <!-- inject:css -->
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <style>
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        width: 30%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+      }
+
+      .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 30px;
+        cursor: pointer;
+      }
+
+      .detail-wrapper {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      
+      .detailname {
+        margin-right: 4px; 
+      }
+    </style>
     <!-- endinject -->
     <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
     {% endblock styles%}
@@ -52,24 +91,28 @@
           </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown d-none d-lg-block">
-              <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false"> Select Clinic </a>
+              <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false"> Filter Appointments </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="messageDropdown">
-                <a class="dropdown-item py-3">
-                  <p class="mb-0 fw-medium float-start">Select clinic</p>
+                <a class="dropdown-item py-3" href="javascript:void(0);" onclick="filterTable('all')">
+                  <p class="mb-0 fw-medium float-start">Show All</p>
                 </a>
+                
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-item-content flex-grow py-2">
-                    <p class="preview-subject ellipsis fw-medium text-dark">Clinic Name 1 </p>
-                    <p class="fw-light small-text mb-0">Clinic Address Lorem Ipsum</p>
-                  </div>
-                </a>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-item-content flex-grow py-2">
-                    <p class="preview-subject ellipsis fw-medium text-dark">Clinic Name 2 </p>
-                    <p class="fw-light small-text mb-0">Clinic Address Lorem Ipsum</p>
-                  </div>
-                </a>
+                {% for doctors_id, doctors_data in doctors.items %}
+                  {% for doctorClinic in doctors_data.clinic %}
+                    {% for clinic_id, clinic_data in clinics.items%}
+                      {% if clinic_id == doctorClinic %}
+                        <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
+                          <div class="preview-item-content flex-grow py-2">
+                            <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
+                            <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
+                            <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
+                          </div>
+                        </a>
+                      {% endif %}
+                    {% endfor %}
+                  {% endfor %}
+                {% endfor %}
               </div>
             </li>
             {% comment %} Notifs {% endcomment %}
@@ -94,28 +137,7 @@
                 </a>
               </div>
             </li>
-            {% comment %} Messages Notif {% endcomment %}
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="icon-mail icon-lg"></i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
-                <a class="dropdown-item py-3">
-                  <p class="mb-0 fw-medium float-start">You have 7 unread mails </p>
-                  <span class="badge badge-pill badge-primary float-end">View all</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="{% static 'doctorjane.jpg' %}" alt="image" class="img-sm profile-pic">
-                  </div>
-                  <div class="preview-item-content flex-grow py-2">
-                    <p class="preview-subject ellipsis fw-medium text-dark">Another Doctor </p>
-                    <p class="fw-light small-text mb-0"> Can you... </p>
-                  </div>
-                </a>
-              </div>
-            </li>
+            
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
               <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
@@ -123,12 +145,8 @@
                 <div class="dropdown-header text-center">
                   {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-<<<<<<< HEAD
                             <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
                             <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-=======
-                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
->>>>>>> dbf870cee38831a52439490211f9b18d8127d83f
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -202,86 +220,130 @@
                               <th>Time</th>
                               <th>Patient Name</th>
                               <th>Visit Type</th>
-                              <th>Details</th>
+                              <th>Clinic</th>
+                              <th>Actions</th>
                               <th>Status</th>
                             </tr>
                           </thead>
                           <tbody>
-                           
-                              {% if appointments %}
-                                {% for appointment_id, appointment_data in appointments.items %}
+                            {% if appointments %}
+                              {% for appointment_id, appointment_data in appointments.items %}
                                 <tr>
-                                    <form method="post" >
-                                        {% csrf_token %}
-                                        <input type="hidden" name="selected_appointment_date" value="{{ appointment_data.appointmentDate }}">
-                                    
-                                        <td name="selected_appointment_date">{{ appointment_data.appointmentDate }}</td>
-                                    </form>
-                                        <td>{{ appointment_data.appointmentTime }}</td>
-                                    {% for patient_id, patient_data in patients.items %}
-                                        {% if patient_data.uid == appointment_data.patientName %}
-                                            <td><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></td>
-                                        {% endif %}
-                                    {% endfor %}
-                                    <td>{{ appointment_data.appointmentVisitType }}</td>
-                                    <td><a href="#" class="details-link" >Click for More Details</label>
-                                    {% for patient_id, patient_data in patients.items %}
-                                        {% if appointment_data.patientName == patient_data.uid  %}
-                                            <div class="details-container" style="display: none;">
-                                                <div class="detail-wrapper">
-                                                    <div class="detailname" style="font-weight: bold;">E-mail: </div>
-                                                    <div class="detailvalue">{{ patient_data.email }}</div>
-                                                </div>
-                                                <div class="detail-wrapper">
-                                                    <div class="detailname" style="font-weight: bold;">Phone Number: </div>
-                                                    <div class="detailvalue">{{ patient_data.cnumber }}</div>
-                                                </div>
-                                                <div class="detail-wrapper">
-                                                    <div class="detailname" style="font-weight: bold;">Location: </div>
-                                                    <div class="detailvalue">{{ patient_data.address}}</div>
-                                                </div>
-                                                <div class="button-container">
-                                                    <button class="reschedule-button" onclick="openModal('{{ appointment_id }}')">Reschedule</button>
-                                                    <form action="{% url 'delete_appointment' %}" method="post">
-                                                        {% csrf_token %}
-                                                        <button type="submit" class="cancel-button" onclick="cancelAppointment()" name='cancel' value={{ appointment_id }}>Cancel Appointment</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
-                                    
-                                    </td>
-                                    
-                                    <td><label class="badge badge-danger">Pending</label></td>
-                                    <div id="myModal" class="modal">
-                                        <div class="modal-content">
-                                            <span class="close">&times;</span>
-                                            <h2>Reschedule Appointment</h2>
-                                            <form id="reschedule-form{{ appointment_id }}" method="POST" action="{% url 'update_appointment' %}">
-                                                {% csrf_token %}
-                                                <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                                                    <label for="suggested-date" style="margin-right: 10px;">Suggested Schedule:</label>
-                                                    <input type="text" id="selected_appointment_date" name="selected_appointment_date" value={{ next_available_date_str }} style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                                    </input>
-                                                </div>
-                                                <label for="suggested-time">Suggested Time:</label>
-                                                <select id="new_appointment_time" name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                                    {% for time_slot in time_slots %}
-                                                        <option value="{{ time_slot }}">{{ time_slot }}</option>
-                                                    {% endfor %}
-                                                </select><br>
-                                                <button type="submit" class="buttons_info" id="appID" name="appID" value="{{ appointment_id }}">Submit</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                        <td colspan="6" style="text-align: center;">No upcoming appointments!</td>
-                        {% endif %}
+                                  <form method="post" >
+                                    {% csrf_token %}
+                                    <input type="hidden" name="selected_appointment_date" value="{{ appointment_data.appointmentDate }}">
+                                    <td name="selected_appointment_date">{{ appointment_data.appointmentDate }}</td>
+                                  </form>
 
-                            
+                                  <td>{{ appointment_data.appointmentTime }}</td>
+
+                                  {% for patient_id, patient_data in patients.items %}
+                                      {% if patient_data.uid == appointment_data.patientName %}
+                                          <td><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></td>
+                                      {% endif %}
+                                  {% endfor %}
+
+                                  <td>{{ appointment_data.appointmentVisitType }}</td>
+
+                                  <form method="post">
+                                    {% csrf_token %}
+                                    {% for clinic_id, clinic_data in clinics.items%}
+                                      {% if clinic_id == appointment_data.clinic %}
+                                      
+                                        <input type="hidden" name="clinic_uid" value="{{ appointment_data.clinic }}">
+                                        <td name="clinic_uid">{{ clinic_data.name }}</td>
+                                      {% endif %}
+                                    {% endfor %}
+                                  </form>
+
+                                  <td>
+                                    <button type="button" class="openModalBtn btn btn-primary btn-sm">Click for More Actions</button>
+                                    <div class="myModal modal">
+                                      <div class="modal-content">
+                                        <span class="close">&times;</span>
+                                        <i class="fa-regular fa-circle-check"></i>
+                                        <h2 style="margin-bottom: 20px;">Patient Contact Information</h2>
+                                        {% for patient_id, patient_data in patients.items %}
+                                          {% if patient_data.uid == appointment_data.patientName %}
+                                            <div class="detail-wrapper">
+                                              <div class="detailname" style="font-weight: bold;">E-mail: </div>
+                                              <div class="detailvalue">{{ patient_data.email }}</div>
+                                            </div>
+                                            <div class="detail-wrapper">
+                                              <div class="detailname" style="font-weight: bold;">Phone Number: </div>
+                                              <div class="detailvalue">{{ patient_data.cnumber }}</div>
+                                            </div>
+                                            <div class="detail-wrapper">
+                                              <div class="detailname" style="font-weight: bold;">Location: </div>
+                                              <div class="detailvalue">{{ patient_data.address}}</div>
+                                            </div>
+                                          {% endif %}
+                                        {% endfor %} 
+
+
+                                        <h2 style="margin-top: 20px; margin-bottom: 20px;">Reschedule Appointment</h2>
+                                        <form id="reschedule-form{{ appointment_id }}" method="POST" action="{% url 'update_appointment' %}">
+                                          {% csrf_token %}
+                                          <div class="detail-wrapper">
+                                            <div class="detailname" style="font-weight: bold;">Clinic: </div>
+                                            <div class="dropdown">
+                                              <button class="btn btn-info btn-sm dropdown-toggle" type="button" id="dropdownMenuSizeButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                {% for clinic_id, clinic_data in clinics.items%}
+                                                  {% if clinic_id == appointment_data.clinic %}
+                                                    {{ clinic_data.name }}
+                                                  {% endif %}
+                                                {% endfor %}
+                                              </button>
+                                              
+                                              <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3">
+                                                {% for doctors_id, doctors_data in doctors.items %}
+                                                  {% for doctorClinic in doctors_data.clinic %}
+                                                    {% for clinic_id, clinic_data in clinics.items%}
+                                                      {% if clinic_id == doctorClinic %}
+                                                          <div class="preview-item-content flex-grow py-2">
+                                                            <input type="hidden" name="clinic_uid" value="{{ appointment_data.clinic }}">
+                                                            <a class="dropdown-item" href="#">{{ clinic_data.name }}</a>
+                                                          </div>
+                                                      {% endif %}
+                                                    {% endfor %}
+                                                  {% endfor %}
+                                                {% endfor %}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="detail-wrapper">
+                                            <div class="detailname" style="font-weight: bold;">Suggested Schedule: </div>
+                                            <input type="text" id="selected_appointment_date" name="selected_appointment_date" value={{ next_available_date_str }} style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></input>
+                                          </div>
+                                          <div class="detail-wrapper">
+                                            <div class="detailname" style="font-weight: bold;">Suggested Time: </div>
+                                            <select id="new_appointment_time" name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                              {% for time_slot in time_slots %}
+                                                  <option value="{{ time_slot }}">{{ time_slot }}</option>
+                                              {% endfor %}
+                                            </select><br>
+                                          </div>
+                                          <button type="submit" class="appID btn btn-primary btn-sm" name="appID" value="{{ appointment_id }}">Reschedule Appointment</button>
+                                        </form>
+
+                                        <h2 style="margin-top: 20px; margin-bottom: 20px;">Cancel Appointment</h2>
+                                        <form action="{% url 'delete_appointment' %}" method="post">
+                                          {% csrf_token %}
+                                          <button type="submit" class="btn btn-primary btn-sm" onclick="cancelAppointment()" name='cancel' value={{ appointment_id }}>Cancel Appointment</button>
+                                        </form>
+
+                                      </div>
+                                    </div>
+                                  </td>
+                                  
+                                  <td><label class="badge badge-danger">Pending</label></td>
+                                  
+                                </tr>
+                              {% endfor %}
+                            {% else %}
+                              <td colspan="7" style="text-align: center;">No upcoming appointments!</td>
+                            {% endif %}
+
                           </tbody>
                         </table>
                       </div>
@@ -292,11 +354,60 @@
             </div>
         </div>
       </div>
-      <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="{% static 'js/appointment.js' %}"></script>
+    {% comment %} <script src="{% static 'js/appointment.js' %}"></script> {% endcomment %}
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        document.body.addEventListener('click', function (event) {
+          // Open modal button clicked
+          if (event.target.classList.contains('openModalBtn')) {
+            var modal = event.target.nextElementSibling;
+            modal.style.display = 'block';
+          }
+    
+          // Close modal button clicked
+          if (event.target.classList.contains('close')) {
+            var modal = event.target.closest('.modal');
+            modal.style.display = 'none';
+          }
+    
+          // Submit appointment reschedule button clicked
+          if (event.target.classList.contains('appID')) {
+            alert('Appointment rescheduled successfully!');
+          }
+        });
+    
+        // Close modal if clicked outside the content
+        window.addEventListener('click', function (event) {
+          if (event.target.classList.contains('myModal')) {
+            event.target.style.display = 'none';
+          }
+        });
+      });
+    </script>
+    
+
+    <script>
+      function filterTable(clinicId) {
+          var tableRows = document.querySelectorAll('tbody tr');
+          if (clinicId === 'all') {
+              tableRows.forEach(function(row) {
+                  row.style.display = '';
+              });
+          } else {
+              tableRows.forEach(function(row) {
+                  var rowClinicId = row.getAttribute('data-clinic-id');
+                  if (rowClinicId === clinicId) {
+                      row.style.display = '';
+                  } else {
+                      row.style.display = 'none';
+                  }
+              });
+          }
+      }
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('appID').addEventListener('click', function () {
@@ -307,16 +418,12 @@
     
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
+    
     <script src="{% static 'assets/js/off-canvas.js' %}"></script>
     <script src="{% static 'assets/js/template.js' %}"></script>
     <script src="{% static 'assets/js/settings.js' %}"></script>
     <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
     <script src="{% static 'assets/js/todolist.js' %}"></script>
 
-    <!-- endinject -->
 </body>
 {% endblock %}

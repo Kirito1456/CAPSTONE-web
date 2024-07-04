@@ -123,12 +123,8 @@
                 <div class="dropdown-header text-center">
                   {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-<<<<<<< HEAD
                             <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
                             <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-=======
-                            <div id="name" style="font-size: 16;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
->>>>>>> dbf870cee38831a52439490211f9b18d8127d83f
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -200,9 +196,9 @@
                             <tr>
                               <th>Patient Name</th>
                               <th>Gender</th>
-                              <th>Age</th>
+                              <th>Diagnosis</th>
                               <th>Last Visited</th>
-                              <th>Status</th>
+                              <th>Medication Adherence</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -215,8 +211,20 @@
                                     </a>
                                 </td>
                                 <td>{{ patients_data.gender }}</td>
-                                <td>{{ chosenPatientData_data.lastVisited }}</td>
-                                <td>{{ chosenPatientData_data.lastVisited }}</td>
+                                <td>
+                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                    {% if patients_id == chosenPatientData_id %}
+                                      {{ chosenPatientData_data.disease }}
+                                    {% endif %}
+                                  {% endfor %}
+                                </td>
+                                <td>
+                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                    {% if patients_id == chosenPatientData_id %}
+                                      {{ chosenPatientData_data.lastVisited }}
+                                    {% endif %}
+                                  {% endfor %}
+                                </td>
                                 <td>
                                     <div class="progress">
                                       <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>

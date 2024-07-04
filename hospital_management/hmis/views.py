@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime , timedelta
 import datetime as date
 import re
@@ -125,14 +126,21 @@ def home(request):
             doctor_found = False
             nurse_found = False
             chargenurse_found = False
-            for account in accounts.values():
-                doctor_found = True
+            complete = False
+            for doctor_id, doctor_data in doctors.items():
+                if session_id == doctor_id:
+                    print(doctor_id)
+                    doctor_found = True
+                    if doctor_data.get('license'):
+                        complete = True
 
-            if doctor_found:
+            if doctor_found and complete == True:
                 return redirect('DoctorDashboard')
+            elif doctor_found and complete == False:
+                return redirect('newuser')
             else:
                 return redirect('register')
-                
+
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
 
@@ -168,8 +176,6 @@ def dashboard(request):
     else:
         # Handle GET request or other cases where no POST data is available
         return render(request, 'hmis/dashboard.html', {})
-
-
 
 
 def clinics(request):
@@ -209,14 +215,34 @@ def nursesAdmin(request):
 
 def register(request):
     
-    clinics = db.child("clinics").get().val()
+    # clinics = db.child("clinics").get().val()
 
-    # Combine doctors and nurses data into one dictionary
-    accounts = {}
-    if clinics:
-        accounts.update(clinics)
+    # # Combine doctors and nurses data into one dictionary
+    # accounts = {}
+    # if clinics:
+    #     accounts.update(clinics)
     
-    return render(request, 'hmis/register.html', {'accounts': accounts})
+    return render(request, 'hmis/register.html')
+
+def newuser(request):
+
+    if request.method == 'POST':
+        license = request.POST.get('license')
+        ptr = request.POST.get('ptr')
+        uid = request.session.get('uid')
+        doctors = db.child("doctors").get().val()
+
+        for doctor_id, doctor_data in doctors.items():
+            if doctor_id == uid:
+                data = {
+                    'license': license,
+                    'ptr': ptr,
+                }
+
+                db.child('doctors').child(uid).update(data)
+                return redirect('DoctorDashboard')
+
+    return render(request, 'hmis/newuser.html')
 
 def create(request):
     if request.method == 'POST':
@@ -246,37 +272,17 @@ def create(request):
                 return redirect('register')
 
             try:
-                clinic = request.POST.get('clinic')
-                
-                # Check if clinic data is provided
-                id = str(uuid.uuid1())
-                clinic_data = {
-                    'name': request.POST.get('newclinic'),
-                    'fnumber': request.POST.get('fnumber'),
-                    'onumber': request.POST.get('onumber'),
-                    'rnumber': request.POST.get('rnumber'),
-                    'uid': id
-                }
-
-                #print(clinic_data)
-
-                if clinic_data['name']:
-                    # Save new clinic data
-                    clinic_ref =  db.child('clinics').child(id).set(clinic_data)
-                    #clinic_id = clinic_ref.key  # Get the unique key of the pushed clinic
-                    clinic = id
-
                 # Create user in Firebase Authentication
                 user = firebase_auth.create_user_with_email_and_password(email, password)
-
                 
                 data = {
                     'uid': user['localId'],
                     'fname': cleaned_data['fname'],
                     'lname': cleaned_data['lname'],
                     'sex': cleaned_data['sex'],
+                    'specialization': cleaned_data['specialization'],
                     #'department': cleaned_data['department'],
-                    'clinic': clinic,
+                    #'clinic': clinic,
                     'email': email,
                 }
 
@@ -384,6 +390,7 @@ def AppointmentUpcoming(request):
     patients = db.child("patients").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']    
+    clinics = db.child("clinics").get().val()
 
     next_available_dates = []
     time_slots = []
@@ -410,6 +417,12 @@ def AppointmentUpcoming(request):
     else:
         sorted_upcoming_appointments = {}
 
+    # Suggested date for rescheduling
+    if request.method == 'POST':
+        clinic_uid = request.POST.get('clinic_uid')
+        print("CLINIC UID IS", clinic_uid)
+    else:
+        print("asdasdasd")
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
     if appointmentschedule_data:
         available_days_str = appointmentschedule_data.get("days", "")
@@ -471,7 +484,7 @@ def AppointmentUpcoming(request):
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
-                                                             'next_available_date_str': next_available_date_str, 'time_slots': time_slots})
+                                                             'next_available_date_str': next_available_date_str, 'time_slots': time_slots, 'clinics': clinics})
 def update_appointment(request):
     
     if request.method == 'POST':
@@ -565,6 +578,8 @@ def AppointmentPast(request):
     doctors = db.child("doctors").get().val()
     consulNotes = db.child("consultationNotes").get().val()
     uid = request.session['uid']
+    clinics = db.child("clinics").get().val()
+
 
     # Filter and sort upcoming appointments
     past_appointments = {}
@@ -589,7 +604,7 @@ def AppointmentPast(request):
         sorted_past_appointments = {}
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
-                                                         'uid': uid, 'doctors': doctors})
+                                                         'uid': uid, 'doctors': doctors, 'clinics': clinics})
     
 def AppointmentCalendar(request):
     
@@ -602,6 +617,7 @@ def AppointmentCalendar(request):
     id = request.session.get('uid')
     patients = db.child("patients").get().val()
     appointments = db.child("appointments").get().val()
+    clinics = db.child("clinics").get().val()
 
     task = []
     if appointments:
@@ -621,7 +637,7 @@ def AppointmentCalendar(request):
     else:
         task_json = ''
     
-    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json})
+    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json, 'clinics': clinics})
 
 def AppointmentScheduling(request):
     doctors = db.child("doctors").get().val()
@@ -701,14 +717,13 @@ def DoctorDashboard(request):
     patientsdata = db.child("patientdata").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
-    rooms = db.child("rooms").get().val()
     submittedTest = db.child("submittedTest").get().val()
     appointments = db.child("appointments").get().val()
     clinics = db.child("clinics").get().val()
+    patientsorders = db.child("patientsorders").get().val()
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
-    inpatients = {}
     if upcomings:
         for appointment_id, appointment_data in upcomings.items():
             if appointment_data["doctorUID"] == uid:
@@ -721,19 +736,14 @@ def DoctorDashboard(request):
                 
                     # Check if appointment date is in the future
                     if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)) and appointment_data["status"] == "Ongoing":
-                        upcoming_appointments[appointment_id] = appointment_data
-
-                for patient_id, patient_data in patients.items():
-                    if appointment_data["patientName"] == patient_id:
-                        for patientdata_id, patientdata_data in patientdatas.items():
-                            if patientdata_data["status"] == 'Inpatient' and patientdata_id == appointment_data["patientName"]:
-                            # if patientdata_data["status"] == 'Inpatient' and patientdata_data['patientid'] == appointment_data["patientName"]:
-                                inpatients[patientdata_id] = patientdata_data       
+                        upcoming_appointments[appointment_id] = appointment_data     
 
         # Sort appointments by date
         sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
     else:
         sorted_upcoming_appointments = {}
+
+    print(sorted_upcoming_appointments)
 
     chosenPatients= {}
     if patients:
@@ -750,13 +760,53 @@ def DoctorDashboard(request):
                 if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
                     chosenPatientData[patientsdata_id] = patientsdata_data
 
+    adherence = defaultdict(list)
+    if patients:
+        for patients_id, patients_data in patients.items():
+            for patientsorders_id, patientsorders_data in patientsorders.items():
+                adherence_percentages = {}
+                
+                for date_id, date_data in patientsorders_data.items():
+                    for inside_id, inside_data in date_data.items():
+                        if patients_id == patientsorders_id:
+                            medicine_name = inside_data['medicine_name']
+                            dispensed = inside_data['total']
+                            remaining = (inside_data['total']) - 2
+                            prescribed = inside_data['total']
+                            days = inside_data['days'] - 1
 
-    # Pass the combined data to the template
+                            adherence_percentage = ((dispensed - remaining) / ((prescribed / days) * days)) * 100
+                            adherence_percentages.setdefault(medicine_name, []).append(adherence_percentage)
+
+                        
+                
+                # Calculate average adherence percentage for each medicine_name
+                for medicine_name, percentages in adherence_percentages.items():
+                    average_adherence = sum(percentages) / len(percentages)
+                    adherence[patientsorders_id].append({
+                        'patientsorders_id': patientsorders_id,
+                        'medicine_name': medicine_name,
+                        'average_adherence_percentage': average_adherence
+                    })
+
+                total_average_adherence = {}
+
+                for patientsorders_id, adherence_data in adherence.items():
+                    total_average = sum(entry['average_adherence_percentage'] for entry in adherence_data) / len(adherence_data)
+                    
+                    total_average_rounded = round(total_average, 2)
+                    
+                    total_average_adherence[patientsorders_id] = {
+                        'total_average_adherence': total_average_rounded
+                    }
+
     return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors,
-                                                             'inpatients':inpatients, 'rooms': rooms, 'chosenPatientData': chosenPatientData,
+                                                             'chosenPatientData': chosenPatientData,
                                                              'submittedTest':submittedTest,'patients1': chosenPatients,
-                                                             'clinics': clinics}) 
+                                                             'clinics': clinics,
+                                                             'patientsorders': patientsorders,
+                                                             'total_average_adherence': total_average_adherence}) 
 
 def ChargeNurseDashboard(request):
     nurses = db.child("nurses").get().val()
@@ -823,8 +873,8 @@ def patient_data_doctor_view(request):
     patientsdata = db.child("patientdata").get().val()
     appointments = db.child("appointments").get().val()
     doctors = db.child("doctors").get().val()
+    clinics = db.child("clinics").get().val()
     uid = request.session['uid'] 
-    rooms = db.child("rooms").get().val()
 
     chosenPatients= {}
     if patients:
@@ -845,7 +895,8 @@ def patient_data_doctor_view(request):
                                                                   'chosenPatientData': chosenPatientData, 
                                                                   'doctors': doctors, 
                                                                   'uid': uid,
-                                                                  'rooms': rooms})
+                                                                  'appointments': appointments,
+                                                                  'clinics': clinics})
 
 def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
