@@ -30,8 +30,9 @@ class Staff(models.Model):
     sex = models.CharField(max_length=10, choices=SEX_CHOICES)
     JOB_TITLE_CHOICES = (
         ('General Practitioner', 'General Practitioner'),
+        ('Pulmonologist', 'Pulmonologist'),
         ('Pediatrician', 'Pediatrician'),
-        ('Charge Nurse', 'Charge Nurse'),
+        #('Charge Nurse', 'Charge Nurse'),
     )
     specialization = models.CharField(max_length=20, choices=JOB_TITLE_CHOICES)
 
@@ -40,7 +41,7 @@ class Staff(models.Model):
         ('Nurse', 'Nurse'),
     )
 
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES , null=True)
+    #role = models.CharField(max_length=10, choices=ROLE_CHOICES , null=True)
     #DEPARTMENT_CHOICES = (
     #    ('General Ward', 'General Ward'),
     #)

@@ -174,7 +174,7 @@
                 <button id="backButton">Back</button>
             </div>
         </div>
-            <form method="post" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
+            <form method="post" enctype="multipart/form-data" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
             {% csrf_token %}
             <div class="prescription-pad">
             <div class="header">
@@ -182,6 +182,7 @@
                     {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
                             <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
+                            <h3>{{ doctor_data.specialization }}</h3>
                             {% for doctorClinic in doctor_data.clinic %}
                                 {% for clinic_id, clinic_data in clinics.items %}  
                                     {% if clinic_data.uid == doctorClinic %}
@@ -226,24 +227,34 @@
                     <div class="medicine">
                         <div class="medicine-row">
                             <label for="medicine-name"><strong>Medicine Name:</strong></label>
-                            <input type="text" name="medicine_name">
+                            {% comment %} <input type="text" name="medicine_name"> {% endcomment %}
+                            <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                                    <datalist id="medicine_name_suggestions">
+                                        {% for medicine in medicines_list %}
+                                            <option value="{{ medicine }}">{{ medicine }}</option>
+                                        {% endfor %}
+                                    </datalist>
                             <label for="dosage"><strong>Dosage:</strong></label>
-                            <select name="dosage">
+                            {% comment %} <select name="dosage">
                                 <option value="5mg">5mg</option>
                                 <option value="10mg">10mg</option>
                                 <option value="15mg">15mg</option>
                                 <option value="20mg">20mg</option>
+                            </select> {% endcomment %}
+                            <select name="dosage" id="dosage_input">
+                                <option value="" selected disabled>Select Dosage</option>
                             </select>
                             <button type="button" class="remove-medicine-btn" onclick="removeMedicineRow(this)">Remove</button>
                         </div>
                         <p>
                             Sig.: take through
-                            <select name="route">
+                            {% comment %} <select name="route">
                                 <option value="oral">oral</option>
                                 <option value="intravenous">intravenous</option>
                                 <option value="topical">topical</option>
                                 <option value="inhalation">inhalation</option>
-                            </select>
+                            </select> {% endcomment %}
+                            <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                             every
                             <select id="times" name="times">
                                 <option value="q.d.">q.d. (once daily)</option>
@@ -257,8 +268,8 @@
                                 <option value="PRN">PRN (as needed)</option>
                                 <option value="AC">AC (before meals)</option>
                                 <option value="PC">PC (after meals)</option>
-                            </select>
-                            times for
+                            </select><br>
+                            times for 
                             <input type="text" name="days" size="2">
                             days
                             <hr>
@@ -417,24 +428,21 @@
         medicineRow.innerHTML = `
             <div class="medicine-row">
                 <label for="medicine-name"><strong>Medicine Name:</strong></label>
-                <input type="text" name="medicine_name">
+                <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                    <datalist id="medicine_name_suggestions">
+                        {% for medicine in medicines_list %}
+                            <option value="{{ medicine }}">{{ medicine }}</option>
+                        {% endfor %}
+                    </datalist>
                 <label for="dosage"><strong>Dosage:</strong></label>
-                <select name="dosage">
-                    <option value="5mg">5mg</option>
-                    <option value="10mg">10mg</option>
-                    <option value="15mg">15mg</option>
-                    <option value="20mg">20mg</option>
+                <select name="dosage" id="dosage_input">
+                    <option value="" selected disabled>Select Dosage</option>
                 </select>
                 <button type="button" class="remove-medicine-btn" onclick="removeMedicineRow(this)">Remove</button>
             </div>
             <p>
                 Sig.: take through
-                <select name="route">
-                    <option value="oral">oral</option>
-                    <option value="intravenous">intravenous</option>
-                    <option value="topical">topical</option>
-                    <option value="inhalation">inhalation</option>
-                </select>
+                <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                 every
                 <select id="times" name="times">
                     <option value="q.d.">q.d. (once daily)</option>
@@ -448,7 +456,7 @@
                     <option value="PRN">PRN (as needed)</option>
                     <option value="AC">AC (before meals)</option>
                     <option value="PC">PC (after meals)</option>
-                </select>
+                </select><br>
                 times for
                 <input type="text" name="days" size="2">
                 days
