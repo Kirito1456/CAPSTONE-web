@@ -231,8 +231,12 @@
                   <div class="card">
                     <div class="card-body">
                       <h4 class="card-title">Past Appointments</h4>
-                      <p class="card-description"> View your past appointments </p>
-
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
+                        <div class="input-group-append">
+                          <button class="btn btn-primary" type="button" id="searchButton">Search</button>
+                        </div>
+                      </div>
                       <div class="table-responsive">
                         <table class="table table-striped">
                           <thead>
@@ -346,6 +350,30 @@
         });
       });
     </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Selecting DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const tableRows = document.querySelectorAll('.table tbody tr');
+    
+        // Adding event listener to search button
+        searchButton.addEventListener('click', function() {
+          const searchTerm = searchInput.value.trim().toLowerCase();
+    
+          tableRows.forEach(function(row) {
+            const patientNameCell = row.querySelector('td:nth-child(3)');
+            if (patientNameCell) {
+              const patientName = patientNameCell.textContent.trim().toLowerCase();
+              const isVisible = patientName.includes(searchTerm);
+              row.style.display = isVisible ? '' : 'none';
+            }
+          });
+        });
+      });
+    </script>
+    
     
     <script>
       function filterTable(clinicId) {

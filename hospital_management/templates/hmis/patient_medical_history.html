@@ -1,752 +1,316 @@
-{% load static %}
-<title>{% block title %}Patient Medical History{% endblock %}</title>
+{%load static%}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Medical History{% endblock %}</title>
+    <!-- plugins:css -->
+     
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-{% block styles%} 
-<link rel="stylesheet" href="{% static 'css/patient_medical_history_style.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<style>
-    #title{
-        margin-top: 20px;
-        margin-bottom: 10px;
-    }
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- endinject -->
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    {% endblock styles%}
+  </head>
 
-    #other-side{
-        width: 81%;
-        height: 100%;
-        
-        position: absolute;
-        left: 18%;
-        top : 0%;
-        display: flex;
-        flex-direction: column; /* Ensure child elements stack vertically */
-    }
-
-    #menu-history-bar {
-        background-color: #f4f4f4;
-        padding: 5px;
-        border-radius: 5px;
-        margin-right: 10px;
-        border: 1px solid #ccc;
-        width: fit-content;
-    }
-    
-    #menu-history-bar ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-        display: flex; /* Make the menu items display horizontally */
-    }
-    
-    #menu-history-bar ul li {
-        margin-right: 10px; /* Add space between menu items */
-    }
-    
-    #menu-history-bar ul li a {
-        display: block;
-        padding: 6px 15px;
-        text-decoration: none;
-        color: #333;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
-    
-    #menu-history-bar ul li a:hover {
-        background-color: #e5e5e5;
-    }
-    
-    #menu-history-bar ul li.active a {
-        font-weight: bold;
-    }
-    
-    #content-container {
-        margin-top: 10px;
-        background-color: #fff; 
-        border-radius: 5px; 
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin-right: 10px;
-        height: 83%;
-        border: 1px solid #ccc;
-    }
-
-    #backButton {
-        padding: 5px;
-        border: solid 2px #334A7C; 
-        background-color: white; 
-        color: black;
-        cursor: pointer; 
-        margin-right:10px;
-        font-size: 15px;
-        font-weight: bold;
-    }
-    
-    #backButton:hover {
-        background-color: #334A7C; 
-        color:white;
-    }
-    
-    .row {
-        display: flex;
-        width: 100%;
-    }
-    
-    .row.header {
-        background-color: #f4f4f4;
-        font-weight: bold;
-    }
-    
-    .cell {
-        padding: 10px;
-        text-align: left;
-    }
-
-    .cell-smoking {
-        padding: 10px;
-        text-align: center;
-    }
-    
-    .cell.allergen {
-        flex-basis: 50%;
-    }
-    
-    .cell.severity {
-        flex-basis: 50%;
-    }
-    
-    .row:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    
-    .row:hover {
-        background-color: #eaeaea;
-    }
-
-    #family-history-table {
-        width: 100%;
-        border-radius: 5px;
-    }
-    
-    #family-history-table .row {
-        display: flex;
-        width: 100%;
-    }
-    
-    #family-history-table .row.header {
-        background-color: #f4f4f4;
-        font-weight: bold;
-    }
-    
-    #family-history-table .cell {
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
-        text-align: left;
-    }
-    
-    #family-history-table .cell.family-member {
-        flex-basis: 33.33%;
-    }
-    
-    #family-history-table .cell.diagnosis {
-        flex-basis: 33.33%;
-    }
-    
-    #family-history-table .cell.age {
-        flex-basis: 33.33%;
-    }
-    
-    #family-history-table .row:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    
-    #family-history-table .row:hover {
-        background-color: #eaeaea;
-    }
-    
-    #edit-family-history {
-        margin: 10px;
-    }
-    
-    #edit-family-history-button, #save-family-history-button, #add-new-family-history-button, #cancel-family-history-button {
-        color: black;
-        cursor: pointer;
-        padding: 5px;
-        background-color: #D9D9D9;
-        width: fit-content;
-        height: max-content;
-        text-align: center;
-        margin-right: 20px;
-        border-radius: 5px;
-    }
-    
-    #edit-family-history-button:hover, #save-family-history-button:hover, #add-new-family-history-button:hover, #cancel-family-history-button:hover {
-        font-weight: bold;
-    }
-    
-    #medical-history-table {
-        width: 100%;
-        border-radius: 5px;
-    }
-    
-    #medical-history-table .row {
-        display: flex;
-        width: 100%;
-    }
-    
-    #medical-history-table .row.header {
-        background-color: #f4f4f4;
-        font-weight: bold;
-    }
-    
-    #medical-history-table .cell {
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
-        text-align: left;
-    }
-    
-    #medical-history-table .cell.diagnosis {
-        flex-basis: 15%;
-    }
-    
-    #medical-history-table .cell.date-illness {
-        flex-basis: 10%;
-    }
-    
-    #medical-history-table .cell.treatment {
-        flex-basis: 30%;
-    }
-    
-    #medical-history-table .cell.remarks {
-        flex-basis: 30%;
-    }
-    
-    #medical-history-table .row:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    
-    #medical-history-table .row:hover {
-        background-color: #eaeaea;
-    }
-    
-    #edit-medical-history {
-        margin: 10px;
-    }
-    
-    #edit-medical-history-button,
-    #save-medical-history-button,
-    #add-new-medical-history-button,
-    #cancel-medical-history-button {
-        color: black;
-        cursor: pointer;
-        padding: 5px;
-        background-color: #D9D9D9;
-        width: fit-content;
-        height: max-content;
-        text-align: center;
-        margin-right: 20px;
-        border-radius: 5px;
-    }
-    
-    #edit-medical-history-button:hover,
-    #save-medical-history-button:hover,
-    #add-new-medical-history-button:hover,
-    #cancel-medical-history-button:hover {
-        font-weight: bold;
-    }
-    
-</style>
-{% endblock styles%}
-
-{% block content %}
-
-<div id="whole-screen">
-    <div id="side-menu"  style="background-color: #334a7c;">
-        <div id="all-info">
-            <div id="user-info"> 
-                <div id="image">
-                    <img src="{% static 'logo-color.png' %}" id="display-photo">
-                </div>
-                <div id="information">
-                    {% for doctor_id, doctor_data in doctors.items %}
+  {% block content %}
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <b>MediMatrix</b>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Medical 
+               
+                        <span class="text-black fw-bold"> History</span>
+                
+            </h1>
+              <h3 class="welcome-sub-text">View your patient's medical history</h3>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+           
+            {% comment %} Notifs {% endcomment %}
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                <i class="icon-bell"></i>
+                <span class="count"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+                <a class="dropdown-item py-3 border-bottom">
+                  <p class="mb-0 fw-medium float-start">You have 4 new notifications </p>
+                  <span class="badge badge-pill badge-primary float-end">View all</span>
+                </a>
+                <a class="dropdown-item preview-item py-3">
+                  <div class="preview-thumbnail">
+                    <i class="mdi mdi-alert m-auto text-primary"></i>
+                  </div>
+                  <div class="preview-item-content">
+                    <h6 class="preview-subject fw-normal text-dark mb-1">Emilia Johnson sent back results</h6>
+                    <p class="fw-light small-text mb-0"> Just now </p>
+                  </div>
+                </a>
+              </div>
+            </li>
+            {% comment %} Messages Notif {% endcomment %}
+            
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  {% for doctor_id, doctor_data in doctors.items %}
                         {% if doctor_data.uid == uid %}
-                            <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
                         {% endif %}
                     {% endfor %}
                 </div>
-            </div>
-            <div id="menu"> 
-                <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
-                <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
-                <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                
-                <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
-
-            </div>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
         </div>
-    </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Menu</li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Appointments</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Patients</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="home-tab">
+                  <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active ps-0" id="family-tab" data-bs-toggle="tab" href="#family" role="tab" aria-controls="family" aria-selected="true">Family History</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="social-tab" data-bs-toggle="tab" href="#social" role="tab" aria-controls="social" aria-selected="false">Social History</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="consultation-tab" data-bs-toggle="tab" href="#consultation" role="tab" aria-controls="consultation" aria-selected="false">Past Consultation Notes</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="tab-content tab-content-basic">
 
-    <div id="other-side">
-        <div id="title">
-            <button id="backButton">Back</button>
-        </div>
-        <div id="menu-history-bar">
-            <ul>
-                <!-- <li><a id="allergies-link" href="#">Allergies</a></li> -->
-                <li><a id="family-history-link" href="#">Family History</a></li>
-                <li><a id="social-history-link" href="#">Social History</a></li>
-                <li><a id="consultation-history-link" href="#">Past Consultation Notes</a></li>
-                <li><a id="medical-history-link" href="#">Past Medical/Surgical History</a></li>
-            </ul>
-        </div>
-        <div id="content-container">
-            
-        </div>
-    </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get references to menu items
-        const medicalHistoryLink = document.getElementById('medical-history-link');
-        const familyHistoryLink = document.getElementById('family-history-link');
-        const socialHistoryLink = document.getElementById('social-history-link');
-        const consultationHistoryLink = document.getElementById('consultation-history-link');
-
-        // Get reference to content container
-        const contentContainer = document.getElementById('content-container');
-        const backButton = document.getElementById('backButton');
-
-        backButton.addEventListener('click', function() {
-            window.history.back();
-        });
-        
-
-        medicalHistoryLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            contentContainer.innerHTML = `
-            <form method="post">
-            {% csrf_token %}
-            <div id="medical-history-table">
-                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
-                    <div class="cell diagnosis" style="flex: 1;">Diagnosis</div>
-                    <div class="cell date-illness" style="flex: 1;">Date of Illness</div>
-                    <div class="cell treatment" style="flex: 1;">Treatment</div>
-                    <div class="cell remarks" style="flex: 1;">Remarks</div>
-                </div>
-
-                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
-                    {% if patientMedical_id == chosenPatient %}
-                        {% for surgical_id, surgical_data in patientMedical_data.items %}
-                            <div style="font-size: 14px; width: 100%;">
-                                <div id="row" style="display: flex; margin-bottom: 5px; margin-right: 10px;">
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in surgical_data.items %}
-                                            {% if item_key == 'diagnosis_surgical' %}
-                                                {% for diagnosis_surgical_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="diagnosis_surgical" value="{{ diagnosis_surgical_item }}"><br> 
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in surgical_data.items %}
-                                            {% if item_key == 'date_illness' %}
-                                                {% for date_illness_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="date" style="display:flex; justify-content: start;" name="date_illness" value="{{ date_illness_item }}"><br> 
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in surgical_data.items %}
-                                            {% if item_key == 'treatment' %}
-                                                {% for treatment_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="treatment" value="{{ treatment_item }}"><br> 
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in surgical_data.items %}
-                                            {% if item_key == 'remarks' %}
-                                                {% for remarks_item in item_value %}
-                                                    <input style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;" type="text" style="display:flex; justify-content: start;" name="remarks" value="{{ remarks_item }}"><br> 
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
+                <div class="tab-pane fade show" id="social" role="tabpanel" aria-labelledby="social">
+                    <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                              <div class="card-body">
+                                <div class="table-responsive">
+                                  <table class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th colspan="2">Tobacco Use</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            {% for social_id, social_data in patientMedical.items %}
+                                                {% if social_id == chosenPatient%}
+                                                    {% for s_id, s_data in social_data.items %}
+                                                        {% if s_id == 'socialHistory'%}
+                                                            <tr>
+                                                                <td> {{s_data.smoking}} </td>
+                                                                <td> {{s_data.yearsSmoking}} </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </tbody>
+                                  </table>
                                 </div>
+                              </div>
                             </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-
-            </div>
-            <div id="edit-medical-history">
-                <button id="edit-medical-history-button" style="border: 0px;">Edit</button>
-                <button id="save-medical-history-button" style="display: none; background-color: green; color: white; border: 0px;" name="saveMedicalHistoryButton" value={{ chosenPatientData_id }}>Save</button>
-                <button id="cancel-medical-history-button" style="display: none; background-color: red; color: white; border: 0px;">Cancel</button>
-                <button id="add-new-medical-history-button" style="border: 0px;">Add New Row</button>
-            </div>            
-            </form>`;
-
-            document.getElementById('save-medical-history-button').addEventListener('click', function () {
-                alert('Successfully Added an Past Medical/Surgical Record!');
-
-                medicalHistoryLink.click();
-            });
-        
-            // Add event listeners
-            const editMedicalHistoryButton = document.getElementById('edit-medical-history-button');
-            const cancelMedicalHistoryButton = document.getElementById('cancel-medical-history-button');
-            const addNewMedicalHistoryButton = document.getElementById('add-new-medical-history-button');
-            const saveMedicalHistoryButton = document.getElementById('save-medical-history-button');
-        
-            addNewMedicalHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-
-                // Hide the Edit button
-                editMedicalHistoryButton.style.display = 'none';
-
-                // Hide the Add New Medical History button
-                addNewMedicalHistoryButton.style.display = 'none';
-
-                // Show the Cancel button
-                cancelMedicalHistoryButton.style.display = 'inline-block';
-
-                // Show the Save button
-                saveMedicalHistoryButton.style.display = 'inline-block';
-                            
-                const newRow = document.createElement('div');
-                newRow.classList.add('row');
-                newRow.innerHTML = `
-                    <div class="cell diagnosis" style="flex: 1;"><input type="text" name="diagnosis_surgical"></div>
-                    <div class="cell date-illness" style="flex: 1;"><input type="date" name="date_illness"></div>
-                    <div class="cell treatment" style="flex: 1;"><input type="text" name="treatment"></div>
-                    <div class="cell remarks" style="flex: 1;"><input type="text" name="remarks"></div>`;
-                        
-                        
-                const medicalHistoryTable = document.getElementById('medical-history-table');
-                medicalHistoryTable.appendChild(newRow);
-            });
-            
-            editMedicalHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-                
-                // Show the Cancel button
-                cancelMedicalHistoryButton.style.display = 'inline-block';
-
-                // Show the Save button
-                saveMedicalHistoryButton.style.display = 'inline-block';
-
-                // Hide the Edit button
-                editMedicalHistoryButton.style.display = 'none';
-
-                // Hide the Add New Medical History button
-                addNewMedicalHistoryButton.style.display = 'none';
-                
-                // Get all rows excluding the header row
-                const rows = document.querySelectorAll('#medical-history-table .row:not(.header)');
-                
-                // Iterate over each row
-                rows.forEach(row => {
-                    // Get the diagnosis cell of the row
-                    const diagnosisCell = row.querySelector('.cell.diagnosis');
-                    
-                    // Replace text content with input box
-                    diagnosisCell.innerHTML = '<input type="text" name="diagnosis">';
-                    
-                    // Get the date of illness cell of the row
-                    const dateIllnessCell = row.querySelector('.cell.date-illness');
-                    
-                    // Replace text content with date input
-                    dateIllnessCell.innerHTML = '<input type="date" name="date_illness">';
-                    
-                    // Get the treatment cell of the row
-                    const treatmentCell = row.querySelector('.cell.treatment');
-                    
-                    // Replace text content with input box
-                    treatmentCell.innerHTML = '<input type="text" name="treatment">';
-                    
-                    // Get the remarks cell of the row
-                    const remarksCell = row.querySelector('.cell.remarks');
-                    
-                    // Replace text content with input box
-                    remarksCell.innerHTML = '<input type="text" name="remarks">';
-                });
-            });
-            
-            cancelMedicalHistoryButton.addEventListener('click', function() {
-                // Hide the Cancel button
-                cancelMedicalHistoryButton.style.display = 'none';
-
-                // Show the Cancel button
-                editMedicalHistoryButton.style.display = 'inline-block';
-                
-                // Show the Add New Medical History button
-                addNewMedicalHistoryButton.style.display = 'inline-block';
-
-                // Hide the Save button
-                saveMedicalHistoryButton.style.display = 'none';
-                        
-                // Get all rows excluding the header row
-                const rows = document.querySelectorAll('#medical-history-table .row:not(.header)');
-                        
-                // Iterate over each row
-                rows.forEach(row => {
-                    // Restore original content
-                    row.querySelector('.cell.diagnosis').innerHTML = '';
-                    row.querySelector('.cell.date-illness').innerHTML = '';
-                    row.querySelector('.cell.treatment').innerHTML = '';
-                    row.querySelector('.cell.remarks').innerHTML = '';
-                });
-
-                medicalHistoryLink.click();
-            });
-        });
-
-        familyHistoryLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            contentContainer.innerHTML = `
-            <form method="post">
-            {% csrf_token %}
-            <div id="family-history-table">
-                <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
-                    <div class="cell family-member">Family Member</div>
-                    <div class="cell diagnosis">Diagnosis</div>
-                    <div class="cell age">Age</div>
-                </div>
-
-                {% for patientMedical_id, patientMedical_data in patientMedical.items %}
-                    {% if patientMedical_id == chosenPatient %}
-                        {% for family_id, family_data in patientMedical_data.items %}
-                            <div style="font-size: 14px; width: 100%">
-                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
-                                    <div style="flex: 1;">
-
-                                        {% for item_key, item_value in family_data.items %}
-                                            {% if item_key == 'member' %}
-                                                {% for family_member_item in item_value %}
-                                                    <select name="family_member"  style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">
-                                                        <option value="" disabled>Select Family Member</option>
-                                                        <option value="Father" {% if family_member_item == 'Father' %} selected {% endif %}>Father</option>
-                                                        <option value="Mother" {% if family_member_item == 'Mother' %} selected {% endif %}>Mother</option>
-                                                        <option value="Brother" {% if family_member_item == 'Brother' %} selected {% endif %}>Brother</option>
-                                                        <option value="Sister" {% if family_member_item == 'Sister' %} selected {% endif %}>Sister</option>
-                                                        <option value="Grandmother" {% if family_member_item == 'Grandmother' %} selected {% endif %}>Grandmother</option>
-                                                        <option value="Grandfather" {% if family_member_item == 'Grandfather' %} selected {% endif %}>Grandfather</option>
-                                                    </select><br>
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1;">
-                                        {% for item_key, item_value in family_data.items %}
-                                            {% if item_key == 'diagnosis' %}
-                                                {% for diagnosis_item in item_value %}
-                                                    <input type="text" name="diagnosis" value="{{ diagnosis_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br>
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1; text-align: center;">
-                                        {% for item_key, item_value in family_data.items %}
-                                            {% if item_key == 'age' %}
-                                                {% for age_item in item_value %}
-                                                    <input type="number" name="age" value="{{ age_item }}" style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;"><br>
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <div id="edit-family-history" style="display: flex; justify-content: center;">
-                <button id="edit-family-history-button">Edit</button>
-                <button id="save-family-history-button" name="saveFamilyHistoryButton" value={{ chosenPatientData_id }}>Save</button>
-                <button id="cancel-family-history-button" style="display: none;">Cancel</button>
-                <button id="add-new-family-history-button">Add New Row</button>
-            </div>            
-            </form>`;
-
-            document.getElementById('save-family-history-button').addEventListener('click', function () {
-                alert('Successfully Added a Family History Record!');
-            });
-        
-            // Add event listeners
-            const editFamilyHistoryButton = document.getElementById('edit-family-history-button');
-            const saveFamilyHistoryButton = document.getElementById('save-family-history-button');
-            const cancelFamilyHistoryButton = document.getElementById('cancel-family-history-button');
-            const addNewFamilyHistoryButton = document.getElementById('add-new-family-history-button');
-        
-            // Event listener for editing family history
-            editFamilyHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-                
-                // Show the Cancel button
-                cancelFamilyHistoryButton.style.display = 'inline-block';
-                
-                // Get all rows excluding the header row
-                const rows = document.querySelectorAll('#family-history-table .row:not(.header)');
-                
-                // Iterate over each row
-                rows.forEach(row => {
-                    // Get the family member cell of the row
-                    const familyMemberCell = row.querySelector('.cell.family-member');
-                    
-                    // Replace text content with dropdown menu
-                    familyMemberCell.innerHTML = `
-                        <select name="family_member">
-                            <option value="" selected disabled>Select Family Member</option>
-                            <option value="Father">Father</option>
-                            <option value="Mother">Mother</option>
-                            <option value="Sibling">Sibling</option>
-                        </select>`;
-                    
-                    // Get the diagnosis cell of the row
-                    const diagnosisCell = row.querySelector('.cell.diagnosis');
-                    
-                    // Replace text content with input box
-                    diagnosisCell.innerHTML = '<input type="text" name="diagnosis">';
-                    
-                    // Get the age cell of the row
-                    const ageCell = row.querySelector('.cell.age');
-                    
-                    // Replace text content with input box
-                    ageCell.innerHTML = '<input type="number" name="age">';
-                });
-            });
-        
-            // Event listener for canceling family history edit
-            cancelFamilyHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-                
-                // Hide the Cancel button
-                cancelFamilyHistoryButton.style.display = 'none';
-                
-                // Restore original content of each row
-                const rows = document.querySelectorAll('#family-history-table .row:not(.header)');
-                rows.forEach(row => {
-                    row.querySelector('.cell.family-member').innerHTML = row.querySelector('.cell.family-member select').value;
-                    row.querySelector('.cell.diagnosis').innerHTML = row.querySelector('.cell.diagnosis input').value;
-                    row.querySelector('.cell.age').innerHTML = row.querySelector('.cell.age input').value;
-                });
-            });
-        
-            // Event listener for adding a new row in family history
-            addNewFamilyHistoryButton.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form submission
-                
-                const newRow = document.createElement('div');
-                newRow.classList.add('row');
-                newRow.innerHTML = `
-                    <div class="cell family-member">
-                        <select name="family_member">
-                            <option value="" selected disabled>Select Family Member</option>
-                            <option value="Father">Father</option>
-                            <option value="Mother">Mother</option>
-                            <option value="Sibling">Sibling</option>
-                        </select>
-                    </div>
-                    <div class="cell diagnosis"><input type="text" name="diagnosis"></div>
-                    <div class="cell age"><input type="number" name="age"></div>`;
-                
-                const familyHistoryTable = document.getElementById('family-history-table');
-                familyHistoryTable.appendChild(newRow);
-            });
-
-        });
-        
-        function displaySocialHistoryForm() {
-            contentContainer.innerHTML = `
-            <form method="post">
-                {% csrf_token %}
-                <div id="social-history-table">
-
-                    <div class="row header" style="display: flex; background-color: #334A7C; color: white; justify-content: center; align-items: center;">
-                        <div class="cell-smoking">
-                            <label for="smoking">Smoking</label>
-                            <input type="checkbox" id="smoking" name="smoking" onclick="checkSmokingCheckbox()" style="margin-left:18px;">
                         </div>
-                            <input type="number" id="smokingyears" name="smokingyears" placeholder="Years of Smoking" 
-                                style="width: 132px; height: 26px; font-size:14px; text-align:center; bottom:10px; display:none;">
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: center;">
-                    <button type="submit" name="saveSocialHistoryButton" id="saveSocialHistoryButton" 
-                        style="padding: 4px; font-size:16px; margin: 10px; background-color: #334A7C; color: white;" >Save</button>
-                </div>
-            </form>
-            
-            `;
+                      </div>
+                  </div>
 
-            document.getElementById('smoking').addEventListener('click', function (event) {
-                // For years of smoking textbox
-                var isSmokingChecked = document.getElementById('smoking');
-                var smokingyears = document.getElementById('smokingyears');
-
-                if (isSmokingChecked.checked == true){
-                    smokingyears.style.display = 'block';
-                } else {
-                    smokingyears.style.display = 'none';
-                }
-            });
-
-            document.getElementById('saveSocialHistoryButton').addEventListener('click', function () {
-                alert('Successfully Added Social History Record!');
-            });
-        }
-
-        socialHistoryLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            displaySocialHistoryForm();
-        });
-
-        consultationHistoryLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            contentContainer.innerHTML = `
-            <form method="post">
-            {% csrf_token %}
-                <div id="consul-notes-table">
-                    <div class="row header" style="display: flex; background-color: #334A7C; color: white;">
-                        <div class="cell diagnosis" style="flex: 1; text-align: center;">Date of Consultation</div>
-                        <div class="cell date-illness" style="flex: 1; text-align: center;">Chief Complaint</div>
-                        <div class="cell remarks" style="flex: 1; text-align: center;">Diagnosis</div>
-                    </div>
-                    
-                    {% for consulNotes_id, consulNotes_data in consulNotes.items %}
-                        {% if consulNotes_id == chosenPatient %}
-                            <div style="font-size: 14px;">
-                                <div id="row" style="display: flex; justify-content: center; margin-bottom: 5px;">
-                                    <div style="flex: 1; text-align: center;">
-                                        {% for item_key, item_value in consulNotes_data.items %}
-                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">{{ item_key }}</div>
+                  <div class="tab-pane fade show" id="consultation" role="tabpanel" aria-labelledby="consultation">
+                    <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                              <div class="card-body">
+                                <div class="table-responsive">
+                                  <table class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th>Date of Consultation</th>
+                                        <th>Chief Complaint</th>
+                                        <th>Diagnosis</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for consul_id, consul_data in consulNotes.items %}
+                                            {% if consul_id == chosenPatient%}
+                                                {% for c_id, c_data in consul_data.items %}
+                                                    <tr>
+                                                        <td> {{c_id}} </td>
+                                                        <td> {{c_data.chiefComplaint}} </td>
+                                                        <td> {{c_data.diagnosis}} </td>  
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
                                         {% endfor %}
-                                    </div>
-                                    <div style="flex: 1; text-align: center;">
-                                        {% for item_key, item_value in consulNotes_data.items %}
-                                           {% if item_value.chiefComplaint is None %}
-                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; height: 16px; border-radius: 10px;"></div>
-                                           {% else %}
-                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">{{ item_value.chiefComplaint }}</div>
-                                           {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    <div style="flex: 1; text-align: center;">
-                                        {% for item_key, item_value in consulNotes_data.items %}
-                                           <div style="margin: 10px; background-color: #ADB8CE; padding: 10px; border-radius: 10px;">{{ item_value.diagnosis }}</div>
-                                        {% endfor %}
-                                    </div>
+                                    </tbody>
+                                  </table>
                                 </div>
+                              </div>
                             </div>
-                        {% endif %}
-                    {% endfor %}
-        
-                </div>           
-            </form>`;
-        });
-    });
+                        </div>
+                      </div>
+                  </div>
 
-</script>
-{% endblock %}
+                    <div class="tab-pane fade show active" id="family" role="tabpanel" aria-labelledby="family">
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                              <div class="card-body">
+                                <div class="table-responsive">
+                                  <table class="table table-striped">
+                                    <thead>
+                                      <tr>
+                                        <th>Family Member</th>
+                                        <th>Diagnosis</th>
+                                        <th>Age of Onset</th>
+                                        <th>Deceased</th>
+                                        <th>Age of Death</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            {% for family_id, family_data in patientMedical.items %}
+                                                {% if family_id == chosenPatient%}
+                                                    {% for f_id, f_data in family_data.items %}
+                                                        {% if f_id == 'familyHistory'%}
+                                                            {% for fh_id, fh_data in f_data.items %}
+                                                                <tr>
+                                                                    <td> {{fh_data}} </td>
+                                                                    <td>  </td>
+                                                                    <td>  </td>  
+                                                                    <td>  </td>  
+                                                                    <td>  </td>  
+                                                                </tr>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+<script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
+<script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="{% static 'assets/js/off-canvas.js' %}"></script>
+<script src="{% static 'assets/js/template.js' %}"></script>
+<script src="{% static 'assets/js/settings.js' %}"></script>
+<script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+<script src="{% static 'assets/js/todolist.js' %}"></script>
+<!-- endinject -->
+<!-- Custom js for this page-->
+<script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/js/dashboard.js' %}"></script>
+
+    <!-- <script src="assets/js/Chart.roundedBarCharts.js"></script> -->
+    <!-- End custom js for this page-->
+  </body>
+  {% endblock %}

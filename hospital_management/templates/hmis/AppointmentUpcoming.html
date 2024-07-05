@@ -210,8 +210,12 @@
                   <div class="card">
                     <div class="card-body">
                       <h4 class="card-title">Upcoming Appointments</h4>
-                      <p class="card-description"> View your upcoming appointments
-                      </p>
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
+                        <div class="input-group-append">
+                          <button class="btn btn-primary" type="button" id="searchButton">Search</button>
+                        </div>
+                      </div>
                       <div class="table-responsive">
                         <table class="table table-striped">
                           <thead>
@@ -225,7 +229,7 @@
                               <th>Status</th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody class="name_table">
                             {% if appointments %}
                               {% for appointment_id, appointment_data in appointments.items %}
                                 <tr>
@@ -355,7 +359,30 @@
         </div>
       </div>
     </div>
-    {% comment %} <script src="{% static 'js/appointment.js' %}"></script> {% endcomment %}
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Selecting DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('.name_table tr');
+    
+        // Adding event listener to search input
+        searchInput.addEventListener('keyup', function() {
+          const searchTerm = searchInput.value.trim().toLowerCase();
+    
+          tableRows.forEach(function(row) {
+            const patientNameCell = row.querySelector('td:nth-child(3) a');
+            if (patientNameCell) {
+              const patientName = patientNameCell.textContent.trim().toLowerCase();
+              const isVisible = patientName.includes(searchTerm);
+              row.style.display = isVisible ? '' : 'none';
+            }
+          });
+        });
+      });
+    </script>
+    
+    
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
