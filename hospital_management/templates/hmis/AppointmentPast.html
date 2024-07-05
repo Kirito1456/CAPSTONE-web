@@ -101,7 +101,7 @@
                 {% for doctors_id, doctors_data in doctors.items %}
                   {% for doctorClinic in doctors_data.clinic %}
                     {% for clinic_id, clinic_data in clinics.items%}
-                      {% if clinic_id == doctorClinic %}
+                      {% if clinic_id == doctorClinic and doctors_id == uid%}
                         <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
                           <div class="preview-item-content flex-grow py-2">
                             <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>

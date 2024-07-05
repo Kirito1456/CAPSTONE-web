@@ -222,7 +222,7 @@
                 {% for doctors_id, doctors_data in doctors.items %}
                 {% for doctorClinic in doctors_data.clinic %}
                 {% for clinic_id, clinic_data in clinics.items%}
-                {% if clinic_id == doctorClinic %}
+                {% if clinic_id == doctorClinic and doctors_id == uid%}
                 <div class="col-12 grid-margin stretch-card">
                     <div class="card">
                       <div class="card-body">

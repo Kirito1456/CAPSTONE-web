@@ -215,29 +215,37 @@
                                                     <i class="fa fa-times"></i> Cancel </button>
 
                                             </form>
+
+                                            <form id="diagnosis" method='post'>
+                                              {% csrf_token %}
+                                              <div class="detail-wrapper">
+                                                  <div class="detailname" style="font-weight: bold;">
+                                                      Diagnosis:
+                                                  </div>
+  
+                                                  <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
+                                                      <datalist id="disease_name_suggestion">
+                                                          <option value="">--- Select Disease ---</option>
+                                                          {% for disease in disease_list %}
+                                                              <option value="{{ disease }}">{{ disease }}</option>
+                                                          {% endfor %}
+                                                      </datalist>
+                                                  </select>
+  
+                                              </div>
+
+                                              
+  
+                                              <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatientData_id }}>
+                                                  <i class="fa fa-check"></i> Save </button>
+                                          </form>
                                         {% endfor %}
-                                            
-                                        <form id="diagnosis" method='post'>
-                                            {% csrf_token %}
-                                            <div class="detail-wrapper">
-                                                <div class="detailname" style="font-weight: bold;">
-                                                    Diagnosis:
-                                                </div>
 
-                                                <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
-                                                    <datalist id="disease_name_suggestion">
-                                                        <option value="">--- Select Disease ---</option>
-                                                        {% for disease in disease_list %}
-                                                            <option value="{{ disease }}">{{ disease }}</option>
-                                                        {% endfor %}
-                                                    </datalist>
-                                                </select>
-
-                                            </div>
-
-                                            <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatientData_id }}>
-                                                <i class="fa fa-check"></i> Save </button>
-                                        </form>
+                                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                            {% if chosenPatientConsulNotes_data.diagnosis %}
+                                                <button  class="buttons_info"><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Medication Order</a></button>
+                                            {% endif %}
+                                        {% endfor %}
 
                                     </div>
                                 </div>

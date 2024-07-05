@@ -1798,7 +1798,7 @@ def save_diagnosis(request):
     # Save Chief Compliant into Firebase Database
     appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
     appointment_path1 = f"/patientdata/{id}"  # Adjust the path as per your Firebase structure
-
+    
     # Update appointment data in Firebase
     if diagnosis:
         db.child(appointment_path).update({
