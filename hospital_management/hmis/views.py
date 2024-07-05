@@ -2276,7 +2276,8 @@ def outpatient_medication_order(request):
     pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
     pharmacy_lists_json = json.dumps(pharmacy_lists)
     doctors = db.child('doctors').get().val()
-    uid = request.session['uid'] 
+    uid = request.session['uid']
+    disease = request.GET.get('diagnosis')
 
     todaydate = datetime.now().strftime("%Y-%m-%d")
     clinics = db.child("clinics").get().val()
@@ -2295,7 +2296,8 @@ def outpatient_medication_order(request):
                                                                      'uid': uid,
                                                                      'todaydate': todaydate,
                                                                      'clinics' :clinics, 
-                                                                     'patientData': patientData,})
+                                                                     'patientData': patientData,
+                                                                     'disease': disease,})
 
 
 @csrf_exempt
@@ -2471,7 +2473,9 @@ def diagnostic_imagery_reports(request):
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
-    return render(request, 'hmis/diagnostic_imagery_reports.html', {'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
+    testRequests = db.child("testrequest").get().val()
+    print("Test requests: " , testRequests)
+    return render(request, 'hmis/diagnostic_imagery_reports.html', {'testRequest': testRequests,'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
 
 
 def download_image(url, file_path):
@@ -2629,7 +2633,7 @@ def requestTest(request):
         }
 
         # Construct the path to the appointment data in Firebase
-        db_path = f"/testrequest/{uid}/{testRequest_id}"
+        db_path = f"/testrequest/{patient_uid}/{testRequest_id}"
 
         db.child(db_path).update( {
             'patient_id': patient_uid,
@@ -2657,8 +2661,15 @@ def requestTest(request):
 
         try:
             # Upload the PDF to Firebase
-            storage_path = patient_uid + '/testRequests/' + todaydate +'-testRequest.pdf'
+            storage_path = patient_uid + '/testRequests/' + todaydate +'-testRequests.pdf'
             upload_pdf_to_firebase(temp_file_path, storage_path)
+
+            pdf_url = firebase_storage.child(f"{storage_path}").get_url(None)
+            print("PDF Download URL: ", pdf_url)
+
+            db.child(db_path).update( {
+                'testURL': pdf_url,
+            })
 
             # Success message
             return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')

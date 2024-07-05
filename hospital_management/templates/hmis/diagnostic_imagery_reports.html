@@ -199,15 +199,32 @@
                         <table class="table table-striped">
                           <thead>
                             <tr>
-                              <th>Date</th>
+                              <th>Date Requested</th>
                               <th>Test Requisition Form</th>
+                              <th>Date Received</th>
                               <th>Test Type</th>
                               <th>Result</th>
                             </tr>
                           </thead>
                           <tbody>
-                              <tr>
-                                {% for submittedTest_id, submittedTest_data in submittedTest.items %}
+                              
+                                {% for testRequest_id, testRequest_data in testRequest.items %}
+                                  {% if testRequest_id == chosenPatient %}
+                                    {% for request_id, request_data in testRequest_data.items %}
+                                    <tr>
+                                      <td>{{ request_data.dateCreated }}</td>
+                                      <td><a href="{{ request_data.testURL }}"> View Test Request</a></td>
+                                      <td>-</td>
+                                      <td>-</td>
+                                      <td>-</td>
+                                    </tr>
+                                    {% endfor %}
+                                  {% elif testRequest_id == chosenPatient %}
+                                    
+                                  {% endif %}
+                                {% endfor %}
+                                
+                                {% comment %} {% for submittedTest_id, submittedTest_data in submittedTest.items %}
                                 {% if submittedTest_id == chosenPatient %}
                                     {% for submitted_id, submitted_data in submittedTest_data.items %}
                                         <div class="report-item">
@@ -248,8 +265,8 @@
                                         
                                     {% endfor %}
                                 {% endif %}
-                            {% endfor %}
-                              </tr>
+                            {% endfor %} {% endcomment %}
+                              
                           </tbody>
                         </table>
                       </div>
