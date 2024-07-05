@@ -1,340 +1,276 @@
 {%load static%}
-<title>{% block title %}Patient Data{% endblock %}</title>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}View Test Results{% endblock %}</title>
+    <!-- plugins:css -->
+     
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-{% block styles%} 
-<link rel="stylesheet" href="{% static 'css/imagery-reports.css' %}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    
+    <!-- endinject -->
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    {% endblock styles%}
+  </head>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<style>
-    
-    #head-corner, #head{
-        float: left;
-        font-size: 18;
-        font-weight: bold;
-        padding: 10px;
-        background-color: #334A7C;
-        text-align: center;
-        color: white;
-    }
+  {% block content %}
+  <body>
+    <div class="container-scroller">
+      <!-- partial:../../partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <b>MediMatrix</b>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">John Doe</span></h1>
+              <h3 class="welcome-sub-text">Your performance summary this week </h3>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown d-none d-lg-block">
+              <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false"> Filter Appointments </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="messageDropdown">
+                <a class="dropdown-item py-3" href="javascript:void(0);" onclick="filterTable('all')">
+                  <p class="mb-0 fw-medium float-start">Show All</p>
+                </a>
+                
+                <div class="dropdown-divider"></div>
+                {% for doctors_id, doctors_data in doctors.items %}
+                  {% for doctorClinic in doctors_data.clinic %}
+                    {% for clinic_id, clinic_data in clinics.items%}
+                      {% if clinic_id == doctorClinic %}
+                        <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
+                          <div class="preview-item-content flex-grow py-2">
+                            <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
+                            <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
+                            <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
+                          </div>
+                        </a>
+                      {% endif %}
+                    {% endfor %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+            </li>
+            {% comment %} Notifs {% endcomment %}
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                <i class="icon-bell"></i>
+                <span class="count"></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+                <a class="dropdown-item py-3 border-bottom">
+                  <p class="mb-0 fw-medium float-start">You have 4 new notifications </p>
+                  <span class="badge badge-pill badge-primary float-end">View all</span>
+                </a>
+                <a class="dropdown-item preview-item py-3">
+                  <div class="preview-thumbnail">
+                    <i class="mdi mdi-alert m-auto text-primary"></i>
+                  </div>
+                  <div class="preview-item-content">
+                    <h6 class="preview-subject fw-normal text-dark mb-1">Emilia Johnson sent back results</h6>
+                    <p class="fw-light small-text mb-0"> Just now </p>
+                  </div>
+                </a>
+              </div>
+            </li>
+            {% comment %} Messages Notif 
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="icon-mail icon-lg"></i>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
+                <a class="dropdown-item py-3">
+                  <p class="mb-0 fw-medium float-start">You have 7 unread mails </p>
+                  <span class="badge badge-pill badge-primary float-end">View all</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <img src="{% static 'doctorjane.jpg' %}" alt="image" class="img-sm profile-pic">
+                  </div>
+                  <div class="preview-item-content flex-grow py-2">
+                    <p class="preview-subject ellipsis fw-medium text-dark">Another Doctor </p>
+                    <p class="fw-light small-text mb-0"> Can you... </p>
+                  </div>
+                </a>
+              </div>
+            </li> {% endcomment %}
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:../../partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Menu</li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Appointments</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Patients</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="main-panel">
+            <div class="content-wrapper">
+              <div class="row">
+                
+                <div class="col-lg-12 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Diagnostic Test Results</h4>
+                      <p class="card-description"> View test results sent by the patient here </p>
 
-    #info, #image-report{
-        display: flex;
-        flex-direction: column;
-    }
-    
-    #imagery-tests{
-        background-color: #E9E9E9;
-    }
-    
-    #imagery-reports-list{
-        display: flex;
-    
-        justify-content: center;
-        align-items: center;
-        align-content: center;
-    
-        flex-direction: column;
-    }
-
-    #backButton {
-        padding: 5px;
-        border: solid 2px #334A7C; 
-        background-color: white; 
-        color: black;
-        cursor: pointer; 
-        margin-right:10px;
-        font-size: 15px;
-        font-weight: bold;
-        margin-top: 4px;
-    }
-    
-    #backButton:hover {
-        background-color: #334A7C; 
-        color:white;
-    }
-    
-    #reports-table{
-        margin-top: 10;
-        margin-bottom: 10;
-    
-        width: 95%;
-    
-        text-align: center;
-    
-        table-layout:fixed;
-    
-        background-color: #D9D9D9;
-    
-        font-size: 15;
-    }
-    
-    th.date{
-        width: 15%
-    }
-    
-    th.type{
-        width: 15%;
-    }
-    
-    th.report{
-        width: 30%;
-    }
-    
-    th.note{
-        width: 52%;
-    }
-    
-    #download{
-        display: flex;
-        flex-direction: column;
-    
-        align-content: center;
-        align-items: center;
-    
-        padding-bottom: 10;
-    
-        font-size: 14;
-    }
-    
-    #download-imagery{
-        background-color: #85AA9B;
-    
-        border-radius: 5%;
-    
-        margin-top: 5;
-    
-        width: 50%;
-        padding: 5;
-    }
-    
-    #download-disposition{
-        background-color: #85AA9B;
-    
-        border-radius: 5%;
-    
-        margin-top: 5;
-    
-        width: 85%;
-        padding: 5;
-    }
-    
-    td{
-        margin-top: 10;
-        margin-bottom: 10;
-    }
-    
-    #notes{
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-    
-        padding: 5;
-        padding-left: 10;
-        padding-right: 10;
-    }
-    
-    #doctor-notes{
-        display: flex;
-        justify-content: flex-start;
-        word-wrap: break-word;
-    
-        width: 70%;
-        text-align: justify;
-    }
-    
-    #add-notes{
-        display: flex;
-        justify-content: flex-end;
-    
-        justify-content: center;
-        align-items: center;
-    
-        background-color: #85AA9B;
-        padding: 5;
-        padding-left: 10;
-        padding-right: 10;
-    
-        border-radius: 5%;
-    
-        width: 15%;
-        font-size: 14;
-    }
-    #reports-container {
-        display: flex;
-        flex-direction: column;
-        border: 1px solid #ccc;
-    }
-    
-    .report-item {
-        display: flex;
-        border-bottom: 1px solid #ccc;
-    }
-    
-    .report-item.label {
-        font-weight: bold;
-    }
-    
-    .date, .type, .report, .note {
-        padding: 8px;
-    }
-    
-    .date, .type, .report {
-        flex: 1;
-    }
-    
-    .note {
-        flex: 2;
-    }
-    
-    #download {
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    #download a {
-        text-decoration: none;
-        color: blue;
-    }
-    
-    #download a:hover {
-        text-decoration: underline;
-    }
-    
-    .add-notes {
-        margin-left: auto;
-    }
-    
-    
-</style>
-{% endblock styles%}
-
-{% block content %}
-        <div id = "whole-screen">
-            <div id = "side-menu" style="background-color: #334a7c;">
-                <div id = "all-info">
-                    <div id = "user-info"> 
-                        <div id = "image">
-                            <img src="{% static 'logo-color.png' %}" id = "display-photo">
-                        </div>
-                        <div id="information">
-                            {% for doctor_id, doctor_data in doctors.items %}
-                                {% if doctor_data.uid == uid %}
-                                    <div id="name" style="font-size: 22px;"> {{ doctor_data.fname }} {{ doctor_data.lname }}</div>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Test Requisition Form</th>
+                              <th>Test Type</th>
+                              <th>Result</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                {% for submittedTest_id, submittedTest_data in submittedTest.items %}
+                                {% if submittedTest_id == chosenPatient %}
+                                    {% for submitted_id, submitted_data in submittedTest_data.items %}
+                                        <div class="report-item">
+                                            <td>{{ submitted_data.date }}</td>
+                                            <td>Test</td>
+                                            <td>
+                                                {% if submitted_data.testRequestKey == 'blood_test' %}
+                                                    Blood Test
+                                                {% elif submitted_data.testRequestKey == 'urine_test' %}
+                                                    Urine Test
+                                                {% elif submitted_data.testRequestKey == 'stool_test' %}
+                                                    Stool Test
+                                                {% elif submitted_data.testRequestKey == 'tissue_biopsy' %}
+                                                    Tissue Biopsy
+                                                {% elif submitted_data.testRequestKey == 'xray' %}
+                                                    X-ray
+                                                {% elif submitted_data.testRequestKey == 'ct_scan' %}
+                                                    CT Scan
+                                                {% elif submitted_data.testRequestKey == 'mri' %}
+                                                    MRI
+                                                {% elif submitted_data.testRequestKey == 'ultrasound' %}
+                                                    Ultrasound
+                                                {% elif submitted_data.testRequestKey == 'ecg' %}
+                                                    ECG
+                                                {% elif submitted_data.testRequestKey == 'colonoscopy' %}
+                                                    Colonoscopy
+                                                {% elif submitted_data.testRequestKey == 'bronchoscopy' %}
+                                                    Bronchoscopy
+                                                {% elif submitted_data.testRequestKey == 'pet_scan' %}
+                                                    PET Scan
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{{ submitted_data.downloadURL }}" class="view-image" style="color: blue;">View Image</a>
+                                            </td>
+                                        </tr>
+                                        </div>
+                                        
+                                    {% endfor %}
                                 {% endif %}
                             {% endfor %}
-                        </div>
+                              </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                    <div id="menu"> 
-                        <div id="a1"><i class="fas fa-tachometer-alt"></i> <a href="{% url 'DoctorDashboard' %}">Dashboard</a></div>
-                        <div id="a2"> <i class="far fa-calendar-alt"></i> <a href="{% url 'AppointmentUpcoming' %}">Appointments</a></div>
-                        <div id="a3" style="font-weight: bold;"><i class="fas fa-user"></i> <a href="{% url 'patient_data_doctor_view' %}">Patients</a></div>
-                    
-                        <div id="a4"><i class="fas fa-sign-out-alt"></i> <a href="{% url 'logout' %}"> Logout</a></div>
-                    </div>
+                  </div>
                 </div>
             </div>
-            <div id = "other-side">
-                <div id = "title">
-                    <div id = "left">
-                        <button id="backButton">Back</button>
-                    </div>
-                </div>
-                <div id = "imagery-reports">
-                    <div id = "image-report">
-                        <div id = "head-corner">Results</div>
-                        <div id = "imagery-tests">
-    
-                            <div id="reports-container">
-                                <div class="report-item label">
-                                    <div class="date">Date</div>
-                                    <div class="type">Test Result Type</div>
-                                    <div class="report">Report</div>
-                                </div>
-                                {% for submittedTest_id, submittedTest_data in submittedTest.items %}
-                                    {% if submittedTest_id == chosenPatient %}
-                                        {% for submitted_id, submitted_data in submittedTest_data.items %}
-                                        
-                                                <div class="report-item">
-                                                    <div class="date">{{ submitted_data.date }}</div>
-                                                    <div class="type">
-                                                        {% if submitted_data.testRequestKey == 'blood_test' %}
-                                                            Blood Test
-                                                        {% elif submitted_data.testRequestKey == 'urine_test' %}
-                                                            Urine Test
-                                                        {% elif submitted_data.testRequestKey == 'stool_test' %}
-                                                            Stool Test
-                                                        {% elif submitted_data.testRequestKey == 'tissue_biopsy' %}
-                                                            Tissue Biopsy
-                                                        {% elif submitted_data.testRequestKey == 'xray' %}
-                                                            X-ray
-                                                        {% elif submitted_data.testRequestKey == 'ct_scan' %}
-                                                            CT Scan
-                                                        {% elif submitted_data.testRequestKey == 'mri' %}
-                                                            MRI
-                                                        {% elif submitted_data.testRequestKey == 'ultrasound' %}
-                                                            Ultrasound
-                                                        {% elif submitted_data.testRequestKey == 'ecg' %}
-                                                            ECG
-                                                        {% elif submitted_data.testRequestKey == 'colonoscopy' %}
-                                                            Colonoscopy
-                                                        {% elif submitted_data.testRequestKey == 'bronchoscopy' %}
-                                                            Bronchoscopy
-                                                        {% elif submitted_data.testRequestKey == 'pet_scan' %}
-                                                            PET Scan
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="report">
-                                                        <a href="{{ submitted_data.downloadURL }}" class="view-image" style="color: blue;">View Image</a>
-                                                    </div>
-                                                </div>
-                                            
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.view-image').click(function(event) {
-            event.preventDefault(); // Prevent default behavior of the link
-            var imageUrl = $(this).attr('href');
-            window.open(imageUrl, '_blank'); // Open the image in a new tab
-        });
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const backButton = document.getElementById('backButton');
+      </div>
+    </div>
 
-        backButton.addEventListener('click', function() {
-            window.history.back();
-        });
-    });
-    // Get the Add Notes link and Doctor's Notes div
-var addNotesLink = document.getElementById("add-doctor-notes");
-var doctorNotesDiv = document.getElementById("doctor-notes");
+    
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+    
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/template.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
 
-// Add an event listener to the Add Notes link
-addNotesLink.addEventListener("click", function(event) {
-    event.preventDefault(); // Prevent the default link behavior
-    
-    // Replace the Doctor's Notes div with an input field
-    var inputField = document.createElement("input");
-    inputField.setAttribute("type", "text");
-    inputField.setAttribute("id", "input-doctor-notes");
-    inputField.setAttribute("placeholder", "Type doctor's notes here");
-    
-    // Replace the Doctor's Notes div with the input field
-    doctorNotesDiv.parentNode.replaceChild(inputField, doctorNotesDiv);
-    
-    // Focus on the input field for immediate typing
-    inputField.focus();
-});
-</script>
+</body>
 {% endblock %}
