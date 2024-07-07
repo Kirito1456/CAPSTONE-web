@@ -905,6 +905,9 @@ def patient_personal_information_inpatient(request):
     consulnotes = db.child("consultationNotes").get().val()
     progressnotes = db.child("progressnotes").get().val()
 
+    patientsymptoms = db.child("symptoms").get().val()
+    symptoms_list = db.child("symptomsList").get().val()
+
     date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
@@ -1150,6 +1153,12 @@ def patient_personal_information_inpatient(request):
     for patientsdata_id, patientsdata_data in patientsdata.items():
         if patientsdata_id == chosenPatient:
             chosenPatientDatas[patientsdata_id] = patientsdata_data
+
+    #Get Patient Symptoms
+    chosenPatientSymptoms = {}
+    for patientsymptoms_id, patientsymptoms_data in patientsymptoms.items():
+        if patientsymptoms_id == chosenPatient:
+            chosenPatientSymptoms[patientsymptoms_id] = patientsymptoms_data
 
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
@@ -1713,7 +1722,9 @@ def patient_personal_information_inpatient(request):
                                                                                 'pharmacy_lists': pharmacy_lists_json,
                                                                                 'time_slots1': time_slots1,
                                                                                 'next_available_date_str1': next_available_date_str1,
-                                                                                'disease_list': disease_list})
+                                                                                'disease_list': disease_list,
+                                                                                'chosenPatientSymptoms': chosenPatientSymptoms,
+                                                                                'symptoms_list': symptoms_list})
 
 def save_chiefComplaint(request):
         
