@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -117,3 +118,11 @@ class Medications(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Notification(models.Model):
+    firebase_id = models.CharField(max_length=100, blank=True, null=True)  # Store the Firebase user ID
+    message = models.TextField()
+    created_at = models.DateTimeField()
+
+    def __str__(self):
+        return f'Notification for {self.firebase_id}: {self.message}'

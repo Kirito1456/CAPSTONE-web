@@ -16,7 +16,7 @@ import json
 import uuid
 import random
 
-from hmis.models import Medications
+from hmis.models import Medications, Notification
 from hospital_management.settings import collection 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -721,6 +721,7 @@ def DoctorDashboard(request):
     appointments = db.child("appointments").get().val()
     clinics = db.child("clinics").get().val()
     patientsorders = db.child("patientsorders").get().val()
+    notifications = Notification.objects.filter(firebase_id=uid)
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -806,7 +807,8 @@ def DoctorDashboard(request):
                                                              'submittedTest':submittedTest,'patients1': chosenPatients,
                                                              'clinics': clinics,
                                                              'patientsorders': patientsorders,
-                                                             'total_average_adherence': total_average_adherence}) 
+                                                             'total_average_adherence': total_average_adherence,
+                                                             'notifications': notifications}) 
 
 def ChargeNurseDashboard(request):
     nurses = db.child("nurses").get().val()
