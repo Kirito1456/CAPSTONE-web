@@ -34,6 +34,7 @@ class Command(BaseCommand):
         def stream_handler(message):
             try:
                 print(f"Received message: {message}")
+                patients = db.child("patients").get().val()
                 if message["event"] == "put" and message["data"] is not None:
                     print("Processing")
                     for patient_id, tests in message["data"].items():
@@ -43,23 +44,40 @@ class Command(BaseCommand):
                             print("Processing3")
                             for test_id, test_data in tests.items():
                                 print("Processing4")
+                                patient_id = test_data.get('patient')
+                                for id, patient_data in patients.items():
+                                    if patient_id == id:
+                                        name = patient_data.get('fname') + ' ' + patient_data.get('lname')
                                 uid = test_data.get('doctor')
                                 date = test_data.get('date')
                                 download_url = test_data.get('downloadURL')
+                                
                                 test_request_key = test_data.get('testRequestKey')
                                 if uid:
                                     print("Processing5")
                                     print(f"Creating notification for {test_request_key}")
-                                    Notification.objects.create(firebase_id=uid, message=f'New test result uploaded for {test_request_key}', created_at=date)
+                                    Notification.objects.create(firebase_id=uid, 
+                                                                message=f'Patient {name} uploaded new test result for {test_request_key}', 
+                                                                created_at=date,
+                                                                patient_id=patient_id,
+                                                                is_read=False)
                         else:
                             uid = message["data"].get('doctor')
                             date = message["data"].get('date')
                             download_url = message["data"].get('downloadURL')
+                            patient_id = test_data.get('patient')
+                            for id, patient_data in patients.items():
+                                    if patient_id == id:
+                                        name = patient_data.get('fname') + ' ' + patient_data.get('lname')
                             test_request_key = message["data"].get('testRequestKey')
                             if uid:
                                 print("Processing5")
                                 print(f"Creating notification for {test_request_key}")
-                                Notification.objects.create(firebase_id=uid, message=f'New test result uploaded for {test_request_key}', created_at=date)
+                                Notification.objects.create(firebase_id=uid, 
+                                                            message=f'Patient {name} uploaded new test result for  {test_request_key}', 
+                                                            created_at=date,
+                                                            patient_id=patient_id,
+                                                            is_read=False)
                             break
             except Exception as e:
                 print(f"Error processing message: {e}")

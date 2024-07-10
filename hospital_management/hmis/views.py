@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime , timedelta
 import datetime as date
 import re
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database, storage as firebase_storage
@@ -721,7 +721,7 @@ def DoctorDashboard(request):
     appointments = db.child("appointments").get().val()
     clinics = db.child("clinics").get().val()
     patientsorders = db.child("patientsorders").get().val()
-    notifications = Notification.objects.filter(firebase_id=uid)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -2481,7 +2481,10 @@ def save_prescriptions(request):
 
 
 
-def diagnostic_imagery_reports(request):
+def diagnostic_imagery_reports(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id)
+    notification.is_read = True
+    notification.save()
     submittedTest = db.child("submittedTest").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
