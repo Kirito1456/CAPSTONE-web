@@ -30,7 +30,7 @@
   </head>
 
   {% block content %}
-  <body>
+  <body class="with-welcome-text">
     <div class="container-scroller">
       <!-- partial:../../partials/_navbar.html -->
       <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
@@ -47,36 +47,16 @@
         <div class="navbar-menu-wrapper d-flex align-items-top">
           <ul class="navbar-nav">
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
-              <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">John Doe</span></h1>
-              <h3 class="welcome-sub-text">Your performance summary this week </h3>
+              <h1 class="welcome-text">Patient: 
+                {% for patients_id, patients_data in patients.items %}
+                {% if patients_id == chosenPatient%}
+                    <span class="text-black fw-bold">{{ patients_data.fname }} {{ patients_data.lname }}</span>
+                {% endif %}
+                {% endfor %}
+                </h1>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown d-none d-lg-block">
-              <a class="nav-link dropdown-bordered dropdown-toggle dropdown-toggle-split" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false"> Filter Appointments </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="messageDropdown">
-                <a class="dropdown-item py-3" href="javascript:void(0);" onclick="filterTable('all')">
-                  <p class="mb-0 fw-medium float-start">Show All</p>
-                </a>
-                
-                <div class="dropdown-divider"></div>
-                {% for doctors_id, doctors_data in doctors.items %}
-                  {% for doctorClinic in doctors_data.clinic %}
-                    {% for clinic_id, clinic_data in clinics.items%}
-                      {% if clinic_id == doctorClinic %}
-                        <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
-                          <div class="preview-item-content flex-grow py-2">
-                            <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
-                            <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
-                            <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
-                          </div>
-                        </a>
-                      {% endif %}
-                    {% endfor %}
-                  {% endfor %}
-                {% endfor %}
-              </div>
-            </li>
             {% comment %} Notifs {% endcomment %}
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
@@ -99,28 +79,6 @@
                 </a>
               </div>
             </li>
-            {% comment %} Messages Notif 
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="icon-mail icon-lg"></i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
-                <a class="dropdown-item py-3">
-                  <p class="mb-0 fw-medium float-start">You have 7 unread mails </p>
-                  <span class="badge badge-pill badge-primary float-end">View all</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="{% static 'doctorjane.jpg' %}" alt="image" class="img-sm profile-pic">
-                  </div>
-                  <div class="preview-item-content flex-grow py-2">
-                    <p class="preview-subject ellipsis fw-medium text-dark">Another Doctor </p>
-                    <p class="fw-light small-text mb-0"> Can you... </p>
-                  </div>
-                </a>
-              </div>
-            </li> {% endcomment %}
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
               <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
@@ -219,8 +177,6 @@
                                       <td>-</td>
                                     </tr>
                                     {% endfor %}
-                                  {% elif testRequest_id == chosenPatient %}
-                                    
                                   {% endif %}
                                 {% endfor %}
                                 

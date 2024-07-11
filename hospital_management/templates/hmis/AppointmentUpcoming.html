@@ -225,8 +225,8 @@
                               <th>Patient Name</th>
                               <th>Visit Type</th>
                               <th>Clinic</th>
-                              <th>Actions</th>
                               <th>Status</th>
+                              <th>Actions</th>
                             </tr>
                           </thead>
                           <tbody class="name_table">
@@ -252,16 +252,19 @@
                                   <form method="post">
                                     {% csrf_token %}
                                     {% for clinic_id, clinic_data in clinics.items%}
-                                      {% if clinic_id == appointment_data.clinic %}
+                                      {% if clinic_id == appointment_data.clinicUID %}
                                       
-                                        <input type="hidden" name="clinic_uid" value="{{ appointment_data.clinic }}">
+                                        <input type="hidden" name="clinic_uid" value="{{ appointment_data.clinicUID }}">
                                         <td name="clinic_uid">{{ clinic_data.name }}</td>
                                       {% endif %}
                                     {% endfor %}
                                   </form>
 
+                                  <td><label class="badge badge-success">{{appointment_data.status}}</label></td>
+
                                   <td>
-                                    <button type="button" class="openModalBtn btn btn-primary btn-sm">Click for More Actions</button>
+                                    <button type="button" class="openModalBtn btn btn-primary btn-sm" name="clinic_uid" value="{{ appointment_data.clinicUID }}">Click for More Actions</button>
+                                    
                                     <div class="myModal modal">
                                       <div class="modal-content">
                                         <span class="close">&times;</span>
@@ -284,30 +287,33 @@
                                           {% endif %}
                                         {% endfor %} 
 
-
+                                        
                                         <h2 style="margin-top: 20px; margin-bottom: 20px;">Reschedule Appointment</h2>
                                         <form id="reschedule-form{{ appointment_id }}" method="POST" action="{% url 'update_appointment' %}">
                                           {% csrf_token %}
+                                          
                                           <div class="detail-wrapper">
                                             <div class="detailname" style="font-weight: bold;">Clinic: </div>
                                             <div class="dropdown">
-                                              <button class="btn btn-info btn-sm dropdown-toggle" type="button" id="dropdownMenuSizeButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                {% for clinic_id, clinic_data in clinics.items%}
-                                                  {% if clinic_id == appointment_data.clinic %}
-                                                    {{ clinic_data.name }}
-                                                  {% endif %}
-                                                {% endfor %}
-                                              </button>
+                                              {% for clinic_id, clinic_data in clinics.items%}
+                                                {% if clinic_id == appointment_data.clinicUID %}
+                                                  <button class="btn btn-info btn-sm dropdown-toggle" type="button" value="clinic_data.clinic_id" id="dropdownMenuSizeButton_ClinicName" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                      {{ clinic_data.name }}
+                                                  </button>
+                                                {% endif %}
+                                              {% endfor %}
+                                              
                                               
                                               <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3">
                                                 {% for doctors_id, doctors_data in doctors.items %}
                                                   {% for doctorClinic in doctors_data.clinic %}
                                                     {% for clinic_id, clinic_data in clinics.items%}
-                                                      {% if clinic_id == doctorClinic %}
+                                                      {% if clinic_id == doctorClinic and doctors_id == uid%}
+                                                        <a class="dropdown-item preview-item" href="#" onclick="selectClinic('{{ clinic_data.name }}'); return false;">
                                                           <div class="preview-item-content flex-grow py-2">
-                                                            <input type="hidden" name="clinic_uid" value="{{ appointment_data.clinic }}">
-                                                            <a class="dropdown-item" href="#">{{ clinic_data.name }}</a>
+                                                            {{ clinic_data.name }}
                                                           </div>
+                                                        </a>
                                                       {% endif %}
                                                     {% endfor %}
                                                   {% endfor %}
@@ -315,20 +321,31 @@
                                               </div>
                                             </div>
                                           </div>
+                                          
                                           <div class="detail-wrapper">
                                             <div class="detailname" style="font-weight: bold;">Suggested Schedule: </div>
-                                            <input type="text" id="selected_appointment_date" name="selected_appointment_date" value={{ next_available_date_str }} style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></input>
+                                            <input type="text" id="selected_appointment_date" name="selected_appointment_date" value="" style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"></input>
+                                          
                                           </div>
                                           <div class="detail-wrapper">
                                             <div class="detailname" style="font-weight: bold;">Suggested Time: </div>
                                             <select id="new_appointment_time" name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                              {% for time_slot in time_slots %}
+                                               {% for time_slot in time_slots %}
                                                   <option value="{{ time_slot }}">{{ time_slot }}</option>
-                                              {% endfor %}
+                                              {% endfor %} 
+
+                                              {% comment %} {% for time_slot in clinic_data.time_slots %}
+                                                  <option value="{{time_slot}}">{{ time_slot }}</option>
+                                              {% endfor %} {% endcomment %}
                                             </select><br>
                                           </div>
+                                          {% endfor %}
+                                          
+                                          {% comment %} {% endfor %} {% endcomment %}
                                           <button type="submit" class="appID btn btn-primary btn-sm" name="appID" value="{{ appointment_id }}">Submit Request to Patient</button>
                                         </form>
+                                        
+                                        {% comment %} {% endif %} {% endcomment %}
 
                                         <h2 style="margin-top: 20px; margin-bottom: 20px;">Cancel Appointment</h2>
                                         <form action="{% url 'delete_appointment' %}" method="post">
@@ -340,10 +357,9 @@
                                     </div>
                                   </td>
                                   
-                                  <td><label class="badge badge-danger">Pending</label></td>
+                                  
                                   
                                 </tr>
-                              {% endfor %}
                             {% else %}
                               <td colspan="7" style="text-align: center;">No upcoming appointments!</td>
                             {% endif %}
@@ -359,6 +375,64 @@
         </div>
       </div>
     </div>
+
+
+
+    <script>
+      var clinic_data_list = {{ clinic_data_list|safe }};
+      console.log(clinic_data_list);
+
+      // Add your additional JavaScript code here
+      const medicineNameInput = document.getElementById('medicine_name_input');
+      const dropdownMenuSizeButton_ClinicName = document.getElementById('dropdownMenuSizeButton_ClinicName');
+      const selected_appointment_date = document.getElementById('selected_appointment_date');
+
+      
+
+      dropdownMenuSizeButton_ClinicName.addEventListener('change', changeRouteDropdown);
+      selected_appointment_date.addEventListener('input', populateDosageDropdown);
+
+      
+      function changeRouteDropdown() {
+        const selectedClinicName = dropdownMenuSizeButton_ClinicName.value.trim();
+        
+        // Change route dropdown based on selected strength
+        clinic_data_list.forEach(function(clinic) {
+            // if (clinic.clinic_id.trim() === selectedClinicName) { // Ensure consistent comparison
+            //   selected_appointment_date.value = clinic.next_available_date_str;
+            // }
+            selected_appointment_date.value = clinic.next_available_date_str;
+        });
+      }
+      function populateDosageDropdown() {
+        const selectedMedicine = selected_appointment_date.value.trim();
+        dropdownMenuSizeButton_ClinicName.innerHTML = '<option value="" selected disabled>Select Dosage</option>'; // Reset dosage dropdown
+        
+        // Populate dosage dropdown based on selected medicine
+        clinic_data_list.forEach(function(clinic) {
+            if (clinic.next_available_date_str.trim() === selectedMedicine) { // Ensure consistent comparison
+                const option = document.createElement('option');
+                option.text = clinic.next_available_date_str;
+                option.value = clinic.next_available_date_str;
+                dropdownMenuSizeButton_ClinicName.appendChild(option);
+            }
+        });
+
+        // Trigger the change event on dosage dropdown to update the route dropdown
+        dropdownMenuSizeButton_ClinicName.dispatchEvent(new Event('change'));
+    } 
+  </script>
+  
+    
+    <script>
+      // JavaScript function to handle clinic selection and update display
+      function selectClinic(clinicName) {
+          document.getElementById('dropdownMenuSizeButton_ClinicName').innerText = clinicName;
+          // Optionally, you can also update some hidden input field or perform further actions based on the selected clinic
+      }
+    </script>
+
+    
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -382,8 +456,6 @@
       });
     </script>
     
-    
-
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         document.body.addEventListener('click', function (event) {

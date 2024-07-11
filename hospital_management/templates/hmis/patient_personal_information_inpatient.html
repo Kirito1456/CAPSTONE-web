@@ -237,13 +237,15 @@
                                               <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatientData_id }}>
                                                   <i class="fa fa-check"></i> Save </button>
                                           </form>
-                                        {% endfor %}
+                                        
 
                                         {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                                             {% if chosenPatientConsulNotes_data.diagnosis %}
                                                 <button  class="buttons_info"><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Medication Order</a></button>
                                             {% endif %}
                                         {% endfor %}
+                                        
+                                      {% endfor %}
 
                                     </div>
                                 </div>

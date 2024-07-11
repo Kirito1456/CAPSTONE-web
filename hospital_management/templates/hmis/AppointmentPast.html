@@ -246,8 +246,8 @@
                               <th>Patient Name</th>
                               <th>Visit Type</th>
                               <th>Clinic</th>
-                              <th>Details</th>
                               <th>Status</th>
+                              <th>Details</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -264,10 +264,18 @@
                                 <td>{{ appointment_data.appointmentVisitType }}</td>
                                 <td>
                                   {% for clinic_id, clinic_data in clinics.items%}
-                                    {% if clinic_id == appointment_data.clinic %}
+                                    {% if clinic_id == appointment_data.clinicUID %}
                                       {{ clinic_data.name }}
                                     {% endif %}
                                   {% endfor %}
+                                </td>
+
+                                <td>
+                                  {% if appointment_data.status == 'Finished' %}
+                                    <label class="badge badge-success">Completed</label>
+                                  {% else %}
+                                    <label class="badge badge-warning">Pending</label>
+                                  {% endif %}
                                 </td>
 
                                 <td> 
@@ -297,13 +305,7 @@
                                   </div>    
                                 </td>
                                 
-                                <td>
-                                  {% if appointment_data.status == 'Finished' %}
-                                    <label class="badge badge-success">Completed</label>
-                                  {% else %}
-                                    <label class="badge badge-warning">Pending</label>
-                                  {% endif %}
-                                </td>
+                                
                               </tr>
                             {% endfor %}
                             {% else %}

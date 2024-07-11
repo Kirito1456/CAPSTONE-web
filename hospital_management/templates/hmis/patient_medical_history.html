@@ -161,6 +161,9 @@
                       <li class="nav-item">
                         <a class="nav-link" id="consultation-tab" data-bs-toggle="tab" href="#consultation" role="tab" aria-controls="consultation" aria-selected="false">Past Consultation Notes</a>
                       </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="treatment-tab" data-bs-toggle="tab" href="#treatment" role="tab" aria-controls="treatment" aria-selected="false">Treatment Plans</a>
+                      </li>
                     </ul>
                   </div>
                   <div class="tab-content tab-content-basic">
@@ -195,6 +198,49 @@
                                     </tbody>
                                   </table>
                                 </div>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+
+                  <div class="tab-pane fade show" id="treatment" role="tabpanel" aria-labelledby="treatment">
+                    <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                              <div class="card-body">
+                                <div id="medications-container">
+                                  <div id="head">Medications History</div>
+                                  <div id="medication-list-container">
+                                      <div id="table-header" style="font-size: 14px; display: flex; padding: 10px;flex-direction: row; background-color: #334A7C; color: white;">
+                                          <div style="flex: 1; text-align: center;">Date Created</div>
+                                          <div style="flex: 1; text-align: center;">Prescribed Medication</div>
+                                      </div>
+                                      <div id="table-body" style="font-size: 14px; display: flex; flex-direction: column;">
+                                          {% for po_date, po_data in prescriptionsorders_ref.items %}
+                                              <div style="display: flex; flex-direction: row;" id="table-row">
+                                                  <div style="flex: 1; text-align: center; padding: 10px;">
+                                                      <span class="po-date"
+                                                          data-medication="{{ po_data.medicine_name|join:' ' }}"
+                                                          data-dosage="{{ po_data.dosage|join:' ' }}"
+                                                          data-route="{{ po_data.route|join:' ' }}"
+                                                          data-times="{{ po_data.times|join:' ' }}">
+                                                          {{ po_date }}
+                                                      </span>
+                                                  </div>
+                                                  <div style="flex: 1; text-align: center; padding: 10px;">
+                                                      {% if po_data.medicine_name|length > 1 %}
+                                                          {{ po_data.medicine_name|join:', ' }}
+                                                      {% else %}
+                                                          {{ po_data.medicine_name|join:' ' }}
+                                                      {% endif %}
+                                                  </div>
+                                              </div>
+                                          {% endfor %}
+                  
+                  
+                                      </div>
+                                  </div>
                               </div>
                             </div>
                         </div>

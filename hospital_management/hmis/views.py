@@ -393,8 +393,12 @@ def AppointmentUpcoming(request):
     clinics = db.child("clinics").get().val()
 
     next_available_dates = []
-    time_slots = []
+    clinic_data_list = []
     days_checked = 0
+    
+    next_available_date = None
+    current_date = datetime.now()
+    
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -409,7 +413,7 @@ def AppointmentUpcoming(request):
                     appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
                 
                     # Check if appointment date is in the future
-                    if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Ongoing":
+                    if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Confirmed":
                         upcoming_appointments[appointment_id] = appointment_data
 
         # Sort appointments by date
@@ -417,74 +421,83 @@ def AppointmentUpcoming(request):
     else:
         sorted_upcoming_appointments = {}
 
-    # Suggested date for rescheduling
-    if request.method == 'POST':
-        clinic_uid = request.POST.get('clinic_uid')
-        print("CLINIC UID IS", clinic_uid)
-    else:
-        print("asdasdasd")
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-    if appointmentschedule_data:
-        available_days_str = appointmentschedule_data.get("days", "")
-        day_name_to_number = {
-            'monday': 0,
-            'tuesday': 1,
-            'wednesday': 2,
-            'thursday': 3,
-            'friday': 4,
-            'saturday': 5,
-            'sunday': 6
-        }
+    for clinic_id, clinic_data in appointmentschedule_data.items():
+        time_slots = []
+        for items_id, items_data in clinic_data.items():
+            
 
-        available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
-        
-        current_day_of_week = datetime.now().weekday()
-        current_date = datetime.now()
-        next_available_date = None  # Initialize the variable to store the next available date
-        while days_checked < 7:  # Check up to 7 days
-            if current_day_of_week in available_days_numbers:
-                if current_date.date():
-                    next_available_date = current_date.date()
-                    break  # Exit the loop as soon as the first available date is found
-            current_date += timedelta(days=1)
-            current_day_of_week = (current_day_of_week + 1) % 7
-            days_checked += 1
+            available_days_str = []
+            if 'days' in items_id:
+                for day_name in items_data:
+                    available_days_str.append(day_name.lower())
+                    day_name_to_number = {
+                        'monday': 0,
+                        'tuesday': 1,
+                        'wednesday': 2,
+                        'thursday': 3,
+                        'friday': 4,
+                        'saturday': 5,
+                        'sunday': 6
+                    }
 
-        next_available_date_str = next_available_date.strftime('%Y-%m-%d')
+                    available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
+                    
+                    current_day_of_week = datetime.now().weekday()
+                    current_date = datetime.now()
+                    next_available_date = None  # Initialize the variable to store the next available date
+                    
+                    while days_checked < 7:  # Check up to 7 days
+                        if current_day_of_week in available_days_numbers:
+                            if current_date.date():
+                                next_available_date = current_date.date()
+                                break  # Exit the loop as soon as the first available date is found
+                        current_date += timedelta(days=1)
+                        current_day_of_week = (current_day_of_week + 1) % 7
+                        days_checked += 1
 
-        appointments_for_specific_date = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str]
-        booked_time_slots = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date)
-       
-        # Define the start and end time for morning and afternoon appointments for the specific date
-        morning_start = datetime.strptime(appointmentschedule_data.get("morning_start"), '%H:%M')
-        morning_end = datetime.strptime(appointmentschedule_data.get("morning_end"), '%H:%M')
-        afternoon_start = datetime.strptime(appointmentschedule_data.get("afternoon_start"), '%H:%M')
-        afternoon_end = datetime.strptime(appointmentschedule_data.get("afternoon_end"), '%H:%M')
-        
-        interval = timedelta(minutes=30)
-        
-        # Calculate time slots for morning
-        current_time = morning_start
-        while current_time <= morning_end:
-            # Check if the current time slot is not booked
-            if current_time.strftime('%I:%M %p') not in booked_time_slots:
-                time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
-            current_time += interval
+                    next_available_date_str = next_available_date.strftime('%Y-%m-%d')
 
-        # Calculate time slots for afternoon
-        current_time = afternoon_start
-        while current_time <= afternoon_end:
-            # Check if the current time slot is not booked
-            if current_time.strftime('%I:%M %p') not in booked_time_slots:
-                time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
-            current_time += interval
-    else: 
-        next_available_date_str = ''
+                    appointments_for_specific_date = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str]
+                    booked_time_slots = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date)
+                        
+                        
+                    morning_start = datetime.strptime(clinic_data["morning_start"], '%H:%M')
+                    morning_end = datetime.strptime(clinic_data["morning_end"], '%H:%M')
+                    afternoon_start = datetime.strptime(clinic_data["afternoon_start"], '%H:%M')
+                    afternoon_end = datetime.strptime(clinic_data["afternoon_end"], '%H:%M')
+
+                    interval = timedelta(minutes=30)
+                    
+                    # Calculate time slots for morning
+                    current_time = morning_start
+                    while current_time <= morning_end:
+                        # Check if the current time slot is not booked
+                        if current_time.strftime('%I:%M %p') not in booked_time_slots:
+                            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
+                        current_time += interval
+
+                    # Calculate time slots for afternoon
+                    current_time = afternoon_start
+                    while current_time <= afternoon_end:
+                        # Check if the current time slot is not booked
+                        if current_time.strftime('%I:%M %p') not in booked_time_slots:
+                            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
+                        current_time += interval
+
+                    clinic_data_list.append({
+                        'clinic_id': clinic_id,
+                        'next_available_date_str': next_available_date_str,
+                        'time_slots': time_slots
+                    })
+
+                    break
             
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
-                                                             'next_available_date_str': next_available_date_str, 'time_slots': time_slots, 'clinics': clinics})
+                                                             'next_available_date_str': next_available_date_str, 'time_slots': time_slots, 'clinics': clinics,
+                                                             'clinic_data_list': clinic_data_list})
 def update_appointment(request):
     
     if request.method == 'POST':
@@ -736,7 +749,7 @@ def DoctorDashboard(request):
                     appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
                 
                     # Check if appointment date is in the future
-                    if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)) and appointment_data["status"] == "Ongoing":
+                    if appointment_datetime >= date.datetime.now() and appointment_datetime < (date.datetime.now()+ timedelta(days=1)) and appointment_data["status"] == "Confirmed":
                         upcoming_appointments[appointment_id] = appointment_data     
 
         # Sort appointments by date
@@ -772,9 +785,9 @@ def DoctorDashboard(request):
                         if patients_id == patientsorders_id:
                             medicine_name = inside_data['medicine_name']
                             dispensed = inside_data['total']
-                            remaining = (inside_data['total']) - 2
+                            remaining = (inside_data['total']) 
                             prescribed = inside_data['total']
-                            days = inside_data['days'] - 1
+                            days = inside_data['days'] 
 
                             adherence_percentage = ((dispensed - remaining) / ((prescribed / days) * days)) * 100
                             adherence_percentages.setdefault(medicine_name, []).append(adherence_percentage)
@@ -927,183 +940,202 @@ def patient_personal_information_inpatient(request):
     uid = request.session['uid']   
 
     time_slots = []
-    next_available_dates = []
     list_final = []
+
+    next_available_dates = []
+    clinic_data_list = []
     days_checked = 0
+    
+    next_available_date = None
     current_date = datetime.now()
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
-    for appointment_id, appointment_data in upcomings.items():
-        if appointment_data["doctorUID"] == uid:
-            appointment_date_str = appointment_data.get("appointmentDate", "")
-            appointment_time_str = appointment_data.get("appointmentTime", "")
-        
-            if appointment_date_str and appointment_time_str:
-                appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+    if upcomings:
+        for appointment_id, appointment_data in upcomings.items():
+            if appointment_data["doctorUID"] == uid:
+                appointment_date_str = appointment_data.get("appointmentDate", "")
+                appointment_time_str = appointment_data.get("appointmentTime", "")
             
-                if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Ongoing":
-                    upcoming_appointments[appointment_id] = appointment_data
+                if appointment_date_str and appointment_time_str:
+                    # Convert appointment date string to datetime object
+                    appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                
+                    # Check if appointment date is in the future
+                    if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Confirmed":
+                        upcoming_appointments[appointment_id] = appointment_data
 
-    # Sort appointments by date
-    sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
-    
-
-    time_slots1 = []
-    appointmentschedule_data1 = db.child("appointmentschedule").child(uid).get().val()
-    if appointmentschedule_data1:
-        available_days_str1 = appointmentschedule_data1.get("days", "")
-        day_name_to_number1 = {
-            'monday': 0,
-            'tuesday': 1,
-            'wednesday': 2,
-            'thursday': 3,
-            'friday': 4,
-            'saturday': 5,
-            'sunday': 6
-        }
-
-        available_days_numbers1 = [day_name_to_number1[day.lower()] for day in available_days_str1 if day.lower() in day_name_to_number1]
-
-        current_day_of_week1 = datetime.now().weekday()
-        current_date1 = datetime.now() + timedelta(days=3)  # Start checking from three days ahead
-        next_available_date1 = None  # Initialize the variable to store the next available date
-        days_checked = 0  # Initialize days_checked variable
-        while days_checked < 7:  # Check up to 7 days
-            if current_day_of_week1 in available_days_numbers1:
-                if current_date1.date():
-                    next_available_date1 = current_date1.date()
-                    break  # Exit the loop as soon as the first available date is found
-            current_date1 += timedelta(days=1)
-            current_day_of_week1 = (current_day_of_week1 + 1) % 7
-            days_checked += 1
-
-        next_available_date_str1 = next_available_date1.strftime('%Y-%m-%d')
-
-        appointments_for_specific_date1 = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str1]
-        booked_time_slots1 = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date1)
-       
-        # Define the start and end time for morning and afternoon appointments for the specific date
-        morning_start = datetime.strptime(appointmentschedule_data1.get("morning_start"), '%H:%M')
-        morning_end = datetime.strptime(appointmentschedule_data1.get("morning_end"), '%H:%M')
-        afternoon_start = datetime.strptime(appointmentschedule_data1.get("afternoon_start"), '%H:%M')
-        afternoon_end = datetime.strptime(appointmentschedule_data1.get("afternoon_end"), '%H:%M')
-        
-        interval = timedelta(minutes=30)
-        
-        # Calculate time slots for morning
-        current_time1 = morning_start
-        while current_time1 <= morning_end:
-            # Check if the current time slot is not booked
-            if current_time1.strftime('%I:%M %p') not in booked_time_slots1:
-                time_slots1.append(current_time1.strftime('%I:%M %p'))  # Include AM/PM
-            current_time1 += interval
-
-        # Calculate time slots for afternoon
-        current_time1 = afternoon_start
-        while current_time1 <= afternoon_end:
-            # Check if the current time slot is not booked
-            if current_time1.strftime('%I:%M %p') not in booked_time_slots1:
-                time_slots1.append(current_time1.strftime('%I:%M %p'))  # Include AM/PM
-            current_time1 += interval
-
-
-
-    
-    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-    if appointmentschedule_data:
-        available_days_str = appointmentschedule_data.get("days", "")
-        day_name_to_number = {
-            'monday': 1,
-            'tuesday': 2,
-            'wednesday': 3,
-            'thursday': 4,
-            'friday': 5,
-            'saturday': 6,
-            'sunday': 7
-        }
-
-        available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
-        current_day_of_week = datetime.now().weekday()
-
-        while len(next_available_dates) < 4 and days_checked < 60:  # Check up to 30 days
-            if current_day_of_week in available_days_numbers:
-                # Check if there are no appointments on this date
-                if current_date.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
-                    list_final.append(current_date.date())
-
-            current_date += timedelta(days=1)
-            current_day_of_week = (current_day_of_week + 1) % 7
-            days_checked += 1
-
-        # Get current date
-        current_date = datetime.now().date()
-        three_days = current_date + timedelta(days=3)
-        # Calculate dates 1 week, 2 weeks, 3 weeks, and 1 month from now
-        
-        one_week_from_now = current_date + timedelta(weeks=1)
-        two_weeks_from_now = current_date + timedelta(weeks=2)
-        three_weeks_from_now = current_date + timedelta(weeks=3)
-        one_month_from_now = current_date + timedelta(days=30)
-
-        # Define a threshold for finding the nearest date
-        threshold = timedelta(days=3)  # Adjust as needed
-
-        # Function to find the nearest date
-        def find_nearest_date(target_date, dates_list):
-            nearest_date = min(dates_list, key=lambda x: abs(x - target_date))
-            return nearest_date
-
-        # Find the nearest dates
-        nearest_dates = {
-            'one_week_from_now': find_nearest_date(one_week_from_now, list_final),
-            'two_weeks_from_now': find_nearest_date(two_weeks_from_now, list_final),
-            'three_weeks_from_now': find_nearest_date(three_weeks_from_now, list_final),
-            'one_month_from_now': find_nearest_date(one_month_from_now, list_final)
-        }
-        
-        three_days_after = find_nearest_date(three_days, list_final)
-        # print('three_days_after', three_days_after)
-
-        # Define time slots for morning
-        morning_start_str = appointmentschedule_data.get("morning_start")
-        morning_end_str = appointmentschedule_data.get("morning_end")
-
-        # Convert strings to datetime objects for morning
-        morning_start = datetime.strptime(morning_start_str, '%H:%M')
-        morning_end = datetime.strptime(morning_end_str, '%H:%M')
-
-        # Define time slots for afternoon
-        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
-        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
-
-        # Convert strings to datetime objects for afternoon
-        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
-        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
-
-        interval = timedelta(minutes=30)
-
-        # Calculate time slots for morning
-        current_time = morning_start
-        while current_time <= morning_end:
-            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
-            current_time += interval
-
-        # Calculate time slots for afternoon
-        current_time = afternoon_start
-        while current_time <= afternoon_end:
-            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
-            current_time += interval
-    
-    time_objects = [datetime.strptime(time_slot, '%I:%M %p') for time_slot in time_slots]
-
-    # Find the earliest time slot
-    if time_objects:
-        earliest_time = min(time_objects)
-        time_early = earliest_time.strftime('%I:%M %p')
-        print("Earliest time slot:", time_early)
+        # Sort appointments by date
+        sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
     else:
-        print("No time slots available")
+        sorted_upcoming_appointments = {}
+
+    appointmentschedule_data1 = db.child("appointmentschedule").child(uid).get().val()
+    
+    for clinic_id, clinic_data in appointmentschedule_data1.items():
+        time_slots1 = []
+        for items_id, items_data in clinic_data.items():
+            
+
+            available_days_str1 = []
+            if 'days' in items_id:
+                for day_name in items_data:
+                    available_days_str1.append(day_name.lower())
+                    day_name_to_number1 = {
+                        'monday': 0,
+                        'tuesday': 1,
+                        'wednesday': 2,
+                        'thursday': 3,
+                        'friday': 4,
+                        'saturday': 5,
+                        'sunday': 6
+                    }
+
+                    available_days_numbers1 = [day_name_to_number1[day.lower()] for day in available_days_str1 if day.lower() in day_name_to_number1]
+
+                    current_day_of_week1 = datetime.now().weekday()
+                    current_date1 = datetime.now() + timedelta(days=3)  # Start checking from three days ahead
+                    next_available_date1 = None  # Initialize the variable to store the next available date
+
+                    while days_checked < 7:  # Check up to 7 days
+                        if current_day_of_week1 in available_days_numbers1:
+                            if current_date1.date():
+                                next_available_date1 = current_date1.date()
+                                break  # Exit the loop as soon as the first available date is found
+                        current_date1 += timedelta(days=1)
+                        current_day_of_week1 = (current_day_of_week1 + 1) % 7
+                        days_checked += 1
+
+                    next_available_date_str1 = next_available_date1.strftime('%Y-%m-%d')
+
+                    appointments_for_specific_date1 = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str1]
+                    booked_time_slots1 = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date1)
+       
+                    # Define the start and end time for morning and afternoon appointments for the specific date
+                    morning_start = datetime.strptime(clinic_data["morning_start"], '%H:%M')
+                    morning_end = datetime.strptime(clinic_data["morning_end"], '%H:%M')
+                    afternoon_start = datetime.strptime(clinic_data["afternoon_start"], '%H:%M')
+                    afternoon_end = datetime.strptime(clinic_data["afternoon_end"], '%H:%M')
+                    
+                    interval = timedelta(minutes=30)
+        
+                    # Calculate time slots for morning
+                    current_time1 = morning_start
+                    while current_time1 <= morning_end:
+                        # Check if the current time slot is not booked
+                        if current_time1.strftime('%I:%M %p') not in booked_time_slots1:
+                            time_slots1.append(current_time1.strftime('%I:%M %p'))  # Include AM/PM
+                        current_time1 += interval
+
+                    # Calculate time slots for afternoon
+                    current_time1 = afternoon_start
+                    while current_time1 <= afternoon_end:
+                        # Check if the current time slot is not booked
+                        if current_time1.strftime('%I:%M %p') not in booked_time_slots1:
+                            time_slots1.append(current_time1.strftime('%I:%M %p'))  # Include AM/PM
+                        current_time1 += interval
+
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
+    for clinic_id, clinic_data in appointmentschedule_data.items():
+        time_slots = []
+        for items_id, items_data in clinic_data.items():
+            
+
+            available_days_str = []
+            if 'days' in items_id:
+                for day_name in items_data:
+                    available_days_str.append(day_name.lower())
+                    day_name_to_number = {
+                        'monday': 0,
+                        'tuesday': 1,
+                        'wednesday': 2,
+                        'thursday': 3,
+                        'friday': 4,
+                        'saturday': 5,
+                        'sunday': 6
+                    }
+
+                    available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
+                    current_day_of_week = datetime.now().weekday()
+
+                    while len(next_available_dates) < 4 and days_checked < 60:  # Check up to 30 days
+                        if current_day_of_week in available_days_numbers:
+                            # Check if there are no appointments on this date
+                            if current_date.date() not in [datetime.strptime(appointment_data['appointmentDate'], "%Y-%m-%d").date() for appointment_data in upcoming_appointments.values()]:
+                                list_final.append(current_date.date())
+
+                        current_date += timedelta(days=1)
+                        current_day_of_week = (current_day_of_week + 1) % 7
+                        days_checked += 1
+
+                    # Get current date
+                    current_date = datetime.now().date()
+                    three_days = current_date + timedelta(days=3)
+                    # Calculate dates 1 week, 2 weeks, 3 weeks, and 1 month from now
+                    
+                    one_week_from_now = current_date + timedelta(weeks=1)
+                    two_weeks_from_now = current_date + timedelta(weeks=2)
+                    three_weeks_from_now = current_date + timedelta(weeks=3)
+                    one_month_from_now = current_date + timedelta(days=30)
+
+                    # Define a threshold for finding the nearest date
+                    threshold = timedelta(days=3)  # Adjust as needed
+
+                    # Function to find the nearest date
+                    def find_nearest_date(target_date, dates_list):
+                        nearest_date = min(dates_list, key=lambda x: abs(x - target_date))
+                        return nearest_date
+
+                    # Find the nearest dates
+                    nearest_dates = {
+                        'one_week_from_now': find_nearest_date(one_week_from_now, list_final),
+                        'two_weeks_from_now': find_nearest_date(two_weeks_from_now, list_final),
+                        'three_weeks_from_now': find_nearest_date(three_weeks_from_now, list_final),
+                        'one_month_from_now': find_nearest_date(one_month_from_now, list_final)
+                    }
+                    
+                    three_days_after = find_nearest_date(three_days, list_final)
+                    # print('three_days_after', three_days_after)
+
+                    # Define time slots for morning
+                    morning_start_str = clinic_data["morning_start"]
+                    morning_end_str = clinic_data["morning_end"]
+
+                    # Convert strings to datetime objects for morning
+                    morning_start = datetime.strptime(morning_start_str, '%H:%M')
+                    morning_end = datetime.strptime(morning_end_str, '%H:%M')
+
+                    # Define time slots for afternoon
+                    afternoon_start_str = clinic_data["afternoon_start"]
+                    afternoon_end_str = clinic_data["afternoon_end"]
+
+                    # Convert strings to datetime objects for afternoon
+                    afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+                    afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+
+                    interval = timedelta(minutes=30)
+
+                    # Calculate time slots for morning
+                    current_time = morning_start
+                    while current_time <= morning_end:
+                        time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
+                        current_time += interval
+
+                    # Calculate time slots for afternoon
+                    current_time = afternoon_start
+                    while current_time <= afternoon_end:
+                        time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
+                        current_time += interval
+                
+                time_objects = [datetime.strptime(time_slot, '%I:%M %p') for time_slot in time_slots]
+
+                # Find the earliest time slot
+                if time_objects:
+                    earliest_time = min(time_objects)
+                    time_early = earliest_time.strftime('%I:%M %p')
+                    print("Earliest time slot:", time_early)
+                else:
+                    print("No time slots available")
 
     chosenPatient = request.GET.get('chosenPatient', '')
     endAppointment = request.GET.get('appointmentID', '')
@@ -1210,35 +1242,36 @@ def patient_personal_information_inpatient(request):
         formatted_dates.append(formatted_date)        
 
     if appointmentschedule_data:
+        for clinic_id, clinic_data in appointmentschedule_data.items():
     # Define time slots for morning
-        morning_start_str = appointmentschedule_data.get("morning_start")
-        morning_end_str = appointmentschedule_data.get("morning_end")
+            morning_start_str = clinic_data["morning_start"]
+            morning_end_str = clinic_data["morning_end"]
 
-        # Convert strings to datetime objects for morning
-        morning_start = datetime.strptime(morning_start_str, '%H:%M')
-        morning_end = datetime.strptime(morning_end_str, '%H:%M')
+            # Convert strings to datetime objects for morning
+            morning_start = datetime.strptime(morning_start_str, '%H:%M')
+            morning_end = datetime.strptime(morning_end_str, '%H:%M')
 
-        # Define time slots for afternoon
-        afternoon_start_str = appointmentschedule_data.get("afternoon_start")
-        afternoon_end_str = appointmentschedule_data.get("afternoon_end")
+            # Define time slots for afternoon
+            afternoon_start_str = clinic_data["afternoon_start"]
+            afternoon_end_str = clinic_data["afternoon_end"]
 
-        # Convert strings to datetime objects for afternoon
-        afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
-        afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
+            # Convert strings to datetime objects for afternoon
+            afternoon_start = datetime.strptime(afternoon_start_str, '%H:%M')
+            afternoon_end = datetime.strptime(afternoon_end_str, '%H:%M')
 
-        interval = timedelta(minutes=30)
+            interval = timedelta(minutes=30)
 
-        # Calculate time slots for morning
-        current_time = morning_start
-        while current_time <= morning_end:
-            time_slots.append(current_time.strftime('%H:%M'))
-            current_time += interval
+            # Calculate time slots for morning
+            current_time = morning_start
+            while current_time <= morning_end:
+                time_slots.append(current_time.strftime('%H:%M'))
+                current_time += interval
 
-        # Calculate time slots for afternoon
-        current_time = afternoon_start
-        while current_time <= afternoon_end:
-            time_slots.append(current_time.strftime('%H:%M'))
-            current_time += interval
+            # Calculate time slots for afternoon
+            current_time = afternoon_start
+            while current_time <= afternoon_end:
+                time_slots.append(current_time.strftime('%H:%M'))
+                current_time += interval
 
     
     if request.method == 'POST':
@@ -1541,7 +1574,7 @@ def patient_personal_information_inpatient(request):
                 'appointmentVisitType': 'Follow-Up Visit',
                 'doctorUID': uid1,
                 'patientName': chosenPatient,
-                'status': 'Ongoing'
+                'status': 'Confirmed'
             }
             db.child('appointments').child(new_id).set(data2)
 
@@ -1886,6 +1919,9 @@ def patient_medical_history(request):
     chosenPatient = request.GET.get('chosenPatient', '')
     consulNotes = db.child("consultationNotes").get().val()
 
+    prescriptionsorders = db.child("prescriptionorders").get().val()
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
+
     patientMedical = db.child("patientmedicalhistory").get().val()
     if request.method == 'POST':
         if 'saveMedicalHistoryButton' in request.POST:
@@ -1955,7 +1991,9 @@ def patient_medical_history(request):
                                                                  'uid': uid,
                                                                  'patientMedical': patientMedical,
                                                                  'chosenPatient': chosenPatient,
-                                                                 'consulNotes': consulNotes})
+                                                                 'consulNotes': consulNotes,
+                                                                 'prescriptionsorders': prescriptionsorders,
+                                                                 'prescriptionsorders_ref': prescriptionsorders_ref})
 
 from datetime import datetime
 
@@ -2484,11 +2522,12 @@ def save_prescriptions(request):
 def diagnostic_imagery_reports(request):
     submittedTest = db.child("submittedTest").get().val()
     doctors = db.child("doctors").get().val()
+    patients = db.child("patients").get().val()
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
     testRequests = db.child("testrequest").get().val()
-    print("Test requests: " , testRequests)
-    return render(request, 'hmis/diagnostic_imagery_reports.html', {'testRequest': testRequests,'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
+    
+    return render(request, 'hmis/diagnostic_imagery_reports.html', {'patients': patients,'testRequest': testRequests,'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
 
 
 def download_image(url, file_path):
