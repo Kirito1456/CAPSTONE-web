@@ -1918,6 +1918,7 @@ def patient_medical_history(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
     consulNotes = db.child("consultationNotes").get().val()
+    testrequest = db.child("testrequest").get().val()
 
     prescriptionsorders = db.child("prescriptionorders").get().val()
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
@@ -1993,7 +1994,8 @@ def patient_medical_history(request):
                                                                  'chosenPatient': chosenPatient,
                                                                  'consulNotes': consulNotes,
                                                                  'prescriptionsorders': prescriptionsorders,
-                                                                 'prescriptionsorders_ref': prescriptionsorders_ref})
+                                                                 'prescriptionsorders_ref': prescriptionsorders_ref,
+                                                                 'testrequest': testrequest})
 
 from datetime import datetime
 
