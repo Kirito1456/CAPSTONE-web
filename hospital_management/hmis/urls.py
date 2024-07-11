@@ -46,6 +46,7 @@ urlpatterns = [
     path('perform_ocr/', views.perform_ocr, name='perform_ocr'),
     path('test/', views.pharmacy_drugs, name='pharmacy_drugs'),
     path('diagnostic_imagery_reports/read/<int:notification_id>/', views.diagnostic_imagery_reports, name="diagnostic_imagery_reports"),
+    path('diagnostic_reports/', views.diagnostic_reports, name="diagnostic_reports"),
     path('patient_personal_information_inpatient/', views.patient_personal_information_inpatient, name="patient_personal_information_inpatient"),
     path('save_chiefComplaint/', views.save_chiefComplaint, name="save_chiefComplaint"),
     path('save_review_of_systems/', views.save_review_of_systems, name='save_review_of_systems'),

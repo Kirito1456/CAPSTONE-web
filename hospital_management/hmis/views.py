@@ -15,6 +15,7 @@ from django.core.mail import send_mail
 import json
 import uuid
 import random
+from operator import itemgetter
 
 from hmis.models import Medications, Notification
 from hospital_management.settings import collection 
@@ -664,7 +665,13 @@ def AppointmentScheduling(request):
         morning_end = request.POST.get('morning_end')
         afternoon_start = request.POST.get('afternoon_start')
         afternoon_end = request.POST.get('afternoon_end')
+        clinic = request.POST.get('clinic')
+        clinicsList = db.child("clinics").get().val()
 
+        for clinicsList_id, clinicsList_data in clinicsList.items():
+            if clinicsList_id == clinic:
+                clinicUID = clinicsList_id
+            
         try:
             if not isinstance(selected_days, list):
                 selected_days = [selected_days]
@@ -678,7 +685,7 @@ def AppointmentScheduling(request):
                 'afternoon_start': str(afternoon_start),
                 'afternoon_end': str(afternoon_end),
             }
-            db.child('appointmentschedule').child(uid).set(data)
+            db.child('appointmentschedule').child(uid).child(clinicUID).update(data)
 
             messages.success(request, 'Appointment schedule saved successfully!')
             return redirect('AppointmentScheduling')
@@ -889,29 +896,44 @@ def patient_data_doctor_view(request):
     appointments = db.child("appointments").get().val()
     doctors = db.child("doctors").get().val()
     clinics = db.child("clinics").get().val()
-    uid = request.session['uid'] 
+    uid = request.session['uid']
 
-    chosenPatients= {}
+    chosenPatients = {}
     if patients:
         for patients_id, patients_data in patients.items():
             for appointment_id, appointment_data in appointments.items():
                 if appointment_data['doctorUID'] == uid and patients_id == appointment_data['patientName']:
                     chosenPatients[patients_id] = patients_data
 
-    chosenPatientData= {}
+    chosenPatientData = {}
     if patientsdata:
         for patientsdata_id, patientsdata_data in patientsdata.items():
             for appointment_id, appointment_data in appointments.items():
                 if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
                     chosenPatientData[patientsdata_id] = patientsdata_data
 
+    combined_data = []
+    for patient_id, patient_data in chosenPatients.items():
+        if patient_id in patientsdata:
+            for appointment_id, appointment_data in appointments.items():
+                if appointment_data['doctorUID'] == uid and patient_id == appointment_data['patientName']:
+                    patient_data['disease'] = patientsdata[patient_id].get('disease', 'Unknown Disease')
+                    patient_data['lastVisited'] = patientsdata[patient_id].get('lastVisited', '2024-01-01')
+            combined_data.append(patient_data)
+
+    # Sort combined_data by lastVisited
+    sorted_patients = sorted(combined_data, key=itemgetter('lastVisited'), reverse=True)
+
     # Pass the patients data to the template
-    return render(request, 'hmis/patient_data_doctor_view.html', {'patients': chosenPatients, 
-                                                                  'chosenPatientData': chosenPatientData, 
-                                                                  'doctors': doctors, 
-                                                                  'uid': uid,
-                                                                  'appointments': appointments,
-                                                                  'clinics': clinics})
+    return render(request, 'hmis/patient_data_doctor_view.html', {
+        'patients': chosenPatients,
+        'chosenPatientData': chosenPatientData,
+        'doctors': doctors,
+        'uid': uid,
+        'appointments': appointments,
+        'clinics': clinics,
+        'sorted_patients': sorted_patients
+    }) 
 
 def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
@@ -2371,6 +2393,8 @@ def save_prescriptions(request):
     patientName = patientData[patient_uid].get('fname','N/A') + ' ' + patientData[patient_uid].get('lname','N/A')
     patientGender = patientData[patient_uid].get('gender','N/A')
     patientAddress = patientData[patient_uid].get('address','N/A')
+    numClinics = 0
+    doctor_clinics = []
 
     for doctor_id, doctor_data in doctors.items():
         if uid == doctor_data["uid"]:
@@ -2378,6 +2402,14 @@ def save_prescriptions(request):
             specialization = doctor_data['specialization']
             license = str(doctor_data["license"])
             ptr = str(doctor_data["ptr"])
+            doctor_uid = doctor_id
+            for clinic_id in doctor_data["clinic"]:
+                if clinic_id in clinics:
+                    numClinics+=1
+                    print(numClinics) 
+                    clinic_info = clinics[clinic_id]
+                    doctor_clinics.append(clinic_info)
+                    print(doctor_clinics)
 
 
     # Generate unique ID for the prescription
@@ -2400,9 +2432,28 @@ def save_prescriptions(request):
         'specialization': specialization,
         'license': license,
         'ptr': ptr,
+        'numClinics': numClinics,
+        'clinics': doctor_clinics
     }
 
     print(data)
+
+    # Construct the path to the appointment data in Firebase
+    db_path = f"/prescriptionsorders/{patient_uid}/{prescription_id}"
+
+    db.child(db_path).update( {
+        'patient_id': patient_uid,
+        'doctor': doctor_uid,
+        'dateCreated': todaydate,
+        'medicines': {
+            'name': request.POST.getlist('medicine_name'),
+            'dosage': request.POST.getlist('dosage'),
+            'route': request.POST.getlist('route'),
+            'times': request.POST.getlist('times'),
+            'days': request.POST.getlist('days'),
+        },
+        'status': "Ongoing",
+    })
 
      # Handle file upload
     signature = request.FILES.get('signature')
@@ -2423,6 +2474,13 @@ def save_prescriptions(request):
         storage_path = patient_uid + '/prescriptions/' + todaydate +'-prescription.pdf'
         upload_pdf_to_firebase(temp_file_path, storage_path)
 
+        pdf_url = firebase_storage.child(f"{storage_path}").get_url(None)
+        print("PDF Download URL: ", pdf_url)
+
+        db.child(db_path).update( {
+            'prescriptionURL': pdf_url,
+        })
+        
         # Success message
         #return HttpResponse("Prescription created and uploaded successfully.")
         return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
@@ -2535,6 +2593,24 @@ def diagnostic_imagery_reports(request, notification_id):
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'patients': patients,'testRequest': testRequests,'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
 
 
+def diagnostic_reports(request):
+    submittedTest = db.child("submittedTest").get().val()
+    doctors = db.child("doctors").get().val()
+    patients = db.child("patients").get().val()
+    uid = request.session['uid'] 
+    chosenPatient = request.GET.get('chosenPatient', '')
+    testRequests = db.child("testrequest").get().val()
+
+
+    
+    return render(request, 'hmis/diagnostic_imagery_reports.html', {'patients': patients,
+                                                                    'testRequest': testRequests,
+                                                                    'submittedTest': submittedTest, 
+                                                                    'chosenPatient': chosenPatient, 
+                                                                    'doctors': doctors, 
+                                                                    'uid': uid})
+
+
 def download_image(url, file_path):
     response = requests.get(url)
     if response.status_code == 200:
@@ -2555,10 +2631,44 @@ def create_prescription_pdf(data, filename, signature_path=None):
     c.drawCentredString(width / 2, height - margin - 0.5 * inch, data['doctor'] + ", M.D.")
     c.setFont("Helvetica-Bold", 18)
     c.drawCentredString(width / 2, height - margin - 0.8 * inch, data['specialization'])
-    c.setFont("Helvetica", 12)
-    c.drawCentredString(width / 2, height - margin - 1.1 * inch, "09168794532")
-    c.drawCentredString(width / 2, height - margin - 1.3 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
-    c.drawCentredString(width / 2, height - margin - 1.5 * inch, "              Sunday          | By Appointment")
+    if data['numClinics'] == 1:
+        for clinic in data['clinics']:
+            c.setFont("Helvetica", 12)
+            # Draw clinic name
+            c.drawCentredString(width / 2, height - margin - 1.1 * inch, clinic['name'])
+            # Draw clinic address below the name
+            c.drawCentredString(width / 2, height - margin - 1.3 * inch, clinic['address'])
+            # Draw clinic address below the name
+            c.drawCentredString(width / 2, height - margin - 1.5 * inch, clinic['onumber'])
+    elif data['numClinics'] == 2:
+        left_x = width / 4  # Position for the left clinic
+        right_x = 3 * width / 4  # Position for the right clinic
+        
+        for i, clinic in enumerate(data['clinics']):
+            c.setFont("Helvetica", 12)
+            
+            if i == 0:
+                # Draw the first clinic on the left side
+                c.drawCentredString(left_x, height - margin - 1.1 * inch, clinic['name'])
+                c.drawCentredString(left_x, height - margin - 1.3 * inch, clinic['address'])
+                c.drawCentredString(left_x, height - margin - 1.5 * inch, clinic['onumber'])
+            elif i == 1:
+                # Draw the second clinic on the right side
+                c.drawCentredString(right_x, height - margin - 1.1 * inch, clinic['name'])
+                c.drawCentredString(right_x, height - margin - 1.3 * inch, clinic['address'])
+                c.drawCentredString(right_x, height - margin - 1.5 * inch, clinic['onumber'])
+    elif data['numClinics'] == 3:
+        positions = [width / 4, width / 2, 3 * width / 4]  # Positions for three clinics
+        
+        for i, clinic in enumerate(data['clinics']):
+            c.setFont("Helvetica", 12)
+            
+            # Draw each clinic at its respective position
+            c.drawCentredString(positions[i], height - margin - 1.1 * inch, clinic['name'])
+            c.drawCentredString(positions[i], height - margin - 1.3 * inch, clinic['address'])
+            c.drawCentredString(positions[i], height - margin - 1.5 * inch, clinic['onumber'])
+
+
 
     # Add a break line before the line
     c.line(margin, height - margin - 1.8 * inch, width - margin, height - margin - 1.8 * inch)
@@ -2662,6 +2772,8 @@ def requestTest(request):
     patientName = patientData[patient_uid].get('fname','N/A') + ' ' + patientData[patient_uid].get('lname','N/A')
     patientGender = patientData[patient_uid].get('gender','N/A')
     patientAddress = patientData[patient_uid].get('address','N/A')
+    numClinics = 0
+    doctor_clinics = []
 
     for doctor_id, doctor_data in doctors.items():
         if uid == doctor_data["uid"]:
@@ -2670,6 +2782,13 @@ def requestTest(request):
             license = str(doctor_data["license"])
             ptr = str(doctor_data["ptr"])
             doctor_uid = doctor_id
+            for clinic_id in doctor_data["clinic"]:
+                if clinic_id in clinics:
+                    numClinics+=1
+                    print(numClinics) 
+                    clinic_info = clinics[clinic_id]
+                    doctor_clinics.append(clinic_info)
+                    print(doctor_clinics)
 
 
     if request.method == 'POST':
@@ -2687,6 +2806,8 @@ def requestTest(request):
             'specialization':specialization,
             'license': license,
             'ptr': ptr,
+            'numClinics': numClinics,
+            'clinics': doctor_clinics
         }
 
         # Construct the path to the appointment data in Firebase
@@ -2758,10 +2879,43 @@ def create_tests_pdf(data, filename, signature_path=None):
     c.drawCentredString(width / 2, height - margin - 0.5 * inch, data['doctor'] + ", M.D.")
     c.setFont("Helvetica-Bold", 18)
     c.drawCentredString(width / 2, height - margin - 0.8 * inch, data['specialization'])
-    c.setFont("Helvetica", 12)
-    c.drawCentredString(width / 2, height - margin - 1.1 * inch, "09168794532")
-    c.drawCentredString(width / 2, height - margin - 1.3 * inch, "Clinic Hours: Monday - Friday | 9:00AM - 12:00NN")
-    c.drawCentredString(width / 2, height - margin - 1.5 * inch, "              Sunday          | By Appointment")
+    if data['numClinics'] == 1:
+        for clinic in data['clinics']:
+            c.setFont("Helvetica", 12)
+            # Draw clinic name
+            c.drawCentredString(width / 2, height - margin - 1.1 * inch, clinic['name'])
+            # Draw clinic address below the name
+            c.drawCentredString(width / 2, height - margin - 1.3 * inch, clinic['address'])
+            # Draw clinic address below the name
+            c.drawCentredString(width / 2, height - margin - 1.5 * inch, clinic['onumber'])
+    elif data['numClinics'] == 2:
+        left_x = width / 4  # Position for the left clinic
+        right_x = 3 * width / 4  # Position for the right clinic
+        
+        for i, clinic in enumerate(data['clinics']):
+            c.setFont("Helvetica", 12)
+            
+            if i == 0:
+                # Draw the first clinic on the left side
+                c.drawCentredString(left_x, height - margin - 1.1 * inch, clinic['name'])
+                c.drawCentredString(left_x, height - margin - 1.3 * inch, clinic['address'])
+                c.drawCentredString(left_x, height - margin - 1.5 * inch, clinic['onumber'])
+            elif i == 1:
+                # Draw the second clinic on the right side
+                c.drawCentredString(right_x, height - margin - 1.1 * inch, clinic['name'])
+                c.drawCentredString(right_x, height - margin - 1.3 * inch, clinic['address'])
+                c.drawCentredString(right_x, height - margin - 1.5 * inch, clinic['onumber'])
+    elif data['numClinics'] == 3:
+        positions = [width / 4, width / 2, 3 * width / 4]  # Positions for three clinics
+        
+        for i, clinic in enumerate(data['clinics']):
+            c.setFont("Helvetica", 12)
+            
+            # Draw each clinic at its respective position
+            c.drawCentredString(positions[i], height - margin - 1.1 * inch, clinic['name'])
+            c.drawCentredString(positions[i], height - margin - 1.3 * inch, clinic['address'])
+            c.drawCentredString(positions[i], height - margin - 1.5 * inch, clinic['onumber'])
+
 
     # Add a break line before the line
     c.line(margin, height - margin - 1.8 * inch, width - margin, height - margin - 1.8 * inch)
