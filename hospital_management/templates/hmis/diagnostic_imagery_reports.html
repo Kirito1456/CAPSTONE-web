@@ -166,19 +166,32 @@
                           </thead>
                           <tbody>
                               
-                                {% for testRequest_id, testRequest_data in testRequest.items %}
-                                  {% if testRequest_id == chosenPatient %}
-                                    {% for request_id, request_data in testRequest_data.items %}
+                            {% for testRequest_id, testRequest_data in testRequest.items %}
+                            {% if testRequest_id == chosenPatient %}
+                                {% for request_id, request_data in testRequest_data.items %}
                                     <tr>
-                                      <td>{{ request_data.dateCreated }}</td>
-                                      <td><a href="{{ request_data.testURL }}"> View Test Request</a></td>
-                                      <td>-</td>
-                                      <td>-</td>
-                                      <td>-</td>
+                                        <td>{{ request_data.dateCreated }}</td>
+                                        <td><a href="{{ request_data.testURL }}"> View Test Request</a></td>
+                                        {% for submittedTest_id, submittedTest_data in submittedTest.items %}
+                                            {% if submittedTest_id == chosenPatient %}
+                                                {% for test_id, test_data in submittedTest_data.items %}
+                                                    {% if request_id == test_data.testrequestid %}
+                                                        <td>{{ test_data.date }}</td>
+                                                        <td>{{ test_data.testRequestKey }}</td>
+                                                        <td><a href="{{ test_data.downloadURL }}">Download Test</a></td>
+                                                        
+                                                    {% endif %}
+                                                {% endfor %}
+                                              {% else %}
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                            {% endif %}
+                                        {% endfor %}
                                     </tr>
-                                    {% endfor %}
-                                  {% endif %}
                                 {% endfor %}
+                            {% endif %}
+                        {% endfor %}
                                 
                                 {% comment %} {% for submittedTest_id, submittedTest_data in submittedTest.items %}
                                 {% if submittedTest_id == chosenPatient %}

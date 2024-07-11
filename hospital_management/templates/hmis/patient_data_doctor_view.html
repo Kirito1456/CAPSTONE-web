@@ -205,29 +205,17 @@
                             </tr>
                           </thead>
                           <tbody class="name_table">
-                            {% if patients %}
-                            {% for patients_id, patients_data in patients.items %}
+                            {% if sorted_patients %}
+                            {% for patient_data in sorted_patients %}
                             <tr id = "patient-info">
                                 <td>
-                                    <a href="{% url 'patient_medical_history' %}?chosenPatient={{patients_data.uid}}">
-                                        {{ patients_data.fname }} {{ patients_data.lname }}
+                                    <a href="{% url 'patient_medical_history' %}?chosenPatient={{patient_data.uid}}">
+                                      {{ patient_data.fname }} {{ patient_data.lname }}
                                     </a>
                                 </td>
-                                <td>{{ patients_data.gender }}</td>
-                                <td>
-                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                    {% if patients_id == chosenPatientData_id %}
-                                      {{ chosenPatientData_data.disease }}
-                                    {% endif %}
-                                  {% endfor %}
-                                </td>
-                                <td>
-                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                    {% if patients_id == chosenPatientData_id %}
-                                      {{ chosenPatientData_data.lastVisited }}
-                                    {% endif %}
-                                  {% endfor %}
-                                </td>
+                                <td>{{ patient_data.gender }}</td>
+                                <td>{{ patient_data.disease }}</td>
+                                <td>{{ patient_data.lastVisited }}</td>
                             </tr>
                             {% endfor %}
                             {% else %}
