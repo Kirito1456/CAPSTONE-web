@@ -123,6 +123,8 @@ class Notification(models.Model):
     firebase_id = models.CharField(max_length=100, blank=True, null=True)  # Store the Firebase user ID
     message = models.TextField()
     created_at = models.DateTimeField()
+    patient_id = models.CharField(max_length=100, blank=True, null=True)
+    is_read = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Notification for {self.firebase_id}: {self.message}'
