@@ -380,9 +380,97 @@ def update_profile (request):
     # Handle GET request or invalid form submission
     return redirect('Profile')
 
-# Function to get upcoming appointments
-def AppointmentUpcoming(request):
+def get_next_available_date(available_days_numbers):
+    current_day_of_week = datetime.now().weekday()
+    current_date = datetime.now()
+    next_available_date = None
+
+    days_checked = 0
+    while days_checked < 7:
+        if current_day_of_week in available_days_numbers:
+            next_available_date = current_date.date()
+            break
+        current_date += timedelta(days=1)
+        current_day_of_week = (current_day_of_week + 1) % 7
+        days_checked += 1
+
+    return next_available_date
+
+def get_available_time_slots(clinic_data, booked_time_slots):
+    time_slots = []
+
+    morning_start = datetime.strptime(clinic_data["morning_start"], '%H:%M')
+    morning_end = datetime.strptime(clinic_data["morning_end"], '%H:%M')
+    afternoon_start = datetime.strptime(clinic_data["afternoon_start"], '%H:%M')
+    afternoon_end = datetime.strptime(clinic_data["afternoon_end"], '%H:%M')
+
+    interval = timedelta(minutes=30)
+
+    # Calculate time slots for morning
+    current_time = morning_start
+    while current_time <= morning_end:
+        if current_time.strftime('%I:%M %p') not in booked_time_slots:
+            time_slots.append(current_time.strftime('%I:%M %p'))
+        current_time += interval
+
+    # Calculate time slots for afternoon
+    current_time = afternoon_start
+    while current_time <= afternoon_end:
+        if current_time.strftime('%I:%M %p') not in booked_time_slots:
+            time_slots.append(current_time.strftime('%I:%M %p'))
+        current_time += interval
+
+    return time_slots
+
+def get_clinic_schedule(uid, upcoming_appointments):
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
     
+    day_name_to_number = {
+        'monday': 0,
+        'tuesday': 1,
+        'wednesday': 2,
+        'thursday': 3,
+        'friday': 4,
+        'saturday': 5,
+        'sunday': 6
+    }
+
+    clinic_data_list = []
+    clinics = db.child("clinics").get().val()
+
+    for clinic_id, clinic_data in appointmentschedule_data.items():
+        for id, data in clinics.items():
+            if id == clinic_id:
+                name = data['name']
+        available_days_numbers = []
+        if 'days' in clinic_data:
+            for day_name in clinic_data['days']:
+                available_days_numbers.append(day_name_to_number[day_name.lower()])
+
+        next_available_date = get_next_available_date(available_days_numbers)
+        if next_available_date is not None:
+            next_available_date_str = next_available_date.strftime('%Y-%m-%d')
+        else:
+            next_available_date_str = "No available date within the next 7 days"
+
+        # Fetch booked appointments for the specific date
+        appointments_for_specific_date = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str]
+        booked_time_slots = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date)
+
+        time_slots = get_available_time_slots(clinic_data, booked_time_slots)
+
+        clinic_data_list.append({
+            'clinic_id': clinic_id,
+            'name': name,
+            'next_available_date_str': next_available_date_str,
+            'time_slots': time_slots
+        })
+
+        print(clinic_data_list)
+
+    return clinic_data_list
+
+def AppointmentUpcoming(request):
     if request.session.get('uid') is None:
         return redirect('home')
     
@@ -390,16 +478,10 @@ def AppointmentUpcoming(request):
     upcomings = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
     doctors = db.child("doctors").get().val()
-    uid = request.session['uid']    
+    uid = request.session['uid']
     clinics = db.child("clinics").get().val()
 
-    next_available_dates = []
-    clinic_data_list = []
-    days_checked = 0
-    
-    next_available_date = None
-    current_date = datetime.now()
-    
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -411,107 +493,49 @@ def AppointmentUpcoming(request):
             
                 if appointment_date_str and appointment_time_str:
                     # Convert appointment date string to datetime object
-                    appointment_datetime = date.datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                    appointment_datetime = datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
                 
                     # Check if appointment date is in the future
-                    if appointment_datetime >= date.datetime.now() and appointment_data["status"] == "Confirmed":
+                    if appointment_datetime >= datetime.now() and (appointment_data["status"] == "Confirmed" or appointment_data["status"] == "Pending"):
                         upcoming_appointments[appointment_id] = appointment_data
 
         # Sort appointments by date
-        sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+        sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
     else:
         sorted_upcoming_appointments = {}
 
-    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val()
-    for clinic_id, clinic_data in appointmentschedule_data.items():
-        time_slots = []
-        for items_id, items_data in clinic_data.items():
-            
-
-            available_days_str = []
-            if 'days' in items_id:
-                for day_name in items_data:
-                    available_days_str.append(day_name.lower())
-                    day_name_to_number = {
-                        'monday': 0,
-                        'tuesday': 1,
-                        'wednesday': 2,
-                        'thursday': 3,
-                        'friday': 4,
-                        'saturday': 5,
-                        'sunday': 6
-                    }
-
-                    available_days_numbers = [day_name_to_number[day.lower()] for day in available_days_str if day.lower() in day_name_to_number]
-                    
-                    current_day_of_week = datetime.now().weekday()
-                    current_date = datetime.now()
-                    next_available_date = None  # Initialize the variable to store the next available date
-                    
-                    while days_checked < 7:  # Check up to 7 days
-                        if current_day_of_week in available_days_numbers:
-                            if current_date.date():
-                                next_available_date = current_date.date()
-                                break  # Exit the loop as soon as the first available date is found
-                        current_date += timedelta(days=1)
-                        current_day_of_week = (current_day_of_week + 1) % 7
-                        days_checked += 1
-
-                    next_available_date_str = next_available_date.strftime('%Y-%m-%d')
-
-                    appointments_for_specific_date = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str]
-                    booked_time_slots = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date)
-                        
-                        
-                    morning_start = datetime.strptime(clinic_data["morning_start"], '%H:%M')
-                    morning_end = datetime.strptime(clinic_data["morning_end"], '%H:%M')
-                    afternoon_start = datetime.strptime(clinic_data["afternoon_start"], '%H:%M')
-                    afternoon_end = datetime.strptime(clinic_data["afternoon_end"], '%H:%M')
-
-                    interval = timedelta(minutes=30)
-                    
-                    # Calculate time slots for morning
-                    current_time = morning_start
-                    while current_time <= morning_end:
-                        # Check if the current time slot is not booked
-                        if current_time.strftime('%I:%M %p') not in booked_time_slots:
-                            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
-                        current_time += interval
-
-                    # Calculate time slots for afternoon
-                    current_time = afternoon_start
-                    while current_time <= afternoon_end:
-                        # Check if the current time slot is not booked
-                        if current_time.strftime('%I:%M %p') not in booked_time_slots:
-                            time_slots.append(current_time.strftime('%I:%M %p'))  # Include AM/PM
-                        current_time += interval
-
-                    clinic_data_list.append({
-                        'clinic_id': clinic_id,
-                        'next_available_date_str': next_available_date_str,
-                        'time_slots': time_slots
-                    })
-
-                    break
-            
-    # Pass the combined data to the template
-    return render(request, 'hmis/AppointmentUpcoming.html', {'appointments': sorted_upcoming_appointments, 
-                                                             'patients': patients, 'uid': uid, 'doctors': doctors, 'time_slots': time_slots,
-                                                             'next_available_date_str': next_available_date_str, 'time_slots': time_slots, 'clinics': clinics,
-                                                             'clinic_data_list': clinic_data_list})
-def update_appointment(request):
+    clinic_data_list = get_clinic_schedule(uid, sorted_upcoming_appointments)
     
+    # Pass the combined data to the template
+    return render(request, 'hmis/AppointmentUpcoming.html', {
+        'appointments': sorted_upcoming_appointments,
+        'patients': patients,
+        'uid': uid,
+        'doctors': doctors,
+        'clinics': clinics,
+        'clinic_data_list': clinic_data_list,
+        'notifications': notifications
+    })
+
+
+def update_appointment(request):    
     if request.method == 'POST':
         try:
             appID = request.POST.get('appID')
-
+            new_clinic = request.POST.get('selected_clinic_id')
             new_time = request.POST.get('new_appointment_time')
             new_date = request.POST.get('selected_appointment_date')
+
+            print(appID)
+            print(new_clinic)
+            print(new_time)
+            print(new_date)
             
             data = {
                 'appointmentDate': new_date,
+                'clinicUID': new_clinic,
                 'appointmentTime': new_time,
-                'status': 'Ongoing',
+                'status': 'Pending',
             }
             db.child('appointments').child(appID).update(data)
 
@@ -593,6 +617,7 @@ def AppointmentPast(request):
     consulNotes = db.child("consultationNotes").get().val()
     uid = request.session['uid']
     clinics = db.child("clinics").get().val()
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
 
     # Filter and sort upcoming appointments
@@ -618,7 +643,7 @@ def AppointmentPast(request):
         sorted_past_appointments = {}
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
-                                                         'uid': uid, 'doctors': doctors, 'clinics': clinics})
+                                                         'uid': uid, 'doctors': doctors, 'clinics': clinics, 'notifications': notifications})
     
 def AppointmentCalendar(request):
     
@@ -632,6 +657,7 @@ def AppointmentCalendar(request):
     patients = db.child("patients").get().val()
     appointments = db.child("appointments").get().val()
     clinics = db.child("clinics").get().val()
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     task = []
     if appointments:
@@ -651,27 +677,44 @@ def AppointmentCalendar(request):
     else:
         task_json = ''
     
-    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json, 'clinics': clinics})
+    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json, 'clinics': clinics, 'notifications': notifications})
 
 def AppointmentScheduling(request):
     doctors = db.child("doctors").get().val()
     clinics = db.child("clinics").get().val()
     uid = request.session.get('uid')
-    schedule = db.child("appointmentschedule").get().val()
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+
+    # Fetch appointment schedule data
+    appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val() or {}
+
+    clinic_schedules = {}
+    for clinic_id, clinic_data in appointmentschedule_data.items():
+        selected_days = clinic_data.get('days', [])
+        morning_start = clinic_data.get('morning_start', "")
+        morning_end = clinic_data.get('morning_end', "")
+        afternoon_start = clinic_data.get('afternoon_start', "")
+        afternoon_end = clinic_data.get('afternoon_end', "")
+        
+        clinic_schedules[clinic_id] = {
+            'selected_days': selected_days,
+            'morning_start': morning_start,
+            'morning_end': morning_end,
+            'afternoon_start': afternoon_start,
+            'afternoon_end': afternoon_end
+        }
+
+    # Define the days of the week
+    days_of_week = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
     if request.method == 'POST':
-        selected_days = request.POST.getlist('selected_days')  # Get list of selected days
-        morning_start = request.POST.get('morning_start')
-        morning_end = request.POST.get('morning_end')
-        afternoon_start = request.POST.get('afternoon_start')
-        afternoon_end = request.POST.get('afternoon_end')
         clinic = request.POST.get('clinic')
-        clinicsList = db.child("clinics").get().val()
-
-        for clinicsList_id, clinicsList_data in clinicsList.items():
-            if clinicsList_id == clinic:
-                clinicUID = clinicsList_id
-            
+        selected_days = request.POST.getlist(f'selected_days_{clinic}')  # Get list of selected days for specific clinic
+        morning_start = request.POST.get(f'morning_start_{clinic}')
+        morning_end = request.POST.get(f'morning_end_{clinic}')
+        afternoon_start = request.POST.get(f'afternoon_start_{clinic}')
+        afternoon_end = request.POST.get(f'afternoon_end_{clinic}')
+        
         try:
             if not isinstance(selected_days, list):
                 selected_days = [selected_days]
@@ -685,30 +728,34 @@ def AppointmentScheduling(request):
                 'afternoon_start': str(afternoon_start),
                 'afternoon_end': str(afternoon_end),
             }
-            db.child('appointmentschedule').child(uid).child(clinicUID).update(data)
+            db.child('appointmentschedule').child(uid).child(clinic).update(data)
 
             messages.success(request, 'Appointment schedule saved successfully!')
             return redirect('AppointmentScheduling')
         except Exception as e:
             messages.error(request, f'Error: {str(e)}')
-    else:
-        # Retrieve appointment schedule data from Firebase
-        appointment_schedule = db.child('appointmentschedule').child(uid).get().val()
-        if appointment_schedule:
-            selected_days = appointment_schedule.get('days', [])
-            morning_start = appointment_schedule.get('morning_start', '')
-            morning_end = appointment_schedule.get('morning_end', '')
-            afternoon_start = appointment_schedule.get('afternoon_start', '')
-            afternoon_end = appointment_schedule.get('afternoon_end', '')
-        else:
-            # Set default values if no appointment schedule found
-            selected_days = []
-            morning_start = ''
-            morning_end = ''
-            afternoon_start = ''
-            afternoon_end = ''
 
-    return render(request, 'hmis/AppointmentScheduling.html', {'uid': uid, 'doctors': doctors, 'clinics': clinics, 'selected_days': selected_days, 'morning_start': morning_start, 'morning_end': morning_end, 'afternoon_start': afternoon_start, 'afternoon_end': afternoon_end})
+    # Preprocess clinic schedules for the template
+    preprocessed_clinic_schedules = []
+    for clinic_id, schedule in clinic_schedules.items():
+        preprocessed_clinic_schedules.append({
+            'clinic_id': clinic_id,
+            'selected_days': schedule['selected_days'],
+            'morning_start': schedule['morning_start'],
+            'morning_end': schedule['morning_end'],
+            'afternoon_start': schedule['afternoon_start'],
+            'afternoon_end': schedule['afternoon_end'],
+        })
+        
+    return render(request, 'hmis/AppointmentScheduling.html', {
+        'uid': uid, 
+        'doctors': doctors, 
+        'clinics': clinics, 
+        'notifications': notifications, 
+        'days_of_week': days_of_week, 
+        'clinic_schedules': preprocessed_clinic_schedules,
+    })
+
 def NurseDashboard(request):
     nurses = db.child("nurses").get().val()
     uid = request.session['uid'] 
@@ -897,6 +944,7 @@ def patient_data_doctor_view(request):
     doctors = db.child("doctors").get().val()
     clinics = db.child("clinics").get().val()
     uid = request.session['uid']
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     chosenPatients = {}
     if patients:
@@ -932,7 +980,8 @@ def patient_data_doctor_view(request):
         'uid': uid,
         'appointments': appointments,
         'clinics': clinics,
-        'sorted_patients': sorted_patients
+        'sorted_patients': sorted_patients,
+        'notifications': notifications
     }) 
 
 def patient_personal_information_inpatient(request):
@@ -941,6 +990,7 @@ def patient_personal_information_inpatient(request):
     vitalsigns = db.child("vitalsigns").get().val()
     consulnotes = db.child("consultationNotes").get().val()
     progressnotes = db.child("progressnotes").get().val()
+    
 
     patientsymptoms = db.child("symptoms").get().val()
     symptoms_list = db.child("symptomsList").get().val()
@@ -960,6 +1010,7 @@ def patient_personal_information_inpatient(request):
     patients = db.child("patients").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid']   
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     time_slots = []
     list_final = []
@@ -1781,7 +1832,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'next_available_date_str1': next_available_date_str1,
                                                                                 'disease_list': disease_list,
                                                                                 'chosenPatientSymptoms': chosenPatientSymptoms,
-                                                                                'symptoms_list': symptoms_list})
+                                                                                'symptoms_list': symptoms_list,
+                                                                                'notifications': notifications})
 
 def save_chiefComplaint(request):
         
@@ -1941,6 +1993,7 @@ def patient_medical_history(request):
     chosenPatient = request.GET.get('chosenPatient', '')
     consulNotes = db.child("consultationNotes").get().val()
     testrequest = db.child("testrequest").get().val()
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     prescriptionsorders = db.child("prescriptionorders").get().val()
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
@@ -2017,7 +2070,8 @@ def patient_medical_history(request):
                                                                  'consulNotes': consulNotes,
                                                                  'prescriptionsorders': prescriptionsorders,
                                                                  'prescriptionsorders_ref': prescriptionsorders_ref,
-                                                                 'testrequest': testrequest})
+                                                                 'testrequest': testrequest,
+                                                                 'notifications': notifications})
 
 from datetime import datetime
 
@@ -2077,9 +2131,11 @@ def patient_medication_doctor(request):
     # Fetch patients data from Firebase
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
+    uid = request.session['uid'] 
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     # Pass the combined data to the template
-    return render(request, 'hmis/patient_medication_doctor.html', {'patients': patients, 'patientsdata': patientsdata})
+    return render(request, 'hmis/patient_medication_doctor.html', {'patients': patients, 'patientsdata': patientsdata, 'notifications': notifications})
 
 def patient_medication_table(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
@@ -2096,7 +2152,6 @@ def patient_medication_table(request):
                                                                   'uid': uid})
 
 from django.http import JsonResponse
-from paddleocr import PaddleOCR
 
 # Function to extract the number of days
 def extract_number_of_days(result):
@@ -2353,6 +2408,7 @@ def outpatient_medication_order(request):
     doctors = db.child('doctors').get().val()
     uid = request.session['uid']
     disease = request.GET.get('diagnosis')
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     todaydate = datetime.now().strftime("%Y-%m-%d")
     clinics = db.child("clinics").get().val()
@@ -2372,7 +2428,8 @@ def outpatient_medication_order(request):
                                                                      'todaydate': todaydate,
                                                                      'clinics' :clinics, 
                                                                      'patientData': patientData,
-                                                                     'disease': disease,})
+                                                                     'disease': disease,
+                                                                     'notifications': notifications})
 
 
 @csrf_exempt
@@ -2600,7 +2657,7 @@ def diagnostic_reports(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
     testRequests = db.child("testrequest").get().val()
-
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'patients': patients,
@@ -2608,7 +2665,8 @@ def diagnostic_reports(request):
                                                                     'submittedTest': submittedTest, 
                                                                     'chosenPatient': chosenPatient, 
                                                                     'doctors': doctors, 
-                                                                    'uid': uid})
+                                                                    'uid': uid,
+                                                                    'notifications': notifications})
 
 
 def download_image(url, file_path):
@@ -2763,6 +2821,7 @@ def requestTest(request):
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 
     clinics = db.child("clinics").get().val()
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     patientData = {}
     for patients_id, patients_data in patients.items():
@@ -2865,7 +2924,8 @@ def requestTest(request):
                                                         'doctors': doctors,
                                                         'clinics': clinics,
                                                         'uid': uid,
-                                                        'todaydate': todaydate})
+                                                        'todaydate': todaydate,
+                                                        'notifications': notifications})
 
 def create_tests_pdf(data, filename, signature_path=None):
     c = canvas.Canvas(filename, pagesize=letter)

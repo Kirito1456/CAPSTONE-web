@@ -118,25 +118,26 @@
             {% comment %} Notifs {% endcomment %}
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-                <i class="icon-bell"></i>
-                <span class="count"></span>
+                  <i class="icon-bell"></i>
+                  <span class="count">{{ notifications.count }}</span>
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
-                <a class="dropdown-item py-3 border-bottom">
-                  <p class="mb-0 fw-medium float-start">You have 4 new notifications </p>
-                  <span class="badge badge-pill badge-primary float-end">View all</span>
-                </a>
-                <a class="dropdown-item preview-item py-3">
-                  <div class="preview-thumbnail">
-                    <i class="mdi mdi-alert m-auto text-primary"></i>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject fw-normal text-dark mb-1">Emilia Johnson sent back results</h6>
-                    <p class="fw-light small-text mb-0"> Just now </p>
-                  </div>
-                </a>
+                  <a class="dropdown-item py-3 border-bottom">
+                      <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                  </a>
+                  {% for notification in notifications %}
+                  <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+                    <div class="preview-thumbnail">
+                          <i class="mdi mdi-alert m-auto text-primary"></i>
+                      </div>
+                      <div class="preview-item-content">
+                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      </div>
+                  </a>
+                  {% endfor %}
               </div>
-            </li>
+          </li>
             {% comment %} Messages Notif 
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -253,7 +254,7 @@
                           <tbody>
                             {% if appointments %}
                             {% for appointment_id, appointment_data in appointments.items %}
-                              <tr data-clinic-id="{{ appointment_data.clinic }}">
+                              <tr data-clinic-id="{{ appointment_data.clinicUID}}">
                                 <td>{{ appointment_data.appointmentDate }}</td>
                                 <td>{{ appointment_data.appointmentTime }}</td>
                                 {% for patient_id, patient_data in patients.items %}
@@ -324,6 +325,25 @@
     </div>
 
     <script>
+      function filterTable(clinicId) {
+          var tableRows = document.querySelectorAll('tbody tr');
+          if (clinicId === 'all') {
+              tableRows.forEach(function(row) {
+                  row.style.display = '';
+              });
+          } else {
+              tableRows.forEach(function(row) {
+                  var rowClinicId = row.getAttribute('data-clinic-id');
+                  if (rowClinicId === clinicId) {
+                      row.style.display = '';
+                  } else {
+                      row.style.display = 'none';
+                  }
+              });
+          }
+      }
+    </script>
+    <script>
       document.addEventListener('DOMContentLoaded', function () {
         document.body.addEventListener('click', function (event) {
           // Open modal button clicked
@@ -377,25 +397,7 @@
     </script>
     
     
-    <script>
-      function filterTable(clinicId) {
-          var tableRows = document.querySelectorAll('tbody tr');
-          if (clinicId === 'all') {
-              tableRows.forEach(function(row) {
-                  row.style.display = '';
-              });
-          } else {
-              tableRows.forEach(function(row) {
-                  var rowClinicId = row.getAttribute('data-clinic-id');
-                  if (rowClinicId === clinicId) {
-                      row.style.display = '';
-                  } else {
-                      row.style.display = 'none';
-                  }
-              });
-          }
-      }
-    </script>
+
   
     <script>
       document.addEventListener('DOMContentLoaded', function () {

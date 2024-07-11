@@ -111,25 +111,26 @@
             {% comment %} Notifs {% endcomment %}
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-                <i class="icon-bell"></i>
-                <span class="count"></span>
+                  <i class="icon-bell"></i>
+                  <span class="count">{{ notifications.count }}</span>
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
-                <a class="dropdown-item py-3 border-bottom">
-                  <p class="mb-0 fw-medium float-start">You have 4 new notifications </p>
-                  <span class="badge badge-pill badge-primary float-end">View all</span>
-                </a>
-                <a class="dropdown-item preview-item py-3">
-                  <div class="preview-thumbnail">
-                    <i class="mdi mdi-alert m-auto text-primary"></i>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject fw-normal text-dark mb-1">Emilia Johnson sent back results</h6>
-                    <p class="fw-light small-text mb-0"> Just now </p>
-                  </div>
-                </a>
+                  <a class="dropdown-item py-3 border-bottom">
+                      <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                  </a>
+                  {% for notification in notifications %}
+                  <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+                    <div class="preview-thumbnail">
+                          <i class="mdi mdi-alert m-auto text-primary"></i>
+                      </div>
+                      <div class="preview-item-content">
+                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      </div>
+                  </a>
+                  {% endfor %}
               </div>
-            </li>
+          </li>
             {% comment %} Messages Notif {% endcomment %}
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
@@ -218,79 +219,58 @@
         </nav>
         <div class="main-panel">
             <div class="content-wrapper">
-                <div class="row">
+              <div class="row">
                 {% for doctors_id, doctors_data in doctors.items %}
                 {% for doctorClinic in doctors_data.clinic %}
-                {% for clinic_id, clinic_data in clinics.items%}
-                {% if clinic_id == doctorClinic and doctors_id == uid%}
+                {% for clinic_id, clinic_data in clinics.items %}
+                {% if clinic_id == doctorClinic and doctors_id == uid %}
                 <div class="col-12 grid-margin stretch-card">
                     <div class="card">
-                      <div class="card-body">
-                          
-                                    <h4 class="card-title">{{ clinic_data.name }}</h4>
-                                    <p class="card-description"> {{ clinic_data.address }} </p>
-                                    <p class="card-description"> {{ clinic_data.onumber }} </p>
-                                
+                        <div class="card-body">
+                            <h4 class="card-title">{{ clinic_data.name }}</h4>
+                            <p class="card-description">{{ clinic_data.address }}</p>
+                            <p class="card-description">{{ clinic_data.onumber }}</p>
                             <form method="post" action="{% url 'AppointmentScheduling' %}">
                                 {% csrf_token %}
-                                    <label style="font-weight: bold;">Select Days:</label>
-                                    <div class="day-checkboxes">
-                                        <div class="day-checkbox">
-                                            <input type="checkbox" id="sunday" name="selected_days" value="sunday" {% if 'sunday' in selected_days %}checked{% endif %}>
-                                            <label for="sunday">Sunday</label>
-                                        </div>
-                                        <div class="day-checkbox">
-                                            <input type="checkbox" id="monday" name="selected_days" value="monday" {% if 'monday' in selected_days %}checked{% endif %}>
-                                            <label for="monday">Monday</label>
-                                        </div>
-                                        <div class="day-checkbox">
-                                            <input type="checkbox" id="tuesday" name="selected_days" value="tuesday" {% if 'tuesday' in selected_days %}checked{% endif %}>
-                                            <label for="tuesday">Tuesday</label>
-                                        </div>
-                                        <div class="day-checkbox">
-                                            <input type="checkbox" id="wednesday" name="selected_days" value="wednesday" {% if 'wednesday' in selected_days %}checked{% endif %}>
-                                            <label for="wednesday">Wednesday</label>
-                                        </div>
-                                        <div class="day-checkbox">
-                                            <input type="checkbox" id="thursday" name="selected_days" value="thursday" {% if 'thursday' in selected_days %}checked{% endif %}>
-                                            <label for="thursday">Thursday</label>
-                                        </div>
-                                        <div class="day-checkbox">
-                                            <input type="checkbox" id="friday" name="selected_days" value="friday" {% if 'friday' in selected_days %}checked{% endif %}>
-                                            <label for="friday">Friday</label>
-                                        </div>
-                                        <div class="day-checkbox">
-                                            <input type="checkbox" id="saturday" name="selected_days" value="saturday" {% if 'saturday' in selected_days %}checked{% endif %}>
-                                            <label for="saturday">Saturday</label>
-                                        </div>
+                                <input type="hidden" name="clinic" value="{{ clinic_id }}">
+                                <label style="font-weight: bold;">Select Days:</label>
+                                <div class="day-checkboxes">
+                                    {% for day in days_of_week %}
+                                    <div class="day-checkbox">
+                                        <input type="checkbox" id="{{ day }}_{{ clinic_id }}" name="selected_days_{{ clinic_id }}" value="{{ day }}"
+                                               {% for schedule in clinic_schedules %}
+                                               {% if schedule.clinic_id == clinic_id and day in schedule.selected_days %}checked{% endif %}
+                                               {% endfor %}>
+                                        <label for="{{ day }}_{{ clinic_id }}">{{ day|capfirst }}</label>
                                     </div>
-                                
-                                    <div class="time-slot">
-                                        <label for="morning-start" style="font-weight: bold;">Morning Start: </label>
-                                        <input type="text" id="morning-start" class="timepicker" placeholder="Select time" name="morning_start" value="{{ morning_start }}">
-                                        <label for="morning-end" style="font-weight: bold;">Morning End: </label>
-                                        <input type="text" id="morning-end" class="timepicker" placeholder="Select time" name="morning_end" value="{{ morning_end }}">
-                                    </div>
-                                    <div class="time-slot">
-                                        <label for="afternoon-start" style="font-weight: bold;">Afternoon Start: </label>
-                                        <input type="text" id="afternoon-start" class="timepicker" placeholder="Select time" name="afternoon_start" value="{{ afternoon_start }}">
-                                        <label for="afternoon-end" style="font-weight: bold;">Afternoon End: </label>
-                                        <input type="text" id="afternoon-end" class="timepicker" placeholder="Select time" name="afternoon_end" value="{{ afternoon_end }}">
-                                    </div>
-                                
-                                    <button id="save-btn" value="{{ clinic_id }}" type="submit" class="btn btn-primary btn-sm" name="clinic"><i class="ti-file btn-icon-prepend"></i> Save </button>
-
-
+                                    {% endfor %}
+                                </div>
+                                <div class="time-slot">
+                                    <label for="morning-start_{{ clinic_id }}" style="font-weight: bold;">Morning Start:</label>
+                                    <input type="text" id="morning-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_start_{{ clinic_id }}"
+                                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_start }}{% endif %}{% endfor %}">
+                                    <label for="morning-end_{{ clinic_id }}" style="font-weight: bold;">Morning End:</label>
+                                    <input type="text" id="morning-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_end_{{ clinic_id }}"
+                                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_end }}{% endif %}{% endfor %}">
+                                </div>
+                                <div class="time-slot">
+                                    <label for="afternoon-start_{{ clinic_id }}" style="font-weight: bold;">Afternoon Start:</label>
+                                    <input type="text" id="afternoon-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_start_{{ clinic_id }}"
+                                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_start }}{% endif %}{% endfor %}">
+                                    <label for="afternoon-end_{{ clinic_id }}" style="font-weight: bold;">Afternoon End:</label>
+                                    <input type="text" id="afternoon-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_end_{{ clinic_id }}"
+                                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_end }}{% endif %}{% endfor %}">
+                                </div>
+                                <button id="save-btn" value="{{ clinic_id }}" type="submit" class="btn btn-primary btn-sm" name="clinic"><i class="ti-file btn-icon-prepend"></i> Save</button>
                             </form>
-                            
-                      </div>
+                        </div>
                     </div>
-                  </div>
-                  {% endif %}
-                  {% endfor %}
-                  {% endfor %}
-                  {% endfor %}
                 </div>
+                {% endif %}
+                {% endfor %}
+                {% endfor %}
+                {% endfor %}
+            </div>
             </div>
         </div>
       </div>
