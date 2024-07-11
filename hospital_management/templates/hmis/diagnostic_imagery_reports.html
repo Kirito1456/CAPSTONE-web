@@ -154,7 +154,7 @@
                       <p class="card-description"> View test results sent by the patient here </p>
 
                       <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table">
                           <thead>
                             <tr>
                               <th>Date Requested</th>
@@ -166,7 +166,7 @@
                           </thead>
                           <tbody>
                               
-                            {% for testRequest_id, testRequest_data in testRequest.items %}
+                            {% comment %} {% for testRequest_id, testRequest_data in testRequest.items %}
                             {% if testRequest_id == chosenPatient %}
                                 {% for request_id, request_data in testRequest_data.items %}
                                     <tr>
@@ -189,6 +189,40 @@
                                             {% endif %}
                                         {% endfor %}
                                     </tr>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %} {% endcomment %}
+
+                        {% for testRequest_id, testRequest_data in testRequest.items %}
+                            {% if testRequest_id == chosenPatient %}
+                                {% for request_id, request_data in testRequest_data.items %}
+                                    <tr>
+                                        <td>{{ request_data.dateCreated }}</td>
+                                        <td><a href="{{ request_data.testURL }}"> View Test Request</a></td>
+                                        <td colspan='3'>
+                                          <table class="table">
+                                            <tbody>
+                                              {% for submittedTest_id, submittedTest_data in submittedTest.items %}
+                                                {% if submittedTest_id == chosenPatient %}
+                                                    {% for test_id, test_data in submittedTest_data.items %}
+                                                        {% if request_id == test_data.testrequestid %}
+                                                            <tr>
+                                                              <td>{{ test_data.date }}</td>
+                                                            <td>{{ test_data.testRequestKey }}</td>
+                                                            <td><a href="{{ test_data.downloadURL }}">Download Test</a></td>
+                                                            </tr>
+                                                            {% endif %}
+                                                    {% endfor %}
+                                                  {% else %}
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                {% endif %}
+                                              {% endfor %}
+                                            </tbody>
+                                          </table>
+                                        </td>
+                                      </tr>
                                 {% endfor %}
                             {% endif %}
                         {% endfor %}

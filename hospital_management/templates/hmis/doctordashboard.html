@@ -94,8 +94,8 @@
                       <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
                   </a>
                   {% for notification in notifications %}
-                  <a class="dropdown-item preview-item py-3">
-                      <div class="preview-thumbnail">
+                  <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+                    <div class="preview-thumbnail">
                           <i class="mdi mdi-alert m-auto text-primary"></i>
                       </div>
                       <div class="preview-item-content">
