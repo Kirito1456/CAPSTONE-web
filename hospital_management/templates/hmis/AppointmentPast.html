@@ -1,11 +1,10 @@
 {%load static%}
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
     <title>{% block title %}Past Appointments{% endblock %}</title>
-    <!-- plugins:css -->
-     
+
     {% block styles%} 
     <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
@@ -16,12 +15,9 @@
     <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
     <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
+
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <style>
       .modal {
@@ -62,12 +58,12 @@
         margin-right: 4px; 
       }
     </style>
-    <!-- endinject -->
+
     <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
     {% endblock styles%}
   </head>
 
-  {% block content %}
+{% block content %}
   <body>
     <div class="container-scroller">
       <!-- partial:../../partials/_navbar.html -->
@@ -96,93 +92,71 @@
                 <a class="dropdown-item py-3" href="javascript:void(0);" onclick="filterTable('all')">
                   <p class="mb-0 fw-medium float-start">Show All</p>
                 </a>
-                
                 <div class="dropdown-divider"></div>
-                {% for doctors_id, doctors_data in doctors.items %}
-                  {% for doctorClinic in doctors_data.clinic %}
-                    {% for clinic_id, clinic_data in clinics.items%}
-                      {% if clinic_id == doctorClinic and doctors_id == uid%}
-                        <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
-                          <div class="preview-item-content flex-grow py-2">
-                            <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
-                            <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
-                            <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
-                          </div>
-                        </a>
-                      {% endif %}
+                  {% for doctors_id, doctors_data in doctors.items %}
+                    {% for doctorClinic in doctors_data.clinic %}
+                      {% for clinic_id, clinic_data in clinics.items%}
+                        {% if clinic_id == doctorClinic and doctors_id == uid%}
+                          <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
+                            <div class="preview-item-content flex-grow py-2">
+                              <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
+                              <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
+                              <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
+                            </div>
+                          </a>
+                        {% endif %}
+                      {% endfor %}
                     {% endfor %}
                   {% endfor %}
-                {% endfor %}
-              </div>
+                </div>
             </li>
             {% comment %} Notifs {% endcomment %}
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-                  <i class="icon-bell"></i>
-                  <span class="count">{{ notifications.count }}</span>
+                <i class="icon-bell"></i>
+                <span class="count">{{ notifications.count }}</span>
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
-                  <a class="dropdown-item py-3 border-bottom">
-                      <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
-                  </a>
-                  {% for notification in notifications %}
+                <a class="dropdown-item py-3 border-bottom">
+                  <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                </a>
+                {% for notification in notifications %}
                   <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
                     <div class="preview-thumbnail">
-                          <i class="mdi mdi-alert m-auto text-primary"></i>
-                      </div>
-                      <div class="preview-item-content">
-                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
-                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
-                      </div>
+                      <i class="mdi mdi-alert m-auto text-primary"></i>
+                    </div>
+                    <div class="preview-item-content">
+                      <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                      <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                    </div>
                   </a>
-                  {% endfor %}
+                {% endfor %}
               </div>
-          </li>
-            {% comment %} Messages Notif 
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="icon-mail icon-lg"></i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
-                <a class="dropdown-item py-3">
-                  <p class="mb-0 fw-medium float-start">You have 7 unread mails </p>
-                  <span class="badge badge-pill badge-primary float-end">View all</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="{% static 'doctorjane.jpg' %}" alt="image" class="img-sm profile-pic">
-                  </div>
-                  <div class="preview-item-content flex-grow py-2">
-                    <p class="preview-subject ellipsis fw-medium text-dark">Another Doctor </p>
-                    <p class="fw-light small-text mb-0"> Can you... </p>
-                  </div>
-                </a>
-              </div>
-            </li> {% endcomment %}
+            </li>
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
               <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                 <div class="dropdown-header text-center">
                   {% for doctor_id, doctor_data in doctors.items %}
-                        {% if doctor_data.uid == uid %}
-                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
-                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-                        {% endif %}
-                    {% endfor %}
+                    {% if doctor_data.uid == uid %}
+                      <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                      <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                    {% endif %}
+                  {% endfor %}
                 </div>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
                 <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
               </div>
             </li>
           </ul>
+
           <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
             <span class="mdi mdi-menu"></span>
           </button>
         </div>
       </nav>
+
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         <!-- partial:../../partials/_sidebar.html -->
@@ -224,45 +198,48 @@
             </li>
           </ul>
         </nav>
+
         <div class="main-panel">
-            <div class="content-wrapper">
-              <div class="row">
-                
-                <div class="col-lg-12 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <h4 class="card-title">Past Appointments</h4>
-                      <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
-                        <div class="input-group-append">
-                          <button class="btn btn-primary" type="button" id="searchButton">Search</button>
-                        </div>
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Past Appointments</h4>
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" id="searchButton">Search</button>
                       </div>
-                      <div class="table-responsive">
-                        <table class="table table-striped">
-                          <thead>
-                            <tr>
-                              <th>Date</th>
-                              <th>Time</th>
-                              <th>Patient Name</th>
-                              <th>Visit Type</th>
-                              <th>Clinic</th>
-                              <th>Status</th>
-                              <th>Details</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {% if appointments %}
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Patient Name</th>
+                            <th>Visit Type</th>
+                            <th>Clinic</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% if appointments %}
                             {% for appointment_id, appointment_data in appointments.items %}
                               <tr data-clinic-id="{{ appointment_data.clinicUID}}">
                                 <td>{{ appointment_data.appointmentDate }}</td>
                                 <td>{{ appointment_data.appointmentTime }}</td>
+
                                 {% for patient_id, patient_data in patients.items %}
-                                    {% if patient_data.uid == appointment_data.patientName %}
-                                        <td>{{ patient_data.lname }}, {{ patient_data.fname }}</td>
-                                    {% endif %}
+                                  {% if patient_data.uid == appointment_data.patientName %}
+                                    <td>{{ patient_data.lname }}, {{ patient_data.fname }}</td>
+                                  {% endif %}
                                 {% endfor %}
+
                                 <td>{{ appointment_data.appointmentVisitType }}</td>
+
                                 <td>
                                   {% for clinic_id, clinic_data in clinics.items%}
                                     {% if clinic_id == appointment_data.clinicUID %}
@@ -282,67 +259,66 @@
                                 <td> 
                                   <button type="button" class="openModalBtn btn btn-primary btn-sm">Contact Information</button>
                                     <div class="myModal modal">
-                                    <div class="modal-content">
-                                      <span class="close">&times;</span>
-                                      <i class="fa-regular fa-circle-check"></i>
-                                      <h2 style="margin-bottom: 20px;">Patient Contact Information</h2>
-                                      {% for patient_id, patient_data in patients.items %}
-                                        {% if patient_data.uid == appointment_data.patientName %}
-                                          <div class="detail-wrapper">
-                                            <div class="detailname" style="font-weight: bold;">E-mail: </div>
-                                            <div class="detailvalue">{{ patient_data.email }}</div>
-                                          </div>
-                                          <div class="detail-wrapper">
-                                            <div class="detailname" style="font-weight: bold;">Phone Number: </div>
-                                            <div class="detailvalue">{{ patient_data.cnumber }}</div>
-                                          </div>
-                                          <div class="detail-wrapper">
-                                            <div class="detailname" style="font-weight: bold;">Location: </div>
-                                            <div class="detailvalue">{{ patient_data.address}}</div>
-                                          </div>
-                                        {% endif %}
-                                      {% endfor %} 
-                                    </div>
-                                  </div>    
+                                      <div class="modal-content">
+                                        <span class="close">&times;</span>
+                                        <i class="fa-regular fa-circle-check"></i>
+                                        <h2 style="margin-bottom: 20px;">Patient Contact Information</h2>
+                                        {% for patient_id, patient_data in patients.items %}
+                                          {% if patient_data.uid == appointment_data.patientName %}
+                                            <div class="detail-wrapper">
+                                              <div class="detailname" style="font-weight: bold;">E-mail: </div>
+                                              <div class="detailvalue">{{ patient_data.email }}</div>
+                                            </div>
+                                            <div class="detail-wrapper">
+                                              <div class="detailname" style="font-weight: bold;">Phone Number: </div>
+                                              <div class="detailvalue">{{ patient_data.cnumber }}</div>
+                                            </div>
+                                            <div class="detail-wrapper">
+                                              <div class="detailname" style="font-weight: bold;">Location: </div>
+                                              <div class="detailvalue">{{ patient_data.address}}</div>
+                                            </div>
+                                          {% endif %}
+                                        {% endfor %} 
+                                      </div>
+                                    </div>    
                                 </td>
-                                
-                                
                               </tr>
                             {% endfor %}
-                            {% else %}
+                          {% else %}
                             <td colspan="7" style="text-align: center;">No past appointments!</td>
-                            {% endif %}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                          {% endif %}
+                        </tbody>
+                      </table>
+
                   </div>
                 </div>
+              </div>
             </div>
-            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <script>
       function filterTable(clinicId) {
-          var tableRows = document.querySelectorAll('tbody tr');
-          if (clinicId === 'all') {
-              tableRows.forEach(function(row) {
-                  row.style.display = '';
-              });
-          } else {
-              tableRows.forEach(function(row) {
-                  var rowClinicId = row.getAttribute('data-clinic-id');
-                  if (rowClinicId === clinicId) {
-                      row.style.display = '';
-                  } else {
-                      row.style.display = 'none';
-                  }
-              });
-          }
+        var tableRows = document.querySelectorAll('tbody tr');
+        if (clinicId === 'all') {
+          tableRows.forEach(function(row) {
+            row.style.display = '';
+          });
+        } else {
+          tableRows.forEach(function(row) {
+            var rowClinicId = row.getAttribute('data-clinic-id');
+            if (rowClinicId === clinicId) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        }
       }
     </script>
+
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         document.body.addEventListener('click', function (event) {
@@ -396,9 +372,6 @@
       });
     </script>
     
-    
-
-  
     <script>
       document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('appID').addEventListener('click', function () {
@@ -416,5 +389,5 @@
     <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
     <script src="{% static 'assets/js/todolist.js' %}"></script>
 
-</body>
+  </body>
 {% endblock %}

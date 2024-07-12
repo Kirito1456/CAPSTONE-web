@@ -1,10 +1,9 @@
 {%load static%}
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
     <title>{% block title %}Patient Data{% endblock %}</title>
-    <!-- plugins:css -->
      
     {% block styles%} 
     <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
@@ -16,12 +15,9 @@
     <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
     <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
+
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <style>
       .modal {
@@ -62,12 +58,12 @@
         margin-right: 4px; 
       }
     </style>
-    <!-- endinject -->
+
     <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
     {% endblock styles%}
   </head>
 
-  {% block content %}
+{% block content %}
   <body>
     <div class="container-scroller">
       <!-- partial:../../partials/_navbar.html -->
@@ -96,72 +92,71 @@
                 <a class="dropdown-item py-3" href="javascript:void(0);" onclick="filterTable('all')">
                   <p class="mb-0 fw-medium float-start">Show All</p>
                 </a>
-                
                 <div class="dropdown-divider"></div>
-                {% for doctors_id, doctors_data in doctors.items %}
-                  {% for doctorClinic in doctors_data.clinic %}
-                    {% for clinic_id, clinic_data in clinics.items%}
-                      {% if clinic_id == doctorClinic and doctors_id == uid%}
-                        <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
-                          <div class="preview-item-content flex-grow py-2">
-                            <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
-                            <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
-                            <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
-                          </div>
-                        </a>
-                      {% endif %}
+                  {% for doctors_id, doctors_data in doctors.items %}
+                    {% for doctorClinic in doctors_data.clinic %}
+                      {% for clinic_id, clinic_data in clinics.items%}
+                        {% if clinic_id == doctorClinic and doctors_id == uid%}
+                          <a class="dropdown-item preview-item" href="javascript:void(0);" onclick="filterTable('{{ clinic_id }}')">
+                            <div class="preview-item-content flex-grow py-2">
+                              <p class="preview-subject ellipsis fw-medium text-dark">{{ clinic_data.name }}</p>
+                              <p class="fw-light small-text mb-0">{{ clinic_data.address }}</p>
+                              <p class="fw-light small-text mb-0">{{ clinic_data.onumber }}</p>
+                            </div>
+                          </a>
+                        {% endif %}
+                      {% endfor %}
                     {% endfor %}
                   {% endfor %}
-                {% endfor %}
-              </div>
+                </div>
             </li>
             {% comment %} Notifs {% endcomment %}
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-                  <i class="icon-bell"></i>
-                  <span class="count">{{ notifications.count }}</span>
+                <i class="icon-bell"></i>
+                <span class="count">{{ notifications.count }}</span>
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
-                  <a class="dropdown-item py-3 border-bottom">
-                      <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
-                  </a>
-                  {% for notification in notifications %}
+                <a class="dropdown-item py-3 border-bottom">
+                  <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                </a>
+                {% for notification in notifications %}
                   <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
                     <div class="preview-thumbnail">
-                          <i class="mdi mdi-alert m-auto text-primary"></i>
-                      </div>
-                      <div class="preview-item-content">
-                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
-                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
-                      </div>
+                      <i class="mdi mdi-alert m-auto text-primary"></i>
+                    </div>
+                    <div class="preview-item-content">
+                      <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                      <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                    </div>
                   </a>
-                  {% endfor %}
+                {% endfor %}
               </div>
-          </li>
-            
+            </li>
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
               <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                 <div class="dropdown-header text-center">
                   {% for doctor_id, doctor_data in doctors.items %}
-                        {% if doctor_data.uid == uid %}
-                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
-                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-                        {% endif %}
-                    {% endfor %}
+                    {% if doctor_data.uid == uid %}
+                      <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                      <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                    {% endif %}
+                  {% endfor %}
                 </div>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
                 <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
               </div>
             </li>
           </ul>
+
           <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
             <span class="mdi mdi-menu"></span>
           </button>
         </div>
       </nav>
+
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         <!-- partial:../../partials/_sidebar.html -->
@@ -203,74 +198,83 @@
             </li>
           </ul>
         </nav>
+
         <div class="main-panel">
-            <div class="content-wrapper">
-              <div class="row">
-                
-                <div class="col-lg-12 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <h4 class="card-title">Upcoming Appointments</h4>
-                      <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
-                        <div class="input-group-append">
-                          <button class="btn btn-primary" type="button" id="searchButton">Search</button>
-                        </div>
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Upcoming Appointments</h4>
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" id="searchButton">Search</button>
                       </div>
-                      <div class="table-responsive">
-                        <table class="table table-striped">
-                          <thead>
-                            <tr>
-                              <th>Date</th>
-                              <th>Time</th>
-                              <th>Patient Name</th>
-                              <th>Visit Type</th>
-                              <th>Clinic</th>
-                              <th>Status</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody class="name_table">
-                            {% if appointments %}
-                              {% for appointment_id, appointment_data in appointments.items %}
-                                <tr data-clinic-id="{{ appointment_data.clinicUID}}">
-                                  <form method="post" >
-                                    {% csrf_token %}
-                                    <input type="hidden" name="selected_appointment_date" value="{{ appointment_data.appointmentDate }}">
-                                    <td name="selected_appointment_date">{{ appointment_data.appointmentDate }}</td>
-                                  </form>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Patient Name</th>
+                            <th>Visit Type</th>
+                            <th>Clinic</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody class="name_table">
+                          {% if appointments %}
+                            {% for appointment_id, appointment_data in appointments.items %}
+                              <tr data-clinic-id="{{ appointment_data.clinicUID}}">
+                                <form method="post" >
+                                  {% csrf_token %}
+                                  <input type="hidden" name="selected_appointment_date" value="{{ appointment_data.appointmentDate }}">
+                                  <td name="selected_appointment_date">{{ appointment_data.appointmentDate }}</td>
+                                </form>
 
-                                  <td>{{ appointment_data.appointmentTime }}</td>
+                                <td>{{ appointment_data.appointmentTime }}</td>
 
-                                  {% for patient_id, patient_data in patients.items %}
-                                      {% if patient_data.uid == appointment_data.patientName %}
-                                          <td><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></td>
-                                      {% endif %}
-                                  {% endfor %}
+                                {% for patient_id, patient_data in patients.items %}
+                                  {% if patient_data.uid == appointment_data.patientName %}
+                                    <td>
+                                      <a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">
+                                        {{ patient_data.lname }}, {{ patient_data.fname }}
+                                      </a>
+                                    </td>
+                                  {% endif %}
+                                {% endfor %}
 
-                                  <td>{{ appointment_data.appointmentVisitType }}</td>
+                                <td>{{ appointment_data.appointmentVisitType }}</td>
 
-                                  <form method="post">
-                                    {% csrf_token %}
+                                <form method="post">
+                                  {% csrf_token %}
                                     {% for clinic_id, clinic_data in clinics.items%}
                                       {% if clinic_id == appointment_data.clinicUID %}
-                                      
                                         <input type="hidden" name="clinic_uid" value="{{ appointment_data.clinicUID }}">
                                         <td name="clinic_uid">{{ clinic_data.name }}</td>
                                       {% endif %}
                                     {% endfor %}
-                                  </form>
+                                </form>
 
-                                  <td><label class="badge badge-success">{{appointment_data.status}}</label></td>
+                                <td>
+                                  {% if appointment_data.status == 'Pending'%}
+                                    <label class="badge badge-warning">{{appointment_data.status}}</label>
+                                  {% elif appointment_data.status == 'Confirmed'%}
+                                    <label class="badge badge-success">{{appointment_data.status}}</label>
+                                  {% endif%}
+                                </td>
 
-                                  <td>
-                                    <button type="button" class="openModalBtn btn btn-primary btn-sm" name="clinic_uid" value="{{ appointment_data.clinicUID }}">Click for More Actions</button>
-                                    
-                                    <div class="myModal modal">
-                                      <div class="modal-content">
-                                        <span class="close">&times;</span>
-                                        <i class="fa-regular fa-circle-check"></i>
-                                        <h2 style="margin-bottom: 20px;">Patient Contact Information</h2>
+                                <td>
+                                  <button type="button" class="openModalBtn btn btn-primary btn-sm" name="clinic_uid" value="{{ appointment_data.clinicUID }}">Click for More Actions</button>
+                                  
+                                  <div class="myModal modal">
+                                    <div class="modal-content">
+                                      <span class="close">&times;</span>
+                                      <i class="fa-regular fa-circle-check"></i>
+                                      <h2 style="margin-bottom: 20px;">Patient Contact Information</h2>
                                         {% for patient_id, patient_data in patients.items %}
                                           {% if patient_data.uid == appointment_data.patientName %}
                                             <div class="detail-wrapper">
@@ -286,96 +290,83 @@
                                               <div class="detailvalue">{{ patient_data.address}}</div>
                                             </div>
                                           {% endif %}
-                                        {% endfor %} 
-
-                                        
-                                        <h2 style="margin-top: 20px; margin-bottom: 20px;">Reschedule Appointment</h2>
+                                        {% endfor %}
+                                      
+                                      <h2 style="margin-top: 20px; margin-bottom: 20px;">Reschedule Appointment</h2>
                                         <form id="reschedule-form{{ appointment_id }}" method="POST" action="{% url 'update_appointment' %}">
                                           {% csrf_token %}
-                                          
                                           <div class="detail-wrapper">
-                                            <div class="detailname" style="font-weight: bold;">Clinic: </div>
+                                            <div class="detailname" style="font-weight: bold;">
+                                              Clinic: 
+                                            </div>
                                             <div class="dropdown">
-                                                {% for clinic_id, clinic_data in clinics.items %}
+                                              {% for clinic_id, clinic_data in clinics.items %}
                                                 {% if clinic_id == appointment_data.clinicUID %}
-                                                <button class="btn btn-info btn-sm dropdown-toggle" type="button" value="{{ clinic_id }}" id="dropdownMenuSizeButton_ClinicName_{{ appointment_id }}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                  <button class="btn btn-info btn-sm dropdown-toggle" type="button" value="{{ clinic_id }}" id="dropdownMenuSizeButton_ClinicName_{{ appointment_id }}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     {{ clinic_data.name }}
-                                                </button>
+                                                  </button>
                                                 {% endif %}
-                                                {% endfor %}
-                                              
-                                              
-                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3">
-                                                  {% for doctors_id, doctors_data in doctors.items %}
-                                                        {% for doctorClinic in doctors_data.clinic %}
-                                                        {% for clinic_id, clinic_data in clinics.items %}
-                                                        {% if clinic_id == doctorClinic and doctors_id == uid %}
+                                              {% endfor %}
+                                            
+                                              <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3">
+                                                {% for doctors_id, doctors_data in doctors.items %}
+                                                  {% for doctorClinic in doctors_data.clinic %}
+                                                    {% for clinic_id, clinic_data in clinics.items %}
+                                                      {% if clinic_id == doctorClinic and doctors_id == uid %}
                                                         <a class="dropdown-item preview-item" href="#" onclick="updateScheduleAndTimeSlots('{{ clinic_id }}', '{{ appointment_id }}'); return false;">
-                                                              <div class="preview-item-content flex-grow py-2" id="clinicName_{{ clinic_id }}">
-                                                                  {{ clinic_data.name }}
-                                                              </div>
-                                                          </a>
-                                                          {% endif %}
-                                                          {% endfor %}
-                                                          {% endfor %}
-                                                          {% endfor %}
+                                                          <div class="preview-item-content flex-grow py-2" id="clinicName_{{ clinic_id }}">
+                                                            {{ clinic_data.name }}
+                                                          </div>
+                                                        </a>
+                                                      {% endif %}
+                                                    {% endfor %}
+                                                  {% endfor %}
+                                                {% endfor %}
                                               </div>
+                                            </div>
                                           </div>
-                                      </div>
-                                        
-                                      <div class="detail-wrapper">
-                                        <input type="hidden" id="selected_clinic_id_{{ appointment_id }}" name="selected_clinic_id" value="">
-                                        <div class="detailname" style="font-weight: bold;">Suggested Schedule: </div>
-                                        <input type="text" id="selected_appointment_date_{{ appointment_id }}" name="selected_appointment_date" value="" style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                    </div>
-                                    
-                                    <div class="detail-wrapper">
-                                      <div class="detailname" style="font-weight: bold;">Suggested Time: </div>
-                                      <select id="new_appointment_time_{{ appointment_id }}" name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                          <!-- Time slots will be populated by JavaScript -->
-                                      </select><br>
-                                  </div>
-                                          
-                                          
-                                          {% comment %} {% for time_slot in clinic_data.time_slots %}
-                                                  <option value="{{time_slot}}">{{ time_slot }}</option>
-                                              {% endfor %} {% endcomment %}
-                                          {% comment %} {% endfor %} {% endcomment %}
+                                      
+                                          <div class="detail-wrapper">
+                                            <input type="hidden" id="selected_clinic_id_{{ appointment_id }}" name="selected_clinic_id" value="">
+                                            <div class="detailname" style="font-weight: bold;">Suggested Schedule: </div>
+                                            <input type="text" id="selected_appointment_date_{{ appointment_id }}" name="selected_appointment_date" value="" style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                          </div>
+                                  
+                                          <div class="detail-wrapper">
+                                            <div class="detailname" style="font-weight: bold;">Suggested Time: </div>
+                                            <select id="new_appointment_time_{{ appointment_id }}" name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                            </select><br>
+                                          </div>
+
                                           <button type="submit" class="appID btn btn-primary btn-sm" name="appID" value="{{ appointment_id }}">Submit Request to Patient</button>
                                         </form>
-                                        
-                                        {% comment %} {% endif %} {% endcomment %}
-
-                                        <h2 style="margin-top: 20px; margin-bottom: 20px;">Cancel Appointment</h2>
+                                      
+                                      <h2 style="margin-top: 20px; margin-bottom: 20px;">Cancel Appointment</h2>
                                         <form action="{% url 'delete_appointment' %}" method="post">
                                           {% csrf_token %}
                                           <button type="submit" class="btn btn-primary btn-sm" onclick="cancelAppointment()" name='cancel' value={{ appointment_id }}>Cancel Appointment</button>
                                         </form>
 
-                                      </div>
                                     </div>
-                                  </td>
-                                  
-                                  
-                                  
-                                </tr>
-                                {% endfor %}
-                            {% else %}
-                              <td colspan="7" style="text-align: center;">No upcoming appointments!</td>
-                            {% endif %}
-                            
-                          </tbody>
-                        </table>
-                      </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          {% else %}
+                            <td colspan="7" style="text-align: center;">No upcoming appointments!</td>
+                          {% endif %}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
+              </div>
             </div>
-            </div>
+          </div>
         </div>
+
       </div>
     </div>
-
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -402,42 +393,39 @@
     
     <script>
       function updateScheduleAndTimeSlots(clinicId, appointmentId) {
-          // Simulated clinic data list (replace with actual data)
-          const clinicDataList = {{ clinic_data_list|safe }};
-          
-          // Find the clinic data by clinicId
-          const clinicData = clinicDataList.find(clinic => clinic.clinic_id === clinicId);
-  
-          if (clinicData) {
-              // Update clinic name display
-              document.getElementById(`dropdownMenuSizeButton_ClinicName_${appointmentId}`).innerText = clinicData.name;
-              document.getElementById(`dropdownMenuSizeButton_ClinicName_${appointmentId}`).value  = clinicId;
-  
-              // Update hidden input for selected clinic ID
-              document.getElementById(`selected_clinic_id_${appointmentId}`).value = clinicId;
-  
-              // Update suggested schedule date
-              document.getElementById(`selected_appointment_date_${appointmentId}`).value = clinicData.next_available_date_str;
-  
-              // Update time slots dropdown
-              const timeSelect = document.getElementById(`new_appointment_time_${appointmentId}`);
-              timeSelect.innerHTML = '';  // Clear existing options
-  
-              clinicData.time_slots.forEach(timeSlot => {
-                  const option = document.createElement('option');
-                  option.value = timeSlot;
-                  option.textContent = timeSlot;
-                  timeSelect.appendChild(option);
-              });
-          } else {
-              console.error(`Clinic data not found for clinic ID: ${clinicId}`);
-          }
-      }
-  </script>
-    
+        // Simulated clinic data list (replace with actual data)
+        const clinicDataList = {{ clinic_data_list|safe }};
+        
+        // Find the clinic data by clinicId
+        const clinicData = clinicDataList.find(clinic => clinic.clinic_id === clinicId);
 
-   
-    
+        if (clinicData) {
+          // Update clinic name display
+          document.getElementById(`dropdownMenuSizeButton_ClinicName_${appointmentId}`).innerText = clinicData.name;
+          document.getElementById(`dropdownMenuSizeButton_ClinicName_${appointmentId}`).value  = clinicId;
+
+          // Update hidden input for selected clinic ID
+          document.getElementById(`selected_clinic_id_${appointmentId}`).value = clinicId;
+
+          // Update suggested schedule date
+          document.getElementById(`selected_appointment_date_${appointmentId}`).value = clinicData.next_available_date_str;
+
+          // Update time slots dropdown
+          const timeSelect = document.getElementById(`new_appointment_time_${appointmentId}`);
+          timeSelect.innerHTML = '';  // Clear existing options
+
+          clinicData.time_slots.forEach(timeSlot => {
+            const option = document.createElement('option');
+            option.value = timeSlot;
+            option.textContent = timeSlot;
+            timeSelect.appendChild(option);
+          });
+        } else {
+          console.error(`Clinic data not found for clinic ID: ${clinicId}`);
+        }
+      }
+    </script>
+  
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         document.body.addEventListener('click', function (event) {
@@ -468,33 +456,32 @@
       });
     </script>
     
-
     <script>
       function filterTable(clinicId) {
-          var tableRows = document.querySelectorAll('tbody tr');
-          if (clinicId === 'all') {
-              tableRows.forEach(function(row) {
-                  row.style.display = '';
-              });
-          } else {
-              tableRows.forEach(function(row) {
-                  var rowClinicId = row.getAttribute('data-clinic-id');
-                  if (rowClinicId === clinicId) {
-                      row.style.display = '';
-                  } else {
-                      row.style.display = 'none';
-                  }
-              });
-          }
+        var tableRows = document.querySelectorAll('tbody tr');
+        if (clinicId === 'all') {
+          tableRows.forEach(function(row) {
+            row.style.display = '';
+          });
+        } else {
+          tableRows.forEach(function(row) {
+            var rowClinicId = row.getAttribute('data-clinic-id');
+            if (rowClinicId === clinicId) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        }
       }
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('appID').addEventListener('click', function () {
-                alert('Appointment rescheduled successfully!');
-            });
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('appID').addEventListener('click', function () {
+          alert('Appointment rescheduled successfully!');
         });
+      });
     </script>
     
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
@@ -506,5 +493,5 @@
     <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
     <script src="{% static 'assets/js/todolist.js' %}"></script>
 
-</body>
+  </body>
 {% endblock %}

@@ -1,10 +1,9 @@
 {%load static%}
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
     <title>{% block title %}Medical History{% endblock %}</title>
-    <!-- plugins:css -->
      
     {% block styles%} 
     <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
@@ -16,19 +15,17 @@
     <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
     <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
+
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
-    <!-- endinject -->
+
     <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
     {% endblock styles%}
+
   </head>
 
-  {% block content %}
+{% block content %}
   <body class="with-welcome-text">
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
@@ -46,64 +43,66 @@
         <div class="navbar-menu-wrapper d-flex align-items-top">
           <ul class="navbar-nav">
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
-              <h1 class="welcome-text">Medical 
-               
-                        <span class="text-black fw-bold"> History</span>
-                
-            </h1>
-              <h3 class="welcome-sub-text">View your patient's medical history</h3>
+              <h1 class="welcome-text">Patient: 
+                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                  {% if chosenPatient == chosenPatientData_id%}
+                    <span class="text-black fw-bold">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</span>
+                  {% endif %}
+                {% endfor %}
+                </h1>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
            
-          {% comment %} Notifs {% endcomment %}
-          <li class="nav-item dropdown">
-            <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+            {% comment %} Notifs {% endcomment %}
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                 <i class="icon-bell"></i>
                 <span class="count">{{ notifications.count }}</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
                 <a class="dropdown-item py-3 border-bottom">
-                    <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                  <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
                 </a>
                 {% for notification in notifications %}
-                <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
-                  <div class="preview-thumbnail">
-                        <i class="mdi mdi-alert m-auto text-primary"></i>
+                  <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+                    <div class="preview-thumbnail">
+                      <i class="mdi mdi-alert m-auto text-primary"></i>
                     </div>
                     <div class="preview-item-content">
-                        <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
-                        <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                      <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
                     </div>
-                </a>
+                  </a>
                 {% endfor %}
-            </div>
-        </li>
-            {% comment %} Messages Notif {% endcomment %}
-            
+              </div>
+            </li>
+
+            {% comment %} DP Options {% endcomment %}
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
               <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                 <div class="dropdown-header text-center">
                   {% for doctor_id, doctor_data in doctors.items %}
-                        {% if doctor_data.uid == uid %}
-                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
-                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-                        {% endif %}
-                    {% endfor %}
+                    {% if doctor_data.uid == uid %}
+                      <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                      <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                    {% endif %}
+                  {% endfor %}
                 </div>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
                 <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
               </div>
             </li>
           </ul>
+
           <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
             <span class="mdi mdi-menu"></span>
           </button>
         </div>
       </nav>
+
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_sidebar.html -->
@@ -145,12 +144,15 @@
             </li>
           </ul>
         </nav>
+        
         <!-- partial -->
         <div class="main-panel">
           <div class="content-wrapper">
             <div class="row">
               <div class="col-sm-12">
                 <div class="home-tab">
+
+                  <!-- Options -->
                   <div class="d-sm-flex align-items-center justify-content-between border-bottom">
                     <ul class="nav nav-tabs" role="tablist">
                       <li class="nav-item">
@@ -168,195 +170,290 @@
                     </ul>
                   </div>
 
+                  <!-- Tabs of All Medical History -->
                   <div class="tab-content tab-content-basic">
+
+                    <!-- Family History -->
                     <div class="tab-pane fade show active" id="family" role="tabpanel" aria-labelledby="family">
+                      <div class="statistics-details d-flex align-items-center">
+                        <!-- Relative Risk: Estimate the likelihood of developing certain diseases compared to the general population based on family history. -->
+                        <div style="margin-right: 40px;">
+                          <p class="statistics-title">Relative Risk</p>
+                          <h3 class="rate-percentage">32.53%</h3>
+                          <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>
+                        </div>
+                        <div style="margin-right: 40px;">
+                          <p class="statistics-title">Median Age Of Onset</p>
+                          <h3 class="rate-percentage">{{median_age_of_onset}}</h3>
+                          <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>
+                        </div>
+                      </div>
                       <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
-                            <div class="card">
-                              <div class="card-body">
-                                <div class="table-responsive">
-                                  <table class="table table-striped">
-                                    <thead>
-                                      <tr>
-                                        <th>Family Member</th>
-                                        <th>Diagnosis</th>
-                                        <th>Age of Onset</th>
-                                        <th>Deceased</th>
-                                        <th>Age of Death</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                            {% for family_id, family_data in patientMedical.items %}
-                                                {% if family_id == chosenPatient%}
-                                                    {% for f_id, f_data in family_data.items %}
-                                                        {% if f_id == 'familyHistory'%}
-                                                            {% for fh_id, fh_data in f_data.items %}
-                                                                <tr>
-                                                                    <td>
-                                                                      {% if fh_id == 'family_member' %}
-                                                                      <div class="form-group">
-                                                                        <input type="text" class="form-control" id="familyMember" placeholder="Family Member">{{fh_data}}
-                                                                      </div>
-                                                                      {% endif %}
-                                                                    </td>
-                                                                    <td>
-                                                                      <div class="form-group">
-                                                                        <input type="text" class="form-control" id="diagnosis" placeholder="Diagnosis">
-                                                                      </div>
-                                                                    </td>
-                                                                    <td>
-                                                                      <div class="form-group">
-                                                                        <input type="number" class="form-control" id="ageOfOnset" placeholder="Age of Onset">
-                                                                      </div>
-                                                                    </td>  
-                                                                    <td>
-                                                                      <div class="form-check">
-                                                                        <label class="form-check-label">
-                                                                          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="yes"> Yes </label>
-                                                                      </div>
-                                                                      <div class="form-check">
-                                                                        <label class="form-check-label">
-                                                                          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="no"> No </label>
-                                                                      </div>
-                                                                    </td>  
-                                                                    <td>
-                                                                      <div class="form-group">
-                                                                        <input type="number" class="form-control" id="ageofDeath" placeholder="Age of Death">
-                                                                      </div>
-                                                                    </td>  
-                                                                </tr>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% endif %}
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  <thead>
+                                    <tr>
+                                      <th>Family Member</th>
+                                      <th>Diagnosis</th>
+                                      <th>Age of Onset</th>
+                                      <th>Deceased</th>
+                                      <th>Age of Death</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for family_id, family_data in patientMedical.items %}
+                                      {% if family_id == chosenPatient%}
+                                        {% for f_id, f_data in family_data.items %}
+                                          {% if f_id == 'familyHistory'%}
+                                            {% for fh_id, fh_data in f_data.items %}
+                                              <tr>
+                                                <td>
+                                                  <div class="form-group">
+                                                    <input type="text" class="form-control" id="familyMember" placeholder="Family Member" value={{fh_data.family_member}} disabled>
+                                                  </div>
+                                                </td>
+                                                <td>
+                                                  <div class="form-group">
+                                                    <input type="text" class="form-control" id="diagnosis" placeholder="Diagnosis" value="{{ fh_data.diagnosis }}" disabled>
+                                                  </div>
+                                                </td>                                                
+                                                <td>
+                                                  <div class="form-group">
+                                                    <input type="number" class="form-control" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.age}} disabled>
+                                                  </div>
+                                                </td>  
+                                                <td>
+                                                  <div class="form-group">
+                                                    <input type="text" class="form-control" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.deceased}} disabled>
+                                                  </div>
+                                                </td>                                                
+                                                <td>
+                                                  <div class="form-group">
+                                                    <input type="text" class="form-control" id="ageofDeath" placeholder="Age of Death" value={{fh_data.ageDeath}} disabled>
+                                                  </div>
+                                                </td>  
+                                              </tr>
                                             {% endfor %}
-                                    </tbody>
-                                  </table>
-                                </div>
+                                          {% endif %}
+                                        {% endfor %}
+                                      {% endif %}
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
                               </div>
                             </div>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                  <div class="tab-pane fade show" id="social" role="tabpanel" aria-labelledby="social">
-                    <div class="row">
+                    <!-- Social History -->
+                    <div class="tab-pane fade show" id="social" role="tabpanel" aria-labelledby="social">
+                      <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
-                            <div class="card">
-                              <div class="card-body">
-                                <div class="table-responsive">
-                                  <table class="table table-striped">
-                                    <thead>
-                                      <tr>
-                                        <th colspan="2">Tobacco Use</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            {% for social_id, social_data in patientMedical.items %}
-                                                {% if social_id == chosenPatient%}
-                                                    {% for s_id, s_data in social_data.items %}
-                                                        {% if s_id == 'socialHistory'%}
-                                                            <tr>
-                                                                <td> {{s_data.smoking}} </td>
-                                                                <td> {{s_data.yearsSmoking}} </td>
-                                                            </tr>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-                        </div>
-                      </div>
-                  </div>
-
-                  <div class="tab-pane fade show" id="treatment" role="tabpanel" aria-labelledby="treatment">
-                    <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                            <div class="card">
-                              <div class="card-body">
-                                <div class="table-responsive">
-                                  
-                                  <table class="table table-striped">
-                                    <thead>
-                                      <tr>
-                                        <th>Date</th>
-                                        <th>Prescription</th>
-                                      </tr>
-                                    </thead>
-                                   
-                                    <tbody class="name_table">
-                                      {% if prescriptionsorders_ref %}
-                                        {% for po_id, po_data in prescriptionsorders_ref.items %}
-                                        
-                                            <tr>
-                                              {% for pres_id, pres_data in po_data.items %}
-                                              {% if pres_id == 'dateCreated'%}
-                                              <td>{{ pres_data }}</td>
-                                              {% endif %}
-                                              {% if pres_id == 'prescriptionURL'%}
-                                              <td><a href="{{ pres_data }}">Open Prescription</a></td>
-                                              {% endif %}
-                                              {% endfor %}
-                                            </tr>
-                                        
-                                        {% endfor %}
-                                      {% else %}
-                                      <td colspan="2" style="text-align: center;">No Prescriptions Yet</td>
-
-                                      {% endif %}
-                                    </tbody>
-                                    
-                                  </table>
-                                  
-                                </div>
-
-                                
-                            </div>
-                        </div>
-                      </div>
-                  </div>
-
-                  <div class="tab-pane fade show" id="consultation" role="tabpanel" aria-labelledby="consultation">
-                    <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                            <div class="card">
-                              <div class="card-body">
-                                <div class="table-responsive">
-                                  <table class="table table-striped">
-                                    <thead>
-                                      <tr>
-                                        <th>Date of Consultation</th>
-                                        <th>Chief Complaint</th>
-                                        <th>Diagnosis</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for consul_id, consul_data in consulNotes.items %}
-                                            {% if consul_id == chosenPatient%}
-                                                {% for c_id, c_data in consul_data.items %}
-                                                    <tr>
-                                                        <td> {{c_id}} </td>
-                                                        <td> {{c_data.chiefComplaint}} </td>
-                                                        <td> {{c_data.diagnosis}} </td>  
-                                                    </tr>
-                                                {% endfor %}
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  <thead>
+                                    <tr>
+                                      <th>Tobacco Use</th>
+                                      <th>Years Smoking (If Applicable)</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      {% for social_id, social_data in patientMedical.items %}
+                                        {% if social_id == chosenPatient%}
+                                          {% for s_id, s_data in social_data.items %}
+                                            {% if s_id == 'socialHistory'%}
+                                              <tr>
+                                                <td> {{s_data.smoking}} </td>
+                                                <td> 
+                                                  {% if s_data.smoking == 'Yes' %}
+                                                    1 year/s
+                                                  {% else %}
+                                                    N/A
+                                                  {% endif %}
+                                                </td>
+                                              </tr>
                                             {% endif %}
-                                        {% endfor %}
-                                    </tbody>
-                                  </table>
-                                </div>
+                                          {% endfor %}
+                                        {% endif %}
+                                      {% endfor %}
+                                    </tr>
+                                  </tbody>
+                                </table>
                               </div>
                             </div>
+                          </div>
                         </div>
                       </div>
-                  </div>
-                  
+                    </div>
+
+                    
+
+                    <!-- Consultation Notes HIstory -->
+                    <div class="tab-pane fade show" id="consultation" role="tabpanel" aria-labelledby="consultation">
+                      <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                              <h4 class="card-title card-title-dash">Consultation History</h4>
+                            </div>
+                            <ul class="bullet-line-list">
+                              {% for consul_id, consul_data in consulNotes.items %}
+                                {% if consul_id == chosenPatient%}
+                                  {% for c_id, c_data in consul_data.items %}
+                                    <li>
+                                      <div class="d-flex justify-content-between">
+                                        <div>Patient complains of <span class="text-light-green">
+                                          {% if c_data.complains%}
+                                                {% for specific_id, specific_data in c_data.items %}
+                                                  {% for s_id, s_data in specific_data.items %}
+                                                        {% if s_id == 'shortnessOfBreathInput' %}
+                                                            Shortness of Breath
+                                                        {% elif s_id == 'coughInput' %}
+                                                            Cough
+                                                        {% elif s_id == 'phlegmInput' %}
+                                                            Phlegm
+                                                        {% elif s_id == 'wheezingInput' %}
+                                                            Wheezing
+                                                        {% elif s_id == 'coughingBloodInput' %}
+                                                            Coughing Blood
+                                                        {% elif s_id == 'chestPainInput' %}
+                                                            Chest Pain
+                                                        {% elif s_id == 'feverInput' %}
+                                                            Fever
+                                                        {% elif s_id == 'heartMurmurInput' %}
+                                                            Heart Murmur
+                                                        {% endif %},
+                                                  {% endfor %}
+                                                {% endfor %}
+                                              {% endif %} 
+                                        </span> </div>
+                                        <p>{{c_id}}</p>
+                                      </div>
+                                    </li>
+                                  {% endfor %}
+                                {% endif %}
+                              {% endfor %}
+                              
+                            </ul>
+                            <div class="list align-items-center pt-3">
+                              <div class="wrapper w-100">
+                                <p class="mb-0">
+                                  <a href="#" class="fw-bold text-primary">Expand <i class="mdi mdi-arrow-right ms-2"></i></a>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  <thead>
+                                    <tr>
+                                      <th>Date of Consultation</th>
+                                      <th>Chief Complaint</th>
+                                      <th>Diagnosis</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for consul_id, consul_data in consulNotes.items %}
+                                      {% if consul_id == chosenPatient%}
+                                        {% for c_id, c_data in consul_data.items %}
+                                          <tr>
+                                            <td> {{c_id}} </td>
+                                            <td> 
+                                              {% if c_data.complains%}
+                                                {% for specific_id, specific_data in c_data.items %}
+                                                  {% for s_id, s_data in specific_data.items %}
+                                                      <p>Patient complains of <b>
+                                                        {% if s_id == 'shortnessOfBreathInput' %}
+                                                            Shortness of Breath
+                                                        {% elif s_id == 'coughInput' %}
+                                                            Cough
+                                                        {% elif s_id == 'phlegmInput' %}
+                                                            Phlegm
+                                                        {% elif s_id == 'wheezingInput' %}
+                                                            Wheezing
+                                                        {% elif s_id == 'coughingBloodInput' %}
+                                                            Coughing Blood
+                                                        {% elif s_id == 'chestPainInput' %}
+                                                            Chest Pain
+                                                        {% elif s_id == 'feverInput' %}
+                                                            Fever
+                                                        {% elif s_id == 'heartMurmurInput' %}
+                                                            Heart Murmur
+                                                        {% endif %}:</b> {{ s_data }} <br>
+                                                      </p>
+                                                  {% endfor %}
+                                                {% endfor %}
+                                              {% endif %} 
+                                            </td>
+                                            <td> {{c_data.diagnosis}} </td>  
+                                          </tr>
+                                        {% endfor %}
+                                      {% endif %}
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Treatment Plan -->
+                    <div class="tab-pane fade show" id="treatment" role="tabpanel" aria-labelledby="treatment">
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  <thead>
+                                    <tr>
+                                      <th>Date</th>
+                                      <th>Prescription</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody class="name_table">
+                                    {% if prescriptionsorders_ref %}
+                                      {% for po_id, po_data in prescriptionsorders_ref.items %}
+                                        <tr>
+                                          {% for pres_id, pres_data in po_data.items %}
+                                            {% if pres_id == 'dateCreated'%}
+                                              <td>{{ pres_data }}</td>
+                                            {% endif %}
+                                            {% if pres_id == 'prescriptionURL'%}
+                                              <td><a href="{{ pres_data }}">Open Prescription</a></td>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </tr>
+                                      {% endfor %}
+                                    {% else %}
+                                      <td colspan="2" style="text-align: center;">No Prescriptions Yet</td>
+                                    {% endif %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+      
                   </div>
 
                 </div>
@@ -364,31 +461,26 @@
             </div>
           </div>
         </div>
+
         <!-- main-panel ends -->
       </div>
       <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
-<script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
-<!-- endinject -->
-<!-- Plugin js for this page -->
-<script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
-<script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
-<!-- End plugin js for this page -->
-<!-- inject:js -->
-<script src="{% static 'assets/js/off-canvas.js' %}"></script>
-<script src="{% static 'assets/js/template.js' %}"></script>
-<script src="{% static 'assets/js/settings.js' %}"></script>
-<script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
-<script src="{% static 'assets/js/todolist.js' %}"></script>
-<!-- endinject -->
-<!-- Custom js for this page-->
-<script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
-<script src="{% static 'assets/js/dashboard.js' %}"></script>
 
-    <!-- <script src="assets/js/Chart.roundedBarCharts.js"></script> -->
-    <!-- End custom js for this page-->
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+
+    <script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
+    <script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
+
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/template.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+
+    <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+
   </body>
-  {% endblock %}
+{% endblock %}

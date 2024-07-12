@@ -1,11 +1,10 @@
 {%load static%}
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}Patient Data{% endblock %}</title>
-    <!-- plugins:css -->
-     
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
+    <title>{% block title %}Consultation{% endblock %}</title>
+
     {% block styles%} 
     <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
@@ -16,19 +15,42 @@
     <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
     <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/select2/select2.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
 
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
-    <!-- endinject -->
+
     <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
     <style>
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        width: 30%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+      }
+
+      .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 30px;
+        cursor: pointer;
+      }
         .detail-wrapper {
             display: flex;
             align-items: center;
@@ -43,7 +65,7 @@
     {% endblock styles%}
   </head>
 
-  {% block content %}
+{% block content %}
   <body class="with-welcome-text">
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
@@ -63,38 +85,37 @@
             <li class="nav-item fw-semibold d-none d-lg-block ms-0">
               <h1 class="welcome-text">Patient: 
                 {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                    <span class="text-black fw-bold">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</span>
+                  <span class="text-black fw-bold">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</span>
                 {% endfor %}
-                </h1>
-
-                {% if chosenPatientConsulNotes %}
-                    {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                        {% if chosenPatientConsulNotes_data.diagnosis %}
-                            <h3 class="welcome-sub-text">Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</h3>
-                        {% else %} 
-                            <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
-                        {% endif %} 
-                    {% endfor %}   
-                {% else %} 
+              </h1>
+              {% if chosenPatientConsulNotes %}
+                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                  {% if chosenPatientConsulNotes_data.diagnosis %}
+                    <h3 class="welcome-sub-text">Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</h3>
+                  {% else %} 
                     <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
-                {% endif %} 
+                  {% endif %} 
+                {% endfor %}   
+              {% else %} 
+                <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
+              {% endif %} 
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown d-none d-lg-block user-dropdown">
               <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image">
+              </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                 <div class="dropdown-header text-center">
                   {% for doctor_id, doctor_data in doctors.items %}
-                        {% if doctor_data.uid == uid %}
-                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
-                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-                        {% endif %}
-                    {% endfor %}
+                    {% if doctor_data.uid == uid %}
+                      <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                      <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                    {% endif %}
+                  {% endfor %}
                 </div>
                 <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
                 <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
               </div>
             </li>
@@ -104,6 +125,7 @@
           </button>
         </div>
       </nav>
+
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_sidebar.html -->
@@ -145,6 +167,7 @@
             </li>
           </ul>
         </nav>
+
         <!-- partial -->
         <div class="main-panel">
           <div class="content-wrapper">
@@ -154,7 +177,7 @@
                   <div class="d-sm-flex align-items-center justify-content-between border-bottom">
                     <ul class="nav nav-tabs" role="tablist">
                       <li class="nav-item">
-                        <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+                        <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Consultation</a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#medicalhistory" role="tab" aria-selected="false">Medical History</a>
@@ -163,7 +186,94 @@
                         <a class="nav-link" id="treatment-tab" data-bs-toggle="tab" href="#treatment" role="tab" aria-selected="false">Treatment Plan</a>
                       </li>
                     </ul>
+
+                    <div class="btn-wrapper">
+                      {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                        {% if chosenPatientConsulNotes_data.diagnosis %}
+                          <a  class="btn btn-primary text-white me-0" a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}"><i class="fa fa-file-powerpoint-o"></i> Create Prescription</a>
+                        {% endif %}
+                      {% endfor %}
+                      <a href="#" class="openModalBtn1 btn btn-primary text-white me-0"><i class="icon-download"></i> End </a>
+                      <div class="myModal modal">
+                        <div class="modal-content">
+                          <span class="close">&times;</span>
+                          <i class="fa-regular fa-circle-check"></i>
+                          <h2 style="margin-bottom: 20px;">Ending Appointment...</h2>
+                          <div class="detail-wrapper">
+                            <div class="form-check form-check-primary">
+                              <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input"> Follow-up Appointment </label>
+                            </div>
+                          </div>
+                          <form method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="endingAppointment" value={{endAppointment}}>End</button>
+                          </form>
+                        </div>
+                      </div> 
+                      <a href="#" class="openModalBtn btn btn-otline-dark align-items-center"><i class="fa fa-share-alt"></i> Share</a>
+                      <div class="myModal modal">
+                        <div class="modal-content">
+                          <span class="close">&times;</span>
+                          <i class="fa-regular fa-circle-check"></i>
+                          <h2 style="margin-bottom: 20px;">Referrals</h2>
+                          <form method="post">
+                            {% csrf_token%}
+                            <div class="detail-wrapper">
+                              <div class="detailname" style="font-weight: bold;">
+                                Clinic:
+                              </div>
+                              <div class="dropdown">
+                                {% for clinic_id, clinic_data in clinics.items %}
+                                  {% for appointment_id, appointment_data in upcomings.items %}
+                                    {% if clinic_id == appointment_data.clinicUID and appointmentIDurl == appointment_id %}
+                                      <button class="btn btn-info btn-sm dropdown-toggle" type="button" value="{{ clinic_id }}" id="clinicDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ clinic_data.name }}
+                                      </button>
+                                    {% endif %}
+                                  {% endfor %}
+                                {% endfor %}
+                                
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3">
+                                  {% for doctors_id, doctors_data in doctors.items %}
+                                    {% for doctorClinic in doctors_data.clinic %}
+                                      {% for clinic_id, clinic_data in clinics.items %}
+                                        {% if clinic_id == doctorClinic and doctors_id == uid %}
+                                          <a class="dropdown-item preview-item" href="#" onclick="updateScheduleAndTimeSlots('{{ clinic_id }}', '{{ appointment_id }}'); return false;">
+                                            <div class="preview-item-content flex-grow py-2" id="clinicName_{{ clinic_id }}" name="clinic_referring">
+                                              {{ clinic_data.name }}
+                                            </div>
+                                          </a>
+                                        {% endif %}
+                                      {% endfor %}
+                                    {% endfor %} 
+                                  {% endfor %}   
+                                </div>
+                              </div>
+                            </div>
+                          
+
+                            <div class="detail-wrapper">
+                              <div class="detailname" style="font-weight: bold;" >Doctor: </div>
+                              <select id="doctors_listahan" name="doctors_listahan" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                              </select><br>
+                            </div>
+
+                            <div class="detail-wrapper">
+                              <div class="form-check form-check-primary">
+                                <label class="form-check-label">
+                                  <input type="checkbox" class="form-check-input" required> I have explained to the patient what this would implicate and the patient understood and gave their consent. </label>
+                              </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="confirmReferral" value={{endAppointment}}>Confirm Referral</button>
+                          </form>
+                        </div>
+                      </div> 
+
+                    </div>
                   </div>
+
                   <div class="tab-content tab-content-basic">
 
                     <!-- Overview Tab -->
@@ -174,124 +284,151 @@
                             <div class="col-12 grid-margin stretch-card">
                               <div class="card card-rounded">
                                 <div class="card-body">
-                                    <div class="d-sm-flex justify-content-between align-items-start">
-                                        <div>
-                                          <h4 class="card-title card-title-dash">Consultation Notes</h4>
-                                          <p class="card-subtitle card-subtitle-dash">Record your observations</p>
-                                        </div>
-                                      </div>
-                                    <div class="table-responsive mt-1">
-                                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                            <form method='post'>
-                                                {% csrf_token %}
-                                                <div class="form-group">
-                                                    <select class="js-example-basic-multiple w-100" multiple="multiple">
-                                                    <option value="Shortness of Breath">Shortness of Breath</option>
-                                                    <option value="Cough">Cough</option>
-                                                    <option value="Production of Phlegm">Production of Phlegm</option>
-                                                    <option value="Wheezing">Wheezing</option>
-                                                    <option value="Coughing up Blood">Coughing up Blood</option>
-                                                    <option value="Chest Pain">Chest Pain</option>
-                                                    <option value="Fever">Fever</option>
-                                                    <option value="Heart Murmur">Heart Murmur</option>
-                                                    </select>
-                                                </div>
-
-                                                <div id="chiefComplaintArea" style="margin-bottom: 15px;"> 
-                                                    {% if chosenPatientConsulNotes %}
-                                                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                                            <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
-                                                            name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
-                                                        {% endfor %}
-                                                    {% else %}
-                                                        <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
-                                                        name="chiefComplaint"></textarea>
-                                                    {% endif %}
-                                                </div> 
-                                                
-                                                <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }}>
-                                                    <i class="fa fa-check"></i> Save </button>
-                                                
-                                                <button id="cancelChiefComplaintButton" type="button" class="btn btn-danger btn-sm">
-                                                    <i class="fa fa-times"></i> Cancel </button>
-
-                                            </form>
-
-                                            <form id="diagnosis" method='post'>
-                                              {% csrf_token %}
-                                              <div class="detail-wrapper">
-                                                  <div class="detailname" style="font-weight: bold;">
-                                                      Diagnosis:
-                                                  </div>
-  
-                                                  <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
-                                                      <datalist id="disease_name_suggestion">
-                                                          <option value="">--- Select Disease ---</option>
-                                                          {% for disease in disease_list %}
-                                                              <option value="{{ disease }}">{{ disease }}</option>
-                                                          {% endfor %}
-                                                      </datalist>
-                                                  </select>
-                                              </div>
-
-                                              <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatientData_id }}>
-                                                  <i class="fa fa-check"></i> Save </button>
-                                          </form>
-                                        
-
-                                        {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                            {% if chosenPatientConsulNotes_data.diagnosis %}
-                                                <button  class="buttons_info"><a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatientData_data.uid}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}">Make Medication Order</a></button>
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                      {% endfor %}
-
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Consultation Notes</h4>
+                                      <p class="card-subtitle card-subtitle-dash">Record your observations</p>
                                     </div>
+                                  </div>
+                                  <div class="table-responsive mt-1">
+                                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                      <form method="POST">
+                                        {% csrf_token %}
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="shortnessOfBreathCheck">
+                                          <label class="form-check-label"> Shortness of Breath </label>
+                                          <input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="coughCheck">
+                                          <label class="form-check-label"> Cough </label>
+                                          <input type="text" class="form-control" id="coughInput" name="coughInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="phlegmCheck">
+                                          <label class="form-check-label"> Production of Phlegm </label>
+                                          <input type="text" class="form-control" id="phlegmInput" name="phlegmInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="wheezingCheck">
+                                          <label class="form-check-label"> Wheezing </label>
+                                          <input type="text" class="form-control" id="wheezingInput" name="wheezingInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="coughingBloodCheck">
+                                          <label class="form-check-label"> Coughing up Blood </label>
+                                          <input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="chestPainCheck">
+                                          <label class="form-check-label"> Chest Pain </label>
+                                          <input type="text" class="form-control" id="chestPainInput" name="chestPainInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="feverCheck">
+                                          <label class="form-check-label"> Fever </label>
+                                          <input type="text" class="form-control" id="feverInput" name="feverInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="heartMurmurCheck">
+                                          <label class="form-check-label"> Heart Murmur </label>
+                                          <input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
+                                        </div>
+
+                                        {% comment %} <div id="chiefComplaintArea" style="margin-bottom: 15px;"> 
+                                            {% if chosenPatientConsulNotes %}
+                                                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                                    <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
+                                                    name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
+                                                {% endfor %}
+                                            {% else %}
+                                                <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
+                                                name="chiefComplaint"></textarea>
+                                            {% endif %}
+                                        </div>   {% endcomment %}
+                                            
+                                        <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }}>
+                                            <i class="fa fa-check"></i> Save </button>
+                                            
+                                        {% comment %} <button id="cancelChiefComplaintButton" type="button" class="btn btn-danger btn-sm">
+                                            <i class="fa fa-times"></i> Cancel </button> {% endcomment %}
+
+                                      </form>
+                                    {% endfor %}
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
+                        
                         <div class="col-lg-4 d-flex flex-column">
-                            <div class="row flex-grow">
-                                <div class="col-12 grid-margin stretch-card">
-                                  <div class="card card-rounded">
-                                    <div class="card-body">
-                                      <div class="row">
-                                        {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                        <div class="col-lg-12">
-                                          <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <div class="d-sm-flex justify-content-between align-items-start">
-                                                <div>
-                                                  <h4 class="card-title card-title-dash">Diagnostic Tests</h4>
-                                                </div>
-                                              </div>
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <form id="diagnosis" method='post'>
+                                      {% csrf_token %}
+                                      <div class="detail-wrapper">
+                                        <div class="detailname" style="font-weight: bold;">
+                                          Diagnosis:
+                                        </div>
+                                        <select id="health-conditions" name="diagnosis" list="disease_name_suggestions">
+                                          <datalist id="disease_name_suggestion">
+                                            <option value="">--- Select Disease ---</option>
+                                            {% for disease in disease_list %}
+                                              <option value="{{ disease }}">{{ disease }}</option>
+                                            {% endfor %}
+                                          </datalist>
+                                        </select>
+                                      </div>
+                                      <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatientData_id }}>
+                                        <i class="fa fa-check"></i> Save </button>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                      <div class="col-lg-12">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                          <div class="d-sm-flex justify-content-between align-items-start">
+                                            <div>
+                                              <h4 class="card-title card-title-dash">Diagnostic Tests</h4>
+                                            </div>
                                           </div>
-                                          <div class="mt-3">
-                                            <div class="wrapper d-flex align-items-center justify-content-between py-2">
-                                              <div class="d-flex">
-                                                <div class="wrapper ms-3">
-                                                    <button class="btn btn-inverse-success btn-sm">
-                                                        <i class="fa fa-folder-open"></i>
-                                                        <a href = "{% url 'diagnostic_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Test Results</a>
-                                                    </button>
-
-                                                    <button class="btn btn-inverse-success btn-sm" id="requestLabTestButton">
-                                                        <i class="fa fa-plus"></i>
-                                                        <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}">Request New Test</a>
-                                                    </button>
-                                                </div>
+                                        </div>
+                                        <div class="mt-3">
+                                          <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                                            <div class="d-flex">
+                                              <div class="wrapper ms-3">
+                                                <button class="btn btn-inverse-success btn-sm">
+                                                  <i class="fa fa-folder-open"></i>
+                                                  <a href = "{% url 'diagnostic_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Test Results</a>
+                                                </button>
+                                                <button class="btn btn-inverse-success btn-sm" id="requestLabTestButton">
+                                                  <i class="fa fa-plus"></i>
+                                                  <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}">Request New Test</a>
+                                                </button>
                                               </div>
                                             </div>
                                           </div>
                                         </div>
-                                        {% endfor %}
                                       </div>
-                                    </div>
+                                    {% endfor %}
                                   </div>
                                 </div>
                               </div>
+                            </div>
+                          </div>
 
                           <div class="row flex-grow">
                             <div class="col-12 grid-margin stretch-card">
@@ -299,35 +436,36 @@
                                 <div class="card-body">
                                   <div class="row">
                                     <div class="col-lg-12">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                          <div>
-                                            <h4 class="card-title card-title-dash fs-5">Personal Information</h4>
-                                          </div>
+                                      <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div>
+                                          <h4 class="card-title card-title-dash">Personal Information</h4>
                                         </div>
-                                        <div class="mt-1">
-                                          <div class="wrapper d-flex align-items-center justify-content-between py-2">
-                                            <div class="d-flex">
-                                              <div class="wrapper ms-3">
-                                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Sex: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.gender }}</span><br>
-                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Birthday: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.bday }}</span><br>
-                                                  {% endfor %}
-
-                                                  {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
-                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Blood Type: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.bloodType }}</span><br>
-                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Height: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.height }} cm</span><br>
-                                                      <span class="ms-0 mb-0 fs-6 fw-bold">Weight: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.weight }} kg</span><br>
-                                                  {% endfor %}
-                                              </div>
+                                      </div>
+                                      <div class="mt-1">
+                                        <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                                          <div class="d-flex">
+                                            <div class="wrapper ms-3">
+                                              {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Sex: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.gender }}</span><br>
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Birthday: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.bday }}</span><br>
+                                              {% endfor %}
+                                              {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Blood Type: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.bloodType }}</span><br>
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Height: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.height }} cm</span><br>
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Weight: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.weight }} kg</span><br>
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">BMI: </span><span class="ms-0 mb-0 fs-6"></span><br>
+                                              {% endfor %}
                                             </div>
                                           </div>
                                         </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+
                         </div>
                       </div>
                     </div>
@@ -343,7 +481,6 @@
                                   <div class="d-sm-flex justify-content-between align-items-start">
                                     <div>
                                       <h4 class="card-title card-title-dash">Symptoms History Chart</h4>
-                                      <!-- DROPDOWN FOR SYMPTOM -->
                                       <div class="dropdown">
                                         <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton8" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> -- Select Symptom -- </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton8">
@@ -417,35 +554,111 @@
               </div>
             </div>
           </div>
-          <!-- partial -->
         </div>
+
         <!-- main-panel ends -->
       </div>
       <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
+
+    <script>
+      function updateScheduleAndTimeSlots(clinicId, appointmentId) {
+        // Simulated clinic data list (replace with actual data)
+        const clinicDataList = {{ clinic_doctor_list|safe }};
+        
+        // Find the clinic data by clinicId
+        const clinicData = clinicDataList.find(clinic => clinic.clinic_id === clinicId);
+        
+
+        if (clinicData) {
+          // Update clinic name display
+          document.getElementById('clinicDropdown').innerText = clinicData.name;
+          document.getElementById('clinicDropdown').value  = clinicId;
+
+          // Update time slots dropdown
+          const doctorSelect = document.getElementById('doctors_listahan');
+          doctorSelect.innerHTML = ''; 
+
+          clinicData.doctorNames.forEach(doctor => {
+            const option = document.createElement('option');
+            option.value = doctor;
+            option.textContent = doctor;
+            doctorSelect.appendChild(option);
+          });
+        } else {
+          console.error(`Clinic data not found for clinic ID: ${clinicId}`);
+        }
+      }
+    </script>
+
+    <script>
+      function toggleInput(checkbox, input) {
+        checkbox.addEventListener('change', function() {
+          input.disabled = !this.checked;
+        });
+      }
+
+      toggleInput(document.getElementById('shortnessOfBreathCheck'), document.getElementById('shortnessOfBreathInput'));
+      toggleInput(document.getElementById('coughCheck'), document.getElementById('coughInput'));
+      toggleInput(document.getElementById('phlegmCheck'), document.getElementById('phlegmInput'));
+      toggleInput(document.getElementById('wheezingCheck'), document.getElementById('wheezingInput'));
+      toggleInput(document.getElementById('coughingBloodCheck'), document.getElementById('coughingBloodInput'));
+      toggleInput(document.getElementById('chestPainCheck'), document.getElementById('chestPainInput'));
+      toggleInput(document.getElementById('feverCheck'), document.getElementById('feverInput'));
+      toggleInput(document.getElementById('heartMurmurCheck'), document.getElementById('heartMurmurInput'));
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        document.body.addEventListener('click', function (event) {
+          // Open modal button clicked
+          if (event.target.classList.contains('openModalBtn')) {
+            var modal = event.target.nextElementSibling;
+            modal.style.display = 'block';
+          }
+
+          if (event.target.classList.contains('openModalBtn1')) {
+            var modal = event.target.nextElementSibling;
+            modal.style.display = 'block';
+          }
+    
+          // Close modal button clicked
+          if (event.target.classList.contains('close')) {
+            var modal = event.target.closest('.modal');
+            modal.style.display = 'none';
+          }
+    
+          // Submit appointment reschedule button clicked
+          if (event.target.classList.contains('appID')) {
+            alert('Appointment rescheduled successfully!');
+          }
+        });
+    
+        // Close modal if clicked outside the content
+        window.addEventListener('click', function (event) {
+          if (event.target.classList.contains('myModal')) {
+            event.target.style.display = 'none';
+          }
+        });
+      });
+    </script>
+    
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
+
     <script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
     <script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
     <script src="{% static 'assets/vendors/select2/select2.min.js' %}"></script>
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
+
     <script src="{% static 'assets/js/off-canvas.js' %}"></script>
     <script src="{% static 'assets/js/template.js' %}"></script>
     <script src="{% static 'assets/js/settings.js' %}"></script>
     <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
     <script src="{% static 'assets/js/todolist.js' %}"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page-->
+ 
     <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
     <script src="{% static 'assets/js/dashboard.js' %}"></script>
     <script src="{% static 'assets/js/select2.js' %}"></script>
 
-    <!-- <script src="assets/js/Chart.roundedBarCharts.js"></script> -->
-    <!-- End custom js for this page-->
   </body>
-  {% endblock %}
+{% endblock %}

@@ -1,244 +1,395 @@
-{% load static%}
-<title>{% block title %}Patient Data{% endblock %}</title>
-{% block styles%} 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{%load static%}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
+        <title>{% block title %}Create Test{% endblock %}</title>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-    }
-    .prescription-pad {
-        width: 600px;
-        margin: 0 auto;
-        border: 2px solid #000;
-        padding: 20px;
-        background-color: white; /* Set background color to white */
-    }
-    .prescription-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .prescription-header h1 {
-        margin: 0;
-    }
-    .prescription-content {
-        margin-bottom: 20px;
-    }
-    .prescription-content p {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-    .prescription-content .right-aligned {
-        white-space: nowrap;
-    }
-    .prescription-details {
-        margin-bottom: 20px;
-    }
-    .prescription-footer {
-        text-align: right;
-    }
-    .rx-sign {
-        font-size: 24px;
-        font-weight: bold;
-    }
-    .header {
-        color: #333;
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-align: center;
-    }
-    .logo {
-        flex: 1;
-    }
-    .logo img {
-        width: 50px;
-        height: 50px;
-        float: left;
-    }
-    .credentials {
-        flex: 1;
-    }
-    .credentials h1 {
-        line-height: 1em;
-        letter-spacing: 1px;
-        font-weight: 700;
-        margin: 0px;
-        padding: 0px;
-    }
-    .credentials h3 {
-        line-height: 1em;
-        letter-spacing: 1px;
-        font-weight: 700;
-        margin: 5px;
-        padding: 2px;
-    }
-    .credentials p {
-        margin: 10px 0 0 0;
-        padding: 1px 0px;
-    }
-    .credentials small {
-        margin: 0;
-        padding: 0;
-        letter-spacing: 1px;
-        padding: 80px;
-    }
-    .medicine p {
-        margin: 5px 0;
-    }
-    .medicine select, .medicine input {
-        margin-right: 10px;
-    }
-    .medicine-row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .medicine-row label {
-        margin-right: 10px;
-    }
-    .medicine-row button {
-        margin-left: 10px;
-    }
-    .add-medicine-btn,
-    .submit-medicine-btn,
-    .print-medicine-btn {
-        display: block;
-        margin-top: 10px;
-    }
-    .print-only {
-        display: none;
-    }
-    @media print {
-        .print-only {
-            display: block;
-        }
-        .add-medicine-btn,
-        .remove-medicine-btn,
-        .submit-medicine-btn,
-        .print-medicine-btn {
-            display: none;
-        }
-    }
-    @media print {
-        input[type="text"],
-        select {
-            border: none;
-            background-color: transparent;
-            -webkit-box-shadow: none;
-            -moz-box-shadow: none;
-            box-shadow: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-    }
-</style>
-{% endblock styles%}
+        {% block styles%} 
+        <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+        <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+        <style>
+            .clinic-container {
+                display: flex;
+                gap: 20px; 
+            }
+            .clinic-info {
+                flex: 1; 
+                padding: 10px; 
+            }
+            .prescription-pad {
+                width: 700px;
+                margin: 0 auto;
+                border: 2px solid #000;
+                padding: 20px;
+                background-color: white; /* Set background color to white */
+            }
+            .prescription-header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .prescription-header h1 {
+                margin: 0;
+            }
+            .prescription-content {
+                margin-bottom: 20px;
+            }
+            .prescription-content p {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            .prescription-content .right-aligned {
+                white-space: nowrap;
+            }
+            .prescription-details {
+                margin-bottom: 20px;
+            }
+            .prescription-footer {
+                text-align: right;
+            }
+            .rx-sign {
+                font-size: 24px;
+                font-weight: bold;
+            }
+            .header {
+                color: #333;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: center;
+            }
+            .logo {
+                flex: 1;
+            }
+            .logo img {
+                width: 50px;
+                height: 50px;
+                float: left;
+            }
+            .credentials {
+                flex: 1;
+            }
+            .credentials h1 {
+                line-height: 1em;
+                letter-spacing: 1px;
+                font-weight: 700;
+                margin: 0px;
+                padding: 0px;
+            }
+            .credentials h3 {
+                line-height: 1em;
+                letter-spacing: 1px;
+                font-weight: 700;
+                margin: 5px;
+                padding: 2px;
+            }
+            .credentials p {
+                margin: 10px 0 0 0;
+                padding: 1px 0px;
+            }
+            .credentials small {
+                margin: 0;
+                padding: 0;
+                letter-spacing: 1px;
+                padding: 80px;
+            }
+            .medicine p {
+                margin: 5px 0;
+            }
+            .medicine select, .medicine input {
+                margin-right: 10px;
+            }
+            .medicine-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .medicine-row label {
+                margin-right: 10px;
+            }
+            .medicine-row button {
+                margin-left: 10px;
+            }
+            .add-medicine-btn,
+            .submit-medicine-btn,
+            .print-medicine-btn {
+                display: block;
+                margin-top: 10px;
+            }
+            .print-only {
+                display: none;
+            }
+            @media print {
+                .print-only {
+                    display: block;
+                }
+                .add-medicine-btn,
+                .remove-medicine-btn,
+                .submit-medicine-btn,
+                .print-medicine-btn {
+                    display: none;
+                }
+            }
+            @media print {
+                input[type="text"],
+                select {
+                    border: none;
+                    background-color: transparent;
+                    -webkit-box-shadow: none;
+                    -moz-box-shadow: none;
+                    box-shadow: none;
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    appearance: none;
+                }
+            }
+        </style>
+        {% endblock styles%}
+    </head>
 
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="prescription-pad">
-        <div class="header">
-            <div class="credentials">
-                {% for doctor_id, doctor_data in doctors.items %}
-                    {% if doctor_data.uid == uid %}
-                        <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
-                        <h3>{{ doctor_data.specialization }}</h3>
-                        {% for doctorClinic in doctor_data.clinic %}
-                            {% for clinic_id, clinic_data in clinics.items %}  
-                                {% if clinic_data.uid == doctorClinic %}
-                                    <p>{{ clinic_data.name }}</p>
-                                    <small>{{ clinic_data.address }}</small><br/>
-                                    <small>{{ clinic_data.onumber }}</small><br/>
-                                    <small>Mb. 0XXXXXXXXX</small>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-
-        <hr>
-
-        <div class="prescription-content">
-            {% for patientData_id, patientData_data in patientData.items %}
-            <p>
-                <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
-                <span><strong>Age:</strong> {{ patientData_data.age }}</span>
-                <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
-            </p>
-            <p>
-                <span><strong>Address:</strong> {{ patientData_data.address }} </span>
-                <span class="right-aligned"><strong>Date:</strong> {{ todaydate }} </span>
-            </p>
-        {% endfor %}
-        </div>
-
-        <br>
-        <div class="logo"><img src="https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png" alt="Clinic Logo"/></div>
-
-        <br>
-        <br>
-        <br>
-        <br>
-
-        <div class="prescription-details">
-            <div id="medicine-container">
-                <div class="medicine">
-                    <div class="medicine-row">
-                        <label for="medicine-name"><strong>Test Name:</strong></label>
-                    </div>
-                    <div>
-                        <input type="checkbox" name="test" value="Spirometry">
-                        <label>Spirometry</label><br>
-
-                        <input type="checkbox" name="test" value="Peak flow monitor">
-                        <label>Peak flow monitor</label><br>
-
-                        <input type="checkbox" name="test" value="Arterial blood gas">
-                        <label>Arterial blood gas</label><br>
-
-                        <input type="checkbox" name="test" value="Pulse oximetry">
-                        <label>Pulse oximetry</label><br>
-
-                        <input type="checkbox" name="test" value="Chest X-ray">
-                        <label>Chest X-ray</label><br>
-
-                        <input type="checkbox" name="test" value="CT scan">
-                        <label>CT scan</label><br>
-
-                        <input type="checkbox" name="test" value="High-resolution computed tomography">
-                        <label>High-resolution computed tomography</label><br>
-
-                        <input type="checkbox" name="test" value="Sputum examination">
-                        <label>Sputum examination</label><br>
-                    </div>
-                    <hr>
+<body>
+    <div class="container-scroller">
+      <!-- partial:../../partials/_navbar.html -->
+        <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+                <div class="me-3">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                        <span class="icon-menu"></span>
+                    </button>
+                </div>
+                <div>
+                    <b>MediMatrix</b>
                 </div>
             </div>
+            <div class="navbar-menu-wrapper d-flex align-items-top">
+                <ul class="navbar-nav">
+                    <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+                        <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">John Doe</span></h1>
+                        <h3 class="welcome-sub-text">Your performance summary this week </h3>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                            <i class="icon-bell"></i>
+                            <span class="count">{{ notifications.count }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+                            <a class="dropdown-item py-3 border-bottom">
+                                <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                            </a>
+                            {% for notification in notifications %}
+                                <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+                                    <div class="preview-thumbnail">
+                                        <i class="mdi mdi-alert m-auto text-primary"></i>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                                        <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </li>
+                
+                    <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+                        <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                            <div class="dropdown-header text-center">
+                                {% for doctor_id, doctor_data in doctors.items %}
+                                    {% if doctor_data.uid == uid %}
+                                        <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                                        <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+                            <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+                        </div>
+                    </li>
+                </ul>
+
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+        <!-- partial:../../partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                            <i class="mdi mdi-grid-large menu-icon"></i>
+                            <span class="menu-title">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item nav-category">Menu</li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                            <i class="menu-icon mdi mdi-floor-plan"></i>
+                            <span class="menu-title">Appointments</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-basic">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                            <i class="menu-icon mdi mdi-card-text-outline"></i>
+                            <span class="menu-title">Patients</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="form-elements">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="main-panel">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="prescription-pad">
+                        <div class="header">
+                            <div class="credentials">
+                                {% for doctor_id, doctor_data in doctors.items %}
+                                    {% if doctor_data.uid == uid %}
+                                        <h1>{{ doctor_data.fname }} {{ doctor_data.lname }}, M.D.</h1>
+                                        <h3>{{ doctor_data.specialization }}</h3>
+                                        
+                                        <div class="clinic-container">
+                                            {% for doctorClinic in doctor_data.clinic %}
+                                                {% for clinic_id, clinic_data in clinics.items %}  
+                                                    {% if clinic_data.uid == doctorClinic %}
+                                                        <div class="clinic-info">
+                                                            <p style="padding: 0; margin:0;">{{ clinic_data.name }}</p>
+                                                            <p style="padding: 0; margin:0;">{{ clinic_data.address }}</p>
+                                                            <p style="padding: 0; margin:0;">{{ clinic_data.onumber }}</p>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="prescription-content">
+                            {% for patientData_id, patientData_data in patientData.items %}
+                                <p>
+                                    <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
+                                    <span><strong>Age:</strong> {{ patientData_data.age }}</span>
+                                    <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
+                                </p>
+                                <p>
+                                    <span><strong>Address:</strong> {{ patientData_data.address }} </span>
+                                    <span class="right-aligned"><strong>Date:</strong> {{ todaydate }} </span>
+                                </p>
+                            {% endfor %}
+                        </div>
+                        <br>
+                        <div class="logo"><img src="https://seeklogo.com/images/R/RX-logo-1057A9CD42-seeklogo.com.png" alt="Clinic Logo"/>
+                        </div>
             
-            <button type="button" class="print-medicine-btn" onclick="window.print()">Print</button>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+            
+                        <div class="prescription-details">
+                            <div id="medicine-container">
+                                <div class="medicine">
+                                    <div class="medicine-row">
+                                        <label for="medicine-name"><strong>Test Name:</strong></label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" name="test" value="Spirometry">
+                                        <label>Spirometry</label><br>
+                
+                                        <input type="checkbox" name="test" value="Peak flow monitor">
+                                        <label>Peak flow monitor</label><br>
+                
+                                        <input type="checkbox" name="test" value="Arterial blood gas">
+                                        <label>Arterial blood gas</label><br>
+                
+                                        <input type="checkbox" name="test" value="Pulse oximetry">
+                                        <label>Pulse oximetry</label><br>
+                
+                                        <input type="checkbox" name="test" value="Chest X-ray">
+                                        <label>Chest X-ray</label><br>
+                
+                                        <input type="checkbox" name="test" value="CT scan">
+                                        <label>CT scan</label><br>
+                
+                                        <input type="checkbox" name="test" value="High-resolution computed tomography">
+                                        <label>High-resolution computed tomography</label><br>
+                
+                                        <input type="checkbox" name="test" value="Sputum examination">
+                                        <label>Sputum examination</label><br>
+                                    </div>
+                                    <hr>
+                                </div>
+                            </div>
+                            
+                        </div>
+            
+                        <div class="prescription-footer">
+                            {% for doctor_id, doctor_data in doctors.items %}
+                                {% if doctor_data.uid == uid %}
+                                    <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
+                                    <p style="font-size: 16;">License No.: {{ doctor_data.license }}</p>
+                                    <p style="font-size: 16;">PTR No.: {{ doctor_data.ptr}}</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-icon-text">
+                        <i class="ti-upload btn-icon-prepend"></i> Submit </button>
+                </form>
+            </div>
         </div>
+    </div>
 
-        <div class="prescription-footer">
-            {% for doctor_id, doctor_data in doctors.items %}
-                {% if doctor_data.uid == uid %}
-                    <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
-                    <p style="font-size: 16;">License No.: {{ doctor_data.license }}</p>
-                    <p style="font-size: 16;">PTR No.: {{ doctor_data.ptr}}</p>
-                {% endif %}
-            {% endfor %}
-        </div>
-        </div>
-        <button type="submit" class="submit-medicine-btn">Submit</button>
-    </form>
+    <script src="{% static 'js/create-medication.js' %}"></script>
+    
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
 
-<script>
-</script>
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/template.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+
+</body>
 {% endblock %}
