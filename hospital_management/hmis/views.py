@@ -189,27 +189,6 @@ def clinics(request):
     # Pass the combined data to the template
     return render(request, 'hmis/clinics.html', {'accounts': accounts})
 
-def nursesAdmin(request):
-    # Fetch doctors and nurses data from Firebase
-    nurses = db.child("nurses").get().val()
-
-    if request.method == 'POST':
-        try:
-            for nurse_id in request.POST.getlist('nurseID'):
-                shift = request.POST.get(f'shift_{nurse_id}')  
-                data = {
-                    'shift': shift
-                }
-                db.child('nurses').child(nurse_id).update(data)
-
-                messages.success(request, 'Nurse Assignments saved successfully!')
-            return redirect('nursesAdmin')
-        except Exception as e:
-            messages.error(request, f'Error: {str(e)}')
-
-
-    # Pass the combined data to the template
-    return render(request, 'hmis/nurses.html', {'nurses': nurses})
 
 
 def register(request):
@@ -318,7 +297,6 @@ def reset(request):
     # If the request method is not POST, render the forgot password form
     else:
         return render(request, 'hmis/forgotpass.html')
-
 
 def logout(request):
     #auth_logout(request)
@@ -539,7 +517,6 @@ def AppointmentUpcoming(request):
         'notifications': notifications
     })
 
-
 def update_appointment(request):    
     if request.method == 'POST':
         try:
@@ -617,7 +594,6 @@ def followup_appointment(request):
     return render(request, 'hmis/AppointmentUpcoming.html', {'uid': uid,
                                                             'appointmentschedule': appointmentschedule,})
         
-
 def AppointmentPast(request):
 
     if request.session.get('uid') is None:
@@ -769,20 +745,6 @@ def AppointmentScheduling(request):
         'clinic_schedules': preprocessed_clinic_schedules,
     })
 
-def NurseDashboard(request):
-    nurses = db.child("nurses").get().val()
-    uid = request.session['uid'] 
-    patients = db.child("patients").get().val()
-
-    # for patient_id, patient_data in patients.items():
-    #     patient_data['room_number'] = random.randint(100, 999)
-
-    # context = {
-    #     'patients': patients,
-    # }
-
-    return render(request, 'hmis/nursedashboard.html', {'nurses': nurses, 'uid': uid, 'patients': patients})
-
 def DoctorDashboard(request):
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
@@ -888,64 +850,6 @@ def DoctorDashboard(request):
                                                              'total_average_adherence': total_average_adherence,
                                                              'notifications': notifications}) 
 
-def ChargeNurseDashboard(request):
-    nurses = db.child("nurses").get().val()
-    uid = request.session['uid'] 
-
-    rooms = db.child("rooms").get().val()
-    
-    if request.method == 'POST':
-        try:
-            for room_id, room_data in rooms.items():
-                morning = request.POST.get(f'morning_{room_id}')  
-                afternoon = request.POST.get(f'afternoon_{room_id}')
-                graveyard = request.POST.get(f'graveyard_{room_id}')
-                data = {
-                    'nurse_assigned': {
-                        'morning': morning,
-                        'afternoon': afternoon,
-                        'graveyard': graveyard,
-                    }
-                }
-                db.child('rooms').child(room_id).update(data)
-
-                messages.success(request, 'Room Assignments saved successfully!')
-            return redirect('ChargeNurseDashboard')
-        except Exception as e:
-            messages.error(request, f'Error: {str(e)}')
-    
-    return render(request, 'hmis/ChargeNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})
-
-# def roomAssignments(request):
-#     nurses = db.child("nurses").get().val()
-#     uid = request.session['uid'] 
-
-#     rooms = db.child("rooms").get().val()
-
-#     if request.method == 'POST':
-#         morning = request.POST.get('morning')  
-#         afternoon = request.POST.get('afternoon')
-#         graveyard = request.POST.get('graveyard')
-#         id = request.POST.get('roomID')
-
-#         try:
-#             # Save to Firebase
-#             data = {
-#                 'nurse_assigned': {
-#                     'morning': morning,
-#                     'afternoon': afternoon,
-#                     'graveyard': graveyard,
-#                 }
-#             }
-#             db.child('rooms').child(id).set(data)
-
-#             messages.success(request, 'Room Assignments saved successfully!')
-#             return redirect('HeadNurseDashboard')
-#         except Exception as e:
-#             messages.error(request, f'Error: {str(e)}')
- 
-#     return render(request, 'hmis/HeadNurseDashboard.html', {'nurses': nurses, 'uid': uid, 'rooms': rooms})
-
 def patient_data_doctor_view(request):
     # Fetch patients from Firebase
     patients = db.child("patients").get().val()
@@ -1017,8 +921,6 @@ def patient_personal_information_inpatient(request):
     disease_list = list(disease_set)
     
     upcomings = db.child("appointments").get().val()
-    patients = db.child("patients").get().val()
-    doctors = db.child("doctors").get().val()
     clinics = db.child("clinics").get().val()
     uid = request.session['uid']   
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
@@ -1035,6 +937,8 @@ def patient_personal_information_inpatient(request):
     next_available_date1 = None  # Initialize the variable to store the next available date
     doctors_data_list = []
     clinic_doctor_list = []
+    chosenPatient = request.GET.get('chosenPatient', '')
+    endAppointment = request.GET.get('appointmentID', '')
 
     clinic_doctor_list = get_clinic_doctor_list()
 
@@ -1065,8 +969,6 @@ def patient_personal_information_inpatient(request):
     for clinic_id, clinic_data in appointmentschedule_data1.items():
         time_slots1 = []
         for items_id, items_data in clinic_data.items():
-            
-
             available_days_str1 = []
             if 'days' in items_id:
                 for day_name in items_data:
@@ -1226,9 +1128,6 @@ def patient_personal_information_inpatient(request):
                 else:
                     print("No time slots available")
 
-    chosenPatient = request.GET.get('chosenPatient', '')
-    endAppointment = request.GET.get('appointmentID', '')
-
     past_appointments = {}
     for appointment_id, appointment_data in upcomings.items():
         if appointment_data["doctorUID"] == uid:
@@ -1386,7 +1285,6 @@ def patient_personal_information_inpatient(request):
 
             db.child('referralRequest').child(chosenPatient).push(data)
 
-        
         if 'submitMedOrder' in request.POST:
             patient_uid = request.GET.get('chosenPatient')
             patientdata = db.child("patientdata").child(patient_uid).get().val()
@@ -1788,59 +1686,12 @@ def save_diagnosis(request):
             'disease': diagnosis
         })
 
-
 #Calculate age function for retrieving patient data
 
 def calculate_age(birthday):
     today = datetime.today()
     birthdate = datetime.strptime(birthday, '%Y-%m-%d').date()
     return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
-
-def new_vital_sign_entry(request):
-    patients = db.child("patients").get().val()
-
-    chosenPatient = request.GET.get('chosenPatient', '')
-
-    chosenPatientData = {}
-    for patients_id, patients_data in patients.items():
-        if chosenPatient == patients_data["uid"]:
-            chosenPatientData[patients_id] = patients_data
-
-            #retrieve patient birthdate
-            chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
-            #calculate patient age function
-            chosenPatientAge = calculate_age(chosenPatientBirthday)
-
-    return render(request, 'hmis/new_vital_sign_entry.html', {'chosenPatientData': chosenPatientData, 'chosenPatientAge' : chosenPatientAge})
-
-
-def patient_vital_signs_history(request):
-    patients = db.child("patients").get().val()
-    vitalsigns = db.child("vitalsigns").get().val()
-    doctors = db.child("doctors").get().val()
-    uid = request.session['uid'] 
-
-    chosenPatient = request.GET.get('chosenPatient', '')
-
-    chosenPatientData = {}
-    for patients_id, patients_data in patients.items():
-        if chosenPatient == patients_data["uid"]:
-            chosenPatientData[patients_id] = patients_data
-
-    #Get Vital Signs Data of Chosen Patient
-    chosenPatientVitalEntryData = {}
-    for vitalsigns_id, vitalsigns_data in vitalsigns.items():
-        if chosenPatient == vitalsigns_id:
-            for vsid, vsdata in vitalsigns_data.items():
-                chosenPatientVitalEntryData[vsid] = vsdata
-    
-    sorted_vital_signs = dict(sorted(chosenPatientVitalEntryData.items(), key=lambda item: date.datetime.strptime(item[1]['date'] + ' ' + item[1]['time'], "%Y-%m-%d %I:%M %p"), reverse=True))
-    return render(request, 'hmis/patient_vital_signs_history.html', {'chosenPatientData': chosenPatientData, 
-                                                                     'chosenPatientVitalEntryData': chosenPatientVitalEntryData, 
-                                                                     'doctors': doctors,
-                                                                     'uid': uid,
-                                                                     'vitalsigns': vitalsigns,
-                                                                     'sorted_vital_signs': sorted_vital_signs})
 
 def patient_medical_history(request):
     doctors = db.child("doctors").get().val()
@@ -2006,17 +1857,6 @@ def view_treatment_plan_all(request):
         'uid': uid
     })
 
-def view_treatment_plan(request, fname, lname, gender, bday):
-    doctors = db.child("doctors").get().val()
-    uid = request.session['uid'] 
-
-    return render(request, 'hmis/view_treatment_plan.html', {'fname': fname, 
-                                                             'lname': lname, 
-                                                             'gender': gender, 
-                                                             'bday': bday, 
-                                                             'doctors': doctors,
-                                                             'uid': uid})
-
 def patient_medication_doctor(request):
     # Fetch patients data from Firebase
     patients = db.child("patients").get().val()
@@ -2042,228 +1882,6 @@ def patient_medication_table(request):
                                                                   'uid': uid})
 
 from django.http import JsonResponse
-
-# Function to extract the number of days
-def extract_number_of_days(result):
-    for sublist in result:
-        if isinstance(sublist, list):
-            num_days = extract_number_of_days(sublist)
-            if num_days is not None:
-                return num_days
-        elif isinstance(sublist, tuple):
-            word = sublist[0]
-            # Use regular expression to find numerical value preceded by optional pound sign, followed by "days"
-            days_match = re.search(r'#?\d+\s*days', word, flags=re.IGNORECASE)
-            if days_match:
-                days_value = int(re.findall(r'\d+', days_match.group())[0])
-                return days_value
-            
-    return None
-
-
-def extract_dosage(result):
-    for sublist in result:
-        if isinstance(sublist, list):
-            dosage = extract_dosage(sublist)
-            if dosage is not None:
-                return dosage
-        elif isinstance(sublist, tuple):
-            word = sublist[0]
-            # Use regular expression to find numerical value followed by "mg" or "mL" or "%cream"
-            dosage_match = re.search(r'(\d+)\s*(mg|mL|%cream)', word, flags=re.IGNORECASE)
-            if dosage_match:
-                dosage_value = dosage_match.group(1)
-                dosage_unit = dosage_match.group(2)
-                # Combine dosage value and unit into a single string
-                dosage = f"{dosage_value}{dosage_unit}"
-                return dosage
-    return None
-
-
-# Function to extract the medicine names
-def extract_medicine_names(result, medicine_names):
-    extracted_medicines = []
-    for sublist in result:
-        if isinstance(sublist, list):
-            extracted_medicines.extend(extract_medicine_names(sublist, medicine_names))
-        elif isinstance(sublist, tuple):
-            word = sublist[0]
-            for medicine in medicine_names:
-                if medicine.lower() in word.lower():
-                    extracted_medicines.append(medicine)
-    return extracted_medicines
-
-
-def extract_routes_and_frequency(result):
-    extracted_frequency = None
-    for sublist in result:
-        if isinstance(sublist, list):
-            frequency = extract_routes_and_frequency(sublist)
-            if frequency:  # Check if frequency is already extracted
-                extracted_frequency = frequency
-        elif isinstance(sublist, tuple):
-            word = sublist[0]
-            # Extract frequency
-            if re.search(r'\bq\.d\.?\b', word, re.IGNORECASE):
-                extracted_frequency = "Morning"
-            elif re.search(r'\bb\.i\.d\.?\b', word, re.IGNORECASE):
-                extracted_frequency = "Morning, Evening"
-            elif re.search(r'\bt\.i\.d\.?\b', word, re.IGNORECASE):
-                extracted_frequency = "Morning, Afternoon, Evening"
-    return extracted_frequency
-
-
-def extract_routes(result, routes):
-    extracted_routes = []
-    routeFinal = "Nal"  # Default value if no text in route is recognized
-    for sublist in result:
-        if isinstance(sublist, list):
-            extracted, route = extract_routes(sublist, routes)
-            extracted_routes.extend(extracted)
-            if route == "Oral":
-                routeFinal = "Oral"  # Update routeFinal if "Oral" is recognized
-        elif isinstance(sublist, tuple):
-            word = sublist[0]
-            for route in routes:
-                if route.lower() in word.lower():
-                    extracted_routes.append(route)
-                    routeFinal = "Oral"  # Set routeFinal to "Oral" when a word from the routes is recognized
-    return extracted_routes, routeFinal
-
-def perform_ocr(request):
-    if request.method == 'POST' and request.FILES['image']:
-        patient_uid = request.GET.get('chosenPatient')
-        image = request.FILES['image'].read()
-
-        # Initialize PaddleOCR with the desired language model
-        ocr = PaddleOCR(use_angle_cls=True, lang='en')
-
-        # Perform OCR on the image
-        result = ocr.ocr(image, cls=True)
-
-        # Extract the recognized text from the OCR result
-        # recognized_text = '\n'.join([line[1][0] for line in result])
-
-        for line in result:
-            for word_info in line:
-                print(word_info[1], end=" ")
-            print() 
-
-
-        medications_cursor = collection.find({}, {"_id": 0, "Drug": 1,})
-        medicines_set = {medication['Drug'] for medication in medications_cursor}
-        medicine_names = list(medicines_set)
-
-        # medicine_names = [
-        #     "Rosuvastatin", "Atorvastatin", "Amoxicillin", "Cefoxitin sodium",
-        #     "Prednisolone", "Alprazolam", "HCTZ", "Metformin", "Glipizide",
-        #     "Diclofenac", "Paracetamol", "Loratadine", "Montelukast", "Salbutamol",
-        #     "Sitagliptin", "Clindamycin", "Hydroxyzine", "Diphenhydramine Hydrochloride",
-        #     "Alvesco", "Glimepiride", "Co-Amoxiclav", "Propranolol", "Linagliptin",
-        #     "Cetirizine", "Levocetirizine", "Desloratadine", "Ibuprofen", "Probucol",
-        #     "Enalapril", "Diazepam", "Azithromycin", "Celecoxib", "Levofloxacin",
-        #     "Ketoconazole", "Lorazepam", "Guaifenesin", "Clotrimazole", "Losartan",
-        #     "Doxycycline", "Piroxicam"
-        # ]
-
-        routes = ["Tablet", "Oral", "Pills", "Capsule", "tasbels", "tablels", "P.O.", "p.o."]
-
-        days_value = extract_number_of_days(result)
-        dosage_value = extract_dosage(result)
-        medicine_names_extracted = extract_medicine_names(result, medicine_names)
-        extracted_frequency = extract_routes_and_frequency(result)
-        extracted_routes, routeFinal = extract_routes(result, routes)
-
-        id=str(uuid.uuid1())
-
-        todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
-        endDate = todaydate_datetime + timedelta(days=days_value)
-        endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
-        days_str = str(days_value)
-
-        data = {
-            'days': [days_str],
-            'dosage': [dosage_value],
-            'medicine_name': medicine_names_extracted,
-            'route': [routeFinal],
-            'todaydate': todaydate,
-            'prescriptionsorderUID': id,
-            'status': 'Ongoing',
-            'endDate': endDate_str,
-            'times': [extracted_frequency],
-            'patient_id': patient_uid
-        }
-
-        db.child('prescriptionsorders').child(patient_uid).child(todaydate).set(data)
-        dosage_value = dosage_value
-        route_value = routeFinal
-        days = int(days_str)
-
-        # Split the times_value into individual frequencies
-        times_split = extracted_frequency.split(', ')
-
-        # Calculate the total number of doses
-        total_doses = len(times_split) * days
-
-        for medicine in medicine_names_extracted:
-            # Generate a unique prescription ID for each medicine
-            
-
-            # Iterate over each frequency (time) for the medicine
-            for time_value in times_split:
-                pid = str(uuid.uuid1())
-                data = {
-                    'date': endDate_str,
-                    'prescriptionsorderUID': pid,
-                    'medicine_name': medicine,
-                    'dosage': dosage_value,
-                    'route': route_value,
-                    'patient_id': patient_uid,
-                    'todaydate': todaydate,
-                    'status': 'Ongoing',
-                    'days': days,
-                    'times': time_value.strip(),  # Save each time separately
-                    'total': total_doses  # Total for this prescription
-                }
-
-                # Save to the database under the patient's orders
-                db.child('patientsorders').child(patient_uid).child(todaydate).child(pid).set(data)
-
-
-    return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
-
-# from PIL import Image, ImageDraw, ImageFont
-
-# def generate_prescription(doctor_name, patient_name, medication, dosage):
-#     # Open prescription pad template
-#     prescription_pad = Image.open('prescription_pad_template.png')
-
-#     # Initialize drawing context
-#     draw = ImageDraw.Draw(prescription_pad)
-
-#     # Load font
-#     font = ImageFont.truetype('arial.ttf', size=12)
-
-#     # Define text and positions
-#     doctor_text = f"Doctor: {doctor_name}"
-#     patient_text = f"Patient: {patient_name}"
-#     medication_text = f"Medication: {medication}"
-#     dosage_text = f"Dosage: {dosage}"
-
-#     # Draw text on the prescription pad
-#     draw.text((50, 50), doctor_text, fill='black', font=font)
-#     draw.text((50, 70), patient_text, fill='black', font=font)
-#     draw.text((50, 90), medication_text, fill='black', font=font)
-#     draw.text((50, 110), dosage_text, fill='black', font=font)
-
-#     # Save the generated prescription
-#     prescription_pad.save('generated_prescription.png')
-
-# Example usage
-# generate_prescription("Dr. Smith", "John Doe", "Aspirin", "Take one tablet daily")
-
 
 def pharmacy_drugs(request):
     #collection = connect_to_mongodb()
@@ -2313,12 +1931,10 @@ def outpatient_medication_order(request):
                                                                      'disease': disease,
                                                                      'notifications': notifications})
 
-
 @csrf_exempt
 def save_prescriptions(request):
     patient_uid = request.GET.get('chosenPatient')
     patients = db.child("patients").get().val()
-    #patientdata = db.child("patientdata").child(patient_uid).get().val()
     todaydate = datetime.now().strftime("%Y-%m-%d")
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 
@@ -2429,90 +2045,6 @@ def save_prescriptions(request):
         if signature_path and os.path.exists(signature_path):
             os.remove(signature_path)
 
-    # patient_uid = request.GET.get('chosenPatient')
-    
-    # patientdata = db.child("patientdata").child(patient_uid).get().val()
-
-    # if request.method == 'POST':
-    #     uid = request.session['uid'] 
-
-    #     todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    #     days = request.POST.get('days')
-    #     numOfDays = max(map(int, days), default=0)
-
-    #     todaydate_datetime = datetime.strptime(todaydate, "%Y-%m-%d %H:%M:%S")
-    #     endDate = todaydate_datetime + timedelta(days=numOfDays)
-    #     endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
-
-    #     patient_id = patient_uid 
-    #     todaydate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-    #     medicine_names = request.POST.getlist('medicine_name[]')
-    #     dosages = request.POST.getlist('dosage[]')
-    #     days = request.POST.getlist('days[]')
-    #     routes = request.POST.getlist('route[]')
-    #     remarks = request.POST.getlist('remarks[]')
-    #     times = request.POST.getlist('times[]')
-
-    #     # Generate unique ID for the prescription
-    #     prescription_id = str(uuid.uuid1())
-
-    #     # Set default status
-    #     status = 'Ongoing' if datetime.now() < endDate else 'Finished'
-
-    #     # Construct prescription data
-    #     prescription_data = {
-    #         'prescriptionsorderUID': prescription_id,
-    #         'days': days,
-    #         'medicine_name': medicine_names,
-    #         'dosage': dosages,
-    #         'route': routes,
-    #         'times': times,
-    #         'additional_remarks': remarks,
-    #         'patient_id': patient_id,
-    #         'todaydate': todaydate,
-    #         'endDate': endDate_str,
-    #         'status': status,
-    #     }
-    #     # Save prescription data to the database
-    #     db.child('prescriptionsorders').child(patient_id).child(todaydate).set(prescription_data)
-
-    #     if patientdata['status'] == 'Outpatient':
-    #         for index in range(len(medicine_names)):
-    #             medicine = medicine_names[index]
-    #             dosage_value = dosages[index]
-    #             route_value = routes[index]
-    #             additional_remarks_value = remarks[index]
-    #             times_value = times[index]
-    #             days_value = int(days[index])
-    #             times_split = times_value.split(', ')
-    #             counter = len(times_split)
-    #             total = counter * days_value
-    #             for time_value in times_split:
-    #                 pid = str(uuid.uuid1())
-                    
-    #                 data = {
-    #                     'date': endDate_str,
-    #                     'prescriptionsorderUID': id,
-    #                     'medicine_name': medicine,
-    #                     'dosage': dosage_value,
-    #                     'route': route_value,
-    #                     'additional_remarks': additional_remarks_value,
-    #                     'patient_id': patient_id,
-    #                     'todaydate': todaydate,
-    #                     'status': 'Ongoing',
-    #                     'days': days_value,
-    #                     'times': time_value.strip(),  # Save each time separately
-    #                     'total': total  # Total for this prescription
-    #                 }
-    #                     # Save to database
-    #                     # Remove non-serializable values from the data dictionary
-    #                 serializable_data = {key: value for key, value in data.items() if isinstance(value, (str, int, float, list, dict, tuple))}
-    #                 db.child('patientsorders').child(patient_id).child(todaydate).child(pid).set(serializable_data)
-
-
-
-
 def diagnostic_imagery_reports(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id)
     notification.is_read = True
@@ -2525,7 +2057,6 @@ def diagnostic_imagery_reports(request, notification_id):
     testRequests = db.child("testrequest").get().val()
     
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'patients': patients,'testRequest': testRequests,'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
-
 
 def diagnostic_reports(request):
     submittedTest = db.child("submittedTest").get().val()
@@ -2544,7 +2075,6 @@ def diagnostic_reports(request):
                                                                     'doctors': doctors, 
                                                                     'uid': uid,
                                                                     'notifications': notifications})
-
 
 def download_image(url, file_path):
     response = requests.get(url)

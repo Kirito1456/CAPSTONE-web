@@ -199,14 +199,42 @@
                           <span class="close">&times;</span>
                           <i class="fa-regular fa-circle-check"></i>
                           <h2 style="margin-bottom: 20px;">Ending Appointment...</h2>
-                          <div class="detail-wrapper">
-                            <div class="form-check form-check-primary">
-                              <label class="form-check-label">
-                                <input type="checkbox" class="form-check-input"> Follow-up Appointment </label>
-                            </div>
-                          </div>
                           <form method="POST">
                             {% csrf_token %}
+                            <div class="detail-wrapper">
+                              <div class="form-check form-check-primary">
+                                <label class="form-check-label">
+                                  <input type="checkbox" class="form-check-input"> Follow-up Appointment </label>
+                              </div>
+                            </div>
+                            <div class="detail-wrapper">
+                              <input type="hidden" id="selected_clinic_id_{{ appointment_id }}" name="selected_clinic_id" value="">
+                              <div class="detailname" style="font-weight: bold;">Suggested Schedule: </div>
+                              {% comment %} <input type="text" id="selected_appointment_date_{{ appointment_id }}" name="selected_appointment_date" value="" style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"> {% endcomment %}
+                              <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                  {% for key, value in nearest_dates.items %}
+                                      <option value="{{ value }}">
+                                          {% if key == 'one_week_from_now' %}
+                                              1 Week: {{ value }}
+                                          {% elif key == 'two_weeks_from_now' %}
+                                              2 Weeks: {{ value }}
+                                          {% elif key == 'three_weeks_from_now' %}
+                                              3 Weeks: {{ value }}
+                                          {% elif key == 'one_month_from_now' %}
+                                              1 Month: {{ value }}
+                                          {% endif %}
+                                      </option>
+                                  {% endfor %}
+                              </select><br>
+                            </div>
+                    
+                            <div class="detail-wrapper">
+                              <div class="detailname" style="font-weight: bold;">Suggested Time: </div>
+                              <select name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                              </select><br>
+                            </div>
+
+                            
                             <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="endingAppointment" value={{endAppointment}}>End</button>
                           </form>
                         </div>
