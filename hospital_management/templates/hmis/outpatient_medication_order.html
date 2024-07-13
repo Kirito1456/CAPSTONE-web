@@ -357,8 +357,9 @@
                                             <option value="2">0-1-0</option>
                                             <option value="3">0-0-1</option>
                                             <option value="4">1-1-0</option>
-                                            <option value="5">1-1-1</option>
+                                            <option value="5">1-0-1</option>
                                             <option value="6">0-1-1</option>
+                                            <option value="7">1-1-1</option>
                                         </select>
                                         times for 
                                         <input type="text" name="days" size="2">
@@ -407,16 +408,21 @@
             medicineRow.innerHTML = `
                 <div class="medicine-row">
                     <label for="medicine-name"><strong>Medicine Name:</strong></label>
-                    <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                        <datalist id="medicine_name_suggestions">
-                            {% for medicine in medicines_list %}
-                                <option value="{{ medicine }}">{{ medicine }}</option>
-                            {% endfor %}
-                        </datalist>
-                    <label for="dosage"><strong>Dosage:</strong></label>
-                    <select name="dosage" id="dosage_input">
-                        <option value="" selected disabled>Select Dosage</option>
-                    </select>
+                    {% if disease == 'Chronic Bronchitis' %}
+                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                            <datalist id="medicine_name_suggestions">
+                                {% for medicine in medicines_list %}
+                                    <option value="{{ medicine }}">{{ medicine }}</option>
+                                {% endfor %}
+                            </datalist>
+                        <label for="dosage"><strong>Dosage:</strong></label>
+                        <select name="dosage" id="dosage_input">
+                            <option value="" selected disabled>Select Dosage</option>
+                        </select> 
+                    {% else %}
+                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" >
+                        <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage"> 
+                    {% endif %}
                     <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
                 </div>
                 <p>
@@ -424,17 +430,13 @@
                     <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                     every
                     <select id="times" name="times">
-                        <option value="q.d.">q.d. (once daily)</option>
-                        <option value="b.i.d.">b.i.d. (twice daily)</option>
-                        <option value="t.i.d.">t.i.d. (three times daily)</option>
-                        <option value="q.i.d.">q.i.d. (four times daily)</option>
-                        <option value="q.a.m.">q.a.m. (every morning)</option>
-                        <option value="q.p.m.">q.p.m. (every evening)</option>
-                        <option value="q.h.s.">q.h.s. (at bedtime)</option>
-                        <option value="q.o.d.">q.o.d. (every other day)</option>
-                        <option value="PRN">PRN (as needed)</option>
-                        <option value="AC">AC (before meals)</option>
-                        <option value="PC">PC (after meals)</option>
+                        <option value="1">1-0-0</option>
+                        <option value="2">0-1-0</option>
+                        <option value="3">0-0-1</option>
+                        <option value="4">1-1-0</option>
+                        <option value="5">1-0-1</option>
+                        <option value="6">0-1-1</option>
+                        <option value="7">1-1-1</option>
                     </select>
                     times for
                     <input type="text" name="days" size="2">

@@ -627,9 +627,11 @@ def AppointmentPast(request):
                         past_appointments[appointment_id] = appointment_data
 
         # Sort appointments by date
-        sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+        sorted_past_appointments = dict(sorted(past_appointments.items(), key=lambda item: date.datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p"), reverse=True))
     else:
         sorted_past_appointments = {}
+    
+    print(sorted_past_appointments)
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
                                                          'uid': uid, 'doctors': doctors, 'clinics': clinics, 'notifications': notifications})
@@ -1181,6 +1183,10 @@ def patient_personal_information_inpatient(request):
     for patientsymptoms_id, patientsymptoms_data in patientsymptoms.items():
         if patientsymptoms_id == chosenPatient:
             chosenPatientSymptoms[patientsymptoms_id] = patientsymptoms_data
+    print(chosenPatient)
+    print(patientsymptoms_id)
+    print(chosenPatientSymptoms)
+
 
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
@@ -1580,7 +1586,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'doctors': doctors,
                                                                                 'doctors_data_list': doctors_data_list,
                                                                                 'appointmentIDurl': endAppointment,
-                                                                                'clinic_doctor_list': clinic_doctor_list})
+                                                                                'clinic_doctor_list': clinic_doctor_list,
+                                                                                'chosenPatient': chosenPatient,})
 
 def save_chiefComplaint(request):
         
@@ -1667,15 +1674,20 @@ def save_review_of_systems(request):
 def save_diagnosis(request):
     date = datetime.today().strftime('%Y-%m-%d')
     diagnosis = request.POST.get('diagnosis')
+    otherdiagnosis = request.POST.get('otherdiagnosis')
     id = request.POST.get('diagnosisButton') 
     uid = request.session['uid']
+
+    print(diagnosis)
+    print(otherdiagnosis)
+
     
     # Save Chief Compliant into Firebase Database
     appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
     appointment_path1 = f"/patientdata/{id}"  # Adjust the path as per your Firebase structure
     
     # Update appointment data in Firebase
-    if diagnosis:
+    if diagnosis != 'Other' and diagnosis:
         db.child(appointment_path).update({
             'patientID': id,
             'doctorID': uid,
@@ -1685,7 +1697,17 @@ def save_diagnosis(request):
         db.child(appointment_path1).update({
             'disease': diagnosis
         })
+    elif diagnosis == 'Other' and otherdiagnosis:
+        db.child(appointment_path).update({
+            'patientID': id,
+            'doctorID': uid,
+            'diagnosis': otherdiagnosis
+        })
 
+        db.child(appointment_path1).update({
+            'disease': otherdiagnosis
+        })
+    
 #Calculate age function for retrieving patient data
 
 def calculate_age(birthday):
