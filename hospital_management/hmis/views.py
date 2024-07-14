@@ -470,6 +470,56 @@ def get_clinic_schedule(uid, upcoming_appointments):
 
     return clinic_data_list
 
+def AppointmentUpcomingNotif(request, notification_id):
+    if request.session.get('uid') is None:
+        return redirect('home')
+    
+    notification = get_object_or_404(Notification, id=notification_id)
+    notification.is_read = True
+    notification.save()
+    # Get data from Firebase
+    upcomings = db.child("appointments").get().val()
+    patients = db.child("patients").get().val()
+    doctors = db.child("doctors").get().val()
+    uid = request.session['uid']
+    clinics = db.child("clinics").get().val()
+
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+
+    # Filter and sort upcoming appointments
+    upcoming_appointments = {}
+    if upcomings:
+        for appointment_id, appointment_data in upcomings.items():
+            if appointment_data["doctorUID"] == uid:
+                appointment_date_str = appointment_data.get("appointmentDate", "")
+                appointment_time_str = appointment_data.get("appointmentTime", "")
+            
+                if appointment_date_str and appointment_time_str:
+                    # Convert appointment date string to datetime object
+                    appointment_datetime = datetime.strptime(appointment_date_str + " " + appointment_time_str, "%Y-%m-%d %I:%M %p")
+                
+                    # Check if appointment date is in the future
+                    if appointment_datetime >= datetime.now() and (appointment_data["status"] == "Confirmed" or appointment_data["status"] == "Pending"):
+                        upcoming_appointments[appointment_id] = appointment_data
+
+        # Sort appointments by date
+        sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
+    else:
+        sorted_upcoming_appointments = {}
+
+    clinic_data_list = get_clinic_schedule(uid, sorted_upcoming_appointments)
+    
+    # Pass the combined data to the template
+    return render(request, 'hmis/AppointmentUpcoming.html', {
+        'appointments': sorted_upcoming_appointments,
+        'patients': patients,
+        'uid': uid,
+        'doctors': doctors,
+        'clinics': clinics,
+        'clinic_data_list': clinic_data_list,
+        'notifications': notifications
+    })
+
 def AppointmentUpcoming(request):
     if request.session.get('uid') is None:
         return redirect('home')

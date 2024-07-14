@@ -68,6 +68,7 @@
                       <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
                   </a>
                   {% for notification in notifications %}
+                  {% if notification.type == 'diagnostic' %}
                   <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
                     <div class="preview-thumbnail">
                           <i class="mdi mdi-alert m-auto text-primary"></i>
@@ -77,6 +78,17 @@
                           <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
                       </div>
                   </a>
+                  {% elif notification.type == 'appointment' %}
+                  <a class="dropdown-item preview-item py-3" href="{% url 'AppointmentUpcomingNotif' notification.id %}">
+                    <div class="preview-thumbnail">
+                          <i class="mdi mdi-alert m-auto text-primary"></i>
+                      </div>
+                      <div class="preview-item-content">
+                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      </div>
+                  </a>
+                  {% endif %}
                   {% endfor %}
               </div>
           </li>

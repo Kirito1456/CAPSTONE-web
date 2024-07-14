@@ -527,11 +527,9 @@
                                   <div class="chartjs-wrapper">
                                     <canvas id="performanceLine"></canvas>
                                 </div>
-
-                                  {% for chosenPatientSymptoms_id, chosenPatientSymptoms_data in chosenPatientSymptoms.items %}
+                                  {% comment %} {% for chosenPatientSymptoms_id, chosenPatientSymptoms_data in chosenPatientSymptoms.items %}
                                       <span class="ms-0 mb-0 fs-6 fw-bold">Symptoms: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientSymptoms_data.Coughing.severityRecords }}</span><br>
-                                  {% endfor %}
-
+                                  {% endfor %} {% endcomment %}
                                 </div>
                               </div>
                             </div>
@@ -556,8 +554,7 @@
   </script> 
 
   <script>
-    
-      document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
         var ctx = document.getElementById('performanceLine').getContext('2d');
         var myLineChart = new Chart(ctx, {
             type: 'line',
@@ -569,6 +566,14 @@
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderWidth: 1
+                }, {
+                    label: 'Forecast',
+                    data: [],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 1,
+                    borderDash: [5, 5],
+                    fill: false
                 }]
             },
             options: {
@@ -580,36 +585,89 @@
                             precision: 0
                         }
                     }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return 'Date: ' + tooltipItems[0].label;
+                            },
+                            label: function(tooltipItem) {
+                                return 'Severity: ' + tooltipItem.raw;
+                            }
+                        }
+                    }
                 }
             }
         });
-    
+
         function updateChart(symptomName) {
             var patientId = Object.keys(chosenPatientSymptoms)[0];
             var symptomData = chosenPatientSymptoms[patientId][symptomName];
             var severityRecords = [];
-            
-            for (var date in symptomData.severityRecords) {
-                for (var time in symptomData.severityRecords[date]) {
-                    severityRecords.push({
-                        datetime: new Date(date + ' ' + time),
-                        severity: symptomData.severityRecords[date][time]
-                    });
+
+            if (symptomData && symptomData.severityRecords) {
+                for (var date in symptomData.severityRecords) {
+                    for (var time in symptomData.severityRecords[date]) {
+                        severityRecords.push({
+                            datetime: new Date(date + ' ' + time),
+                            severity: symptomData.severityRecords[date][time]
+                        });
+                    }
                 }
+
+                severityRecords.sort(function (a, b) {
+                    return a.datetime - b.datetime;
+                });
+
+                var labels = severityRecords.map(record => record.datetime.toLocaleString());
+                var data = severityRecords.map(record => record.severity);
+
+                myLineChart.data.labels = labels;
+                myLineChart.data.datasets[0].data = data;
+
+                // Forecasting
+                var forecastData = forecast(data);
+                myLineChart.data.datasets[1].data = forecastData;
+
+                myLineChart.update();
+
+                // Calculate insights
+                var maxSeverity = Math.max(...data);
+                var minSeverity = Math.min(...data);
+                var averageSeverity = data.reduce((acc, val) => acc + val, 0) / data.length;
+
+                // Display insights
+                var insightsElement = document.getElementById('performanceLine-legend');
+                insightsElement.innerHTML = `
+                    <p><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
+                    <p>Maximum Severity: ${maxSeverity}</p>
+                    <p>Minimum Severity: ${minSeverity}</p>
+                    <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
+                `;
+            } else {
+                // Display message when no data is available
+                myLineChart.data.labels = [];
+                myLineChart.data.datasets[0].data = [];
+                myLineChart.data.datasets[1].data = [];
+                myLineChart.update();
+
+                var insightsElement = document.getElementById('performanceLine-legend');
+                insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
             }
-    
-            severityRecords.sort(function(a, b) {
-                return a.datetime - b.datetime;
-            });
-    
-            var labels = severityRecords.map(record => record.datetime.toLocaleString());
-            var data = severityRecords.map(record => record.severity);
-    
-            myLineChart.data.labels = labels;
-            myLineChart.data.datasets[0].data = data;
-            myLineChart.update();
         }
-    
+
+        function forecast(data) {
+            // Simple linear forecasting
+            var n = data.length;
+            var slope = (data[n - 1] - data[0]) / (n - 1);
+            var forecastData = [];
+            for (var i = 0; i < n; i++) {
+                forecastData.push(data[0] + slope * i);
+            }
+            return forecastData;
+        }
+
         document.querySelectorAll('.dropdown-item').forEach(item => {
             item.addEventListener('click', function (event) {
                 event.preventDefault();
@@ -619,7 +677,7 @@
             });
         });
     });
-    </script>
+</script>
 
     <script>
       function updateScheduleAndTimeSlots(clinicId, appointmentId) {
