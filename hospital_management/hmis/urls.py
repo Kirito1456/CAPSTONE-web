@@ -16,6 +16,7 @@ urlpatterns = [
 
     # Appointments
     path('AppointmentUpcoming.html', views.AppointmentUpcoming, name='AppointmentUpcoming'),
+    path('AppointmentUpcoming/read/<int:notification_id>/', views.AppointmentUpcomingNotif, name='AppointmentUpcomingNotif'),
     path('AppointmentScheduling.html', views.AppointmentScheduling, name='AppointmentScheduling'),
     path('AppointmentPast.html', views.AppointmentPast, name='AppointmentPast'),
     path('AppointmentCalendar.html', views.AppointmentCalendar, name='AppointmentCalendar'),

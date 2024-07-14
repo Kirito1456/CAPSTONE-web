@@ -60,7 +60,8 @@ class Command(BaseCommand):
                                                                 message=f'Patient {name} uploaded new test result for {test_request_key}', 
                                                                 created_at=date,
                                                                 patient_id=patient_id,
-                                                                is_read=False)
+                                                                is_read=False,
+                                                                type = 'diagnostic',)
                         else:
                             uid = message["data"].get('doctor')
                             date = message["data"].get('date')
@@ -77,10 +78,51 @@ class Command(BaseCommand):
                                                             message=f'Patient {name} uploaded new test result for  {test_request_key}', 
                                                             created_at=date,
                                                             patient_id=patient_id,
-                                                            is_read=False)
+                                                            is_read=False,
+                                                            type = 'diagnostic',)
                             break
             except Exception as e:
                 print(f"Error processing message: {e}")
+        
+        def appointments_stream_handler(message):
+            try:
+                print(f"Received appointments message: {message}")
+                if message["event"] == "put" and message["data"] is not None:
+                    if isinstance(message["data"], dict) and message["path"] == '/' :
+                        for appointment_id, appointment_data in message["data"].items():
+                            process_appointment_data(appointment_id, appointment_data)
+                    else:
+                        # Extract appointment_id from the path
+                        appointment_id = message["path"].split('/')[1]
+                        appointment_data = message["data"]
+                        print(appointment_id)
+                        print(appointment_data)
+                        if isinstance(appointment_data, dict):
+                            process_appointment_data(appointment_id, appointment_data)
+                        else:
+                            appointment_data1 = db.child("appointments").child(appointment_id).get().val()
+                            print(appointment_data1)
+                            process_appointment_data(appointment_id, appointment_data1)
+            except Exception as e:
+                print(f"Error processing appointments message: {e}")
+
+        def process_appointment_data(appointment_id, appointment_data):
+            try:
+                print(f"Processing appointment data: {appointment_data}")
+                if appointment_data.get('status') == 'Confirmed':
+                    doctor_uid = appointment_data.get('doctorUID')
+                    patient_name = appointment_data.get('patientName')
+                    appointment_date = appointment_data.get('appointmentDate')
+                    appointment_time = appointment_data.get('appointmentTime')
+                    Notification.objects.create(
+                        firebase_id=doctor_uid,
+                        message=f'Appointment with {patient_name} on {appointment_date} at {appointment_time} has been confirmed.',
+                        created_at=appointment_date,
+                        is_read=False,
+                        type = 'appointment'
+                    )
+            except Exception as e:
+                print(f"Error processing appointment data: {e}")
                 
          # Define a function to stop the listener
         def stop_listener(signal, frame):
@@ -93,6 +135,7 @@ class Command(BaseCommand):
 
         # Set up a listener on the Firebase Realtime Database
         my_stream = db.child("submittedTest").stream(stream_handler)
+        appointments_stream = db.child("appointments").stream(appointments_stream_handler)
 
         # Keep the script running until stop_event is set
         try:
@@ -101,4 +144,5 @@ class Command(BaseCommand):
                 time.sleep(2)
         finally:
             my_stream.close()
+            appointments_stream.close()
             print("Firebase listener stopped.")
