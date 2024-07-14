@@ -2011,9 +2011,9 @@ def save_prescriptions(request):
         'clinics': doctor_clinics
     }
 
-
     # Construct the path to the appointment data in Firebase
     db_path = f"/prescriptionsorders/{patient_uid}/{prescription_id}"
+    db_path2 = f"/patientsorders/{patient_uid}/"
 
     db.child(db_path).update( {
         'patient_id': patient_uid,
@@ -2028,6 +2028,40 @@ def save_prescriptions(request):
         },
         'status': "Ongoing",
     })
+
+
+    medicines = data['medicines']
+    for i in range(len(medicines['name'])):
+        # endDate = todaydate + timedelta(days= medicines['days'][i])
+        # endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+        medicine_data = {
+            'dateCreated': todaydate,
+            # 'endDate': endDate_str,
+            # 'endDate': (datetime.datetime.strptime(todaydate, '%Y-%m-%d') + datetime.timedelta(days=int(medicines['days'][i]))).strftime('%Y-%m-%d'),
+            'dosage': medicines['dosage'][i],
+            'medicine_name': medicines['name'][i],
+            'route': medicines['route'][i],
+            'times': medicines['times'][i],
+            'counter': int(medicines['days'][i]),
+            'total': int(medicines['days'][i]),
+            'status': "Ongoing",
+        }
+
+        # Interpret times and split accordingly
+        times = medicines['times'][i].split('-')
+        time_periods = ['Morning', 'Lunch', 'Evening']
+
+        for j, time in enumerate(times):
+            if time == '1':
+                specific_time_data = medicine_data.copy()
+                specific_time_data['times'] = time_periods[j]
+                
+                # Generate a unique ID for each entry in patientsorders
+                per_id = str(uuid.uuid1())
+                db.child(f"{db_path2}/{per_id}").update(specific_time_data)
+
+                print('specific_time_data', specific_time_data)
+
 
      # Handle file upload
     signature = request.FILES.get('signature')
@@ -2057,7 +2091,7 @@ def save_prescriptions(request):
         
         # Success message
         #return HttpResponse("Prescription created and uploaded successfully.")
-        return redirect(reverse('view_treatment_plan_all') + f'?chosenPatient={patient_uid}')
+        return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
     except Exception as e:
         return HttpResponse(f"An error occurred: {e}")
     finally:
