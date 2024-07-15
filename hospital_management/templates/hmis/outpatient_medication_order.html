@@ -344,19 +344,19 @@
                                     <div class="medicine-row">
                                         <label for="medicine-name"><strong>Medicine Name:</strong></label>
                                         {% if disease == 'Chronic Bronchitis' %}
-                                            <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                                            <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions" required>
                                                 <datalist id="medicine_name_suggestions">
                                                     {% for medicine in medicines_list %}
                                                         <option value="{{ medicine }}">{{ medicine }}</option>
                                                     {% endfor %}
                                                 </datalist>
                                             <label for="dosage"><strong>Dosage:</strong></label>
-                                            <select name="dosage" id="dosage_input">
+                                            <select name="dosage" id="dosage_input" required>
                                                 <option value="" selected disabled>Select Dosage</option>
                                             </select> 
                                         {% else %}
-                                            <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" >
-                                            <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage"> 
+                                            <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" required>
+                                            <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage" required> 
                                         {% endif %}
                                         <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
                                     </div>
@@ -364,17 +364,17 @@
                                         Sig.: take through
                                         <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                                         every
-                                        <select id="times" name="times">
-                                            <option value="1">1-0-0</option>
-                                            <option value="2">0-1-0</option>
-                                            <option value="3">0-0-1</option>
-                                            <option value="4">1-1-0</option>
-                                            <option value="5">1-0-1</option>
-                                            <option value="6">0-1-1</option>
-                                            <option value="7">1-1-1</option>
+                                        <select id="times" name="times" required>
+                                            <option value="1-0-0">1-0-0</option>
+                                            <option value="0-1-0">0-1-0</option>
+                                            <option value="0-0-1">0-0-1</option>
+                                            <option value="1-1-0">1-1-0</option>
+                                            <option value="1-0-1">1-0-1</option>
+                                            <option value="0-1-1">0-1-1</option>
+                                            <option value="1-1-1">1-1-1</option>
                                         </select>
                                         times for 
-                                        <input type="text" name="days" size="2">
+                                        <input type="text" name="days" size="2" required>
                                         days
                                         <hr>
                                     </p>
@@ -386,7 +386,7 @@
                         <div class="prescription-footer">
                             {% for doctor_id, doctor_data in doctors.items %}
                                 {% if doctor_data.uid == uid %}
-                                    <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
+                                    <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature' required></p>
                                     <p style="font-size: 16;">License No.: {{ doctor_data.license }}</p>
                                     <p style="font-size: 16;">PTR No.: {{ doctor_data.ptr}}</p>
                                 {% endif %}
@@ -411,59 +411,7 @@
     <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
     <script src="{% static 'assets/js/todolist.js' %}"></script>
 
-    <script>
-        function addMedicineRow() {
-            const medicineContainer = document.getElementById('medicine-container');
-            const medicineRow = document.createElement('div');
-            medicineRow.className = 'medicine';
-
-            medicineRow.innerHTML = `
-                <div class="medicine-row">
-                    <label for="medicine-name"><strong>Medicine Name:</strong></label>
-                    {% if disease == 'Chronic Bronchitis' %}
-                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
-                            <datalist id="medicine_name_suggestions">
-                                {% for medicine in medicines_list %}
-                                    <option value="{{ medicine }}">{{ medicine }}</option>
-                                {% endfor %}
-                            </datalist>
-                        <label for="dosage"><strong>Dosage:</strong></label>
-                        <select name="dosage" id="dosage_input">
-                            <option value="" selected disabled>Select Dosage</option>
-                        </select> 
-                    {% else %}
-                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" >
-                        <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage"> 
-                    {% endif %}
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
-                </div>
-                <p>
-                    Sig.: take through
-                    <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
-                    every
-                    <select id="times" name="times">
-                        <option value="1">1-0-0</option>
-                        <option value="2">0-1-0</option>
-                        <option value="3">0-0-1</option>
-                        <option value="4">1-1-0</option>
-                        <option value="5">1-0-1</option>
-                        <option value="6">0-1-1</option>
-                        <option value="7">1-1-1</option>
-                    </select>
-                    times for
-                    <input type="text" name="days" size="2">
-                    days
-                    <hr>
-                </p>
-            `;
-
-            medicineContainer.appendChild(medicineRow);
-        }
-
-        function removeMedicineRow(button) {
-            button.closest('.medicine').remove();
-        }
-    </script>
+    
 
     <script>
         // Retrieve pharmacy_lists from the template
@@ -528,6 +476,60 @@
             });
             
         });
+    </script>
+
+    <script>
+        function addMedicineRow() {
+            const medicineContainer = document.getElementById('medicine-container');
+            const medicineRow = document.createElement('div');
+            medicineRow.className = 'medicine';
+
+            medicineRow.innerHTML = `
+                <div class="medicine-row">
+                    <label for="medicine-name"><strong>Medicine Name:</strong></label>
+                    {% if disease == 'Chronic Bronchitis' %}
+                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" list="medicine_name_suggestions">
+                            <datalist id="medicine_name_suggestions">
+                                {% for medicine in medicines_list %}
+                                    <option value="{{ medicine }}">{{ medicine }}</option>
+                                {% endfor %}
+                            </datalist>
+                        <label for="dosage"><strong>Dosage:</strong></label>
+                        <select name="dosage" id="dosage_input">
+                            <option value="" selected disabled>Select Dosage</option>
+                        </select> 
+                    {% else %}
+                        <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" >
+                        <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage"> 
+                    {% endif %}
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
+                </div>
+                <p>
+                    Sig.: take through
+                    <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
+                    every
+                    <select id="times" name="times">
+                        <option value="1-0-0">1-0-0</option>
+                        <option value="0-1-0">0-1-0</option>
+                        <option value="0-0-1">0-0-1</option>
+                        <option value="1-1-0">1-1-0</option>
+                        <option value="1-0-1">1-0-1</option>
+                        <option value="0-1-1">0-1-1</option>
+                        <option value="1-1-1">1-1-1</option>
+                    </select>
+                    times for
+                    <input type="text" name="days" size="2">
+                    days
+                    <hr>
+                </p>
+            `;
+
+            medicineContainer.appendChild(medicineRow);
+        }
+
+        function removeMedicineRow(button) {
+            button.closest('.medicine').remove();
+        }
     </script>
 
 </body>

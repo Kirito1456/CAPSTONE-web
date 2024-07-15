@@ -2081,41 +2081,49 @@ def save_prescriptions(request):
 
 
     medicines = data['medicines']
+    print(medicines)
     for i in range(len(medicines['name'])):
-        # endDate = todaydate + timedelta(days= medicines['days'][i])
-        # endDate_str = endDate.strftime("%Y-%m-%d %H:%M:%S")
+        endDate = datetime.strptime(todaydate, '%Y-%m-%d') + timedelta(days=int(medicines['days'][i]))
+        endDate_str = endDate.strftime('%Y-%m-%d')
         medicine_data = {
             'dateCreated': todaydate,
-            # 'endDate': endDate_str,
-            # 'endDate': (datetime.datetime.strptime(todaydate, '%Y-%m-%d') + datetime.timedelta(days=int(medicines['days'][i]))).strftime('%Y-%m-%d'),
+            'endDate': endDate_str,
             'dosage': medicines['dosage'][i],
             'medicine_name': medicines['name'][i],
             'route': medicines['route'][i],
             'times': medicines['times'][i],
             'counter': int(medicines['days'][i]),
+            'days': int(medicines['days'][i]),
             'total': int(medicines['days'][i]),
             'status': "Ongoing",
         }
 
+        print(medicine_data)
+
         # Interpret times and split accordingly
         times = medicines['times'][i].split('-')
-        time_periods = ['Morning', 'Lunch', 'Evening']
+        time_periods = ['Breakfast', 'Lunch', 'Dinner']
+
+        print(medicine_data)
 
         for j, time in enumerate(times):
             if time == '1':
                 specific_time_data = medicine_data.copy()
                 specific_time_data['times'] = time_periods[j]
+
+                #print('specific_time_data', specific_time_data)
                 
                 # Generate a unique ID for each entry in patientsorders
                 per_id = str(uuid.uuid1())
-                db.child(f"{db_path2}/{per_id}").update(specific_time_data)
+                db.child(db_path2).child(todaydate).child(per_id).update(specific_time_data)
 
-                print('specific_time_data', specific_time_data)
+                #print('specific_time_dataaaaa', specific_time_data)
+
 
 
      # Handle file upload
     signature = request.FILES.get('signature')
-    print(signature)
+    #print(signature)
     signature_path = None
     if signature:
         signature_path = 'static/signature.png'
