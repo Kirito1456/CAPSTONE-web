@@ -189,15 +189,15 @@
                     <div class="tab-pane fade show active" id="family" role="tabpanel" aria-labelledby="family">
                       <div class="statistics-details d-flex align-items-center">
                         <!-- Relative Risk: Estimate the likelihood of developing certain diseases compared to the general population based on family history. -->
-                        <div style="margin-right: 40px;">
+                        {% comment %} <div style="margin-right: 40px;">
                           <p class="statistics-title">Relative Risk</p>
                           <h3 class="rate-percentage">32.53%</h3>
                           <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>
-                        </div>
+                        </div> {% endcomment %}
                         <div style="margin-right: 40px;">
                           <p class="statistics-title">Median Age Of Onset</p>
                           <h3 class="rate-percentage">{{median_age_of_onset}}</h3>
-                          <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>
+                          {% comment %} <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p> {% endcomment %}
                         </div>
                       </div>
                       <div class="row">
@@ -310,7 +310,7 @@
 
                     <!-- Consultation Notes HIstory -->
                     <div class="tab-pane fade show" id="consultation" role="tabpanel" aria-labelledby="consultation">
-                      <div class="col-lg-12 grid-margin stretch-card">
+                      {% comment %} <div class="col-lg-12 grid-margin stretch-card">
                         <div class="card card-rounded">
                           <div class="card-body">
                             <div class="d-flex align-items-center justify-content-between mb-3">
@@ -364,7 +364,16 @@
                             </div>
                           </div>
                         </div>
+                      </div> {% endcomment %}
+
+                      <div class="statistics-details d-flex align-items-center">
+
+                      <div style="margin-right: 40px;">
+                        <p class="statistics-title">Most Reoccuring Symptom</p>
+                        <h3 class="rate-percentage">0</h3>
+                        <p class="text-success d-flex"><span>For the last 10 consultations</span></p>
                       </div>
+                    </div>
 
                       <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">

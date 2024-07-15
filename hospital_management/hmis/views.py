@@ -863,9 +863,9 @@ def DoctorDashboard(request):
                     for inside_id, inside_data in date_data.items():
                         if patients_id == patientsorders_id:
                             medicine_name = inside_data['medicine_name']
-                            dispensed = inside_data['total']
+                            dispensed = inside_data['days']
                             remaining = (inside_data['total']) 
-                            prescribed = inside_data['total']
+                            prescribed = inside_data['days']
                             days = inside_data['days'] 
 
                             adherence_percentage = ((dispensed - remaining) / ((prescribed / days) * days)) * 100
