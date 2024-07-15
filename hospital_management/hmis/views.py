@@ -12,8 +12,6 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import logout as auth_logout
 from django.core.mail import send_mail
-import json
-import uuid
 import random
 from operator import itemgetter
 
@@ -23,23 +21,16 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.files.storage import FileSystemStorage
 
-from PIL import Image 
-from pytesseract import pytesseract 
-
 import uuid
 import json
-# from hmis.OCR import recognise 
 
 from django.http import HttpResponse, JsonResponse
 from PIL import Image
-import pytesseract
 import base64
 from firebase_admin import db
 
 from io import BytesIO
-from django.http import HttpResponse
 from django.template.loader import get_template
-from xhtml2pdf import pisa
 
 # Use the firebase_database object directly
 db = firebase_database
@@ -47,12 +38,8 @@ db = firebase_database
 # views.py
 import firebase_admin
 from firebase_admin import storage
-from django.shortcuts import render, redirect
 from .forms import ImageUploadForm
 
-from django.shortcuts import render
-from django.http import JsonResponse
-from paddleocr import PaddleOCR
 
 import requests
 from reportlab.lib.pagesizes import letter
@@ -63,7 +50,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Tabl
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 import os
-from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -177,28 +163,8 @@ def dashboard(request):
         return render(request, 'hmis/dashboard.html', {})
 
 
-def clinics(request):
-    # Fetch doctors and nurses data from Firebase
-    clinics = db.child("clinics").get().val()
-
-    # Combine doctors and nurses data into one dictionary
-    accounts = {}
-    if clinics:
-        accounts.update(clinics)
-
-    # Pass the combined data to the template
-    return render(request, 'hmis/clinics.html', {'accounts': accounts})
-
-
 
 def register(request):
-    
-    # clinics = db.child("clinics").get().val()
-
-    # # Combine doctors and nurses data into one dictionary
-    # accounts = {}
-    # if clinics:
-    #     accounts.update(clinics)
     
     return render(request, 'hmis/register.html')
 
@@ -315,42 +281,35 @@ def logout(request):
 def profile(request):
     # Fetch doctors and nurses data from Firebase
     doctors = db.child("doctors").get().val()
-    nurses = db.child("nurses").get().val()
+    clinics = db.child("clinics").get().val()
     uid = request.session['uid'] 
-
-            # Combine doctors and nurses data into one dictionary
-    accounts = {}
-    if doctors:
-        accounts.update(doctors)
-    if nurses:
-        accounts.update(nurses)
     
-    return render(request, 'hmis/Profile.html', {'uid': uid, 'accounts': accounts})
+    return render(request, 'hmis/Profile.html', {'uid': uid, 'accounts': doctors, 'clinics': clinics})
 
 def update_profile (request):
     if request.method == 'POST':
         try:
             uid = request.POST.get('update')
-            onumber = request.POST.get('cnumber')
-            department = request.POST.get('department')
-            clinicname = request.POST.get('clinicname')
-            clinicaddress = request.POST.get('clinicaddress')
+            new_clinics = request.POST.getlist('newclinic')
 
             # Construct the path to the appointment data in Firebase
             db_path = f"/doctors/{uid}"
 
+            doctor_data = db.child(db_path).get().val()
+
+            existing_clinics = doctor_data.get('clinic', [])
+
+            updated_clinics = list(set(existing_clinics + new_clinics))
+
             # Update appointment data in Firebase
             db.child(db_path).update({
-                'cnumber': onumber,
-                'department': department,
-                'clinicname': clinicname,
-                'clinicaddress': clinicaddress
+                'clinic': updated_clinics
             }) 
 
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
 
-        return redirect('Profile')  # Redirect to the appointments list page
+        return redirect('Profile')  # Redirect to the profile page
 
     # Handle GET request or invalid form submission
     return redirect('Profile')
@@ -1529,9 +1488,6 @@ def patient_personal_information_inpatient(request):
     patientsdata = db.child("patientdata").get().val()
     vitalsigns = db.child("vitalsigns").get().val()
     consulnotes = db.child("consultationNotes").get().val()
-    # today = datetime.now()
-    # tomorrow = today + timedelta(days=1)
-    # date = tomorrow.strftime('%Y-%m-%d')
     date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
@@ -1691,11 +1647,6 @@ def save_review_of_systems(request):
 
     # Save into Firebase Database
     appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
-
-    # if not isinstance(skin_conditions, list):
-    #     skin_conditions = [skin_conditions]
-    #  Update appointment data in Firebase
-    
 
     db.child(appointment_path).update({
         'patientID': id,
@@ -2148,7 +2099,6 @@ def save_prescriptions(request):
         })
         
         # Success message
-        #return HttpResponse("Prescription created and uploaded successfully.")
         return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
     except Exception as e:
         return HttpResponse(f"An error occurred: {e}")
@@ -2337,7 +2287,6 @@ def upload_pdf_to_firebase(file_path, storage_path):
 def requestTest(request):
     patient_uid = request.GET.get('chosenPatient')
     patients = db.child("patients").get().val()
-    #patientdata = db.child("patientdata").child(patient_uid).get().val()
     todaydate = datetime.now().strftime("%Y-%m-%d")
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 

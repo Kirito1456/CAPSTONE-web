@@ -10,32 +10,7 @@
 
 {% block content %}
 <div id = "whole-screen">
-    <div id = "side-menu" style="background-color: #334a7c;">
-        <div id = "all-info">
-            <div id = "user-info"> 
-                <div id = "image">
-                    <img src="\static\doctorjohn.jpg" id = "display-photo">
-                </div>
-                <div id = "information">
-                    {% for account_id, account_data in accounts.items %}
-                        {% if account_data.uid == uid %}
-                            <div id="name"> {{ account_data.fname }} {{ account_data.lname }}</div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            <div id = "menu"> 
-                <div id = "a1"><a href="">Dashboard</a></div>
-                <div id = "a3"><a href="AppointmentUpcoming.html">Appointments</a></div>
-                <div id = "a1"><a href="">Patients</a></div>
-                <div id = "a4"><a href="">Medications</a></div>
-                <div id = "a5"><a href="Message.html">Message</a></div>
-                <div id = "a6" style="font-weight: bold;"><a href="{% url 'Profile' %}">Profile</a></div>
-                <div id = "a7"><a href="">Settings</a></div>
-                <div id="a7"><a href="{% url 'logout' %}">Logout</a></div>
-            </div>
-        </div>
-    </div>
+    
 
     <div id="admin-screen">
         {% for account_id, account_data in accounts.items %}
@@ -60,32 +35,51 @@
                 <input type="radio" name="sex" value="Male" {% if account_data.sex == 'Male' %} checked {% endif %} disabled><label class="signup_lbl2">Male &ensp;</label>
                 <input type="radio" name="sex" value="Female" {% if account_data.sex == 'Female' %} checked {% endif %} disabled><label class="signup_lbl2">Female</label>
             </div>
-
             <div class="form-group">
-                <label class="signup_lbl">Office Number </label>
-                <input class="signup_txtboxname" type="number" name="cnumber" placeholder="Enter Office Number" value={{ account_data.cnumber }} required>
+                <label class="signup_lbl">Specialization </label>
+                <input class="signup_txtboxname" type="text" name="specialization" placeholder="Enter Specialization" value="{{ account_data.specialization }}" disabled >
+            </div>
+            <div class="form-group">
+                <label class="signup_lbl">License No. </label>
+                <input class="signup_txtboxname" type="text" name="license" placeholder="Enter License No." value="{{ account_data.license }}" disabled >
+            </div>
+            <div class="form-group">
+                <label class="signup_lbl">PTR No. </label>
+                <input class="signup_txtboxname" type="text" name="ptr" placeholder="Enter PTR No." value="{{ account_data.ptr }}" disabled >
             </div>
 
             <div class="form-group">
-                <label class="signup_lbl">Clinic Name </label>
-                <input class="signup_txtboxname" name="clinicname" placeholder="Enter Clinic Name" value={{ account_data.clinicname }} disabled>
+                <label class="signup_lbl">Affiliated Clinics</label>
+                {% for clinic_id in account_data.clinic %}
+                    {% for id, clinic_data in clinics.items %}
+                        {% if clinic_id == id %}
+                            <p>{{ clinic_data.name }} </p>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
             </div>
-
 
             <div class="form-group">
-                <label class="signup_lbl">Clinic Address </label>
-                <input class="signup_txtboxname" name="clinicaddress" placeholder="Enter Clinic Address" value={{ account_data.clinicaddress }} disabled>
+                <label class="signup_lbl">Join Clinics </label>
+                {% for clinic_id, clinic_data in clinics.items %}
+                    {% if clinic_id not in account_data.clinic %}
+                        <input type="checkbox" name="newclinic" value="{{ clinic_id }}">
+                        <label class="signup_lbl2">{{ clinic_data.name }} &ensp;</label>
+                    {% endif %}
+                {% endfor %}
             </div>
+
+            
 
             <button id="signup_btn" type="submit" name='update' value={{ uid }}>Update Account</button>
 
-            {% if messages %}
+            {% comment %} {% if messages %}
             <ul>
                 {% for message in messages %}
                     <li>{{ message }}</li>
                 {% endfor %}
             </ul>
-            {% endif %}
+            {% endif %} {% endcomment %}
         </form>
         
         {% endif %}
