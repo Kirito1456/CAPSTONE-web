@@ -3,6 +3,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
     <title>{% block title %}Patient Data{% endblock %}</title>
     <!-- plugins:css -->
      
@@ -132,7 +133,7 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+                <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
                 <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
               </div>
             </li>

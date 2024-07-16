@@ -29,7 +29,7 @@ urlpatterns = [
     path('delete_appointment/', views.delete_appointment, name='delete_appointment'),
     path('update_appointment/', views.update_appointment, name='update_appointment'),
     path('followup_appointment/', views.followup_appointment, name='followup_appointment'),
-    path('clinics/', views.clinics, name='clinics'),
+    # path('clinics/', views.clinics, name='clinics'),
 
     # Patient Data Module
     path('patient_data_doctor_view/', views.patient_data_doctor_view, name='patient_data_doctor_view'),

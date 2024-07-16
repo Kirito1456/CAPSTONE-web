@@ -103,7 +103,7 @@
                     {% endif %}
                   {% endfor %}
                 </div>
-                <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+                <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
                 <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
               </div>
             </li>
@@ -370,7 +370,7 @@
 
                       <div style="margin-right: 40px;">
                         <p class="statistics-title">Most Reoccuring Symptom</p>
-                        <h3 class="rate-percentage">0</h3>
+                        <h3 class="rate-percentage">{{top_3_symptoms}}</h3>
                         <p class="text-success d-flex"><span>For the last 10 consultations</span></p>
                       </div>
                     </div>

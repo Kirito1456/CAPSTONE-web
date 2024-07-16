@@ -1192,9 +1192,18 @@ def patient_personal_information_inpatient(request):
     for patientsymptoms_id, patientsymptoms_data in patientsymptoms.items():
         if patientsymptoms_id == chosenPatient:
             chosenPatientSymptoms[patientsymptoms_id] = patientsymptoms_data
-    print(chosenPatient)
-    print(patientsymptoms_id)
-    print(chosenPatientSymptoms)
+
+    chosenPatientSymptoms1 = []
+
+    if chosenPatient in patientsymptoms:
+        patient_data1 = patientsymptoms[chosenPatient]
+        for symptom, details in patient_data1.items():
+            formatted_symptom = symptom.replace('_', ' ')
+            chosenPatientSymptoms1.append(formatted_symptom)
+
+
+    print(chosenPatientSymptoms1)
+    print(chosenPatientSymptoms1)
 
 
     #Get Vital Signs Data of Chosen Patient
@@ -1593,7 +1602,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'doctors_data_list': doctors_data_list,
                                                                                 'appointmentIDurl': endAppointment,
                                                                                 'clinic_doctor_list': clinic_doctor_list,
-                                                                                'chosenPatient': chosenPatient,})
+                                                                                'chosenPatient': chosenPatient,
+                                                                                'chosenPatientSymptoms1': chosenPatientSymptoms1})
 
 def save_chiefComplaint(request):
         
@@ -1828,6 +1838,23 @@ def patient_medical_history(request):
             }
             db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').update(data)
 
+    symptom_counter = defaultdict(int)
+
+    for patient_id, dates in consulNotes.items():
+        for date, data in dates.items():
+            if 'complains' in data:
+                for symptom, description in data['complains'].items():
+                    symptom_counter[symptom] += 1
+
+    sorted_symptoms = sorted(symptom_counter.items(), key=lambda item: item[1], reverse=True)
+
+    # Step 4: Get the top 3 most recurring symptoms and their total numbers
+    top_3_symptoms = sorted_symptoms[:3]
+
+    # Display the result
+    for symptom, count in top_3_symptoms:
+        print(f'Symptom: {symptom}, Count: {count}')
+
     return render(request, 'hmis/patient_medical_history.html', {'doctors': doctors,
                                                                  'uid': uid,
                                                                  'patientMedical': patientMedical,
@@ -1838,7 +1865,8 @@ def patient_medical_history(request):
                                                                  'testrequest': testrequest,
                                                                  'notifications': notifications,
                                                                  'chosenPatientData': chosenPatientData,
-                                                                 'median_age_of_onset': median_age_of_onset})
+                                                                 'median_age_of_onset': median_age_of_onset, 
+                                                                 'top_3_symptoms': top_3_symptoms})
 
 from datetime import datetime
 
@@ -2030,48 +2058,6 @@ def save_prescriptions(request):
         'status': "Ongoing",
     })
 
-
-    medicines = data['medicines']
-    print(medicines)
-    for i in range(len(medicines['name'])):
-        endDate = datetime.strptime(todaydate, '%Y-%m-%d') + timedelta(days=int(medicines['days'][i]))
-        endDate_str = endDate.strftime('%Y-%m-%d')
-        medicine_data = {
-            'dateCreated': todaydate,
-            'endDate': endDate_str,
-            'dosage': medicines['dosage'][i],
-            'medicine_name': medicines['name'][i],
-            'route': medicines['route'][i],
-            'times': medicines['times'][i],
-            'counter': int(medicines['days'][i]),
-            'days': int(medicines['days'][i]),
-            'total': int(medicines['days'][i]),
-            'status': "Ongoing",
-        }
-
-        print(medicine_data)
-
-        # Interpret times and split accordingly
-        times = medicines['times'][i].split('-')
-        time_periods = ['Breakfast', 'Lunch', 'Dinner']
-
-        print(medicine_data)
-
-        for j, time in enumerate(times):
-            if time == '1':
-                specific_time_data = medicine_data.copy()
-                specific_time_data['times'] = time_periods[j]
-
-                #print('specific_time_data', specific_time_data)
-                
-                # Generate a unique ID for each entry in patientsorders
-                per_id = str(uuid.uuid1())
-                db.child(db_path2).child(todaydate).child(per_id).update(specific_time_data)
-
-                #print('specific_time_dataaaaa', specific_time_data)
-
-
-
      # Handle file upload
     signature = request.FILES.get('signature')
     #print(signature)
@@ -2097,7 +2083,41 @@ def save_prescriptions(request):
         db.child(db_path).update( {
             'prescriptionURL': pdf_url,
         })
-        
+
+        medicines = data['medicines']
+        for i in range(len(medicines['name'])):
+            endDate = datetime.strptime(todaydate, '%Y-%m-%d') + timedelta(days=int(medicines['days'][i]))
+            endDate_str = endDate.strftime('%Y-%m-%d')
+            medicine_data = {
+                'dateCreated': todaydate,
+                'endDate': endDate_str,
+                'dosage': medicines['dosage'][i],
+                'medicine_name': medicines['name'][i],
+                'route': medicines['route'][i],
+                'times': medicines['times'][i],
+                'counter': int(medicines['days'][i]),
+                'days': int(medicines['days'][i]),
+                'total': int(medicines['days'][i]),
+                'status': "Ongoing",
+                'presURL': pdf_url,
+            }
+
+            print(medicine_data)
+
+            # Interpret times and split accordingly
+            times = medicines['times'][i].split('-')
+            time_periods = ['Breakfast', 'Lunch', 'Dinner']
+
+            print(medicine_data)
+
+            for j, time in enumerate(times):
+                if time == '1':
+                    specific_time_data = medicine_data.copy()
+                    specific_time_data['times'] = time_periods[j]
+                    # Generate a unique ID for each entry in patientsorders
+                    per_id = str(uuid.uuid1())
+                    db.child(db_path2).child(todaydate).child(per_id).update(specific_time_data)
+            
         # Success message
         return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
     except Exception as e:
