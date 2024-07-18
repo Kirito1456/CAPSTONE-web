@@ -1967,6 +1967,8 @@ def outpatient_medication_order(request):
     patientData = {}
     for patients_id, patients_data in patients.items():
         if patient_uid == patients_data["uid"]:
+            patient_age = calculate_age(patients_data["bday"])
+            patients_data["age"] = patient_age
             patientData[patients_id] = patients_data
 
 
@@ -1994,11 +1996,15 @@ def save_prescriptions(request):
     patientData = {}
     for patients_id, patients_data in patients.items():
         if patient_uid == patients_data["uid"]:
+            patient_age = calculate_age(patients_data["bday"])
+            patients_data["age"] = patient_age
             patientData[patients_id] = patients_data
+
 
     patientName = patientData[patient_uid].get('fname','N/A') + ' ' + patientData[patient_uid].get('lname','N/A')
     patientGender = patientData[patient_uid].get('gender','N/A')
     patientAddress = patientData[patient_uid].get('address','N/A')
+    patientAge = patientData[patient_uid].get('age','N/A')
     numClinics = 0
     doctor_clinics = []
 
@@ -2021,7 +2027,7 @@ def save_prescriptions(request):
 
     data = {
         'patient_name': patientName,
-        'patient_age': request.POST.get('patient_age', 'N/A'),
+        'patient_age': patientAge,
         'patient_gender': patientGender,
         'patient_address': patientAddress,
         'date': todaydate,
@@ -2232,7 +2238,7 @@ def create_prescription_pdf(data, filename, signature_path=None):
     c.setFont("Helvetica-Bold", 12)
     c.drawString(3.5 * inch + 0.5 * inch, patient_info_y, "Age:")
     c.setFont("Helvetica", 12)
-    c.drawString(3.5 * inch + 1.0 * inch, patient_info_y, data['patient_age'])
+    c.drawString(3.5 * inch + 1.0 * inch, patient_info_y, str(data['patient_age']))
     
     c.setFont("Helvetica-Bold", 12)
     c.drawRightString(width - margin - 1.7 * inch, patient_info_y, "Gender:")
@@ -2316,11 +2322,14 @@ def requestTest(request):
     patientData = {}
     for patients_id, patients_data in patients.items():
         if patient_uid == patients_data["uid"]:
+            patient_age = calculate_age(patients_data["bday"])
+            patients_data["age"] = patient_age
             patientData[patients_id] = patients_data
 
     patientName = patientData[patient_uid].get('fname','N/A') + ' ' + patientData[patient_uid].get('lname','N/A')
     patientGender = patientData[patient_uid].get('gender','N/A')
     patientAddress = patientData[patient_uid].get('address','N/A')
+    patientAge = patientData[patient_uid].get('age','N/A')
     numClinics = 0
     doctor_clinics = []
 
@@ -2344,7 +2353,7 @@ def requestTest(request):
 
         data = {
             'patient_name': patientName,
-            'patient_age': request.POST.get('patient_age', 'N/A'),
+            'patient_age': patientAge,
             'patient_gender': patientGender,
             'patient_address': patientAddress,
             'date': todaydate,
@@ -2477,7 +2486,7 @@ def create_tests_pdf(data, filename, signature_path=None):
     c.setFont("Helvetica-Bold", 12)
     c.drawString(3.5 * inch + 0.5 * inch, patient_info_y, "Age:")
     c.setFont("Helvetica", 12)
-    c.drawString(3.5 * inch + 1.0 * inch, patient_info_y, data['patient_age'])
+    c.drawString(3.5 * inch + 1.0 * inch, patient_info_y, str(data['patient_age']))
     
     c.setFont("Helvetica-Bold", 12)
     c.drawRightString(width - margin - 1.7 * inch, patient_info_y, "Gender:")
