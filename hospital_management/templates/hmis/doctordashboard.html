@@ -312,7 +312,12 @@
                                                 <img class="img-sm rounded-10" src="{% static 'acc.png' %}" alt="profile">
                                                 <div class="wrapper ms-3">
                                                   <p class="ms-1 mb-1 fw-bold"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></p>
-                                                  <small class="text-muted mb-0">{{ appointment_data.appointmentTime }}</small>
+                                                  <small class="text-muted mb-0">{{ appointment_data.appointmentTime }} at </small>
+                                                  {% for clinic_id, clinic_data in clinics.items%}
+                                                    {% if clinic_id == appointment_data.clinicUID%}
+                                                      <small class="text-muted mb-0">{{ clinic_data.name }}</small>
+                                                    {% endif %}
+                                                  {% endfor %}
                                                 </div>
                                               </div>
                                             </div>
