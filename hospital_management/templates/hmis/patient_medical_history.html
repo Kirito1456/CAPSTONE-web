@@ -195,7 +195,7 @@
                           <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>
                         </div> {% endcomment %}
                         <div style="margin-right: 40px;">
-                          <p class="statistics-title">Median Age Of Onset</p>
+                          <p class="statistics-title">Median Age Of Onset for COPD-related</p>
                           <h3 class="rate-percentage">{{median_age_of_onset}}</h3>
                           {% comment %} <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p> {% endcomment %}
                         </div>
@@ -224,7 +224,7 @@
                                               <tr>
                                                 <td>
                                                   <div class="form-group">
-                                                    <input type="text" class="form-control" id="familyMember" placeholder="Family Member" value={{fh_data.family_member}} disabled>
+                                                    <input type="text" class="form-control" id="familyMember" placeholder="Family Member" value="{{fh_data.family_member}}" disabled>
                                                   </div>
                                                 </td>
                                                 <td>
@@ -292,6 +292,7 @@
                                                   {% endif %}
                                                 </td>
                                               </tr>
+                                           
                                             {% endif %}
                                           {% endfor %}
                                         {% endif %}
@@ -310,71 +311,17 @@
 
                     <!-- Consultation Notes HIstory -->
                     <div class="tab-pane fade show" id="consultation" role="tabpanel" aria-labelledby="consultation">
-                      {% comment %} <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                              <h4 class="card-title card-title-dash">Consultation History</h4>
-                            </div>
-                            <ul class="bullet-line-list">
-                              {% for consul_id, consul_data in consulNotes.items %}
-                                {% if consul_id == chosenPatient%}
-                                  {% for c_id, c_data in consul_data.items %}
-                                    <li>
-                                      <div class="d-flex justify-content-between">
-                                        <div>Patient complains of <span class="text-light-green">
-                                          {% if c_data.complains%}
-                                                {% for specific_id, specific_data in c_data.items %}
-                                                  {% for s_id, s_data in specific_data.items %}
-                                                        {% if s_id == 'shortnessOfBreathInput' %}
-                                                            Shortness of Breath
-                                                        {% elif s_id == 'coughInput' %}
-                                                            Cough
-                                                        {% elif s_id == 'phlegmInput' %}
-                                                            Phlegm
-                                                        {% elif s_id == 'wheezingInput' %}
-                                                            Wheezing
-                                                        {% elif s_id == 'coughingBloodInput' %}
-                                                            Coughing Blood
-                                                        {% elif s_id == 'chestPainInput' %}
-                                                            Chest Pain
-                                                        {% elif s_id == 'feverInput' %}
-                                                            Fever
-                                                        {% elif s_id == 'heartMurmurInput' %}
-                                                            Heart Murmur
-                                                        {% endif %},
-                                                  {% endfor %}
-                                                {% endfor %}
-                                              {% endif %} 
-                                        </span> </div>
-                                        <p>{{c_id}}</p>
-                                      </div>
-                                    </li>
-                                  {% endfor %}
-                                {% endif %}
-                              {% endfor %}
-                              
-                            </ul>
-                            <div class="list align-items-center pt-3">
-                              <div class="wrapper w-100">
-                                <p class="mb-0">
-                                  <a href="#" class="fw-bold text-primary">Expand <i class="mdi mdi-arrow-right ms-2"></i></a>
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div> {% endcomment %}
-
+                      
                       <div class="statistics-details d-flex align-items-center">
-
-                      <div style="margin-right: 40px;">
-                        <p class="statistics-title">Most Reoccuring Symptom</p>
-                        <h3 class="rate-percentage">{{top_3_symptoms}}</h3>
-                        <p class="text-success d-flex"><span>For the last 10 consultations</span></p>
-                      </div>
+                        {% for symptom, occurrence_times in top_3_symptoms %}
+                        <div style="margin-right: 40px;">
+                            <p class="statistics-title">Most Reoccurring Symptom #{{ forloop.counter }}</p>
+                            <h3 class="rate-percentage">{{ occurrence_times }}</h3>
+                            <p class="text-success d-flex"><span>{{ symptom }}</span></p>
+                        </div>
+                        {% endfor %}
                     </div>
-
+                    
                       <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
                           <div class="card">
@@ -419,7 +366,9 @@
                                                       </p>
                                                   {% endfor %}
                                                 {% endfor %}
-                                              {% endif %} 
+                                              {% else%}
+                                                <td colspan="3" style="text-align: center;">Patient have not yet consulted with you previously.</td>
+                                              {% endif %}
                                             </td>
                                             <td> {{c_data.diagnosis}} </td>  
                                           </tr>

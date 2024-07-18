@@ -399,33 +399,36 @@ def get_clinic_schedule(uid, upcoming_appointments):
     clinic_data_list = []
     clinics = db.child("clinics").get().val()
 
-    for clinic_id, clinic_data in appointmentschedule_data.items():
-        for id, data in clinics.items():
-            if id == clinic_id:
-                name = data['name']
-        available_days_numbers = []
-        if 'days' in clinic_data:
-            for day_name in clinic_data['days']:
-                available_days_numbers.append(day_name_to_number[day_name.lower()])
+    if appointmentschedule_data:
+        for clinic_id, clinic_data in appointmentschedule_data.items():
+            for id, data in clinics.items():
+                if id == clinic_id:
+                    name = data['name']
+            available_days_numbers = []
+            if 'days' in clinic_data:
+                for day_name in clinic_data['days']:
+                    available_days_numbers.append(day_name_to_number[day_name.lower()])
 
-        next_available_date = get_next_available_date(available_days_numbers)
-        if next_available_date is not None:
-            next_available_date_str = next_available_date.strftime('%Y-%m-%d')
-        else:
-            next_available_date_str = "No available date within the next 7 days"
+            next_available_date = get_next_available_date(available_days_numbers)
+            if next_available_date is not None:
+                next_available_date_str = next_available_date.strftime('%Y-%m-%d')
+            else:
+                next_available_date_str = "No available date within the next 7 days"
 
-        # Fetch booked appointments for the specific date
-        appointments_for_specific_date = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str]
-        booked_time_slots = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date)
+            # Fetch booked appointments for the specific date
+            appointments_for_specific_date = [appointment_data for appointment_data in upcoming_appointments.values() if appointment_data['appointmentDate'] == next_available_date_str]
+            booked_time_slots = set(appointment['appointmentTime'] for appointment in appointments_for_specific_date)
 
-        time_slots = get_available_time_slots(clinic_data, booked_time_slots)
+            time_slots = get_available_time_slots(clinic_data, booked_time_slots)
 
-        clinic_data_list.append({
-            'clinic_id': clinic_id,
-            'name': name,
-            'next_available_date_str': next_available_date_str,
-            'time_slots': time_slots
-        })
+            clinic_data_list.append({
+                'clinic_id': clinic_id,
+                'name': name,
+                'next_available_date_str': next_available_date_str,
+                'time_slots': time_slots
+            })
+    else:
+        clinic_data_list = []
 
     return clinic_data_list
 
@@ -574,34 +577,69 @@ def delete_appointment(request):
 def followup_appointment(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
-    # appointment_id = request.GET.get('appointmentID', '')
-    appointmentschedule = db.child("appointmentschedule").get().val()
+    appID = request.GET.get('appointmentID', '')
+    appointmentschedule = db.child("appointmentschedule").child(uid).get().val()
+    appointments = db.child("appointments").get().val()
+    clinicId = ''
     
     if request.method == 'POST':
         endAppointmentPatientID = request.POST.get('followupCheckbox')
-        endAppointmentAPP = request.POST.get('endAppointment')
-        if endAppointmentPatientID:
-            id=str(uuid.uuid1())
-            endAppointment = request.POST.get('past-appointment-id')
-        
-            new_time = request.POST.get('new_appointment_time1')
-            new_date = request.POST.get('selected_appointment_date1')
-            data = {
-                'appointmentDate': new_date,
-                'appointmentTime': new_time,
-                'status': 'Ongoing',
-                'doctorUID': uid,
-                'appointmentVisitType': "Follow-Up Visit",
-                'patientName': endAppointmentPatientID
-            }
-            db.child("appointments").child(id).set(data)
-
+        endAppointmentAPP = request.POST.get('endingAppointment')
+        for id, data in appointments.items():
+            if id == endAppointmentAPP:
+                clinicId = data.get('clinicUID', '')
+                appointmentTime = data.get('appointmentTime', '')
+                break
         db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
 
+        if endAppointmentPatientID:
+            id = str(uuid.uuid1())
+            new_date = request.POST.get('follow_up_date')
+            reoccuring = request.POST.get('reoccuringCheckbox')
+            interval = request.POST.get('follow_up_interval')
+
+            current_date = datetime.now().date()
+            one_week_from_now = current_date + timedelta(weeks=1)
+            one_week_from_now_str = one_week_from_now.strftime("%Y-%m-%d")
+
+            # Single follow-up appointment
+            if not reoccuring:
+                data = {
+                    'appointmentDate': one_week_from_now_str,
+                    'appointmentTime': appointmentTime,
+                    'status': 'Pending',
+                    'doctorUID': uid,
+                    'appointmentVisitType': "Follow-Up Visit",
+                    'clinicUID': clinicId,
+                    'patientName': chosenPatient
+                }
+                db.child("appointments").child(id).set(data)
+            else:
+                intervals = {
+                    '1_month': 1,
+                    '3_months': 3,
+                    '6_months': 6
+                }
+                interval_months = intervals.get(interval, 3) 
+                date1 = datetime.today()
+                
+                for _ in range(4):  # Add appointments for the next 1 year
+                    date1 += timedelta(days=interval_months * 30)
+                    data = {
+                        'appointmentDate': date1.strftime('%Y-%m-%d'),
+                        'appointmentTime': appointmentTime,
+                        'status': 'Pending',
+                        'doctorUID': uid,
+                        'appointmentVisitType': "Follow-Up Visit",
+                        'clinicUID': clinicId,
+                        'patientName': chosenPatient
+                    }
+                    db.child("appointments").child(str(uuid.uuid1())).set(data)
+        
         return redirect('DoctorDashboard')  # Redirect to the appointments list page
 
-    return render(request, 'hmis/AppointmentUpcoming.html', {'uid': uid,
-                                                            'appointmentschedule': appointmentschedule,})
+    return render(request, 'hmis/AppointmentUpcoming.html', {'uid': uid, 'appointmentschedule': appointmentschedule})
+
         
 def AppointmentPast(request):
 
@@ -766,7 +804,6 @@ def DoctorDashboard(request):
     # Get data from Firebase
     upcomings = db.child("appointments").get().val()
     patients = db.child("patients").get().val()
-    patientdatas = db.child("patientdata").get().val()
     patientsdata = db.child("patientdata").get().val()
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
@@ -774,6 +811,7 @@ def DoctorDashboard(request):
     appointments = db.child("appointments").get().val()
     clinics = db.child("clinics").get().val()
     patientsorders = db.child("patientsorders").get().val()
+    prescriptionsorders = db.child("prescriptionsorders").get().val()
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     # Filter and sort upcoming appointments
@@ -812,45 +850,71 @@ def DoctorDashboard(request):
                 if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
                     chosenPatientData[patientsdata_id] = patientsdata_data
 
+    combined_data = []
+    for patient_id, patient_data in chosenPatients.items():
+        if patient_id in patientsdata:
+            for appointment_id, appointment_data in appointments.items():
+                if appointment_data['doctorUID'] == uid and patient_id == appointment_data['patientName']:
+                    patient_data['disease'] = patientsdata[patient_id].get('disease', 'Unknown Disease')
+                    patient_data['lastVisited'] = patientsdata[patient_id].get('lastVisited', '2024-01-01')
+            combined_data.append(patient_data)
+
+    # Sort combined_data by lastVisited
+    sorted_patients = sorted(combined_data, key=itemgetter('lastVisited'), reverse=True)
     adherence = defaultdict(list)
     if patients:
-        for patients_id, patients_data in patients.items():
-            for patientsorders_id, patientsorders_data in patientsorders.items():
+        for patient_data in sorted_patients:
+            patients_id = patient_data.get('uid')
+            if patients_id in patientsorders:
+                latest_date_pres = max(patientsorders[patients_id].keys())
                 adherence_percentages = {}
+                date_data = patientsorders[patients_id][latest_date_pres]
                 
-                for date_id, date_data in patientsorders_data.items():
-                    for inside_id, inside_data in date_data.items():
-                        if patients_id == patientsorders_id:
-                            medicine_name = inside_data['medicine_name']
-                            dispensed = inside_data['days']
-                            remaining = (inside_data['total']) 
-                            prescribed = inside_data['days']
-                            days = inside_data['days'] 
+                for inside_id, inside_data in date_data.items():
+                    medicine_name = inside_data['medicine_name']
+                    dispensed = inside_data['days']
+                    remaining = inside_data['total']
+                    prescribed = inside_data['days']
+                    days = inside_data['days']
+                    dateCreated = inside_data['dateCreated']
+                    
+                    adherence_percentage = ((dispensed - remaining) / ((prescribed / days) * days)) * 100
+                    adherence_percentages.setdefault(medicine_name, []).append(adherence_percentage)
 
-                            adherence_percentage = ((dispensed - remaining) / ((prescribed / days) * days)) * 100
-                            adherence_percentages.setdefault(medicine_name, []).append(adherence_percentage)
-
-                        
-                
                 # Calculate average adherence percentage for each medicine_name
                 for medicine_name, percentages in adherence_percentages.items():
                     average_adherence = sum(percentages) / len(percentages)
-                    adherence[patientsorders_id].append({
-                        'patientsorders_id': patientsorders_id,
+                    adherence[patients_id].append({
+                        'patientsorders_id': patients_id,
                         'medicine_name': medicine_name,
-                        'average_adherence_percentage': average_adherence
+                        'average_adherence_percentage': average_adherence,
+                        'dateCreated': dateCreated
                     })
 
-                total_average_adherence = {}
+        total_average_adherence = {}
 
-                for patientsorders_id, adherence_data in adherence.items():
-                    total_average = sum(entry['average_adherence_percentage'] for entry in adherence_data) / len(adherence_data)
-                    
-                    total_average_rounded = round(total_average, 2)
-                    
-                    total_average_adherence[patientsorders_id] = {
-                        'total_average_adherence': total_average_rounded
-                    }
+        for patientsorders_id, adherence_data in adherence.items():
+            total_average = sum(entry['average_adherence_percentage'] for entry in adherence_data) / len(adherence_data)
+            total_average_rounded = round(total_average, 2)
+            total_average_adherence[patientsorders_id] = {
+                'total_average_adherence': total_average_rounded,
+        }
+            
+        latest_date_created = None
+
+        for patientsorders_id, adherence_data in adherence.items():
+            for entry in adherence_data:
+                if latest_date_created is None or entry['dateCreated'] > latest_date_created:
+                    latest_date_created = entry['dateCreated']
+
+    # Dictionary to hold latest prescription dates for each patient
+    latest_prescriptions = {}
+
+    if prescriptionsorders:
+        for patient_id, prescriptions in prescriptionsorders.items():
+            # Find the latest prescription based on dateCreated
+            latest_prescription = max(prescriptions.items(), key=lambda item: item[1]['dateCreated'])[1]
+            latest_prescriptions[patient_id] = latest_prescription['dateCreated']
 
     return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors,
@@ -859,7 +923,10 @@ def DoctorDashboard(request):
                                                              'clinics': clinics,
                                                              'patientsorders': patientsorders,
                                                              'total_average_adherence': total_average_adherence,
-                                                             'notifications': notifications}) 
+                                                             'latest_date_created': latest_date_created,
+                                                             'notifications': notifications,
+                                                             'sorted_patients': sorted_patients,
+                                                             'latest_prescriptions': latest_prescriptions,}) 
 
 def patient_data_doctor_view(request):
     # Fetch patients from Firebase
@@ -1504,6 +1571,48 @@ def patient_personal_information_inpatient(request):
     chosenPatient = request.GET.get('chosenPatient', '')
 
     appointmentschedule = db.child("appointmentschedule").get().val()
+    shortnessOfBreathInput = request.POST.get('shortnessOfBreathInput')
+    coughInput = request.POST.get('coughInput')
+    phlegmInput = request.POST.get('phlegmInput')
+    wheezingInput = request.POST.get('wheezingInput')
+    coughingBloodInput = request.POST.get('coughingBloodInput')
+    chestPainInput = request.POST.get('chestPainInput')
+    feverInput = request.POST.get('feverInput')
+    heartMurmurInput = request.POST.get('heartMurmurInput')
+    othersInput = request.POST.get('othersInput')
+
+    today_date = datetime.now().strftime('%Y-%m-%d')
+    todays_complaints = {}
+    showOthers = {}
+    today_data = []
+    dates={}
+
+    # for consultation_id, data in consulnotes.items():
+    #     if consultation_id == chosenPatient:
+    #         for id, dates in data.items():
+    #             if id == today_date:
+    #                 if 'complains' in dates:  
+    #                     for key, value in dates['complains'].items():  
+    #                         print('complains id are ', key)
+    #                         print('complains value are ', value)
+    #                 else:
+    #                     print("No 'complains' found for this date.")
+
+    for consultation_id, data in consulnotes.items():
+        if consultation_id == chosenPatient:
+            for id, dates_in_data in data.items():
+                if id == today_date:
+                    dates = dates_in_data  # Assign dates if the condition is met
+                    if 'complains' in dates_in_data:  
+                        for key, value in dates_in_data['complains'].items():  
+                            dates = dates_in_data['complains']
+                            print('complains id are ', key)
+                            print('complains value are ', value)
+                    else:
+                        print("No 'complains' found for this date.")
+                    break  # Exit the loop if the date is found
+            if id == today_date:
+                break  # Exit the outer loop if the patient is found
 
     chosenPatientData = {}
     for patients_id, patients_data in patients.items():
@@ -1569,6 +1678,18 @@ def patient_personal_information_inpatient(request):
         today_date = datetime.now()
         num_days = (today_date - given_date).days
 
+    prescriptionsorders = db.child("prescriptionsorders").get().val()
+    latest_prescription_url = None
+    latest_date = datetime.min
+
+    for prescription_id, prescription_data in prescriptionsorders.items():
+        if prescription_id == chosenPatient:
+            for id, data in prescription_data.items():
+                date_created = datetime.strptime(data['dateCreated'], '%Y-%m-%d')
+                if date_created > latest_date:
+                    latest_date = date_created
+                    latest_prescription_url = data['prescriptionURL']
+
         
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
@@ -1594,7 +1715,7 @@ def patient_personal_information_inpatient(request):
                                                                                 'next_available_date_str1': next_available_date_str1,
                                                                                 'disease_list': disease_list,
                                                                                 'chosenPatientSymptoms': chosenPatientSymptoms,
-                                                                                'symptoms_list': symptoms_list,
+                                                                             'symptoms_list': symptoms_list,
                                                                                 'notifications': notifications,
                                                                                 'clinics': clinics,
                                                                                 'upcomings': upcomings,
@@ -1603,7 +1724,12 @@ def patient_personal_information_inpatient(request):
                                                                                 'appointmentIDurl': endAppointment,
                                                                                 'clinic_doctor_list': clinic_doctor_list,
                                                                                 'chosenPatient': chosenPatient,
-                                                                                'chosenPatientSymptoms1': chosenPatientSymptoms1})
+                                                                                'chosenPatientSymptoms1': chosenPatientSymptoms1,
+                                                                                'todays_complaints': todays_complaints,
+                                                                                'showOthers': showOthers,
+                                                                                'prescriptionsorders': prescriptionsorders,
+                                                                                'latest_prescription_url': latest_prescription_url,
+                                                                                'dates': dates})
 
 def save_chiefComplaint(request):
         
@@ -1626,6 +1752,7 @@ def save_chiefComplaint(request):
             'chestPainInput': request.POST.get('chestPainInput'),
             'feverInput': request.POST.get('feverInput'),
             'heartMurmurInput': request.POST.get('heartMurmurInput'),
+            'othersInput': request.POST.get('othersInput'),
         }
         db.child(appointment_path).update({
             'patientID': id,
@@ -1838,22 +1965,36 @@ def patient_medical_history(request):
             }
             db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').update(data)
 
+    def transform_symptom_name(symptom):
+        parts = symptom.replace('Input', '').split('_')
+        transformed_parts = []
+        
+        for part in parts:
+            temp_parts = []
+            
+            for i, char in enumerate(part):
+                if char.isupper() and i > 0:
+                    temp_parts.append(' ')
+                temp_parts.append(char)
+            
+            transformed_parts.append(''.join(temp_parts))
+        return ' '.join(transformed_parts).capitalize()
+
     symptom_counter = defaultdict(int)
 
     for patient_id, dates in consulNotes.items():
-        for date, data in dates.items():
-            if 'complains' in data:
-                for symptom, description in data['complains'].items():
-                    symptom_counter[symptom] += 1
+        if patient_id == chosenPatient:
+            for date, data in dates.items():
+                if 'complains' in data:
+                    for symptom, description in data['complains'].items():
+                        transformed_symptom = transform_symptom_name(symptom)
+                        symptom_counter[transformed_symptom] += 1
 
     sorted_symptoms = sorted(symptom_counter.items(), key=lambda item: item[1], reverse=True)
 
     # Step 4: Get the top 3 most recurring symptoms and their total numbers
     top_3_symptoms = sorted_symptoms[:3]
 
-    # Display the result
-    for symptom, count in top_3_symptoms:
-        print(f'Symptom: {symptom}, Count: {count}')
 
     return render(request, 'hmis/patient_medical_history.html', {'doctors': doctors,
                                                                  'uid': uid,

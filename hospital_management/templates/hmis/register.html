@@ -34,7 +34,7 @@
                     <img src="{% static 'logo-color.png' %}" alt="logo">
                   </div>
                   <h4>New here?</h4>
-                  <h6 class="fw-light">Signing up is easy. It only takes a few steps</h6>
+                  <h6 class="fw-light">Please enter the needed information to create an account.</h6>
                   <form method="post" action="{% url 'create' %}" class="signup_table">
                     {% csrf_token %}
                     <div class="form-group">
@@ -47,18 +47,19 @@
                         <input class="form-control form-control-lg" type="text" name="lname" placeholder="Last Name" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="border: 1px solid #ddd; padding: 10px; text-align: center; ">
                         <label class="signup_lbl">Sex &ensp;</label>
+                        &ensp;  &ensp;  &ensp;
                         <input type="radio" Name="sex" Value="Male"><label class="signup_lbl2">Male &ensp;</label>
                         <input type="radio" Name="sex" Value="Female"><label class="signup_lbl2">Female</label>
                     </div>
                     
                     <div class="form-group">
-                      <select class="form-select form-select-lg" name="specialization" id="jobTitleSelect">
+                      <select class="form-select form-select-lg" name="specialization" id="jobTitleSelect" style="color: black;">
                         <option>Specialization</option>
-                        <option value="General Practitioner">General Practitioner</option>
-                        <option value="Pulmonologist">Pulmonologist</option>
-                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="General Practitioner" style="color: black;">General Practitioner</option>
+                        <option value="Pulmonologist" style="color: black;">Pulmonologist</option>
+                        <option value="Pediatrician" style="color: black;">Pediatrician</option>
                       </select>
                     </div>
                     

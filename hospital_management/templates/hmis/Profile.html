@@ -203,19 +203,19 @@
                             </div>
 
                             <label class="exampleInputEmail1">Join Clinics </label>
-                            <div class="form-check form-check-success">
-                                {% for clinic_id, clinic_data in clinics.items %}
-                                    {% if clinic_id not in account_data.clinic %}
-                                        <div class="form-check mb-2">
-                                            <label class="form-check-label ms-2"> &ensp;&ensp;
-                                              <input type="checkbox" class="form-check-input" name="newclinic" value="{{ clinic_id }}">{{ clinic_data.name }}
-                                            </label>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-
-
+                            {% for clinic_id, clinic_data in clinics.items %}
+                              <div class="form-check form-check-success">
+                                {% if account_data.clinic%}
+                                  {% if clinic_id not in account_data.clinic %} 
+                                    <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" name="newclinic" value="{{ clinic_id }}">{{ clinic_data.name }} </label>
+                                  {% endif %}
+                                {% else %}
+                                  <label class="form-check-label">
+                                  <input type="checkbox" class="form-check-input" name="newclinic" value="{{ clinic_id }}">{{ clinic_data.name }} </label>
+                                {% endif %}
+                              </div>
+                              {% endfor %}
                             <button class="btn btn-primary me-2" id="signup_btn" type="submit" name='update' value={{ uid }}>Update Account</button>
                           </form>
                           {% endif %}

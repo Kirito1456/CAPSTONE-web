@@ -320,8 +320,9 @@
                             {% for patientData_id, patientData_data in patientData.items %}
                                 <p>
                                     <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
-                                    <span><strong>Age:</strong> {{ patientData_data.age }}</span>
+                                    <strong>Age:</strong><span id = "age-view" ></span>
                                     <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
+                                    <div id = "birthday-view" style="display: none;">{{ patientData_data.bday }}</div>
                                 </p>
                                 <p>
                                     <span><strong>Address:</strong> {{ patientData_data.address }} </span>
@@ -393,12 +394,35 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-success btn-icon-text">
-                        <i class="ti-upload btn-icon-prepend"></i> Submit </button>
+                    <div class="d-flex justify-content-end" style="margin-right: 40px"> 
+                        <button type="submit" class="btn btn-success btn-icon-text">
+                            <i class="ti-upload btn-icon-prepend"></i> Submit
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var birthdayString = document.getElementById("birthday-view").innerText;
+            var birthday = new Date(birthdayString);
+        
+            var today = new Date();
+            var ageYear = today.getFullYear() - birthday.getFullYear();
+            var ageMonth = today.getMonth() - birthday.getMonth();
+
+            
+            // Adjust age months if negative
+            if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
+                ageYear--;
+                ageMonth += 12;
+            }
+        
+            document.getElementById("age-view").innerText = ageYear + " years and " + ageMonth + " months"; 
+        });
+    </script>
 
     <script src="{% static 'js/create-medication.js' %}"></script>
     
@@ -455,27 +479,6 @@
                 }
             });
         }
-        document.addEventListener("DOMContentLoaded", function() {
-            var birthdayString = document.getElementById("birthday-view").innerText;
-            var birthday = new Date(birthdayString);
-            var today = new Date();
-            var ageYear = today.getFullYear() - birthday.getFullYear();
-            var ageMonth = today.getMonth() - birthday.getMonth();
-            const backButton = document.getElementById('backButton');
-
-            // Adjust age months if negative
-            if (ageMonth < 0 || (ageMonth === 0 && today.getDate() < birthday.getDate())) {
-                ageYear--;
-                ageMonth += 12;
-            }
-
-            document.getElementById("age-view").innerText = ageYear + " years and " + ageMonth + " months";
-
-            backButton.addEventListener('click', function() {
-                window.history.back();
-            });
-            
-        });
     </script>
 
     <script>

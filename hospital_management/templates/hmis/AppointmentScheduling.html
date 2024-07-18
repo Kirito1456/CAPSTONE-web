@@ -183,6 +183,7 @@
           <div class="content-wrapper">
             <div class="row">
               {% for doctors_id, doctors_data in doctors.items %}
+              {% if doctors_data.clinic %}
                 {% for doctorClinic in doctors_data.clinic %}
                   {% for clinic_id, clinic_data in clinics.items %}
                     {% if clinic_id == doctorClinic and doctors_id == uid %}
@@ -232,6 +233,9 @@
                     {% endif %}
                   {% endfor %}
                 {% endfor %}
+              {%else%}
+              You have not joined any clinic yet.
+              {%endif%}
               {% endfor %}
             </div>
           </div>

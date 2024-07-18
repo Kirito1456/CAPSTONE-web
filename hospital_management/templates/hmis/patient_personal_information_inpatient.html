@@ -183,7 +183,10 @@
                         <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#medicalhistory" role="tab" aria-selected="false">Symptoms History</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" id="treatment-tab" data-bs-toggle="tab" href="#treatment" role="tab" aria-selected="false">Treatment Plan</a>
+                        <a class="nav-link" id="treatment-tab" data-bs-toggle="tab" href="#treatment" role="tab" aria-selected="false">Medications</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="history-tab" href="{% url 'patient_medical_history' %}?chosenPatient={{chosenPatient}}" role="tab" aria-selected="false" >Medical History</a>
                       </li>
                     </ul>
 
@@ -196,49 +199,46 @@
                       <a href="#" class="openModalBtn1 btn btn-primary text-white me-0"><i class="icon-download"></i> End </a>
                       <div class="myModal modal">
                         <div class="modal-content">
-                          <span class="close">&times;</span>
-                          <i class="fa-regular fa-circle-check"></i>
-                          <h2 style="margin-bottom: 20px;">Ending Appointment...</h2>
-                          <form method="POST">
-                            {% csrf_token %}
-                            <div class="detail-wrapper">
-                              <div class="form-check form-check-primary">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Follow-up Appointment </label>
-                              </div>
-                            </div>
-                            <div class="detail-wrapper">
-                              <input type="hidden" id="selected_clinic_id_{{ appointment_id }}" name="selected_clinic_id" value="">
-                              <div class="detailname" style="font-weight: bold;">Suggested Schedule: </div>
-                              {% comment %} <input type="text" id="selected_appointment_date_{{ appointment_id }}" name="selected_appointment_date" value="" style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"> {% endcomment %}
-                              <select id="selected_appointment_date" name="selected_appointment_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                                  {% for key, value in nearest_dates.items %}
-                                      <option value="{{ value }}">
-                                          {% if key == 'one_week_from_now' %}
-                                              1 Week: {{ value }}
-                                          {% elif key == 'two_weeks_from_now' %}
-                                              2 Weeks: {{ value }}
-                                          {% elif key == 'three_weeks_from_now' %}
-                                              3 Weeks: {{ value }}
-                                          {% elif key == 'one_month_from_now' %}
-                                              1 Month: {{ value }}
-                                          {% endif %}
-                                      </option>
-                                  {% endfor %}
-                              </select><br>
-                            </div>
-                    
-                            <div class="detail-wrapper">
-                              <div class="detailname" style="font-weight: bold;">Suggested Time: </div>
-                              <select name="new_appointment_time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                              </select><br>
-                            </div>
+                            <span class="close">&times;</span>
+                            <i class="fa-regular fa-circle-check"></i>
+                            <h2 style="margin-bottom: 20px;">Ending Appointment...</h2>
+                            <form method="POST" action="{% url 'followup_appointment' %}?chosenPatient={{chosenPatient}}">
+                                {% csrf_token %}
+                                <div class="detail-wrapper">
+                                    <div class="form-check form-check-primary">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="followUpCheckbox" name="followupCheckbox" value="{{endAppointment}}"> Follow-up Appointment
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="followUpDetails" style="display: none;">
+                                    <div id="onceFP" class="detail-wrapper">
+                                        <label for="followUpDate" class="detailname" style="font-weight: bold;">Next follow-up:</label>
+                                        <input type="date" id="followUpDate" name="follow_up_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                    </div>
 
+
+                                    <div class="detail-wrapper">
+                                        <div class="form-check form-check-primary">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" id="reoccuringCheckbox" name="reoccuringCheckbox" value="{{endAppointment}}"> Reoccuring
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="occuringDetails" class="detail-wrapper" style="display: none;">
+                                        <label for="followUpInterval" class="detailname" style="font-weight: bold;">Follow-up for monitoring every:</label>
+                                        <select id="followUpInterval" name="follow_up_interval" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                            <option value="1_month" name="1_month">1 month</option>
+                                            <option value="3_months" name="3_months">3 months</option>
+                                            <option value="6_months" name="6_months">6 months</option>
+                                        </select>
+                                    </div>
+                                </div>
                             
-                            <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="endingAppointment" value={{endAppointment}}>End</button>
-                          </form>
+                                <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="endingAppointment" value="{{endAppointment}}">End</button>
+                            </form>
                         </div>
-                      </div> 
+                    </div>
                       <a href="#" class="openModalBtn btn btn-otline-dark align-items-center"><i class="fa fa-share-alt"></i> Share</a>
                       <div class="myModal modal">
                         <div class="modal-content">
@@ -322,70 +322,57 @@
                                     {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
                                       <form method="POST">
                                         {% csrf_token %}
+                                      
                                         <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="shortnessOfBreathCheck">
+                                          <input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Shortness of Breath </label>
-                                          <input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="coughCheck">
+                                          <input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in dates %}{{ dates.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="coughCheck" {% if 'coughInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Cough </label>
-                                          <input type="text" class="form-control" id="coughInput" name="coughInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="phlegmCheck">
+                                          <input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in dates %}{{ dates.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Production of Phlegm </label>
-                                          <input type="text" class="form-control" id="phlegmInput" name="phlegmInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="wheezingCheck">
+                                          <input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in dates %}{{ dates.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Wheezing </label>
-                                          <input type="text" class="form-control" id="wheezingInput" name="wheezingInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="coughingBloodCheck">
+                                          <input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in dates %}{{ dates.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Coughing up Blood </label>
-                                          <input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="chestPainCheck">
+                                          <input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in dates %}{{ dates.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Chest Pain </label>
-                                          <input type="text" class="form-control" id="chestPainInput" name="chestPainInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="feverCheck">
+                                          <input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in dates %}{{ dates.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="feverCheck" {% if 'feverInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Fever </label>
-                                          <input type="text" class="form-control" id="feverInput" name="feverInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="heartMurmurCheck">
+                                          <input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in dates %}{{ dates.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Heart Murmur </label>
-                                          <input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-                                        <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="othersCheck">
+                                          <input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in dates %}{{ dates.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      <div class="form-check form-check-primary" style="display: flex; align-items: center;">
+                                          <input type="checkbox" id="othersCheck" {% if 'othersInput' in dates %} checked {% endif %}>
                                           <label class="form-check-label"> Others </label>
-                                          <input type="text" class="form-control" id="othersInput" name="othersInput" placeholder="Details" style="margin-left: 20px; width: 400px;" disabled>
-                                        </div>
-
-                                        {% comment %} <div id="chiefComplaintArea" style="margin-bottom: 15px;"> 
-                                            {% if chosenPatientConsulNotes %}
-                                                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                                                    <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
-                                                    name="chiefComplaint">{{ chosenPatientConsulNotes_data.chiefComplaint }}</textarea>
-                                                {% endfor %}
-                                            {% else %}
-                                                <textarea id="chiefComplaintText" rows="3" cols="72" placeholder="Additional Notes" 
-                                                name="chiefComplaint"></textarea>
-                                            {% endif %}
-                                        </div>   {% endcomment %}
+                                          <input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in dates %}{{ dates.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}>
+                                      </div>
+                                      
+                                        
                                             
                                         <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }}>
                                             <i class="fa fa-check"></i> Save </button>
-                                            
-                                        {% comment %} <button id="cancelChiefComplaintButton" type="button" class="btn btn-danger btn-sm">
-                                            <i class="fa fa-times"></i> Cancel </button> {% endcomment %}
-
                                       </form>
                                     {% endfor %}
                                   </div>
@@ -409,15 +396,18 @@
                                         </div>
                                         <select id="health-conditions" name="diagnosis" list="disease_name_suggestions" onchange="toggleOther()">
                                           <datalist id="disease_name_suggestion">
-                                            <option value="">--- Select Disease ---</option>
+                                            <option value="">Select</option>
                                             {% for disease in disease_list %}
                                               <option value="{{ disease }}">{{ disease }}</option>
                                             {% endfor %}
                                           </datalist>
                                           <option value="Other">Other</option>
                                         </select>
-                                        <input type="text" id="otherdiagnosis" name='otherdiagnosis' style="display: none;" placeholder="Specify other diagnosis"></input>
                                       </div>
+                                      <input type="text" id="otherdiagnosis" name='otherdiagnosis' style="display: none;" placeholder="Specify other diagnosis"></input>
+
+                                      <br>
+                                      <br>
                                       <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatient }}>
                                         <i class="fa fa-check"></i> Save </button>
                                     </form>
@@ -488,7 +478,6 @@
                                                 <span class="ms-0 mb-0 fs-6 fw-bold">Blood Type: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.bloodType }}</span><br>
                                                 <span class="ms-0 mb-0 fs-6 fw-bold">Height: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.height }} cm</span><br>
                                                 <span class="ms-0 mb-0 fs-6 fw-bold">Weight: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.weight }} kg</span><br>
-                                                <span class="ms-0 mb-0 fs-6 fw-bold">BMI: </span><span class="ms-0 mb-0 fs-6"></span><br>
                                               {% endfor %}
                                             </div>
                                           </div>
@@ -505,7 +494,7 @@
                       </div>
                     </div>
 
-                    <!-- Medical History Tab -->
+                    <!-- Symptom Tab -->
                     <div class="tab-pane fade" id="medicalhistory" role="tabpanel" aria-labelledby="medicalhistory">
                       <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
@@ -544,6 +533,30 @@
                         </div>
                       </div>
                     </div>
+
+                    <div class="tab-pane fade" id="treatment" role="tabpanel" aria-labelledby="treatment">
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="row flex-grow">
+                            <div class="col-12 col-lg-4 col-lg-12 grid-margin">
+                              <div class="card">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                      <h4 class="card-title card-title-dash">Lastest Prescription</h4>
+                                      {% if latest_prescription_url%}
+                                      <object data="{{ latest_prescription_url }}" type="application/pdf" width="100%" height="600px">    
+                                        {%else%}                                
+                                        Patient is not taking any medications.
+                                        {%endif%}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -555,6 +568,16 @@
       </div>
       <!-- page-body-wrapper ends -->
     </div>
+
+    <script>
+      document.getElementById('followUpCheckbox').addEventListener('change', function() {
+          document.getElementById('followUpDetails').style.display = this.checked ? 'block' : 'none';
+      });
+      document.getElementById('reoccuringCheckbox').addEventListener('change', function() {
+          document.getElementById('occuringDetails').style.display = this.checked ? 'block' : 'none';
+          document.getElementById('onceFP').style.display = this.checked ? 'none' : 'block';
+      });
+      </script>
 
    <script>
    var chosenPatientSymptoms = {{ chosenPatientSymptoms|safe }};
@@ -731,6 +754,7 @@
       toggleInput(document.getElementById('chestPainCheck'), document.getElementById('chestPainInput'));
       toggleInput(document.getElementById('feverCheck'), document.getElementById('feverInput'));
       toggleInput(document.getElementById('heartMurmurCheck'), document.getElementById('heartMurmurInput'));
+      toggleInput(document.getElementById('othersCheck'), document.getElementById('othersInput'));
     </script>
 
     <script>
