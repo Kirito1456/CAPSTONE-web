@@ -235,56 +235,53 @@
                                       <thead>
                                         <tr>
                                           <th>Patient Name</th>
-                                          <th>Medication Adherence</th>
+                                          <th>Medication Progress</th>
+                                          <th>Medicaiton End</th>
                                           
                                         </tr>
                                       </thead>
                                       <tbody>
 
-                                    {% if patients %}
-                                      {% for patients_id, patients_data in patients.items %}
-                                        <tr>
+                                        {% if sorted_patients %}
+                                        {% for patient_data in sorted_patients %}
+                                          <tr id = "patient-info">
+                                            <td>
+                                              <a href="{% url 'patient_medical_history' %}?chosenPatient={{patient_data.uid}}">
+                                                {{ patient_data.fname }} {{ patient_data.lname }}
+                                              </a>
+                                            </td>
 
-                                          <td>
-                                            <div class="d-flex ">
-                                              <div>
-                                                <h6>
-                                                  <a href="{% url 'patient_medical_history' %}?chosenPatient={{patients_data.uid}}">
-                                                   {{ patients_data.fname }} {{ patients_data.lname }}
-                                                  </a>
-                                                </h6>
-                                                <p>
-                                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                                                  {% if patients_id == chosenPatientData_id %}
-                                                    {{ chosenPatientData_data.disease }}
-                                                  {% endif %}
-                                                {% endfor %}</p>
-                                              </div>
-                                            </div>
-                                          </td>
+                                            {% if total_average_adherence %}
+                                              {% for total_average_adherence_id, total_average_adherence_data in total_average_adherence.items %}
+                                                {% if patient_data.uid == total_average_adherence_id %}
+                                                  <td>
+                                                    <div>
+                                                      <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                        <p class="text-success">
+                                                          {{ total_average_adherence_data.total_average_adherence }}%
+                                                        </p>
+                                                      </div>
+                                                      <div class="progress progress-md">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ total_average_adherence_data.total_average_adherence }}%" aria-valuenow="{{ total_average_adherence_data.total_average_adherence }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                      </div>
+                                                    </div>
+                                                  </td>
+                                                {% endif %}
+                                              {% endfor %}
+                                            {%else%}
+                                              <td>-</td>
+                                            {% endif %}
 
+                                            
+                                            <td style="color: black;">
+                                              {{latest_date_created}}
+                                            </td>
 
-                                          
-                                          <td>
-                                            {% for total_average_adherence_id, total_average_adherence_data in total_average_adherence.items %}
-                                              {% if patients_id == total_average_adherence_id %}
-                                                <div>
-                                                  <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
-                                                    <p class="text-success">
-                                                      {{ total_average_adherence_data.total_average_adherence }}%
-                                                    </p>
-                                                  </div>
-                                                  <div class="progress progress-md">
-                                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ total_average_adherence_data.total_average_adherence }}%" aria-valuenow="{{ total_average_adherence_data.total_average_adherence }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                                  </div>
-                                                </div>
-                                              {% endif %}
-                                            {% endfor %}
-                                          </td>
-                                          {% comment %} <td class="text-success"> 82.00% <i class="ti-arrow-up"></i></td> {% endcomment %}
-                                        </tr>
+                                          </tr>
                                         {% endfor %}
-                                        {% endif %}
+                                      {% else %}
+                                        <td colspan="3" style="padding: 15px; text-align: center;">No current patients!</td>
+                                      {% endif %}
                                       </tbody>
                                     </table>
                                   </div>
@@ -312,7 +309,7 @@
                                                   {% if patient_data.uid == appointment_data.patientName %}
                                             <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
                                               <div class="d-flex">
-                                                <img class="img-sm rounded-10" src="{% static 'emily.png' %}" alt="profile">
+                                                <img class="img-sm rounded-10" src="{% static 'acc.png' %}" alt="profile">
                                                 <div class="wrapper ms-3">
                                                   <p class="ms-1 mb-1 fw-bold"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></p>
                                                   <small class="text-muted mb-0">{{ appointment_data.appointmentTime }}</small>

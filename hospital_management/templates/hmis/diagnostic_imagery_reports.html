@@ -209,54 +209,13 @@
                                         </td>
                                       </tr>
                                 {% endfor %}
-                            {% endif %}
+                                {% else %}
+                                <td>-</td>
+                                {% endif %}
                         {% endfor %}
                         {% else %}
                         <td colspan='5'>No test requests yet!</td>
                         {% endif %}
-                                
-                                {% comment %} {% for submittedTest_id, submittedTest_data in submittedTest.items %}
-                                {% if submittedTest_id == chosenPatient %}
-                                    {% for submitted_id, submitted_data in submittedTest_data.items %}
-                                        <div class="report-item">
-                                            <td>{{ submitted_data.date }}</td>
-                                            <td>Test</td>
-                                            <td>
-                                                {% if submitted_data.testRequestKey == 'blood_test' %}
-                                                    Blood Test
-                                                {% elif submitted_data.testRequestKey == 'urine_test' %}
-                                                    Urine Test
-                                                {% elif submitted_data.testRequestKey == 'stool_test' %}
-                                                    Stool Test
-                                                {% elif submitted_data.testRequestKey == 'tissue_biopsy' %}
-                                                    Tissue Biopsy
-                                                {% elif submitted_data.testRequestKey == 'xray' %}
-                                                    X-ray
-                                                {% elif submitted_data.testRequestKey == 'ct_scan' %}
-                                                    CT Scan
-                                                {% elif submitted_data.testRequestKey == 'mri' %}
-                                                    MRI
-                                                {% elif submitted_data.testRequestKey == 'ultrasound' %}
-                                                    Ultrasound
-                                                {% elif submitted_data.testRequestKey == 'ecg' %}
-                                                    ECG
-                                                {% elif submitted_data.testRequestKey == 'colonoscopy' %}
-                                                    Colonoscopy
-                                                {% elif submitted_data.testRequestKey == 'bronchoscopy' %}
-                                                    Bronchoscopy
-                                                {% elif submitted_data.testRequestKey == 'pet_scan' %}
-                                                    PET Scan
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                <a href="{{ submitted_data.downloadURL }}" class="view-image" style="color: blue;">View Image</a>
-                                            </td>
-                                        </tr>
-                                        </div>
-                                        
-                                    {% endfor %}
-                                {% endif %}
-                            {% endfor %} {% endcomment %}
                               
                           </tbody>
                         </table>
