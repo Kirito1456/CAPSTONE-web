@@ -108,15 +108,19 @@ class Command(BaseCommand):
 
         def process_appointment_data(appointment_id, appointment_data):
             try:
+                patients = db.child("patients").get().val()
                 print(f"Processing appointment data: {appointment_data}")
                 if appointment_data.get('status') == 'Confirmed':
                     doctor_uid = appointment_data.get('doctorUID')
                     patient_name = appointment_data.get('patientName')
+                    for id, patient_data in patients.items():
+                        if patient_name == id:
+                            name = patient_data.get('fname') + ' ' + patient_data.get('lname')
                     appointment_date = appointment_data.get('appointmentDate')
                     appointment_time = appointment_data.get('appointmentTime')
                     Notification.objects.create(
                         firebase_id=doctor_uid,
-                        message=f'Appointment with {patient_name} on {appointment_date} at {appointment_time} has been confirmed.',
+                        message=f'Appointment with {name} on {appointment_date} at {appointment_time} has been confirmed.',
                         created_at=appointment_date,
                         is_read=False,
                         type = 'appointment'
