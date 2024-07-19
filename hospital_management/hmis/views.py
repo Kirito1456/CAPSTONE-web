@@ -1065,6 +1065,7 @@ def DoctorDashboard(request):
     sorted_patients = sorted(combined_data, key=itemgetter('lastVisited'), reverse=True)
     adherence = defaultdict(list)
     dates = []
+    total_average_adherence={}
     if patients:
         for patient_data in sorted_patients:
             patients_id = patient_data.get('uid')
@@ -2146,14 +2147,20 @@ def patient_medical_history(request):
     prescriptionsorders = db.child("prescriptionorders").get().val()
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
 
+    sorted_consul_notes = {}
+
+    for user_uid, notes in consulNotes.items():
+        # Sort notes by date
+        sorted_notes = dict(sorted(notes.items(), key=lambda item: datetime.strptime(item[0], '%Y-%m-%d'), reverse=True))
+        sorted_consul_notes[user_uid] = sorted_notes
+
+
     # Filter prescriptions to include only those prescribed by the logged-in doctor
     doctor_prescriptions = {}
     for prescription_id, prescription_data in prescriptionsorders_ref.items():
         if prescription_data.get('doctor') == uid:
             doctor_prescriptions[prescription_id] = prescription_data
     
-    print(doctor_prescriptions)
-
     patientMedical = db.child("patientmedicalhistory").get().val()
 
     copd = ['chronic Bronchitis', 'emphysema', 'copd', 'chronic obstructive pulmonary disease']
@@ -2291,7 +2298,7 @@ def patient_medical_history(request):
                                                                  'uid': uid,
                                                                  'patientMedical': patientMedical,
                                                                  'chosenPatient': chosenPatient,
-                                                                 'consulNotes': consulNotes,
+                                                                 'consulNotes': sorted_consul_notes,
                                                                  'prescriptionsorders': prescriptionsorders,
                                                                  'prescriptionsorders_ref': prescriptionsorders_ref,
                                                                  'testrequest': testrequest,

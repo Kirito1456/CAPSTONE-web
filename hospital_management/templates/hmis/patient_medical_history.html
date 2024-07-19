@@ -277,7 +277,11 @@
                                               <tr>
                                                 <td> {{s_data.smokingStatus}} </td>
                                                 <td> 
+                                                  {% if s_data.monthSmoking %}
                                                   {{s_data.monthSmoking}} months
+                                                  {%else %}
+                                                  -
+                                                  {%endif%}
                                                 </td>
                                               </tr>
                                            
