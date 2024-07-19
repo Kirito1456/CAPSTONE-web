@@ -2305,7 +2305,8 @@ def patient_medical_history(request):
                                                                  'notifications': notifications,
                                                                  'chosenPatientData': chosenPatientData,
                                                                  'copd_risk': copd_risk, 
-                                                                 'top_3_symptoms': top_3_symptoms})
+                                                                 'top_3_symptoms': top_3_symptoms,
+                                                                 'doctor_prescriptions': doctor_prescriptions,  })
 
 from datetime import datetime
 
