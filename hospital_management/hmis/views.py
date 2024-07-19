@@ -469,6 +469,13 @@ def AppointmentUpcomingNotif(request, notification_id):
     else:
         sorted_upcoming_appointments = {}
 
+    selected_date = request.GET.get('selected_date')
+    if selected_date:
+        # Convert selected date string to datetime object
+        selected_datetime = datetime.strptime(selected_date, "%Y-%m-%d")
+        # Filter appointments by the selected date
+        sorted_upcoming_appointments = {k: v for k, v in sorted_upcoming_appointments.items() if datetime.strptime(v['appointmentDate'], "%Y-%m-%d").date() == selected_datetime.date()}
+
     clinic_data_list = get_clinic_schedule(uid, sorted_upcoming_appointments)
     
     # Pass the combined data to the template
@@ -515,6 +522,14 @@ def AppointmentUpcoming(request):
         sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
     else:
         sorted_upcoming_appointments = {}
+    
+    selected_date = request.GET.get('selected_date')
+    if selected_date:
+        # Convert selected date string to datetime object
+        selected_datetime = datetime.strptime(selected_date, "%Y-%m-%d")
+        # Filter appointments by the selected date
+        sorted_upcoming_appointments = {k: v for k, v in sorted_upcoming_appointments.items() if datetime.strptime(v['appointmentDate'], "%Y-%m-%d").date() == selected_datetime.date()}
+
 
     clinic_data_list = get_clinic_schedule(uid, sorted_upcoming_appointments)
     
@@ -526,7 +541,8 @@ def AppointmentUpcoming(request):
         'doctors': doctors,
         'clinics': clinics,
         'clinic_data_list': clinic_data_list,
-        'notifications': notifications
+        'notifications': notifications,
+        'selected_date' : selected_date
     })
 
 def update_appointment(request):    
@@ -847,6 +863,10 @@ def DoctorDashboard(request):
 
     if request.session.get('uid') is None:
         return redirect('home')
+    
+    # Clear old messages
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
     
     # Get data from Firebase
     upcomings = db.child("appointments").get().val()
@@ -2499,6 +2519,10 @@ def upload_pdf_to_firebase(file_path, storage_path):
 
 @csrf_exempt
 def requestTest(request):
+     # Clear old messages
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
+
     patient_uid = request.GET.get('chosenPatient')
     patients = db.child("patients").get().val()
     todaydate = datetime.now().strftime("%Y-%m-%d")
@@ -2593,9 +2617,11 @@ def requestTest(request):
             })
 
             # Success message
+            messages.success(request, 'Test request created successfully.')
             return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
         except Exception as e:
-            return HttpResponse(f"An error occurred: {e}")
+            messages.error(request, f"An error occurred: {e}")
+            return redirect(reverse('requestTest') + f'?chosenPatient={patient_uid}')
         finally:
             # Ensure the temporary file is deleted
             if os.path.exists(temp_file_path):

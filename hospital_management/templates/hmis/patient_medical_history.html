@@ -344,27 +344,29 @@
                                             <td> 
                                               {% if c_data.complains%}
                                                 {% for specific_id, specific_data in c_data.items %}
-                                                  {% for s_id, s_data in specific_data.items %}
-                                                      <p>Patient complains of <b>
-                                                        {% if s_id == 'shortnessOfBreathInput' %}
-                                                            Shortness of Breath
-                                                        {% elif s_id == 'coughInput' %}
-                                                            Cough
-                                                        {% elif s_id == 'phlegmInput' %}
-                                                            Phlegm
-                                                        {% elif s_id == 'wheezingInput' %}
-                                                            Wheezing
-                                                        {% elif s_id == 'coughingBloodInput' %}
-                                                            Coughing Blood
-                                                        {% elif s_id == 'chestPainInput' %}
-                                                            Chest Pain
-                                                        {% elif s_id == 'feverInput' %}
-                                                            Fever
-                                                        {% elif s_id == 'heartMurmurInput' %}
-                                                            Heart Murmur
-                                                        {% endif %}:</b> {{ s_data }} <br>
-                                                      </p>
-                                                  {% endfor %}
+                                                  {% if c_data.doctorID == uid %}
+                                                    {% for s_id, s_data in specific_data.items %}
+                                                        <p>Patient complains of <b>
+                                                          {% if s_id == 'shortnessOfBreathInput' %}
+                                                              Shortness of Breath
+                                                          {% elif s_id == 'coughInput' %}
+                                                              Cough
+                                                          {% elif s_id == 'phlegmInput' %}
+                                                              Phlegm
+                                                          {% elif s_id == 'wheezingInput' %}
+                                                              Wheezing
+                                                          {% elif s_id == 'coughingBloodInput' %}
+                                                              Coughing Blood
+                                                          {% elif s_id == 'chestPainInput' %}
+                                                              Chest Pain
+                                                          {% elif s_id == 'feverInput' %}
+                                                              Fever
+                                                          {% elif s_id == 'heartMurmurInput' %}
+                                                              Heart Murmur
+                                                          {% endif %}:</b> {{ s_data }} <br>
+                                                        </p>
+                                                    {% endfor %}
+                                                  {% endif %}
                                                 {% endfor %}
                                               {% else%}
                                                 <td colspan="3" style="text-align: center;">Patient have not yet consulted with you previously.</td>
@@ -403,14 +405,20 @@
                                       {% for po_id, po_data in prescriptionsorders_ref.items %}
                                         <tr>
                                           {% for pres_id, pres_data in po_data.items %}
+                                          {% if pres_data.doctor == uid %}
                                             {% if pres_id == 'dateCreated'%}
                                               <td>{{ pres_data }}</td>
                                             {% endif %}
                                             {% if pres_id == 'prescriptionURL'%}
                                               <td><a href="{{ pres_data }}">Open Prescription</a></td>
                                             {% endif %}
+                                            {% comment %} {% else %}
+                                              <td style="text-align: center;">No Prescriptions Yet</td>
+                                     {% endcomment %}
+                                            {% endif %}
                                           {% endfor %}
                                         </tr>
+                                        
                                       {% endfor %}
                                     {% else %}
                                       <td colspan="2" style="text-align: center;">No Prescriptions Yet</td>

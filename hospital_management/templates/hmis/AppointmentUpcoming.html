@@ -218,12 +218,23 @@
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Upcoming Appointments</h4>
-                    <div class="input-group">
+                    {% comment %} <div class="input-group">
                       <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
                       <div class="input-group-append">
                         <button class="btn btn-primary" type="button" id="searchButton">Search</button>
                       </div>
+                    </div> {% endcomment %}
+                    <!-- Date Filter -->
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" id="datePicker" placeholder="Select Date" aria-label="Select Date">
+                      <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" id="dateFilterButton">Filter by Date</button>
+                      </div>
                     </div>
+                    {% if selected_date %}
+                      <p>Selected date: {{ selected_date }} </p>
+                    {% endif %}
+                    
                     <div class="table-responsive">
                       <table class="table table-striped">
                         <thead>
@@ -447,26 +458,35 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Selecting DOM elements
-        const searchInput = document.getElementById('searchInput');
-        const searchButton = document.getElementById('searchButton');
-        const tableRows = document.querySelectorAll('.table tbody tr');
-    
-        // Adding event listener to search button
-        searchButton.addEventListener('click', function() {
-          const searchTerm = searchInput.value.trim().toLowerCase();
-    
-          tableRows.forEach(function(row) {
-            const patientNameCell = row.querySelector('td:nth-child(3)');
-            if (patientNameCell) {
-              const patientName = patientNameCell.textContent.trim().toLowerCase();
-              const isVisible = patientName.includes(searchTerm);
-              row.style.display = isVisible ? '' : 'none';
-            }
+          // Initialize date picker
+          $('#datePicker').datepicker({
+              format: 'yyyy-mm-dd',
+              autoclose: true
           });
-        });
+
+          const dateFilterButton = document.getElementById('dateFilterButton');
+          const datePicker = document.getElementById('datePicker');
+
+          dateFilterButton.addEventListener('click', function() {
+              const selectedDate = datePicker.value;
+                // Submit the form with the selected date
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '{% url "AppointmentUpcoming" %}';  // Replace with your actual view URL
+
+                const dateInput = document.createElement('input');
+                dateInput.type = 'hidden';
+                dateInput.name = 'selected_date';
+                dateInput.value = selectedDate;
+
+                form.appendChild(dateInput);
+                document.body.appendChild(form);
+                form.submit();
+            
+          });
       });
-    </script>
+  </script>
+    
     
     <script>
       function filterTable(clinicId) {
