@@ -348,11 +348,13 @@
                                               </div>
                                             </div>
                                           </div>
+
                                       
                                           <div class="detail-wrapper">
                                             <input type="hidden" id="selected_clinic_id_{{ appointment_id }}" name="selected_clinic_id" value="">
                                             <div class="detailname" style="font-weight: bold;">Suggested Schedule: </div>
-                                            <input type="text" id="selected_appointment_date_{{ appointment_id }}" name="selected_appointment_date" value="" style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                            <input type="date" id="selected_appointment_date_{{ appointment_id }}" name="selected_appointment_date" value="" style="font-size: 14px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+
                                           </div>
                                   
                                           <div class="detail-wrapper">
@@ -361,7 +363,7 @@
                                             </select><br>
                                           </div>
 
-                                          <button type="submit" class="appID btn btn-primary btn-sm" name="appID" value="{{ appointment_id }}">Submit Request to Patient</button>
+                                          <button type="submit" class="appID btn btn-primary btn-sm" name="appID" value="{{ appointment_id }}">Submit New Schedule</button>
                                         </form>
                                       
                                       <h2 style="margin-top: 20px; margin-bottom: 20px;">Cancel Appointment</h2>

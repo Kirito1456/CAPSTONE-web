@@ -546,12 +546,32 @@ def AppointmentUpcoming(request):
     })
 
 def update_appointment(request):    
+    uid = request.session['uid'] 
+
     if request.method == 'POST':
         try:
             appID = request.POST.get('appID')
             new_clinic = request.POST.get('selected_clinic_id')
             new_time = request.POST.get('new_appointment_time')
             new_date = request.POST.get('selected_appointment_date')
+
+            # Fetch the booked time slots for the selected date and clinic
+            upcoming_appointments = db.child('appointments').get().val()
+            booked_time_slots = set()
+            if upcoming_appointments:
+                for appointment_data in upcoming_appointments.values():
+                    if (appointment_data['appointmentDate'] == new_date and 
+                        appointment_data['clinicUID'] == new_clinic):
+                        booked_time_slots.add(appointment_data['appointmentTime'])
+
+            # Check if the new time is already booked
+            if new_time in booked_time_slots:
+                # Find the nearest available time slot
+                clinic_data = db.child('appointmentschedule').child(uid).child(new_clinic).get().val()
+                available_time_slots = get_available_time_slots(clinic_data, booked_time_slots)
+
+                # Find the nearest available time slot
+                new_time = find_nearest_available_time(new_time, available_time_slots)
 
             data = {
                 'appointmentDate': new_date,
@@ -568,6 +588,21 @@ def update_appointment(request):
 
     # Handle GET request or invalid form submission
     return redirect('AppointmentUpcoming')
+
+def find_nearest_available_time(requested_time, available_time_slots):
+    requested_time_dt = datetime.strptime(requested_time, '%I:%M %p')
+    print('requested_time_dt is ', requested_time_dt)
+
+    min_diff = None
+    nearest_time = None
+    for slot in available_time_slots:
+        slot_dt = datetime.strptime(slot, '%I:%M %p')
+        diff = abs((slot_dt - requested_time_dt).total_seconds())
+        if min_diff is None or diff < min_diff:
+            min_diff = diff
+            nearest_time = slot
+
+    return nearest_time
 
 def delete_appointment(request):
     if request.method == 'POST':
@@ -590,6 +625,7 @@ def delete_appointment(request):
     # Render a template if the request method is not POST
     return render(request, 'hmis/AppointmentUpcoming.html')
 
+
 def followup_appointment(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
@@ -601,29 +637,47 @@ def followup_appointment(request):
     if request.method == 'POST':
         endAppointmentPatientID = request.POST.get('followupCheckbox')
         endAppointmentAPP = request.POST.get('endingAppointment')
+        print('endAppointmentAPP is ', endAppointmentAPP)
         for id, data in appointments.items():
+            print('id is ', id)
+
             if id == endAppointmentAPP:
                 clinicId = data.get('clinicUID', '')
                 appointmentTime = data.get('appointmentTime', '')
                 break
-        db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
+        # db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
 
         if endAppointmentPatientID:
             id = str(uuid.uuid1())
-            new_date = request.POST.get('follow_up_date')
-            reoccuring = request.POST.get('reoccuringCheckbox')
-            interval = request.POST.get('follow_up_interval')
 
-            current_date = datetime.now().date()
-            one_week_from_now = current_date + timedelta(weeks=1)
-            one_week_from_now_str = one_week_from_now.strftime("%Y-%m-%d")
+            reoccuring = request.POST.get('reoccuringCheckbox')
 
             # Single follow-up appointment
             if not reoccuring:
+                # for one time appointments
+                new_date_str = request.POST.get('follow_up_date')
+                new_date = datetime.strptime(new_date_str, "%Y-%m-%d")
+                formatted_date = new_date.strftime("%Y-%m-%d")
+
+                booked_time_slots = set()
+                if appointments:
+                    for appointment_data in appointments.values():
+                        if (appointment_data['appointmentDate'] == formatted_date and 
+                            appointment_data['clinicUID'] == clinicId):
+                            booked_time_slots.add(appointment_data['appointmentTime'])
+                
+
+                # Check if the desired appointment time is already booked
+                if appointmentTime in booked_time_slots:
+                    # Find the nearest available time slot
+                    clinic_data = db.child('appointmentschedule').child(uid).child(clinicId).get().val()
+                    available_time_slots = get_available_time_slots(clinic_data, booked_time_slots)
+                    appointmentTime = find_nearest_available_time(appointmentTime, available_time_slots)
+
                 data = {
-                    'appointmentDate': one_week_from_now_str,
+                    'appointmentDate': formatted_date,
                     'appointmentTime': appointmentTime,
-                    'status': 'Pending',
+                    'status': 'Confirmed',
                     'doctorUID': uid,
                     'appointmentVisitType': "Follow-Up Visit",
                     'clinicUID': clinicId,
@@ -631,6 +685,8 @@ def followup_appointment(request):
                 }
                 db.child("appointments").child(id).set(data)
             else:
+                interval = request.POST.get('follow_up_interval')
+
                 intervals = {
                     '1_month': 1,
                     '3_months': 3,
@@ -641,16 +697,32 @@ def followup_appointment(request):
                 
                 for _ in range(4):  # Add appointments for the next 1 year
                     date1 += timedelta(days=interval_months * 30)
+
+                    booked_time_slots = set()
+                    if appointments:
+                        for appointment_data in appointments.values():
+                            if (appointment_data['appointmentDate'] == date1.strftime('%Y-%m-%d') and 
+                                appointment_data['clinicUID'] == clinicId):
+                                booked_time_slots.add(appointment_data['appointmentTime'])
+
+                    # Check if the desired appointment time is already booked
+                    if appointmentTime in booked_time_slots:
+                        # Find the nearest available time slot
+                        clinic_data = db.child('appointmentschedule').child(uid).child(clinicId).get().val()
+                        available_time_slots = get_available_time_slots(clinic_data, booked_time_slots)
+                        appointmentTime = find_nearest_available_time(appointmentTime, available_time_slots)
+
                     data = {
                         'appointmentDate': date1.strftime('%Y-%m-%d'),
                         'appointmentTime': appointmentTime,
-                        'status': 'Pending',
+                        'status': 'Confirmed',
                         'doctorUID': uid,
                         'appointmentVisitType': "Follow-Up Visit",
                         'clinicUID': clinicId,
                         'patientName': chosenPatient
                     }
                     db.child("appointments").child(str(uuid.uuid1())).set(data)
+        db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
         
         return redirect('DoctorDashboard')  # Redirect to the appointments list page
 
@@ -944,6 +1016,7 @@ def DoctorDashboard(request):
                     prescribed = inside_data['days']
                     days = inside_data['days']
                     dateCreated = inside_data['dateCreated']
+                    presURL = inside_data['presURL']
                     
                     adherence_percentage = ((dispensed - remaining) / ((prescribed / days) * days)) * 100
                     adherence_percentages.setdefault(medicine_name, []).append(adherence_percentage)
@@ -955,25 +1028,35 @@ def DoctorDashboard(request):
                         'patientsorders_id': patients_id,
                         'medicine_name': medicine_name,
                         'average_adherence_percentage': average_adherence,
-                        'dateCreated': dateCreated
+                        'dateCreated': dateCreated,
+                        'presURL': presURL
                     })
 
-        total_average_adherence = {}
+                total_average_adherence = {}
 
-        for patientsorders_id, adherence_data in adherence.items():
-            total_average = sum(entry['average_adherence_percentage'] for entry in adherence_data) / len(adherence_data)
-            total_average_rounded = round(total_average, 2)
-            total_average_adherence[patientsorders_id] = {
-                'total_average_adherence': total_average_rounded,
-        }
+                for patientsorders_id, adherence_data in adherence.items():
+                    total_average = sum(entry['average_adherence_percentage'] for entry in adherence_data) / len(adherence_data)
+                    total_average_rounded = round(total_average, 2)
+
+                    if adherence_data:
+                        date_created = adherence_data[0].get('dateCreated', None)
+                    else:
+                        date_created = None
+
+                    if adherence_data:
+                        pres_URL = adherence_data[0].get('presURL', None)
+                    else:
+                        pres_URL = None
+
+                    total_average_adherence[patientsorders_id] = {
+                        'total_average_adherence': total_average_rounded,
+                        'dateCreated': date_created,
+                        'patientsorders_id': patientsorders_id,
+                        'presURL': pres_URL
+
+                    }
             
-        latest_date_created = None
-
-        for patientsorders_id, adherence_data in adherence.items():
-            for entry in adherence_data:
-                if latest_date_created is None or entry['dateCreated'] > latest_date_created:
-                    latest_date_created = entry['dateCreated']
-
+            
     # Dictionary to hold latest prescription dates for each patient
     latest_prescriptions = {}
 
@@ -990,7 +1073,6 @@ def DoctorDashboard(request):
                                                              'clinics': clinics,
                                                              'patientsorders': patientsorders,
                                                              'total_average_adherence': total_average_adherence,
-                                                             'latest_date_created': latest_date_created,
                                                              'notifications': notifications,
                                                              'sorted_patients': sorted_patients,
                                                              'latest_prescriptions': latest_prescriptions,}) 
@@ -1746,16 +1828,16 @@ def patient_personal_information_inpatient(request):
         num_days = (today_date - given_date).days
 
     prescriptionsorders = db.child("prescriptionsorders").get().val()
-    latest_prescription_url = None
-    latest_date = datetime.min
+    # latest_prescription_url = None
+    # latest_date = datetime.min
 
-    for prescription_id, prescription_data in prescriptionsorders.items():
-        if prescription_id == chosenPatient:
-            for id, data in prescription_data.items():
-                date_created = datetime.strptime(data['dateCreated'], '%Y-%m-%d')
-                if date_created > latest_date:
-                    latest_date = date_created
-                    latest_prescription_url = data['prescriptionURL']
+    # for prescription_id, prescription_data in prescriptionsorders.items():
+    #     if prescription_id == chosenPatient:
+    #         for id, data in prescription_data.items():
+    #             date_created = datetime.strptime(data['dateCreated'], '%Y-%m-%d')
+    #             if date_created > latest_date:
+    #                 latest_date = date_created
+    #                 latest_prescription_url = data['prescriptionURL']
 
         
 
@@ -1795,7 +1877,7 @@ def patient_personal_information_inpatient(request):
                                                                                 'todays_complaints': todays_complaints,
                                                                                 'showOthers': showOthers,
                                                                                 'prescriptionsorders': prescriptionsorders,
-                                                                                'latest_prescription_url': latest_prescription_url,
+                                                                                # 'latest_prescription_url': latest_prescription_url,
                                                                                 'dates': dates})
 
 def save_chiefComplaint(request):
