@@ -148,7 +148,15 @@
             </li>
           </ul>
         </nav>
-
+        {% if messages %}
+          <div class="alert-messages">
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
         <div class="main-panel">
           <div class="content-wrapper">
             <div class="row">
