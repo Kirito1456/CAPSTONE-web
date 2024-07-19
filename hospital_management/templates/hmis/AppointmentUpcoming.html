@@ -218,6 +218,15 @@
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Upcoming Appointments</h4>
+                    {% if messages %}
+                      <div class="alert-messages">
+                        {% for message in messages %}
+                          <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
                     {% comment %} <div class="input-group">
                       <input type="text" class="form-control" placeholder="Search Name" aria-label="Search Name" id="searchInput">
                       <div class="input-group-append">

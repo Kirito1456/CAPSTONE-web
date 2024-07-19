@@ -288,6 +288,15 @@
             </nav>
 
             <div class="main-panel">
+                {% if messages %}
+                      <div class="alert-messages">
+                        {% for message in messages %}
+                          <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
                 <form method="post" enctype="multipart/form-data" action="{% url 'save_prescriptions' %}?chosenPatient={{patient_uid}}">
                     {% csrf_token %}
                     <div class="prescription-pad">

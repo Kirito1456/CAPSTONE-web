@@ -71,8 +71,12 @@ def upload_image(request):
 
 
 def home(request):
-    storage = messages.get_messages(request)
-    storage.used = True
+    # storage = messages.get_messages(request)
+    # storage.used = True
+
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
+
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
@@ -165,6 +169,8 @@ def dashboard(request):
 
 
 def register(request):
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
     
     return render(request, 'hmis/register.html')
 
@@ -279,6 +285,9 @@ def logout(request):
     return redirect('home')
 
 def profile(request):
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
+
     # Fetch doctors and nurses data from Firebase
     doctors = db.child("doctors").get().val()
     clinics = db.child("clinics").get().val()
@@ -305,6 +314,7 @@ def update_profile (request):
             db.child(db_path).update({
                 'clinic': updated_clinics
             }) 
+            messages.success(request, 'You have successfully joined clinics')
 
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
@@ -436,6 +446,9 @@ def AppointmentUpcomingNotif(request, notification_id):
     if request.session.get('uid') is None:
         return redirect('home')
     
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
+    
     notification = get_object_or_404(Notification, id=notification_id)
     notification.is_read = True
     notification.save()
@@ -492,6 +505,9 @@ def AppointmentUpcomingNotif(request, notification_id):
 def AppointmentUpcoming(request):
     if request.session.get('uid') is None:
         return redirect('home')
+    
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
     
     # Get data from Firebase
     upcomings = db.child("appointments").get().val()
@@ -580,6 +596,7 @@ def update_appointment(request):
                 'status': 'Pending',
             }
             db.child('appointments').child(appID).update(data)
+            messages.success(request, 'Rescheduled Appointment successfully requested')
 
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
@@ -645,7 +662,9 @@ def followup_appointment(request):
                 clinicId = data.get('clinicUID', '')
                 appointmentTime = data.get('appointmentTime', '')
                 break
-        # db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
+        db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
+        messages.success(request, 'Appointment ended successfully')
+
 
         if endAppointmentPatientID:
             id = str(uuid.uuid1())
@@ -684,6 +703,7 @@ def followup_appointment(request):
                     'patientName': chosenPatient
                 }
                 db.child("appointments").child(id).set(data)
+                messages.success(request, 'Follow up appointment successfully scheduled')
             else:
                 interval = request.POST.get('follow_up_interval')
 
@@ -722,7 +742,7 @@ def followup_appointment(request):
                         'patientName': chosenPatient
                     }
                     db.child("appointments").child(str(uuid.uuid1())).set(data)
-        db.child("appointments").child(endAppointmentAPP).update({'status': 'Finished'})
+                messages.success(request, 'Follow up appointments successfully scheduled')
         
         return redirect('DoctorDashboard')  # Redirect to the appointments list page
 
@@ -809,6 +829,8 @@ def parse_time(time_str):
     return datetime.datetime.strptime(time_str, '%H:%M') if time_str else None
 
 def AppointmentScheduling(request):
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
     doctors = db.child("doctors").get().val()
     
     clinics = db.child("clinics").get().val()
@@ -862,6 +884,7 @@ def AppointmentScheduling(request):
 
             if morning_start > morning_end or afternoon_start > afternoon_end:
                 print('Invalid Time Range')
+                messages.error('Invalid Time Range')
                 return redirect('AppointmentScheduling')
 
             # Save appointment schedule to Firebase
@@ -1126,6 +1149,10 @@ def patient_data_doctor_view(request):
     }) 
 
 def patient_personal_information_inpatient(request):
+    
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
+
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
     vitalsigns = db.child("vitalsigns").get().val()
@@ -1524,6 +1551,7 @@ def patient_personal_information_inpatient(request):
             }
 
             db.child('referralRequest').child(chosenPatient).push(data)
+            messages.success(request, f'Patient successfully referred to {data["referredDoctor"]}')
 
         if 'submitMedOrder' in request.POST:
             patient_uid = request.GET.get('chosenPatient')
@@ -1909,6 +1937,8 @@ def save_chiefComplaint(request):
             'complains': complains
         })
     
+    messages.success(request, 'Consultation notes successfully saved')
+    
 def save_review_of_systems(request):
     date = datetime.today().strftime('%Y-%m-%d')
     skin_conditions = request.POST.getlist('skin_conditions')
@@ -1994,6 +2024,8 @@ def save_diagnosis(request):
         db.child(appointment_path1).update({
             'disease': otherdiagnosis
         })
+    
+    messages.success(request, 'Diagnosis Successfully Saved')
     
 #Calculate age function for retrieving patient data
 
@@ -2415,9 +2447,11 @@ def save_prescriptions(request):
                     db.child(db_path2).child(todaydate).child(per_id).update(specific_time_data)
             
         # Success message
+        messages.success(request, 'Prescriptions created successfully.')           
         return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
     except Exception as e:
-        return HttpResponse(f"An error occurred: {e}")
+        messages.error(request, f"An error occurred: {e}")
+        return redirect(reverse('outpatient_medication_order') + f'?chosenPatient={patient_uid}')
     finally:
         # Ensure the temporary file is deleted
         if os.path.exists(temp_file_path):
