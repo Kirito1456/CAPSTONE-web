@@ -676,7 +676,6 @@ def followup_appointment(request):
         endAppointmentAPP = request.POST.get('endingAppointment')
         print('endAppointmentAPP is ', endAppointmentAPP)
         for id, data in appointments.items():
-            print('id is ', id)
 
             if id == endAppointmentAPP:
                 clinicId = data.get('clinicUID', '')
@@ -700,8 +699,6 @@ def followup_appointment(request):
                 # Adjust the date to the nearest valid day
                 day_of_week = date.weekday()
                 available_days = {DAY_NAME_TO_NUMBER[day] for day in available_days} 
-                print('day_of_week is ', day_of_week)
-                print('available_days is ', available_days)
                 if day_of_week in available_days:
                     return date
                 # Find the nearest valid day
@@ -1065,6 +1062,7 @@ def DoctorDashboard(request):
     # Sort combined_data by lastVisited
     sorted_patients = sorted(combined_data, key=itemgetter('lastVisited'), reverse=True)
     adherence = defaultdict(list)
+    total_average_adherence = {}
     if patients:
         for patient_data in sorted_patients:
             patients_id = patient_data.get('uid')
@@ -1096,7 +1094,7 @@ def DoctorDashboard(request):
                         'presURL': presURL
                     })
 
-                total_average_adherence = {}
+                
 
                 for patientsorders_id, adherence_data in adherence.items():
                     total_average = sum(entry['average_adherence_percentage'] for entry in adherence_data) / len(adherence_data)
@@ -2085,6 +2083,19 @@ def calculate_age(birthday):
     birthdate = datetime.strptime(birthday, '%Y-%m-%d').date()
     return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
+def calculate_copd_risk(baseline_risk, odds_ratio, num_family_members, smoking_factor):
+    # Convert odds ratio to cumulative odds ratio
+    cumulative_or = odds_ratio ** num_family_members
+    
+    # Adjust for smoking factor
+    adjusted_or = cumulative_or * smoking_factor
+    
+    # Calculate adjusted probability
+    final_probability = (baseline_risk * adjusted_or) / (1 + (baseline_risk * (adjusted_or - 1)))
+    
+    return final_probability
+
+
 def patient_medical_history(request):
     doctors = db.child("doctors").get().val()
     patientsdata = db.child("patients").get().val()
@@ -2101,11 +2112,11 @@ def patient_medical_history(request):
 
     patientMedical = db.child("patientmedicalhistory").get().val()
 
-    # Initialize variables
-    ages = []
-    median_age_of_onset = 0
+    copd = ['chronic Bronchitis', 'emphysema', 'copd', 'chronic obstructive pulmonary disease']
+    baseline_risk = 0.14
+    odds_ratio = 1.57
 
-    copd = ['Chronic Bronchitis', 'Emphysema', 'Asthma', 'Respiratory Infections', 'Lung Cancer', 'Pulmonary Hypertension', 'Cor Pulmonale', 'Osteoporosis']
+    num_family_members_with_copd = 0
 
     # Iterate through the patient medical data
     for medical_id, medical_data in patientMedical.items():
@@ -2114,17 +2125,21 @@ def patient_medical_history(request):
                 if m_id == 'familyHistory':
                     for f_id, f_data in m_data.items():
                         # Check if any COPD-related diagnosis is in f_data['diagnosis']
-                        if any(copd_diagnosis in f_data['diagnosis'] for copd_diagnosis in copd):
-                            ages.append(f_data['age'])  # Collect ages
+                        if any(copd_diagnosis.lower() in f_data['diagnosis'].lower() for copd_diagnosis in copd):
+                            num_family_members_with_copd += 1
+                if m_id == 'socialHistory':   
+                    smoking_status = m_data['smokingStatus'].lower()
+                    if smoking_status == 'current smoker':
+                        smoking_factor = 1.46  # Higher risk factor for current smokers
+                    elif smoking_status == 'former smoker':
+                        smoking_factor = 1.21  # Lower risk factor for former smokers
+                    elif smoking_status == 'not at all':
+                        smoking_factor = 1.0 
+                        
 
 
-    # Calculate statistics
-    if ages:
-        median_age_of_onset = sorted(ages)[len(ages) // 2] if len(ages) % 2 != 0 else (sorted(ages)[len(ages) // 2 - 1] + sorted(ages)[len(ages) // 2]) / 2  # Median
-        
-    else:
-        print("No age data available.")
-
+    # Calculate COPD risk
+    copd_risk = round((calculate_copd_risk(baseline_risk, odds_ratio, num_family_members_with_copd, smoking_factor))*100, 2)
 
     chosenPatientData= {}
     
@@ -2217,7 +2232,7 @@ def patient_medical_history(request):
     for patient_id, dates in consulNotes.items():
         if patient_id == chosenPatient:
             for date, data in dates.items():
-                if 'complains' in data:
+                if 'complains' in data and data['doctorID'] == uid:
                     for symptom, description in data['complains'].items():
                         transformed_symptom = transform_symptom_name(symptom)
                         symptom_counter[transformed_symptom] += 1
@@ -2238,7 +2253,7 @@ def patient_medical_history(request):
                                                                  'testrequest': testrequest,
                                                                  'notifications': notifications,
                                                                  'chosenPatientData': chosenPatientData,
-                                                                 'median_age_of_onset': median_age_of_onset, 
+                                                                 'copd_risk': copd_risk, 
                                                                  'top_3_symptoms': top_3_symptoms})
 
 from datetime import datetime
@@ -2520,6 +2535,7 @@ def diagnostic_imagery_reports(request, notification_id):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
     testRequests = db.child("testrequest").get().val()
+                
     
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'patients': patients,'testRequest': testRequests,'submittedTest': submittedTest, 'chosenPatient': chosenPatient, 'doctors': doctors, 'uid': uid})
 

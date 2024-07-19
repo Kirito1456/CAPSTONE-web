@@ -239,7 +239,7 @@
                             </form>
                         </div>
                     </div>
-                      <a href="#" class="openModalBtn btn btn-otline-dark align-items-center"><i class="fa fa-share-alt"></i> Share</a>
+                      {% comment %} <a href="#" class="openModalBtn btn btn-otline-dark align-items-center"><i class="fa fa-share-alt"></i> Share</a> {% endcomment %}
                       <div class="myModal modal">
                         <div class="modal-content">
                           <span class="close">&times;</span>
@@ -511,23 +511,23 @@
                                         <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton8" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Select Symptom  </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton8">
                                           {% for symptom_name in chosenPatientSymptoms1 %}
-                                              {% comment %} {% if symptom_status == 'on' %} {% endcomment %}
-                                                  <a class="dropdown-item" href="#" data-symptom-name="{{ symptom_name }}">{{ symptom_name }}</a>
-                                              {% comment %} {% endif %} {% endcomment %}
+                                            <a class="dropdown-item" href="#" data-symptom-name="{{ symptom_name }}">{{ symptom_name }}</a>
                                           {% endfor %}
                                         </div>
+                                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton99" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Time</button>                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton99">
+                                          <a class="dropdown-item" href="#" data-value="Show All">Show All</a>
+                                          <a class="dropdown-item" href="#" data-value="1 month">1 month</a>
+                                          <a class="dropdown-item" href="#" data-value="3 months">3 months</a>
+                                          <a class="dropdown-item" href="#" data-value="6 months">6 months</a>
+                                      </div>
                                       </div>
                                     </div>
                                     <div id="performanceLine-legend"></div>
                                   </div>
                                   
-                                <div style="width: 100%; height: 300px;">
+                                <div style="width: 100%; height: 100%;">
                                   <canvas id="performanceLine"></canvas>
                                 </div>
-                              
-                                  {% comment %} {% for chosenPatientSymptoms_id, chosenPatientSymptoms_data in chosenPatientSymptoms.items %}
-                                      <span class="ms-0 mb-0 fs-6 fw-bold">Symptoms: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientSymptoms_data.Coughing.severityRecords }}</span><br>
-                                  {% endfor %} {% endcomment %}
                                 </div>
                               </div>
                             </div>
@@ -572,6 +572,7 @@
     </div>
 
     <script>
+      
       document.addEventListener('DOMContentLoaded', function() {
         var availableDays = {{ available_days_list|safe }};
         
@@ -657,6 +658,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      
         var ctx = document.getElementById('performanceLine').getContext('2d');
         var myLineChart = new Chart(ctx, {
             type: 'line',
@@ -703,62 +705,73 @@
             }
         });
 
-        function updateChart(symptomName) {
-            var patientId = Object.keys(chosenPatientSymptoms)[0];
-            var symptomData = chosenPatientSymptoms[patientId][symptomName];
-            var severityRecords = [];
-
-            if (symptomData && symptomData.severityRecords) {
-                for (var date in symptomData.severityRecords) {
-                    for (var time in symptomData.severityRecords[date]) {
-                        severityRecords.push({
-                            datetime: new Date(date + ' ' + time),
-                            severity: symptomData.severityRecords[date][time]
-                        });
-                    }
-                }
-
-                severityRecords.sort(function (a, b) {
-                    return a.datetime - b.datetime;
-                });
-
-                var labels = severityRecords.map(record => record.datetime.toLocaleString());
-                var data = severityRecords.map(record => record.severity);
-
-                myLineChart.data.labels = labels;
-                myLineChart.data.datasets[0].data = data;
-
-                // Forecasting
-                var forecastData = forecast(data);
-                myLineChart.data.datasets[1].data = forecastData;
-
-                myLineChart.update();
-
-                // Calculate insights
-                var maxSeverity = Math.max(...data);
-                var minSeverity = Math.min(...data);
-                var averageSeverity = data.reduce((acc, val) => acc + val, 0) / data.length;
-
-                // Display insights
-                var insightsElement = document.getElementById('performanceLine-legend');
-                insightsElement.innerHTML = `
-                    <p><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
-                    <p>Maximum Severity: ${maxSeverity}</p>
-                    <p>Minimum Severity: ${minSeverity}</p>
-                    <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
-                `;
-            } else {
-                // Display message when no data is available
-                myLineChart.data.labels = [];
-                myLineChart.data.datasets[0].data = [];
-                myLineChart.data.datasets[1].data = [];
-                myLineChart.update();
-
-                var insightsElement = document.getElementById('performanceLine-legend');
-                insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
-            }
-        }
-
+        function updateChart(symptomName, timePeriod) {
+          var patientId = Object.keys(chosenPatientSymptoms)[0];
+          var symptomData = chosenPatientSymptoms[patientId][symptomName];
+          var severityRecords = [];
+  
+          if (symptomData && symptomData.severityRecords) {
+              for (var date in symptomData.severityRecords) {
+                  for (var time in symptomData.severityRecords[date]) {
+                      severityRecords.push({
+                          datetime: new Date(date + ' ' + time),
+                          severity: symptomData.severityRecords[date][time]
+                      });
+                  }
+              }
+  
+              severityRecords.sort(function (a, b) {
+                  return a.datetime - b.datetime;
+              });
+  
+              // Filter data based on the selected time period
+              var filteredRecords;
+              var now = new Date();
+              if (timePeriod === 'Show All') {
+                  filteredRecords = severityRecords;
+              } else {
+                  var months = parseInt(timePeriod);
+                  var cutoffDate = new Date();
+                  cutoffDate.setMonth(cutoffDate.getMonth() - months);
+                  filteredRecords = severityRecords.filter(record => record.datetime >= cutoffDate);
+              }
+  
+              var labels = filteredRecords.map(record => record.datetime.toLocaleString());
+              var data = filteredRecords.map(record => record.severity);
+  
+              myLineChart.data.labels = labels;
+              myLineChart.data.datasets[0].data = data;
+  
+              // Forecasting
+              var forecastData = forecast(data);
+              myLineChart.data.datasets[1].data = forecastData;
+  
+              myLineChart.update();
+  
+              // Calculate insights
+              var maxSeverity = Math.max(...data);
+              var minSeverity = Math.min(...data);
+              var averageSeverity = data.reduce((acc, val) => acc + val, 0) / data.length;
+  
+              // Display insights
+              var insightsElement = document.getElementById('performanceLine-legend');
+              insightsElement.innerHTML = `
+                  <p><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
+                  <p>Maximum Severity: ${maxSeverity}</p>
+                  <p>Minimum Severity: ${minSeverity}</p>
+                  <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
+              `;
+          } else {
+              // Display message when no data is available
+              myLineChart.data.labels = [];
+              myLineChart.data.datasets[0].data = [];
+              myLineChart.data.datasets[1].data = [];
+              myLineChart.update();
+  
+              var insightsElement = document.getElementById('performanceLine-legend');
+              insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
+          }
+      }
         function forecast(data) {
             // Simple linear forecasting
             var n = data.length;
@@ -771,13 +784,27 @@
         }
 
         document.querySelectorAll('.dropdown-item').forEach(item => {
-            item.addEventListener('click', function (event) {
-                event.preventDefault();
-                var symptomName = this.getAttribute('data-symptom-name');
-                updateChart(symptomName);
-                document.getElementById('dropdownMenuButton8').innerText = symptomName.replace(/_/g, ' ');
-            });
-        });
+          item.addEventListener('click', function (event) {
+              event.preventDefault();
+              var symptomName = document.querySelector('#dropdownMenuButton8').innerText;
+              var timePeriod = document.querySelector('#dropdownMenuButton99').innerText;
+              
+              if (this.hasAttribute('data-symptom-name')) {
+                  symptomName = this.getAttribute('data-symptom-name');
+                  document.getElementById('dropdownMenuButton8').innerText = symptomName.replace(/_/g, ' ');
+              }
+              
+              if (this.hasAttribute('data-value')) {
+                  timePeriod = this.getAttribute('data-value');
+                  document.getElementById('dropdownMenuButton99').innerText = timePeriod;
+              }
+              
+              updateChart(symptomName, timePeriod);
+          });
+      });
+
+        
+        
     });
 </script>
 
