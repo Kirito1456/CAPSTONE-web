@@ -320,9 +320,9 @@
                             {% for patientData_id, patientData_data in patientData.items %}
                                 <p>
                                     <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
-                                    <strong>Age:</strong><span id = "age-view" ></span>
+                                    <span><strong>Age:</strong> {{ patientData_data.age }} </span>
                                     <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
-                                    <div id = "birthday-view" style="display: none;">{{ patientData_data.bday }}</div>
+                                    {% comment %} <div id = "birthday-view" style="display: none;">{{ patientData_data.bday }}</div> {% endcomment %}
                                 </p>
                                 <p>
                                     <span><strong>Address:</strong> {{ patientData_data.address }} </span>
@@ -352,9 +352,7 @@
                                                     {% endfor %}
                                                 </datalist>
                                             <label for="dosage"><strong>Dosage:</strong></label>
-                                            <select name="dosage" id="dosage_input" required>
-                                                <option value="" selected disabled>Select Dosage</option>
-                                            </select> 
+                                            <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage" required> 
                                         {% else %}
                                             <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" required>
                                             <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage" required> 
@@ -498,9 +496,7 @@
                                 {% endfor %}
                             </datalist>
                         <label for="dosage"><strong>Dosage:</strong></label>
-                        <select name="dosage" id="dosage_input">
-                            <option value="" selected disabled>Select Dosage</option>
-                        </select> 
+                        <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage" required>
                     {% else %}
                         <input type="text" name="medicine_name" id="medicine_name_input" placeholder="Enter Medicine Name" >
                         <input type="text" name="dosage" id="dosage_input" placeholder="Enter Dosage"> 

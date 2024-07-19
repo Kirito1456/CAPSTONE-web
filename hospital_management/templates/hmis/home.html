@@ -33,6 +33,16 @@
                 <div class="brand-logo">
                   <img src="{% static 'logo-color.png' %}" alt="logo">
                 </div>
+                {% if messages %}
+                      <div class="alert-messages">
+                        {% for message in messages %}
+                          <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
                 <h4>Hello! Let's get started</h4>
                 <h6 class="fw-light">Sign in to continue.</h6>
 

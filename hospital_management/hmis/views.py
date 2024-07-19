@@ -469,6 +469,13 @@ def AppointmentUpcomingNotif(request, notification_id):
     else:
         sorted_upcoming_appointments = {}
 
+    selected_date = request.GET.get('selected_date')
+    if selected_date:
+        # Convert selected date string to datetime object
+        selected_datetime = datetime.strptime(selected_date, "%Y-%m-%d")
+        # Filter appointments by the selected date
+        sorted_upcoming_appointments = {k: v for k, v in sorted_upcoming_appointments.items() if datetime.strptime(v['appointmentDate'], "%Y-%m-%d").date() == selected_datetime.date()}
+
     clinic_data_list = get_clinic_schedule(uid, sorted_upcoming_appointments)
     
     # Pass the combined data to the template
@@ -515,6 +522,14 @@ def AppointmentUpcoming(request):
         sorted_upcoming_appointments = dict(sorted(upcoming_appointments.items(), key=lambda item: datetime.strptime(item[1]['appointmentDate'] + ' ' + item[1]['appointmentTime'], "%Y-%m-%d %I:%M %p")))
     else:
         sorted_upcoming_appointments = {}
+    
+    selected_date = request.GET.get('selected_date')
+    if selected_date:
+        # Convert selected date string to datetime object
+        selected_datetime = datetime.strptime(selected_date, "%Y-%m-%d")
+        # Filter appointments by the selected date
+        sorted_upcoming_appointments = {k: v for k, v in sorted_upcoming_appointments.items() if datetime.strptime(v['appointmentDate'], "%Y-%m-%d").date() == selected_datetime.date()}
+
 
     clinic_data_list = get_clinic_schedule(uid, sorted_upcoming_appointments)
     
@@ -526,7 +541,8 @@ def AppointmentUpcoming(request):
         'doctors': doctors,
         'clinics': clinics,
         'clinic_data_list': clinic_data_list,
-        'notifications': notifications
+        'notifications': notifications,
+        'selected_date' : selected_date
     })
 
 def update_appointment(request):    
@@ -717,8 +733,12 @@ def AppointmentCalendar(request):
     
     return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json, 'clinics': clinics, 'notifications': notifications})
 
+def parse_time(time_str):
+    return datetime.datetime.strptime(time_str, '%H:%M') if time_str else None
+
 def AppointmentScheduling(request):
     doctors = db.child("doctors").get().val()
+    
     clinics = db.child("clinics").get().val()
     uid = request.session.get('uid')
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
@@ -745,6 +765,17 @@ def AppointmentScheduling(request):
     # Define the days of the week
     days_of_week = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
+    found_clinic = False
+    for doctors_id, doctors_data in doctors.items():
+        if doctors_id == uid:
+            if doctors_data.get('clinic'):
+                for doctorClinic in doctors_data['clinic']:
+                    if doctorClinic in clinics:
+                        found_clinic = True
+                        break
+                if found_clinic:
+                    break
+
     if request.method == 'POST':
         clinic = request.POST.get('clinic')
         selected_days = request.POST.getlist(f'selected_days_{clinic}')  # Get list of selected days for specific clinic
@@ -757,6 +788,10 @@ def AppointmentScheduling(request):
             if not isinstance(selected_days, list):
                 selected_days = [selected_days]
 
+            if morning_start > morning_end or afternoon_start > afternoon_end:
+                print('Invalid Time Range')
+                return redirect('AppointmentScheduling')
+
             # Save appointment schedule to Firebase
             data = {
                 'uid': uid,
@@ -766,8 +801,34 @@ def AppointmentScheduling(request):
                 'afternoon_start': str(afternoon_start),
                 'afternoon_end': str(afternoon_end),
             }
-            db.child('appointmentschedule').child(uid).child(clinic).update(data)
 
+            existing_schedules = db.child('appointmentschedule').child(uid).get().val()
+
+            if existing_schedules:
+                for schedule_id, existing_schedule in existing_schedules.items():
+                    if clinic != schedule_id:
+                        existing_days = existing_schedule['days']
+                        existing_morning_start = existing_schedule['morning_start']
+                        existing_morning_end = existing_schedule['morning_end']
+                        existing_afternoon_start = existing_schedule['afternoon_start']
+                        existing_afternoon_end = existing_schedule['afternoon_end']
+
+                        for day in selected_days:
+                            if day in existing_days:
+                                print('Checking Conflict')
+                                if morning_start and morning_end and existing_morning_start and existing_morning_end:
+                                    if (morning_start < existing_morning_end and morning_end > existing_morning_start):
+                                        print('Conflict Morning')
+                                        return redirect('AppointmentScheduling')
+
+                                 # Check for conflict in the afternoon schedule
+                                if afternoon_start and afternoon_end and existing_afternoon_start and existing_afternoon_end:
+                                    if (afternoon_start < existing_afternoon_end and afternoon_end > existing_afternoon_start):
+                                       print('Conflict Afternoon')
+                                       return redirect('AppointmentScheduling')
+                                        
+            db.child('appointmentschedule').child(uid).child(clinic).update(data)
+            print('Appointment schedule saved successfully!')
             messages.success(request, 'Appointment schedule saved successfully!')
             return redirect('AppointmentScheduling')
         except Exception as e:
@@ -792,7 +853,9 @@ def AppointmentScheduling(request):
         'notifications': notifications, 
         'days_of_week': days_of_week, 
         'clinic_schedules': preprocessed_clinic_schedules,
+        'found_clinic' : found_clinic
     })
+
 
 def DoctorDashboard(request):
     doctors = db.child("doctors").get().val()
@@ -800,6 +863,10 @@ def DoctorDashboard(request):
 
     if request.session.get('uid') is None:
         return redirect('home')
+    
+    # Clear old messages
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
     
     # Get data from Firebase
     upcomings = db.child("appointments").get().val()
@@ -2452,6 +2519,10 @@ def upload_pdf_to_firebase(file_path, storage_path):
 
 @csrf_exempt
 def requestTest(request):
+     # Clear old messages
+    for message in messages.get_messages(request):
+        pass  # Iterating over the messages clears them
+
     patient_uid = request.GET.get('chosenPatient')
     patients = db.child("patients").get().val()
     todaydate = datetime.now().strftime("%Y-%m-%d")
@@ -2546,9 +2617,11 @@ def requestTest(request):
             })
 
             # Success message
+            messages.success(request, 'Test request created successfully.')
             return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
         except Exception as e:
-            return HttpResponse(f"An error occurred: {e}")
+            messages.error(request, f"An error occurred: {e}")
+            return redirect(reverse('requestTest') + f'?chosenPatient={patient_uid}')
         finally:
             # Ensure the temporary file is deleted
             if os.path.exists(temp_file_path):

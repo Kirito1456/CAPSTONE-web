@@ -320,9 +320,9 @@
                             {% for patientData_id, patientData_data in patientData.items %}
                                 <p>
                                     <span><strong>Patient Name:</strong> {{ patientData_data.fname }} {{ patientData_data.lname }}</span>
-                                    <strong>Age:</strong><span id = "age-view" ></span>
+                                    <span><strong>Age:</strong> {{ patientData_data.age }} </span>
                                     <span><strong>Gender:</strong> {{ patientData_data.gender }}</span>
-                                    <div id = "birthday-view" style="display: none;">{{ patientData_data.bday }}</div>
+                                    {% comment %} <div id = "birthday-view" style="display: none;">{{ patientData_data.bday }}</div> {% endcomment %}
                                 </p>
                                 <p>
                                     <span><strong>Address:</strong> {{ patientData_data.address }} </span>

@@ -181,6 +181,7 @@
                         {% for testRequest_id, testRequest_data in testRequest.items %}
                             {% if testRequest_id == chosenPatient %}
                                 {% for request_id, request_data in testRequest_data.items %}
+                                {% if request_data.doctor == uid %}
                                     <tr>
                                         <td>{{ request_data.dateCreated }}</td>
                                         <td><a href="{{ request_data.testURL }}"> View Test Request</a></td>
@@ -199,8 +200,8 @@
                                                             {% endif %}
                                                     {% endfor %}
                                                   {% else %}
-                                                    <td>-</td>
-                                                    <td>-</td>
+                                                    {% comment %} <td>-</td>
+                                                    <td>-</td> {% endcomment %}
                                                     <td>-</td>
                                                 {% endif %}
                                               {% endfor %}
@@ -208,9 +209,10 @@
                                           </table>
                                         </td>
                                       </tr>
+                                      {% endif %}
                                 {% endfor %}
-                                {% else %}
-                                <td>-</td>
+                                {% comment %} {% else %}
+                                <td>-</td> {% endcomment %}
                                 {% endif %}
                         {% endfor %}
                         {% else %}
