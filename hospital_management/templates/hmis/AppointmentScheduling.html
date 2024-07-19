@@ -195,30 +195,30 @@
                     {% endif %}
             <div class="row">
               {% for doctors_id, doctors_data in doctors.items %}
-  {% if doctors_data.clinic %}
-    {% for doctorClinic in doctors_data.clinic %}
-      {% for clinic_id, clinic_data in clinics.items %}
-        {% if clinic_id == doctorClinic and doctors_id == uid %}
-          <div class="col-12 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">{{ clinic_data.name }}</h4>
-                <p class="card-description">{{ clinic_data.address }}</p>
-                <p class="card-description">{{ clinic_data.onumber }}</p>
-                <form method="post" action="{% url 'AppointmentScheduling' %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="clinic" value="{{ clinic_id }}">
-                  <label style="font-weight: bold;">Select Days:</label>
-                  <div class="day-checkboxes">
-                    {% for day in days_of_week %}
-                      <div class="day-checkbox">
-                        <input type="checkbox" id="{{ day }}_{{ clinic_id }}" name="selected_days_{{ clinic_id }}" value="{{ day }}"
-                        {% for schedule in clinic_schedules %}
-                          {% if schedule.clinic_id == clinic_id and day in schedule.selected_days %}checked{% endif %}
-                        {% endfor %}>
-                        <label for="{{ day }}_{{ clinic_id }}">{{ day|capfirst }}</label>
-                      </div>
-                    {% endfor %}
+                {% if doctors_data.clinic %}
+                  {% for doctorClinic in doctors_data.clinic %}
+                    {% for clinic_id, clinic_data in clinics.items %}
+                      {% if clinic_id == doctorClinic and doctors_id == uid %}
+                        <div class="col-12 grid-margin stretch-card">
+                          <div class="card">
+                            <div class="card-body">
+                              <h4 class="card-title">{{ clinic_data.name }}</h4>
+                              <p class="card-description">{{ clinic_data.address }}</p>
+                              <p class="card-description">{{ clinic_data.onumber }}</p>
+                              <form method="post" action="{% url 'AppointmentScheduling' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="clinic" value="{{ clinic_id }}">
+                                <label style="font-weight: bold;">Select Days:</label>
+                                <div class="day-checkboxes">
+                                  {% for day in days_of_week %}
+                                    <div class="day-checkbox">
+                                      <input type="checkbox" id="{{ day }}_{{ clinic_id }}" name="selected_days_{{ clinic_id }}" value="{{ day }}"
+                                      {% for schedule in clinic_schedules %}
+                                        {% if schedule.clinic_id == clinic_id and day in schedule.selected_days %}checked{% endif %}
+                                      {% endfor %}>
+                                      <label for="{{ day }}_{{ clinic_id }}">{{ day|capfirst }}</label>
+                                    </div>
+                                  {% endfor %}
                   </div>
                   <div class="time-slot">
                     <label for="morning-start_{{ clinic_id }}" style="font-weight: bold;">Morning Start:</label>
@@ -259,13 +259,13 @@
       <!-- page-body-wrapper ends -->
     </div>
     
-    <script>
+    {% comment %} <script>
       document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('appID').addEventListener('click', function () {
           alert('Appointment rescheduled successfully!');
         });
       });
-    </script>
+    </script> {% endcomment %}
     
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
@@ -288,7 +288,7 @@
       });
       document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('save-btn').addEventListener('click', function () {
-          alert('New Schedule Saved!');
+          //alert('New Schedule Saved!');
         });
       });
     </script>

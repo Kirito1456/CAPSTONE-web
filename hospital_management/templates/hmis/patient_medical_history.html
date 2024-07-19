@@ -401,30 +401,21 @@
                                     </tr>
                                   </thead>
                                   <tbody class="name_table">
-                                    {% if prescriptionsorders_ref %}
-                                      {% for po_id, po_data in prescriptionsorders_ref.items %}
+                                    {% if doctor_prescriptions %}
+                                      {% for po_id, po_data in doctor_prescriptions.items %}
                                         <tr>
-                                          {% for pres_id, pres_data in po_data.items %}
-                                          {% if pres_data.doctor == uid %}
-                                            {% if pres_id == 'dateCreated'%}
-                                              <td>{{ pres_data }}</td>
-                                            {% endif %}
-                                            {% if pres_id == 'prescriptionURL'%}
-                                              <td><a href="{{ pres_data }}">Open Prescription</a></td>
-                                            {% endif %}
-                                            {% comment %} {% else %}
-                                              <td style="text-align: center;">No Prescriptions Yet</td>
-                                     {% endcomment %}
-                                            {% endif %}
-                                          {% endfor %}
+                                          <td>{{ po_data.dateCreated }}</td>
+                                          <td><a href="{{ po_data.prescriptionURL }}">Open Prescription</a></td>
                                         </tr>
-                                        
                                       {% endfor %}
                                     {% else %}
-                                      <td colspan="2" style="text-align: center;">No Prescriptions Yet</td>
+                                      <tr>
+                                        <td colspan="2" style="text-align: center;">You Have No Prescriptions Created For This Patient</td>
+                                      </tr>
                                     {% endif %}
                                   </tbody>
                                 </table>
+                                
                               </div>
                             </div>
                           </div>

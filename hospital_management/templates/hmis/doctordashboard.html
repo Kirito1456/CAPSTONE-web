@@ -229,7 +229,7 @@
                                         <tr>
                                           <th>Patient Name</th>
                                           <th>Medication Progress</th>
-                                          <th>Medicaiton End</th>
+                                          <th>Medication End</th>
                                           
                                         </tr>
                                       </thead>
@@ -254,7 +254,7 @@
                                                   
                                                   {% if total_average_adherence %}
                                               {% for total_average_adherence_id, total_average_adherence_data in total_average_adherence.items %}
-                                                {% if patient_data.uid == total_average_adherence_id %}
+                                                {% if patient_data.uid == total_average_adherence_id and total_average_adherence_data.doctor_uid == uid%}
 
                                             
                                                 <div id="modal-{{ patient_data.uid }}" class="modal">
@@ -283,7 +283,7 @@
                                                       </div>
                                                     </div>
                                                   </td>
-                                                  <td>{{ total_average_adherence_data.dateCreated }}</td>
+                                                  <td>{{ total_average_adherence_data.dateEnd }}</td>
                                                 {% endif %}
                                               {% endfor %}
                                             {% endif %}

@@ -925,7 +925,7 @@ def AppointmentScheduling(request):
 
             if morning_start > morning_end or afternoon_start > afternoon_end:
                 print('Invalid Time Range')
-                messages.error('Invalid Time Range')
+                messages.error(request, 'Invalid Time Range')
                 return redirect('AppointmentScheduling')
 
             # Save appointment schedule to Firebase
@@ -955,12 +955,14 @@ def AppointmentScheduling(request):
                                 if morning_start and morning_end and existing_morning_start and existing_morning_end:
                                     if (morning_start < existing_morning_end and morning_end > existing_morning_start):
                                         print('Conflict Morning')
+                                        messages.error(request, 'Conflicting Schedule with Another Clinic')
                                         return redirect('AppointmentScheduling')
 
                                  # Check for conflict in the afternoon schedule
                                 if afternoon_start and afternoon_end and existing_afternoon_start and existing_afternoon_end:
                                     if (afternoon_start < existing_afternoon_end and afternoon_end > existing_afternoon_start):
                                        print('Conflict Afternoon')
+                                       messages.error(request, 'Conflicting Schedule with Another Clinic')
                                        return redirect('AppointmentScheduling')
                                         
             db.child('appointmentschedule').child(uid).child(clinic).update(data)
@@ -1065,6 +1067,7 @@ def DoctorDashboard(request):
     # Sort combined_data by lastVisited
     sorted_patients = sorted(combined_data, key=itemgetter('lastVisited'), reverse=True)
     adherence = defaultdict(list)
+    dates = []
     if patients:
         for patient_data in sorted_patients:
             patients_id = patient_data.get('uid')
@@ -1072,6 +1075,8 @@ def DoctorDashboard(request):
                 latest_date_pres = max(patientsorders[patients_id].keys())
                 adherence_percentages = {}
                 date_data = patientsorders[patients_id][latest_date_pres]
+                print(date_data)
+                max_days_prescribed = 0
                 
                 for inside_id, inside_data in date_data.items():
                     medicine_name = inside_data['medicine_name']
@@ -1081,18 +1086,26 @@ def DoctorDashboard(request):
                     days = inside_data['days']
                     dateCreated = inside_data['dateCreated']
                     presURL = inside_data['presURL']
+                   # max_days_prescribed = max(entry['days'] for entry in date_data.values())
                     
+
                     adherence_percentage = ((dispensed - remaining) / ((prescribed / days) * days)) * 100
                     adherence_percentages.setdefault(medicine_name, []).append(adherence_percentage)
+
+                    if days > max_days_prescribed:
+                        max_days_prescribed = days
+                    
 
                 # Calculate average adherence percentage for each medicine_name
                 for medicine_name, percentages in adherence_percentages.items():
                     average_adherence = sum(percentages) / len(percentages)
+                    
                     adherence[patients_id].append({
                         'patientsorders_id': patients_id,
                         'medicine_name': medicine_name,
                         'average_adherence_percentage': average_adherence,
                         'dateCreated': dateCreated,
+                        'max_days_prescribed': max_days_prescribed,
                         'presURL': presURL
                     })
 
@@ -1104,31 +1117,55 @@ def DoctorDashboard(request):
 
                     if adherence_data:
                         date_created = adherence_data[0].get('dateCreated', None)
+                        pres_URL = adherence_data[0].get('presURL', None)
+                        max_days_prescribed = adherence_data[0].get('max_days_prescribed', None)
+
+                        if date_created and max_days_prescribed:
+                            date_created_dt = datetime.strptime(date_created, '%Y-%m-%d')
+                            end_date = date_created_dt + timedelta(days=max_days_prescribed)
+                            end_date_str = end_date.strftime('%Y-%m-%d')
+                        else:
+                            end_date_str = None
                     else:
                         date_created = None
-
-                    if adherence_data:
-                        pres_URL = adherence_data[0].get('presURL', None)
-                    else:
                         pres_URL = None
+                        max_days_prescribed = None
+                        end_date_str = None
 
                     total_average_adherence[patientsorders_id] = {
                         'total_average_adherence': total_average_rounded,
-                        'dateCreated': date_created,
+                        'dateEnd': end_date_str,
                         'patientsorders_id': patientsorders_id,
                         'presURL': pres_URL
-
                     }
-            
-            
-    # Dictionary to hold latest prescription dates for each patient
-    latest_prescriptions = {}
+                
+                # Iterate over total_average_adherence
+                for patientsorders_id, adherence_data in total_average_adherence.items():
+                    pres_URL = adherence_data['presURL']
 
-    if prescriptionsorders:
-        for patient_id, prescriptions in prescriptionsorders.items():
-            # Find the latest prescription based on dateCreated
-            latest_prescription = max(prescriptions.items(), key=lambda item: item[1]['dateCreated'])[1]
-            latest_prescriptions[patient_id] = latest_prescription['dateCreated']
+                    # Iterate over prescriptionsorders
+                    for patient_uid, prescriptions_data in prescriptionsorders.items():
+                        for prescriptions_id, prescription_data in prescriptions_data.items():
+                            if prescription_data.get('prescriptionURL') == pres_URL:
+                                # Add doctor's UID to total_average_adherence
+                                adherence_data['doctor_uid'] = prescription_data.get('doctor')
+                
+                #print(total_average_adherence)
+                    
+            
+    # # Dictionary to hold latest prescription dates for each patient
+    #     latest_prescriptions = {}
+    #     for patientsorders_id, adherence_data in total_average_adherence.items():
+    #         if adherence_data['doctor_uid'] == uid:
+    #             latest_prescriptions[patientsorders_id] = adherence_data
+        
+    #     print(latest_prescriptions)
+
+    # if prescriptionsorders:
+    #     for patient_id, prescriptions in prescriptionsorders.items():
+    #         # Find the latest prescription based on dateCreated
+    #         latest_prescription = max(prescriptions.items(), key=lambda item: item[1]['dateCreated'])[1]
+    #         latest_prescriptions[patient_id] = latest_prescription['dateCreated']
 
     return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors,
@@ -1139,7 +1176,7 @@ def DoctorDashboard(request):
                                                              'total_average_adherence': total_average_adherence,
                                                              'notifications': notifications,
                                                              'sorted_patients': sorted_patients,
-                                                             'latest_prescriptions': latest_prescriptions,}) 
+                                                             }) 
 
 def patient_data_doctor_view(request):
     # Fetch patients from Firebase
@@ -2099,6 +2136,14 @@ def patient_medical_history(request):
     prescriptionsorders = db.child("prescriptionorders").get().val()
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
 
+    # Filter prescriptions to include only those prescribed by the logged-in doctor
+    doctor_prescriptions = {}
+    for prescription_id, prescription_data in prescriptionsorders_ref.items():
+        if prescription_data.get('doctor') == uid:
+            doctor_prescriptions[prescription_id] = prescription_data
+    
+    print(doctor_prescriptions)
+
     patientMedical = db.child("patientmedicalhistory").get().val()
 
     # Initialize variables
@@ -2239,7 +2284,8 @@ def patient_medical_history(request):
                                                                  'notifications': notifications,
                                                                  'chosenPatientData': chosenPatientData,
                                                                  'median_age_of_onset': median_age_of_onset, 
-                                                                 'top_3_symptoms': top_3_symptoms})
+                                                                 'top_3_symptoms': top_3_symptoms,
+                                                                 'doctor_prescriptions': doctor_prescriptions,})
 
 from datetime import datetime
 
