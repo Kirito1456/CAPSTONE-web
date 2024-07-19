@@ -183,60 +183,62 @@
           <div class="content-wrapper">
             <div class="row">
               {% for doctors_id, doctors_data in doctors.items %}
-              {% if doctors_data.clinic %}
-                {% for doctorClinic in doctors_data.clinic %}
-                  {% for clinic_id, clinic_data in clinics.items %}
-                    {% if clinic_id == doctorClinic and doctors_id == uid %}
-                      <div class="col-12 grid-margin stretch-card">
-                        <div class="card">
-                          <div class="card-body">
-                            <h4 class="card-title">{{ clinic_data.name }}</h4>
-                            <p class="card-description">{{ clinic_data.address }}</p>
-                            <p class="card-description">{{ clinic_data.onumber }}</p>
-                            <form method="post" action="{% url 'AppointmentScheduling' %}">
-                              {% csrf_token %}
-                              <input type="hidden" name="clinic" value="{{ clinic_id }}">
-                              <label style="font-weight: bold;">Select Days:</label>
-                              <div class="day-checkboxes">
-                                {% for day in days_of_week %}
-                                  <div class="day-checkbox">
-                                    <input type="checkbox" id="{{ day }}_{{ clinic_id }}" name="selected_days_{{ clinic_id }}" value="{{ day }}"
-                                    {% for schedule in clinic_schedules %}
-                                      {% if schedule.clinic_id == clinic_id and day in schedule.selected_days %}checked
-                                      {% endif %}
-                                    {% endfor %}>
-                                    <label for="{{ day }}_{{ clinic_id }}">{{ day|capfirst }}</label>
-                                  </div>
-                                {% endfor %}
-                              </div>
-                              <div class="time-slot">
-                                <label for="morning-start_{{ clinic_id }}" style="font-weight: bold;">Morning Start:</label>
-                                <input type="text" id="morning-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_start_{{ clinic_id }}"
-                                      value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_start }}{% endif %}{% endfor %}">
-                                <label for="morning-end_{{ clinic_id }}" style="font-weight: bold;">Morning End:</label>
-                                <input type="text" id="morning-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_end_{{ clinic_id }}"
-                                      value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_end }}{% endif %}{% endfor %}">
-                              </div>
-                              <div class="time-slot">
-                                <label for="afternoon-start_{{ clinic_id }}" style="font-weight: bold;">Afternoon Start:</label>
-                                <input type="text" id="afternoon-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_start_{{ clinic_id }}"
-                                      value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_start }}{% endif %}{% endfor %}">
-                                <label for="afternoon-end_{{ clinic_id }}" style="font-weight: bold;">Afternoon End:</label>
-                                <input type="text" id="afternoon-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_end_{{ clinic_id }}"
-                                      value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_end }}{% endif %}{% endfor %}">
-                              </div>
-                              <button id="save-btn" value="{{ clinic_id }}" type="submit" class="btn btn-primary btn-sm" name="clinic"><i class="ti-file btn-icon-prepend"></i> Save</button>
-                            </form>
-                          </div>
-                        </div>
+  {% if doctors_data.clinic %}
+    {% for doctorClinic in doctors_data.clinic %}
+      {% for clinic_id, clinic_data in clinics.items %}
+        {% if clinic_id == doctorClinic and doctors_id == uid %}
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">{{ clinic_data.name }}</h4>
+                <p class="card-description">{{ clinic_data.address }}</p>
+                <p class="card-description">{{ clinic_data.onumber }}</p>
+                <form method="post" action="{% url 'AppointmentScheduling' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="clinic" value="{{ clinic_id }}">
+                  <label style="font-weight: bold;">Select Days:</label>
+                  <div class="day-checkboxes">
+                    {% for day in days_of_week %}
+                      <div class="day-checkbox">
+                        <input type="checkbox" id="{{ day }}_{{ clinic_id }}" name="selected_days_{{ clinic_id }}" value="{{ day }}"
+                        {% for schedule in clinic_schedules %}
+                          {% if schedule.clinic_id == clinic_id and day in schedule.selected_days %}checked{% endif %}
+                        {% endfor %}>
+                        <label for="{{ day }}_{{ clinic_id }}">{{ day|capfirst }}</label>
                       </div>
-                    {% endif %}
-                  {% endfor %}
-                {% endfor %}
-              {%else%}
-              You have not joined any clinic yet.
-              {%endif%}
-              {% endfor %}
+                    {% endfor %}
+                  </div>
+                  <div class="time-slot">
+                    <label for="morning-start_{{ clinic_id }}" style="font-weight: bold;">Morning Start:</label>
+                    <input type="text" id="morning-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_start_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_start }}{% endif %}{% endfor %}">
+                    <label for="morning-end_{{ clinic_id }}" style="font-weight: bold;">Morning End:</label>
+                    <input type="text" id="morning-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_end_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_end }}{% endif %}{% endfor %}">
+                  </div>
+                  <div class="time-slot">
+                    <label for="afternoon-start_{{ clinic_id }}" style="font-weight: bold;">Afternoon Start:</label>
+                    <input type="text" id="afternoon-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_start_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_start }}{% endif %}{% endfor %}">
+                    <label for="afternoon-end_{{ clinic_id }}" style="font-weight: bold;">Afternoon End:</label>
+                    <input type="text" id="afternoon-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_end_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_end }}{% endif %}{% endfor %}">
+                  </div>
+                  <button id="save-btn" value="{{ clinic_id }}" type="submit" class="btn btn-primary btn-sm" name="clinic"><i class="ti-file btn-icon-prepend"></i> Save</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+{% if not found_clinic %}
+  You have not joined any clinic yet.
+{% endif %}
+
             </div>
           </div>
         </div>
