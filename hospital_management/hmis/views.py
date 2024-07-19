@@ -518,6 +518,15 @@ def AppointmentUpcoming(request):
 
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
+    clinic_schedule = db.child("appointmentschedule").child(uid).get().val()
+    available_days = set()
+    if clinic_schedule:
+        for clinic_id, clinic_data in clinic_schedule.items():
+            days = clinic_data.get('days', [])
+            available_days.update(days)
+
+    available_days_list = list(available_days)
+
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
     if upcomings:
@@ -558,7 +567,8 @@ def AppointmentUpcoming(request):
         'clinics': clinics,
         'clinic_data_list': clinic_data_list,
         'notifications': notifications,
-        'selected_date' : selected_date
+        'selected_date' : selected_date,
+        'available_days_list': available_days_list
     })
 
 def update_appointment(request):    
@@ -650,6 +660,16 @@ def followup_appointment(request):
     appointmentschedule = db.child("appointmentschedule").child(uid).get().val()
     appointments = db.child("appointments").get().val()
     clinicId = ''
+
+    DAY_NAME_TO_NUMBER = {
+        'monday': 0,
+        'tuesday': 1,
+        'wednesday': 2,
+        'thursday': 3,
+        'friday': 4,
+        'saturday': 5,
+        'sunday': 6
+    }
     
     if request.method == 'POST':
         endAppointmentPatientID = request.POST.get('followupCheckbox')
@@ -670,6 +690,26 @@ def followup_appointment(request):
             id = str(uuid.uuid1())
 
             reoccuring = request.POST.get('reoccuringCheckbox')
+            available_days = set()
+            if appointmentschedule:
+                for clinic_id, clinic_data in appointmentschedule.items():
+                    days = clinic_data.get('days', [])
+                    available_days.update(days)
+
+            def get_nearest_valid_date(date, available_days):
+                # Adjust the date to the nearest valid day
+                day_of_week = date.weekday()
+                available_days = {DAY_NAME_TO_NUMBER[day] for day in available_days} 
+                print('day_of_week is ', day_of_week)
+                print('available_days is ', available_days)
+                if day_of_week in available_days:
+                    return date
+                # Find the nearest valid day
+                for i in range(1, 8):
+                    next_day = (day_of_week + i) % 7
+                    if next_day in available_days:
+                        return date + timedelta(days=i)
+                return date
 
             # Single follow-up appointment
             if not reoccuring:
@@ -717,11 +757,12 @@ def followup_appointment(request):
                 
                 for _ in range(4):  # Add appointments for the next 1 year
                     date1 += timedelta(days=interval_months * 30)
+                    nearest_date = get_nearest_valid_date(date1, available_days)
 
                     booked_time_slots = set()
                     if appointments:
                         for appointment_data in appointments.values():
-                            if (appointment_data['appointmentDate'] == date1.strftime('%Y-%m-%d') and 
+                            if (appointment_data['appointmentDate'] == nearest_date.strftime('%Y-%m-%d') and 
                                 appointment_data['clinicUID'] == clinicId):
                                 booked_time_slots.add(appointment_data['appointmentTime'])
 
@@ -733,7 +774,7 @@ def followup_appointment(request):
                         appointmentTime = find_nearest_available_time(appointmentTime, available_time_slots)
 
                     data = {
-                        'appointmentDate': date1.strftime('%Y-%m-%d'),
+                        'appointmentDate': nearest_date.strftime('%Y-%m-%d'),
                         'appointmentTime': appointmentTime,
                         'status': 'Confirmed',
                         'doctorUID': uid,
@@ -1195,6 +1236,15 @@ def patient_personal_information_inpatient(request):
     endAppointment = request.GET.get('appointmentID', '')
 
     clinic_doctor_list = get_clinic_doctor_list()
+
+    clinic_schedule1 = db.child("appointmentschedule").child(uid).get().val()
+    available_days = set()
+    if clinic_schedule1:
+        for clinic_id, clinic_data in clinic_schedule1.items():
+            days = clinic_data.get('days', [])
+            available_days.update(days)
+
+    available_days_list = list(available_days)
 
     
     # Filter and sort upcoming appointments
@@ -1906,7 +1956,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'showOthers': showOthers,
                                                                                 'prescriptionsorders': prescriptionsorders,
                                                                                 # 'latest_prescription_url': latest_prescription_url,
-                                                                                'dates': dates})
+                                                                                'dates': dates,
+                                                                                'available_days_list': available_days_list})
 
 def save_chiefComplaint(request):
         

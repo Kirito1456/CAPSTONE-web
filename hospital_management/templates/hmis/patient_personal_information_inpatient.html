@@ -214,7 +214,7 @@
                                 <div id="followUpDetails" style="display: none;">
                                     <div id="onceFP" class="detail-wrapper">
                                         <label for="followUpDate" class="detailname" style="font-weight: bold;">Next follow-up:</label>
-                                        <input type="date" id="followUpDate" name="follow_up_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                        <input type="date" class="jsdatepicker" id="followUpDate" name="follow_up_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                                     </div>
 
 
@@ -570,6 +570,76 @@
       </div>
       <!-- page-body-wrapper ends -->
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var availableDays = {{ available_days_list|safe }};
+        
+        // Convert available days to a format we can use
+        var availableDaysMap = {
+            'Monday': 1,
+            'Tuesday': 2,
+            'Wednesday': 3,
+            'Thursday': 4,
+            'Friday': 5,
+            'Saturday': 6,
+            'Sunday': 0,
+            'monday': 1,
+            'tuesday': 2,
+            'wednesday': 3,
+            'thursday': 4,
+            'friday': 5,
+            'saturday': 6,
+            'sunday': 0,
+        };
+    
+        var availableDayNumbers = new Set(availableDays.map(day => availableDaysMap[day]));
+    
+        var dateInputs = document.querySelectorAll('.jsdatepicker');
+    
+        // Function to check if a date should be enabled or disabled
+        function isDateAvailable(date) {
+            var dayNumber = date.getDay();
+            return availableDayNumbers.has(dayNumber);
+        }
+    
+        function disableUnavailableDates() {
+            var today = new Date();
+            var minDate = today.toISOString().split('T')[0];
+            
+            var maxDate = new Date();
+            maxDate.setFullYear(maxDate.getFullYear() + 1);  // Example: 1 year from now
+            var maxDateStr = maxDate.toISOString().split('T')[0];
+            
+            var currentDate = new Date(today);
+            var endDate = new Date(maxDate);
+            
+            var disabledDates = [];
+    
+            while (currentDate <= endDate) {
+                if (!isDateAvailable(currentDate)) {
+                    disabledDates.push(currentDate.toISOString().split('T')[0]);
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+    
+            dateInputs.forEach(function(dateInput) {
+                dateInput.setAttribute('min', minDate);
+                dateInput.setAttribute('max', maxDateStr);
+                
+                dateInput.addEventListener('input', function() {
+                    var selectedDate = new Date(dateInput.value);
+                    if (disabledDates.includes(dateInput.value)) {
+                        alert('The selected date is not available. Your schedule does not accomodate this day.');
+                        dateInput.value = '';
+                    }
+                });
+            });
+        }
+    
+        disableUnavailableDates();
+      });
+    </script>
 
     <script>
       document.getElementById('followUpCheckbox').addEventListener('change', function() {
