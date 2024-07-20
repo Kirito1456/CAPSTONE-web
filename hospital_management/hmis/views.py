@@ -1859,22 +1859,24 @@ def patient_personal_information_inpatient(request):
     #                         print('complains value are ', value)
     #                 else:
     #                     print("No 'complains' found for this date.")
+    print('endAppointment is ', endAppointment)
 
     for consultation_id, data in consulnotes.items():
-        if consultation_id == chosenPatient:
-            for id, dates_in_data in data.items():
+        for app_id, app_data in appointments.items():
+            if consultation_id == chosenPatient == app_data['patientName'] and endAppointment == app_id:
+                for id, dates_in_data in data.items():
+                    if id == today_date == app_data['appointmentDate']:
+                        dates = dates_in_data  # Assign dates if the condition is met
+                        if 'complains' in dates_in_data:  
+                            for key, value in dates_in_data['complains'].items():  
+                                dates = dates_in_data['complains']
+                                print('complains id are ', key)
+                                print('complains value are ', value)
+                        else:
+                            print("No 'complains' found for this date.")
+                        break  # Exit the loop if the date is found
                 if id == today_date:
-                    dates = dates_in_data  # Assign dates if the condition is met
-                    if 'complains' in dates_in_data:  
-                        for key, value in dates_in_data['complains'].items():  
-                            dates = dates_in_data['complains']
-                            print('complains id are ', key)
-                            print('complains value are ', value)
-                    else:
-                        print("No 'complains' found for this date.")
-                    break  # Exit the loop if the date is found
-            if id == today_date:
-                break  # Exit the outer loop if the patient is found
+                    break  # Exit the outer loop if the patient is found
 
     chosenPatientData = {}
     for patients_id, patients_data in patients.items():
