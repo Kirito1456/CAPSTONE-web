@@ -83,6 +83,12 @@ def home(request):
 
         try:
             user = firebase_auth.sign_in_with_email_and_password(email, password)
+            if user:
+                messages.success(request, 'Login successful!')
+            else:
+                messages.error(request, 'Invalid Login Credentials')
+                return redirect('home')
+
             session_id = user['localId']
             request.session['uid'] = str(session_id)
 
@@ -90,13 +96,11 @@ def home(request):
 
             # subject = 'Welcome to My Site'
             # message = 'Thank you for creating an account!'
-            # from_email = 'jmmojica0701@gmail.com'
+            # from_email = ''
             recipient_list = [email]
             # send_mail(subject, message, from_email, recipient_list)
             
             # send_mail(subject, message, from_email, recipient_list)
-            
-            messages.success(request, 'Login successful!')
 
             # Fetch doctors and nurses data from Firebase
             doctors = db.child("doctors").get().val()
