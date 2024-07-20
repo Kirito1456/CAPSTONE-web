@@ -2159,9 +2159,10 @@ def patient_medical_history(request):
 
     # Filter prescriptions to include only those prescribed by the logged-in doctor
     doctor_prescriptions = {}
-    for prescription_id, prescription_data in prescriptionsorders_ref.items():
-        if prescription_data.get('doctor') == uid:
-            doctor_prescriptions[prescription_id] = prescription_data
+    if prescriptionsorders_ref:
+        for prescription_id, prescription_data in prescriptionsorders_ref.items():
+            if prescription_data.get('doctor') == uid:
+                doctor_prescriptions[prescription_id] = prescription_data
     
     patientMedical = db.child("patientmedicalhistory").get().val()
 
@@ -2188,11 +2189,30 @@ def patient_medical_history(request):
                         smoking_factor = 1.21  # Lower risk factor for former smokers
                     elif smoking_status == 'not at all':
                         smoking_factor = 1.0 
+        else:
+            smoking_factor = 1.0
                         
 
 
     # Calculate COPD risk
     copd_risk = round((calculate_copd_risk(baseline_risk, odds_ratio, num_family_members_with_copd, smoking_factor))*100, 2)
+
+    patientsymptoms = db.child("symptoms").get().val()
+    symptoms_list = db.child("symptomsList").get().val()
+
+    #Get Patient Symptoms
+    chosenPatientSymptoms = {}
+    for patientsymptoms_id, patientsymptoms_data in patientsymptoms.items():
+        if patientsymptoms_id == chosenPatient:
+            chosenPatientSymptoms[patientsymptoms_id] = patientsymptoms_data
+
+    chosenPatientSymptoms1 = []
+
+    if chosenPatient in patientsymptoms:
+        patient_data1 = patientsymptoms[chosenPatient]
+        for symptom, details in patient_data1.items():
+            formatted_symptom = symptom.replace('_', ' ')
+            chosenPatientSymptoms1.append(formatted_symptom)
 
     chosenPatientData= {}
     
@@ -2308,7 +2328,11 @@ def patient_medical_history(request):
                                                                  'chosenPatientData': chosenPatientData,
                                                                  'copd_risk': copd_risk, 
                                                                  'top_3_symptoms': top_3_symptoms,
-                                                                 'doctor_prescriptions': doctor_prescriptions,  })
+                                                                 'doctor_prescriptions': doctor_prescriptions,
+                                                                'chosenPatientSymptoms1': chosenPatientSymptoms1,
+                                                                'chosenPatientSymptoms': chosenPatientSymptoms,
+                                                                'symptoms_list': symptoms_list
+                                                                     })
 
 from datetime import datetime
 
@@ -2428,6 +2452,7 @@ def outpatient_medication_order(request):
 
 @csrf_exempt
 def save_prescriptions(request):
+    previous_url = request.META.get('HTTP_REFERER')
     patient_uid = request.GET.get('chosenPatient')
     patients = db.child("patients").get().val()
     todaydate = datetime.now().strftime("%Y-%m-%d")
@@ -2568,7 +2593,8 @@ def save_prescriptions(request):
             
         # Success message
         messages.success(request, 'Prescriptions created successfully.')           
-        return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
+        # return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
+        return redirect(previous_url)
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
         return redirect(reverse('outpatient_medication_order') + f'?chosenPatient={patient_uid}')
