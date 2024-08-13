@@ -2789,7 +2789,10 @@ def requestTest(request):
      # Clear old messages
     for message in messages.get_messages(request):
         pass  # Iterating over the messages clears them
+    appointment_id = request.GET.get('appointmentID')
+    previous_url = request.META.get('HTTP_REFERER')
 
+    print(appointment_id)
     patient_uid = request.GET.get('chosenPatient')
     patients = db.child("patients").get().val()
     todaydate = datetime.now().strftime("%Y-%m-%d")
@@ -2885,7 +2888,8 @@ def requestTest(request):
 
             # Success message
             messages.success(request, 'Test request created successfully.')
-            return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
+            return redirect(previous_url)        
+            # return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}&appointmentID={appointment_id}')        
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
             return redirect(reverse('requestTest') + f'?chosenPatient={patient_uid}')
