@@ -95,7 +95,7 @@
                   <i class="icon-bell"></i>
                   <span class="count">{{ notifications.count }}</span>
               </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown" style="max-height: 300px; overflow-y: auto;">
                   <a class="dropdown-item py-3 border-bottom">
                       <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
                   </a>
@@ -112,6 +112,16 @@
                   </a>
                   {% elif notification.type == 'appointment' %}
                   <a class="dropdown-item preview-item py-3" href="{% url 'AppointmentUpcomingNotif' notification.id %}">
+                    <div class="preview-thumbnail">
+                          <i class="mdi mdi-alert m-auto text-primary"></i>
+                      </div>
+                      <div class="preview-item-content">
+                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      </div>
+                  </a>
+                  {% elif notification.type == 'symptom' %}
+                  <a class="dropdown-item preview-item py-3" href="{% url 'patient_history' notification.id %}?chosenPatient={{notification.patient_id}}">
                     <div class="preview-thumbnail">
                           <i class="mdi mdi-alert m-auto text-primary"></i>
                       </div>

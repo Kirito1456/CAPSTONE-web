@@ -127,6 +127,37 @@ class Command(BaseCommand):
                     )
             except Exception as e:
                 print(f"Error processing appointment data: {e}")
+
+        def symptoms_stream_handler(message):
+            try:
+                print(f"Received symptoms message: {message}")
+                if message["event"] == "put" and message["data"] is not None:
+                    process_symptom_data(message["data"])
+            except Exception as e:
+                print(f"Error processing symptoms message: {e}")
+        
+        def process_symptom_data(symptom_data):
+            try:
+                patients = db.child("patients").get().val()
+                for patient_id, symptoms in symptom_data.items():
+                    for symptom_name, symptom_details in symptoms.items():
+                        if "severityRecords" in symptom_details:
+                            for date, time_records in symptom_details["severityRecords"].items():
+                                for time, severity in time_records.items():
+                                    if severity in [3, 4]:
+                                        print(f"High severity detected: {severity} for {symptom_name} on {date} at {time}")
+                                        for id, patient_data in patients.items():
+                                            if patient_id == id:
+                                                name = patient_data.get('fname') + ' ' + patient_data.get('lname')
+                                        Notification.objects.create(
+                                            message=f'Patient {name} has a high severity of {severity} for {symptom_name} on {date} at {time}.',
+                                            created_at=date,
+                                            patient_id=patient_id,
+                                            is_read=False,
+                                            type='symptom',
+                                        )
+            except Exception as e:
+                print(f"Error processing symptom data: {e}")
                 
          # Define a function to stop the listener
         def stop_listener(signal, frame):
@@ -140,6 +171,7 @@ class Command(BaseCommand):
         # Set up a listener on the Firebase Realtime Database
         my_stream = db.child("submittedTest").stream(stream_handler)
         appointments_stream = db.child("appointments").stream(appointments_stream_handler)
+        symptoms_stream = db.child("symptoms").stream(symptoms_stream_handler)
 
         # Keep the script running until stop_event is set
         try:
@@ -149,4 +181,5 @@ class Command(BaseCommand):
         finally:
             my_stream.close()
             appointments_stream.close()
+            symptoms_stream.close()
             print("Firebase listener stopped.")

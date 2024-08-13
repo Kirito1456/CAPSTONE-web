@@ -34,6 +34,7 @@ urlpatterns = [
     # Patient Data Module
     path('patient_data_doctor_view/', views.patient_data_doctor_view, name='patient_data_doctor_view'),
     path('patient_medical_history/', views.patient_medical_history, name='patient_medical_history'),
+    path('patient_history/read/<int:notification_id>/', views.patient_history, name='patient_history'),
     path('patient_medication_doctor/', views.patient_medication_doctor, name='patient_medication_doctor'),
     path('patient_medication_table/', views.patient_medication_table, name = 'patient_medication_table'),
     path('outpatient_medication_order/', views.outpatient_medication_order, name = 'outpatient_medication_order'),

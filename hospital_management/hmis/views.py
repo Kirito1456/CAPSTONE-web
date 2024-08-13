@@ -1018,8 +1018,7 @@ def DoctorDashboard(request):
     clinics = db.child("clinics").get().val()
     patientsorders = db.child("patientsorders").get().val()
     prescriptionsorders = db.child("prescriptionsorders").get().val()
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
-
+    
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
     if upcomings:
@@ -1046,8 +1045,15 @@ def DoctorDashboard(request):
         for patients_id, patients_data in patients.items():
             for appointment_id, appointment_data in appointments.items():
                 if appointment_data['doctorUID'] == uid and patients_id == appointment_data['patientName']:
+                    notifications = Notification.objects.filter(patient_id=patients_id, type='symptom')
+                    notifications.update(firebase_id=uid)
                     chosenPatients[patients_id] = patients_data
 
+    # for patients_id, patients_data in patients.items():
+    #     notifications = Notification.objects.filter(patient_id=patients_id, type='symptom')
+    #     notifications.update(firebase_id=uid)
+
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     chosenPatientData= {}
     if patientsdata:
@@ -1227,6 +1233,7 @@ def patient_data_doctor_view(request):
         'sorted_patients': sorted_patients,
         'notifications': notifications
     }) 
+    
 
 def patient_personal_information_inpatient(request):
     
@@ -2338,6 +2345,208 @@ def patient_medical_history(request):
                                                                 'symptoms_list': symptoms_list
                                                                      })
 
+def patient_history(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id)
+    notification.is_read = True
+    notification.save()
+    doctors = db.child("doctors").get().val()
+    patientsdata = db.child("patients").get().val()
+    appointments = db.child("appointments").get().val()
+    chosen_patient_uid = request.GET.get('chosenPatient', None)
+    uid = request.session['uid'] 
+    chosenPatient = request.GET.get('chosenPatient', '')
+    consulNotes = db.child("consultationNotes").get().val()
+    testrequest = db.child("testrequest").get().val()
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+
+    prescriptionsorders = db.child("prescriptionorders").get().val()
+    prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
+
+    sorted_consul_notes = {}
+
+    for user_uid, notes in consulNotes.items():
+        # Sort notes by date
+        sorted_notes = dict(sorted(notes.items(), key=lambda item: datetime.strptime(item[0], '%Y-%m-%d'), reverse=True))
+        sorted_consul_notes[user_uid] = sorted_notes
+
+
+    # Filter prescriptions to include only those prescribed by the logged-in doctor
+    doctor_prescriptions = {}
+    if prescriptionsorders_ref:
+        for prescription_id, prescription_data in prescriptionsorders_ref.items():
+            if prescription_data.get('doctor') == uid:
+                doctor_prescriptions[prescription_id] = prescription_data
+    
+    patientMedical = db.child("patientmedicalhistory").get().val()
+
+    copd = ['chronic Bronchitis', 'emphysema', 'copd', 'chronic obstructive pulmonary disease']
+    baseline_risk = 0.14
+    odds_ratio = 1.57
+
+    num_family_members_with_copd = 0
+
+    # Iterate through the patient medical data
+    for medical_id, medical_data in patientMedical.items():
+        if medical_id == chosenPatient:
+            for m_id, m_data in medical_data.items():
+                if m_id == 'familyHistory':
+                    for f_id, f_data in m_data.items():
+                        # Check if any COPD-related diagnosis is in f_data['diagnosis']
+                        if any(copd_diagnosis.lower() in f_data['diagnosis'].lower() for copd_diagnosis in copd):
+                            num_family_members_with_copd += 1
+                if m_id == 'socialHistory':   
+                    smoking_status = m_data['smokingStatus'].lower()
+                    if smoking_status == 'current smoker':
+                        smoking_factor = 1.46  # Higher risk factor for current smokers
+                    elif smoking_status == 'former smoker':
+                        smoking_factor = 1.21  # Lower risk factor for former smokers
+                    elif smoking_status == 'not at all':
+                        smoking_factor = 1.0 
+        else:
+            smoking_factor = 1.0
+                        
+
+
+    # Calculate COPD risk
+    copd_risk = round((calculate_copd_risk(baseline_risk, odds_ratio, num_family_members_with_copd, smoking_factor))*100, 2)
+
+    patientsymptoms = db.child("symptoms").get().val()
+    symptoms_list = db.child("symptomsList").get().val()
+
+    #Get Patient Symptoms
+    chosenPatientSymptoms = {}
+    for patientsymptoms_id, patientsymptoms_data in patientsymptoms.items():
+        if patientsymptoms_id == chosenPatient:
+            chosenPatientSymptoms[patientsymptoms_id] = patientsymptoms_data
+
+    chosenPatientSymptoms1 = []
+
+    if chosenPatient in patientsymptoms:
+        patient_data1 = patientsymptoms[chosenPatient]
+        for symptom, details in patient_data1.items():
+            formatted_symptom = symptom.replace('_', ' ')
+            chosenPatientSymptoms1.append(formatted_symptom)
+
+    chosenPatientData= {}
+    
+    if patientsdata:
+        for patientsdata_id, patientsdata_data in patientsdata.items():
+            for appointment_id, appointment_data in appointments.items():
+                if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
+                    chosenPatientData[patientsdata_id] = patientsdata_data
+
+    if request.method == 'POST':
+        if 'saveMedicalHistoryButton' in request.POST:
+            diagnosis_surgical = request.POST.getlist('diagnosis_surgical')
+            date_illness = request.POST.getlist('date_illness')
+            treatment = request.POST.getlist('treatment')
+            remarks = request.POST.getlist('remarks')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'diagnosis_surgical': diagnosis_surgical,
+                'date_illness': date_illness,
+                'treatment': treatment,
+                'remarks': remarks
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('pastHistory').update(data)
+
+        if 'saveAllergyButton' in request.POST:
+            allergen = request.POST.getlist('allergen')
+            severity = request.POST.getlist('severity')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'allergen': allergen,
+                'severity': severity
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('allergyhistory').update(data)
+
+        if 'saveImmunizationButton' in request.POST:
+            vaccine = request.POST.getlist('vaccine')
+            date = request.POST.getlist('date')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'vaccine': vaccine,
+                'date': date
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('immunizationHistory').update(data)
+
+        if 'saveFamilyHistoryButton' in request.POST:
+            family_member = request.POST.getlist('family_member')
+            diagnosis = request.POST.getlist('diagnosis')
+            age = request.POST.getlist('age')
+            
+            data = {
+                'patient_id': chosen_patient_uid,
+                'family_member': family_member,
+                'diagnosis': diagnosis,
+                'age': age
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('familyHistory').update(data)
+
+        if 'saveSocialHistoryButton' in request.POST:
+            smoking = request.POST.get('smoking')
+            yearsSmoking = request.POST.get('smokingyears')
+            #alcohol = request.POST.get('alcohol')
+            data = {
+                'patient_id': chosen_patient_uid,
+                'smoking': smoking,
+                'yearsSmoking': yearsSmoking
+                #'alcohol': alcohol
+            }
+            db.child('patientmedicalhistory').child(chosen_patient_uid).child('socialHistory').update(data)
+
+    def transform_symptom_name(symptom):
+        parts = symptom.replace('Input', '').split('_')
+        transformed_parts = []
+        
+        for part in parts:
+            temp_parts = []
+            
+            for i, char in enumerate(part):
+                if char.isupper() and i > 0:
+                    temp_parts.append(' ')
+                temp_parts.append(char)
+            
+            transformed_parts.append(''.join(temp_parts))
+        return ' '.join(transformed_parts).capitalize()
+
+    symptom_counter = defaultdict(int)
+
+    for patient_id, dates in consulNotes.items():
+        if patient_id == chosenPatient:
+            for date, data in dates.items():
+                if 'complains' in data and data['doctorID'] == uid:
+                    for symptom, description in data['complains'].items():
+                        transformed_symptom = transform_symptom_name(symptom)
+                        symptom_counter[transformed_symptom] += 1
+
+    sorted_symptoms = sorted(symptom_counter.items(), key=lambda item: item[1], reverse=True)
+
+    # Step 4: Get the top 3 most recurring symptoms and their total numbers
+    top_3_symptoms = sorted_symptoms[:3]
+
+
+    return render(request, 'hmis/patient_medical_history.html', {'doctors': doctors,
+                                                                 'uid': uid,
+                                                                 'patientMedical': patientMedical,
+                                                                 'chosenPatient': chosenPatient,
+                                                                 'consulNotes': sorted_consul_notes,
+                                                                 'prescriptionsorders': prescriptionsorders,
+                                                                 'prescriptionsorders_ref': prescriptionsorders_ref,
+                                                                 'testrequest': testrequest,
+                                                                 'notifications': notifications,
+                                                                 'chosenPatientData': chosenPatientData,
+                                                                 'copd_risk': copd_risk, 
+                                                                 'top_3_symptoms': top_3_symptoms,
+                                                                 'doctor_prescriptions': doctor_prescriptions,
+                                                                'chosenPatientSymptoms1': chosenPatientSymptoms1,
+                                                                'chosenPatientSymptoms': chosenPatientSymptoms,
+                                                                'symptoms_list': symptoms_list
+                                                                     })
+
 from datetime import datetime
 
 def view_treatment_plan_all(request):
@@ -2508,6 +2717,7 @@ def save_prescriptions(request):
             'route': request.POST.getlist('route'),
             'times': request.POST.getlist('times'),
             'days': request.POST.getlist('days'),
+            'maintenance': request.POST.getlist('maintenance'),
         },
         'doctor': doctorName,
         'specialization': specialization,
@@ -2531,6 +2741,7 @@ def save_prescriptions(request):
             'route': request.POST.getlist('route'),
             'times': request.POST.getlist('times'),
             'days': request.POST.getlist('days'),
+            'maintenance': request.POST.getlist('maintenance'),
         },
         'status': "Ongoing",
     })
@@ -2629,7 +2840,7 @@ def diagnostic_reports(request):
     patients = db.child("patients").get().val()
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
-    testRequests = db.child("testrequest").get().val()
+    testRequests = db.child("testrequest").get().val()  
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
     
