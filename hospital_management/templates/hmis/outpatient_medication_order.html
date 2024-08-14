@@ -349,6 +349,42 @@
                         <br>
             
                         <div class="prescription-details">
+                            {% if maintenance_medicines %}
+                                {% for medicine in maintenance_medicines %}
+                                    <div id="medicine-container">
+                                        <div class="medicine">
+                                            <div class="medicine-row">
+                                                <label for="medicine-name"><strong>Medicine Name:</strong></label>
+                                                <input type="text" name="medicine_name" id="medicine_name_input" value="{{ medicine.name }}" >
+                                                
+                                                <label for="dosage"><strong>Dosage:</strong></label>
+                                                <input type="text" name="dosage" id="dosage_input" value="{{ medicine.dosage }}"> 
+                                                
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
+                                            </div>
+                                            <p>
+                                                Sig.: take through
+                                                <input type="text" name="route" id="route_input" value="{{ medicine.route }}" >
+                                                every
+                                                <select id="times" name="times" required>
+                                                    <option value="1-0-0" {% if medicine.times == "1-0-0" %} selected {% endif %}>1-0-0</option>
+                                                    <option value="0-1-0" {% if medicine.times == "0-1-0" %} selected {% endif %}>0-1-0</option>
+                                                    <option value="0-0-1" {% if medicine.times == "0-0-1" %} selected {% endif %}>0-0-1</option>
+                                                    <option value="1-1-0" {% if medicine.times == "1-1-0" %} selected {% endif %}>1-1-0</option>
+                                                    <option value="1-0-1" {% if medicine.times == "1-0-1" %} selected {% endif %}>1-0-1</option>
+                                                    <option value="0-1-1" {% if medicine.times == "0-1-1" %} selected {% endif %}>0-1-1</option>
+                                                    <option value="1-1-1" {% if medicine.times == "1-1-1" %} selected {% endif %}>1-1-1</option>
+                                                </select>
+                                                times for 
+                                                <input type="text" name="days" value="{{ medicine.days }}" size="2" >
+                                                days &nbsp;&nbsp;
+                                                <input type="checkbox" name="maintenance" checked > maintenance</input>
+                                                <hr>
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                             <div id="medicine-container">
                                 <div class="medicine">
                                     <div class="medicine-row">
@@ -528,7 +564,8 @@
                     </select>
                     times for
                     <input type="text" name="days" size="2">
-                    days
+                    days &nbsp;&nbsp;
+                    <input type="checkbox" name="maintenance" > maintenance</input>
                     <hr>
                 </p>
             `;

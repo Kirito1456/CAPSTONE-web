@@ -2639,6 +2639,29 @@ def outpatient_medication_order(request):
     uid = request.session['uid']
     disease = request.GET.get('diagnosis')
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    prescriptions = db.child("prescriptionsorders").child(patient_uid).get().val()
+
+    # Sort prescriptions by date and get the latest one
+    if prescriptions:
+        sorted_prescriptions = sorted(prescriptions.values(), key=lambda x: x['dateCreated'], reverse=True)
+        latest_prescription = sorted_prescriptions[0] if sorted_prescriptions else None
+    else:
+        latest_prescription = None
+
+    maintenance_medicines = []
+    if latest_prescription:
+        for idx, maintenance_flag in enumerate(latest_prescription['medicines']['maintenance']):
+            if maintenance_flag == 'on':
+                maintenance_medicines.append({
+                    'days': latest_prescription['medicines']['days'][idx],
+                    'dosage': latest_prescription['medicines']['dosage'][idx],
+                    'maintenance': latest_prescription['medicines']['maintenance'][idx],
+                    'name': latest_prescription['medicines']['name'][idx],
+                    'route': latest_prescription['medicines']['route'][idx],
+                    'times': latest_prescription['medicines']['times'][idx],
+                })
+
+    print(maintenance_medicines)
 
     todaydate = datetime.now().strftime("%Y-%m-%d")
     clinics = db.child("clinics").get().val()
@@ -2661,7 +2684,8 @@ def outpatient_medication_order(request):
                                                                      'clinics' :clinics, 
                                                                      'patientData': patientData,
                                                                      'disease': disease,
-                                                                     'notifications': notifications})
+                                                                     'notifications': notifications,
+                                                                     'maintenance_medicines': maintenance_medicines})
 
 @csrf_exempt
 def save_prescriptions(request):
