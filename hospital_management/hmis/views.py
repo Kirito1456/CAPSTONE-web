@@ -1053,7 +1053,8 @@ def DoctorDashboard(request):
     #     notifications = Notification.objects.filter(patient_id=patients_id, type='symptom')
     #     notifications.update(firebase_id=uid)
 
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     chosenPatientData= {}
     if patientsdata:
@@ -1184,6 +1185,7 @@ def DoctorDashboard(request):
                                                              'total_average_adherence': total_average_adherence,
                                                              'notifications': notifications,
                                                              'sorted_patients': sorted_patients,
+                                                             'non_symptom_notifications_count': non_symptom_notifications_count,
                                                              }) 
 
 def patient_data_doctor_view(request):
