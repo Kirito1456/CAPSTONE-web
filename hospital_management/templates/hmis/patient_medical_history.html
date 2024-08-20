@@ -666,7 +666,7 @@
           }
       });
   
-      function updateChart(symptomName, timePeriod, specificTime) {
+      function updateChart(symptomName, timePeriod, specificTime, week) {
           var patientId = Object.keys(chosenPatientSymptoms)[0];
           var symptomData = chosenPatientSymptoms[patientId][symptomName];
           var severityRecords = [];
@@ -694,24 +694,21 @@
               } else if (timePeriod === '1 month') {
                 var startMonth = specificTime;
                 var startYear = now.getFullYear();
-                var cutoffStart = new Date(startYear, startMonth - 1, 1);
-                var cutoffEnd = new Date(startYear, startMonth, 0);
+                var cutoffStart = new Date(startYear, startMonth - 1, 1); // months are 0-based
+                var cutoffEnd = new Date(startYear, startMonth, 0); // last day of the month
                 filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
+                
 
-                // Group data by week
-                var weeklyData = {};
-                filteredRecords.forEach(record => {
-                    var weekNumber = getWeekNumber(record.datetime);
-                    if (!weeklyData[weekNumber]) {
-                        weeklyData[weekNumber] = [];
-                    }
-                    weeklyData[weekNumber].push(record.severity);
-                });
+                if (week !== null) {
+                  var firstDayOfMonth = new Date(startYear, startMonth - 1, 1).getDay();
+                  var weekStartDay = (week - 1) * 7 - firstDayOfMonth + 1;
+                  var weekEndDay = weekStartDay + 6;
+                  var cutoffWeekStart = new Date(startYear, startMonth - 1, weekStartDay);
+                  var cutoffWeekEnd = new Date(startYear, startMonth - 1, weekEndDay);
 
-                var labels = Object.keys(weeklyData).map(week => 'Week ' + week);
-                var data = Object.values(weeklyData).map(weekData => {
-                    return weekData.reduce((acc, val) => acc + val, 0) / weekData.length;
-                });
+                  filteredRecords = filteredRecords.filter(record => record.datetime >= cutoffWeekStart && record.datetime <= cutoffWeekEnd);
+
+                }
 
               } else if (timePeriod === '3 months') {
                   var quarter = specificTime;
@@ -735,7 +732,7 @@
                   filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
               }
   
-              var labels = filteredRecords.map(record => record.datetime.toLocaleString());
+              var labels = filteredRecords.map(record => record.datetime.toLocaleDateString());
               var data = filteredRecords.map(record => record.severity);
               
   
@@ -784,12 +781,6 @@
         }
     }
 
-      function getWeekNumber(date) {
-        var firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-        var pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-      }
-
       function forecast(data) {
           // Simple linear forecasting
           var n = data.length;
@@ -826,7 +817,7 @@
                     document.getElementById('weekSelection').style.display = timePeriod === '1 month' ? 'block' : 'none';
                     
                     // Update chart with selected time period
-                    updateChart(symptomName, timePeriod, null);
+                    updateChart(symptomName, timePeriod, null, null);
                 }
     
                 // Handle specific time selections
@@ -850,13 +841,13 @@
                 if (this.hasAttribute('data-quarter')) {
                     var quarter = this.getAttribute('data-quarter');
                     document.getElementById('dropdownQuarterButton').innerText = this.innerText; // Update button text
-                    updateChart(symptomName, '3 months', quarter);
+                    updateChart(symptomName, '3 months', quarter, null);
                 }
     
                 if (this.hasAttribute('data-half')) {
                     var half = this.getAttribute('data-half');
                     document.getElementById('dropdownHalfButton').innerText = this.innerText; // Update button text
-                    updateChart(symptomName, '6 months', half);
+                    updateChart(symptomName, '6 months', half, null);
                 }
             });
         });
