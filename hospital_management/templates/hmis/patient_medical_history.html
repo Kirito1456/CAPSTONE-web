@@ -501,6 +501,9 @@
                                     </div>
                                       </div>
                                     </div>
+                                    <div id="rawRecordsDisplay"></div>
+                                    <div id="dateRangeDisplay"></div>
+                                    <div id="rawRecordsDisplay"></div>
 
                                     
 
@@ -665,7 +668,7 @@
               }
           }
       });
-  
+
       function updateChart(symptomName, timePeriod, specificTime, week) {
           var patientId = Object.keys(chosenPatientSymptoms)[0];
           var symptomData = chosenPatientSymptoms[patientId][symptomName];
@@ -690,47 +693,77 @@
               var now = new Date();
 
               if (timePeriod === 'Show All') {
-                  filteredRecords = severityRecords;
-              } else if (timePeriod === '1 month') {
+                filteredRecords = severityRecords;
+                startDate = new Date(severityRecords[0]?.datetime);
+                endDate = new Date(severityRecords[severityRecords.length - 1]?.datetime);
+            } else if (timePeriod === '1 month') {
                 var startMonth = specificTime;
                 var startYear = now.getFullYear();
-                var cutoffStart = new Date(startYear, startMonth - 1, 1); // months are 0-based
-                var cutoffEnd = new Date(startYear, startMonth, 0); // last day of the month
+                var cutoffStart = new Date(startYear, startMonth - 1, 1);
+                var cutoffEnd = new Date(startYear, startMonth, 0);
                 filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
-                
 
                 if (week !== null) {
-                  var firstDayOfMonth = new Date(startYear, startMonth - 1, 1).getDay();
-                  var weekStartDay = (week - 1) * 7 - firstDayOfMonth + 1;
-                  var weekEndDay = weekStartDay + 6;
-                  var cutoffWeekStart = new Date(startYear, startMonth - 1, weekStartDay);
-                  var cutoffWeekEnd = new Date(startYear, startMonth - 1, weekEndDay);
+                  //var firstDayOfMonth = new Date(startYear, startMonth - 1, 1);
+                  var periodStartDate = new Date(startYear, startMonth - 1, 1);
+                  //periodStartDate.setDate(periodStartDate.getDate() + (week - 1) * 7);
+  
+                  var periodEndDate = periodStartDate;
+                  periodEndDate.setDate(periodEndDate.getDate() + 6);
+  
+                  filteredRecords = filteredRecords.filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
+  
+                  startDate = periodStartDate;
+                  endDate = cutoffStart;
+  
+                  // Display period start and end dates
+                  var dateRangeDisplay = document.getElementById('dateRangeDisplay');
+                  dateRangeDisplay.innerHTML = `
+                      <p><strong>7-Day Period:</strong></p>
+                      <p>Start Date: ${startDate.toDateString()}</p>
+                      <p>End Date: ${endDate.toDateString()}</p>
+                  `;
+              } else {
+                  startDate = cutoffStart;
+                  endDate = cutoffEnd;
 
-                  filteredRecords = filteredRecords.filter(record => record.datetime >= cutoffWeekStart && record.datetime <= cutoffWeekEnd);
-
-                }
-
-              } else if (timePeriod === '3 months') {
-                  var quarter = specificTime;
-                  var quarters = {
-                      'Q1': [0, 3],
-                      'Q2': [3, 6],
-                      'Q3': [6, 9],
-                      'Q4': [9, 12]
-                  };
-                  var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
-                  var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
-                  filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
-              } else if (timePeriod === '6 months') {
-                  var half = specificTime;
-                  var halves = {
-                      'H1': [0, 6],
-                      'H2': [6, 12]
-                  };
-                  var start = new Date(now.getFullYear(), halves[half][0], 1);
-                  var end = new Date(now.getFullYear(), halves[half][1], 0);
-                  filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+                  // Display period start and end dates
+                  var dateRangeDisplay = document.getElementById('dateRangeDisplay');
+                  dateRangeDisplay.innerHTML = `
+                      <p><strong>7-Day Period:</strong></p>
+                      <p>Start Date: ${startDate.toDateString()}</p>
+                      <p>End Date: ${endDate.toDateString()}</p>
+                  `;
               }
+              
+              
+            } else if (timePeriod === '3 months') {
+                var quarter = specificTime;
+                var quarters = {
+                    'Q1': [0, 3],
+                    'Q2': [3, 6],
+                    'Q3': [6, 9],
+                    'Q4': [9, 12]
+                };
+                var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
+                var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
+                filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+
+                startDate = start;
+                endDate = end;
+            } else if (timePeriod === '6 months') {
+                var half = specificTime;
+                var halves = {
+                    'H1': [0, 6],
+                    'H2': [6, 12]
+                };
+                var start = new Date(now.getFullYear(), halves[half][0], 1);
+                var end = new Date(now.getFullYear(), halves[half][1], 0);
+                filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+
+                startDate = start;
+                endDate = end;
+            }
   
               var labels = filteredRecords.map(record => record.datetime.toLocaleDateString());
               var data = filteredRecords.map(record => record.severity);
@@ -755,6 +788,7 @@
                 var insightsElement = document.getElementById('performanceLine-legend');
                 insightsElement.innerHTML = `
                     <p><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
+                    <p>Date Range: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</p>
                     <p>Maximum Severity: ${maxSeverity}</p>
                     <p>Minimum Severity: ${minSeverity}</p>
                     <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
@@ -779,6 +813,10 @@
             var insightsElement = document.getElementById('performanceLine-legend');
             insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
         }
+
+        // Display raw filtered records for debugging
+        var rawRecordsDisplay = document.getElementById('rawRecordsDisplay');
+        rawRecordsDisplay.innerHTML = '<h5>Filtered Records:</h5><pre>' + JSON.stringify(filteredRecords, null, 2) + '</pre>';
     }
 
       function forecast(data) {
