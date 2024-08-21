@@ -372,11 +372,11 @@
                                                     <div class="mt-3" style="max-height: 400px; overflow-y: auto;">
                                                         {% for notification in notifications %}
                                                         {% if notification.type == 'symptom' %}
-                                                        <a class="dropdown-item preview-item py-3" href="{% url 'patient_history' notification.id %}?chosenPatient={{notification.patient_id}}">
-                                                            <div class="preview-thumbnail">
+                                                        <a class="dropdown-item preview-item py-3 d-flex align-items-center" href="{% url 'patient_history' notification.id %}?chosenPatient={{notification.patient_id}}">
+                                                            <div class="preview-thumbnail d-flex align-items-center me-3">
                                                                 <i class="mdi mdi-alert m-auto text-primary"></i>
                                                             </div>
-                                                            <div class="preview-item-content">
+                                                            <div class="preview-item-content w-100 text-wrap pe-3">
                                                                 <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
                                                                 <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
                                                             </div>
@@ -389,6 +389,8 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            
                             </div>
                             
                           
