@@ -704,15 +704,17 @@
                 filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
 
                 if (week !== null) {
-                  var firstDayOfMonth = new Date(startYear, startMonth - 1, 1);
-                  var periodStartDate = new Date(firstDayOfMonth);
-                  periodStartDate.setDate(periodStartDate.getDate() + (week - 1) * 7);
+                  var periodStartDate = new Date(cutoffStart); // Start of the month
+                  periodStartDate.setDate(cutoffStart.getDate() + (week - 1) * 7); // Move to the selected week
 
-                  var periodEndDate = new Date(periodStartDate);
-                  periodEndDate.setDate(periodEndDate.getDate() + 6);
+                  var periodEndDate = new Date(periodStartDate); // End of the 7-day period
+                  periodEndDate.setDate(periodStartDate.getDate() + 6); // Add 6 days to get end date
 
-                  filteredRecords = filteredRecords.filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
-
+                  // Filter records within the 7-day period
+                  filteredRecords = filteredRecords.filter(record => {
+                      var recordDate = new Date(record.datetime);
+                      return recordDate >= periodStartDate && recordDate <= periodEndDate;
+                  });
                   startDate = periodStartDate;
                   endDate = periodEndDate;
 
@@ -722,7 +724,7 @@
                       <p><strong>7-Day Period:</strong></p>
                       <p>Start Date: ${startDate.toDateString()}</p>
                       <p>End Date: ${endDate.toDateString()}</p>
-                      <p>Week: ${week}</p>
+                      <p>Week: ${specificTime}</p>
                   `;
               } else {
                   startDate = cutoffStart;
@@ -734,7 +736,7 @@
                       <p><strong>7-Day Period:</strong></p>
                       <p>Start Date: ${startDate.toDateString()}</p>
                       <p>End Date: ${endDate.toDateString()}</p>
-                      <p>Week: ${week}</p>
+                      <p>Week: ${specificTime}</p>
                   `;
               }
               
@@ -864,19 +866,24 @@
                 if (this.hasAttribute('data-month')) {
                   var selectedMonth = parseInt(this.getAttribute('data-month'), 10);
                   document.getElementById('dropdownMonthButton').innerText = this.innerText;
+                  document.getElementById('dropdownMonthButton').setAttribute('data-month', selectedMonth);
       
                   // Reset week selection when a new month is selected
                   document.getElementById('dropdownWeekButton').innerText = 'Select Week';
                   updateChart(symptomName, timePeriod, selectedMonth, null);
-              }
+                }
       
-              if (this.hasAttribute('data-week')) {
-                  var selectedWeek = parseInt(this.getAttribute('data-week'), 10);
-                  document.getElementById('dropdownWeekButton').innerText = `Week ${selectedWeek}`;
-      
-                  var selectedMonth = parseInt(document.getElementById('dropdownMonthButton').getAttribute('data-month'), 10);
-                  updateChart(symptomName, timePeriod, selectedMonth, selectedWeek);
-              }
+                if (this.hasAttribute('data-week')) {
+                    var selectedWeek = parseInt(this.getAttribute('data-week'), 10);
+                    var selectedMonth = document.getElementById('dropdownMonthButton').getAttribute('data-month');
+    
+                    // Ensure selectedMonth is valid before converting to an integer
+                    if (selectedMonth) {
+                        selectedMonth = parseInt(selectedMonth, 10);
+                    }
+                    document.getElementById('dropdownWeekButton').innerText = `Week ${selectedWeek}`;
+                    updateChart(symptomName, timePeriod, selectedMonth, selectedWeek);
+                }
     
                 if (this.hasAttribute('data-quarter')) {
                     var quarter = this.getAttribute('data-quarter');
