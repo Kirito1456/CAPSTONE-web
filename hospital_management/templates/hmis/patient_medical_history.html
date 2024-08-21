@@ -704,24 +704,25 @@
                 filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
 
                 if (week !== null) {
-                  //var firstDayOfMonth = new Date(startYear, startMonth - 1, 1);
-                  var periodStartDate = new Date(startYear, startMonth - 1, 1);
-                  //periodStartDate.setDate(periodStartDate.getDate() + (week - 1) * 7);
-  
-                  var periodEndDate = periodStartDate;
+                  var firstDayOfMonth = new Date(startYear, startMonth - 1, 1);
+                  var periodStartDate = new Date(firstDayOfMonth);
+                  periodStartDate.setDate(periodStartDate.getDate() + (week - 1) * 7);
+
+                  var periodEndDate = new Date(periodStartDate);
                   periodEndDate.setDate(periodEndDate.getDate() + 6);
-  
+
                   filteredRecords = filteredRecords.filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
-  
+
                   startDate = periodStartDate;
-                  endDate = cutoffStart;
-  
+                  endDate = periodEndDate;
+
                   // Display period start and end dates
                   var dateRangeDisplay = document.getElementById('dateRangeDisplay');
                   dateRangeDisplay.innerHTML = `
                       <p><strong>7-Day Period:</strong></p>
                       <p>Start Date: ${startDate.toDateString()}</p>
                       <p>End Date: ${endDate.toDateString()}</p>
+                      <p>Week: ${week}</p>
                   `;
               } else {
                   startDate = cutoffStart;
@@ -733,6 +734,7 @@
                       <p><strong>7-Day Period:</strong></p>
                       <p>Start Date: ${startDate.toDateString()}</p>
                       <p>End Date: ${endDate.toDateString()}</p>
+                      <p>Week: ${week}</p>
                   `;
               }
               
