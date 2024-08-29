@@ -522,49 +522,49 @@
                                         {% csrf_token %}
                                       
                                         <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Shortness of Breath </label>
-                                          <input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in dates %}{{ dates.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in latest_complains %}{{ latest_complains.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="coughCheck" {% if 'coughInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="coughCheck" {% if 'coughInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Cough </label>
-                                          <input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in dates %}{{ dates.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in latest_complains %}{{ latest_complains.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Production of Phlegm </label>
-                                          <input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in dates %}{{ dates.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in latest_complains %}{{ latest_complains.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Wheezing </label>
-                                          <input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in dates %}{{ dates.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in latest_complains %}{{ latest_complains.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Coughing up Blood </label>
-                                          <input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in dates %}{{ dates.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in latest_complains %}{{ latest_complains.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Chest Pain </label>
-                                          <input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in dates %}{{ dates.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in latest_complains %}{{ latest_complains.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="feverCheck" {% if 'feverInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="feverCheck" {% if 'feverInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Fever </label>
-                                          <input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in dates %}{{ dates.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in latest_complains %}{{ latest_complains.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Heart Murmur </label>
-                                          <input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in dates %}{{ dates.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in latest_complains %}{{ latest_complains.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       <div class="form-check form-check-primary" style="display: flex; align-items: center;">
-                                          <input type="checkbox" id="othersCheck" {% if 'othersInput' in dates %} checked {% endif %}>
+                                          <input type="checkbox" id="othersCheck" {% if 'othersInput' in latest_complains %} checked {% endif %}>
                                           <label class="form-check-label"> Others </label>
-                                          <input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in dates %}{{ dates.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}>
+                                          <input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in latest_complains %}{{ latest_complains.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}>
                                       </div>
                                       
                                         

@@ -1574,6 +1574,25 @@ def patient_personal_information_inpatient(request):
         else:
             currdiagnosis = None
 
+    ref = db.child("consultationNotes").child(chosenPatient)
+
+    consultation_notes = ref.get().val()
+
+    
+
+    # Extract and sort the dates
+    sorted_dates = sorted(consultation_notes.keys(), reverse=True)
+    latest_date = sorted_dates[0]
+    print(latest_date)
+    latest_complains = db.child("consultationNotes").child(chosenPatient).child(latest_date).child('complains').get().val()
+    print(latest_complains)
+    # # Sort the dates to get the latest one
+    # sorted_dates = sorted(dates.keys(), reverse=True)
+    # latest_date = sorted_dates[0]
+
+    # # Fetch the latest complains
+    # latest_complains = ref.child(f'{latest_date}/complains').get()
+
     # medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
     # medicines_set = {medication['Disease'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
     # medicines_list = list(medicines_set)
@@ -1992,7 +2011,7 @@ def patient_personal_information_inpatient(request):
                                                                                 'next_available_date_str1': next_available_date_str1,
                                                                                 'disease_list': disease_list,
                                                                                 'chosenPatientSymptoms': chosenPatientSymptoms,
-                                                                             'symptoms_list': symptoms_list,
+                                                                                'symptoms_list': symptoms_list,
                                                                                 'notifications': notifications,
                                                                                 'clinics': clinics,
                                                                                 'upcomings': upcomings,
@@ -2005,7 +2024,7 @@ def patient_personal_information_inpatient(request):
                                                                                 'todays_complaints': todays_complaints,
                                                                                 'showOthers': showOthers,
                                                                                 'prescriptionsorders': prescriptionsorders,
-                                                                                # 'latest_prescription_url': latest_prescription_url,
+                                                                                'latest_complains': latest_complains,
                                                                                 'dates': dates,
                                                                                 'available_days_list': available_days_list})
 
