@@ -14,6 +14,7 @@ from django.contrib.auth import logout as auth_logout
 from django.core.mail import send_mail
 import random
 from operator import itemgetter
+from collections import OrderedDict
 
 from hmis.models import Medications, Notification
 from hospital_management.settings import collection 
@@ -1543,10 +1544,6 @@ def patient_personal_information_inpatient(request):
             chosenPatientSymptoms1.append(formatted_symptom)
 
 
-    print(chosenPatientSymptoms1)
-    print(chosenPatientSymptoms1)
-
-
     #Get Vital Signs Data of Chosen Patient
     chosenPatientVitalEntryData = {}
     if vitalsigns:
@@ -1583,19 +1580,7 @@ def patient_personal_information_inpatient(request):
     # Extract and sort the dates
     sorted_dates = sorted(consultation_notes.keys(), reverse=True)
     latest_date = sorted_dates[0]
-    print(latest_date)
     latest_complains = db.child("consultationNotes").child(chosenPatient).child(latest_date).child('complains').get().val()
-    print(latest_complains)
-    # # Sort the dates to get the latest one
-    # sorted_dates = sorted(dates.keys(), reverse=True)
-    # latest_date = sorted_dates[0]
-
-    # # Fetch the latest complains
-    # latest_complains = ref.child(f'{latest_date}/complains').get()
-
-    # medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
-    # medicines_set = {medication['Disease'] for medication in medications_cursor if medication['Disease'] == currdiagnosis}
-    # medicines_list = list(medicines_set)
 
     cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
     pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
@@ -2254,6 +2239,28 @@ def patient_medical_history(request):
                 if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
                     chosenPatientData[patientsdata_id] = patientsdata_data
 
+    medical_history_ref = db.child("patientmedicalhistory").child(chosenPatient).child("vaccineHistory")
+    vaccine_history = medical_history_ref.get().val()
+
+    # Filter out vaccines with null/None values
+    filtered_vaccine_history = {}
+    if vaccine_history:
+        for vaccine, details in vaccine_history.items():
+            if details.get('lastDate') != "none":
+            # Sort the dates within each vaccine, from latest to earliest
+                sorted_dates = sorted(
+                    {key: value for key, value in details.items() if isinstance(value, dict) and 'date' in value}.items(),
+                    key=lambda x: x[1]['date'], 
+                    reverse=True
+                )
+                filtered_vaccine_history[vaccine] = {
+                    'lastDate': details.get('lastDate'),
+                    'dates': OrderedDict(sorted_dates)
+                }
+
+    print(filtered_vaccine_history)
+
+
     if request.method == 'POST':
         if 'saveMedicalHistoryButton' in request.POST:
             diagnosis_surgical = request.POST.getlist('diagnosis_surgical')
@@ -2363,7 +2370,8 @@ def patient_medical_history(request):
                                                                  'doctor_prescriptions': doctor_prescriptions,
                                                                 'chosenPatientSymptoms1': chosenPatientSymptoms1,
                                                                 'chosenPatientSymptoms': chosenPatientSymptoms,
-                                                                'symptoms_list': symptoms_list
+                                                                'symptoms_list': symptoms_list,
+                                                                'vaccine_history': filtered_vaccine_history,
                                                                      })
 
 def patient_history(request, notification_id):

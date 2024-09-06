@@ -173,6 +173,9 @@
                         <a class="nav-link active ps-0" id="family-tab" data-bs-toggle="tab" href="#family" role="tab" aria-controls="family" aria-selected="true">Family and Social History</a>
                       </li>
                       <li class="nav-item">
+                        <a class="nav-link" id="vaccine-tab" data-bs-toggle="tab" href="#vaccine" role="tab" aria-controls="vacine" aria-selected="false">Vaccination History</a>
+                      </li>
+                      <li class="nav-item">
                         <a class="nav-link" id="consultation-tab" data-bs-toggle="tab" href="#consultation" role="tab" aria-controls="consultation" aria-selected="false">Past Consultation Notes</a>
                       </li>
                       <li class="nav-item">
@@ -304,6 +307,48 @@
                       </div>
                     </div>
 
+                    <!-- Vaccination History -->
+                    <div class="tab-pane fade show" id="vaccine" role="tabpanel" aria-labelledby="vaccine">
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  <thead>
+                                    <tr>
+                                      <th>Vaccine</th>
+                                      <th>Last Date</th>
+                                      <th>Previous Vaccination Dates</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% if vaccine_history %}
+                                      {% for vaccine, details in vaccine_history.items %}
+                                        <tr>
+                                          <td>{{ vaccine|capfirst }}</td>
+                                          <td>{{ details.lastDate }}</td>
+                                          <td>
+                                            {% for key, value in details.dates.items %}
+                                              <span class="badge badge-info">{{ value.date }}</span>
+                                            {% endfor %}
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    {% else %}
+                                      <tr>
+                                        <td colspan="3">No vaccination history available.</td>
+                                      </tr>
+                                    {% endif %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                    
                     <!-- Consultation Notes HIstory -->
                     <div class="tab-pane fade show" id="consultation" role="tabpanel" aria-labelledby="consultation">
@@ -387,7 +432,7 @@
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> 
                     </div>
 
                     <!-- Treatment Plan -->
