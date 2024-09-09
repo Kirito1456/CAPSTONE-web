@@ -220,23 +220,23 @@
                                     </div>
                                   {% endfor %}
                   </div>
-                  <div class="time-slot">
+                  <div class="time-slot" style="padding: 5px;">
                     <label for="morning-start_{{ clinic_id }}" style="font-weight: bold;">Morning Start:</label>
                     <input type="text" id="morning-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_start_{{ clinic_id }}"
                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_start }}{% endif %}{% endfor %}">
-                    <label for="morning-end_{{ clinic_id }}" style="font-weight: bold;">Morning End:</label>
+                    &emsp;<label for="morning-end_{{ clinic_id }}" style="font-weight: bold;">&emsp;Morning End:</label>
                     <input type="text" id="morning-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_end_{{ clinic_id }}"
                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_end }}{% endif %}{% endfor %}">
                   </div>
-                  <div class="time-slot">
+                  <div class="time-slot" style="padding: 5px;">
                     <label for="afternoon-start_{{ clinic_id }}" style="font-weight: bold;">Afternoon Start:</label>
                     <input type="text" id="afternoon-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_start_{{ clinic_id }}"
                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_start }}{% endif %}{% endfor %}">
-                    <label for="afternoon-end_{{ clinic_id }}" style="font-weight: bold;">Afternoon End:</label>
+                    &emsp;<label for="afternoon-end_{{ clinic_id }}" style="font-weight: bold;">Afternoon End:</label>
                     <input type="text" id="afternoon-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_end_{{ clinic_id }}"
                           value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_end }}{% endif %}{% endfor %}">
                   </div>
-                  <button id="save-btn" value="{{ clinic_id }}" type="submit" class="btn btn-primary btn-sm" name="clinic"><i class="ti-file btn-icon-prepend"></i> Save</button>
+                  <button id="save-btn" style="font-weight: bold; font-size: 15px;" value="{{ clinic_id }}" type="submit" class="btn btn-primary btn-sm" name="clinic"><i class="ti-file btn-icon-prepend"></i> Save</button>
                 </form>
               </div>
             </div>

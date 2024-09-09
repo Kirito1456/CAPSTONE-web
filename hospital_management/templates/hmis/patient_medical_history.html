@@ -228,30 +228,20 @@
                                             {% for fh_id, fh_data in f_data.items %}
                                               <tr>
                                                 <td>
-                                                  <div class="form-group">
-                                                    <input type="text" class="form-control" id="familyMember" placeholder="Family Member" value="{{fh_data.family_member}}" disabled>
-                                                  </div>
+                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="familyMember" placeholder="Family Member" value="{{fh_data.family_member}}" disabled>
                                                 </td>
                                                 <td>
-                                                  <div class="form-group">
-                                                    <input type="text" class="form-control" id="diagnosis" placeholder="Diagnosis" value="{{ fh_data.diagnosis }}" disabled>
-                                                  </div>
+                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="diagnosis" placeholder="Diagnosis" value="{{ fh_data.diagnosis }}" disabled>
                                                 </td>                                                
                                                 <td>
-                                                  <div class="form-group">
-                                                    <input type="number" class="form-control" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.age}} disabled>
-                                                  </div>
+                                                  <input type="number" style="background-color: transparent; border: none; font-size: 13px;" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.age}} disabled>
                                                 </td>  
                                                 <td>
-                                                  <div class="form-group">
-                                                    <input type="text" class="form-control" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.deceased}} disabled>
-                                                  </div>
+                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.deceased}} disabled>
                                                 </td>                                                
                                                 <td>
-                                                  <div class="form-group">
-                                                    <input type="text" class="form-control" id="ageofDeath" placeholder="Age of Death" value={{fh_data.ageDeath}} disabled>
-                                                  </div>
-                                                </td>  
+                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="ageofDeath" placeholder="Age of Death" value={{fh_data.ageDeath}} disabled>
+                                                </td>
                                               </tr>
                                             {% endfor %}
                                           {% endif %}
@@ -330,7 +320,7 @@
                                           <td>{{ details.lastDate }}</td>
                                           <td>
                                             {% for key, value in details.dates.items %}
-                                              <span class="badge badge-info">{{ value.date }}</span>
+                                              <span class="badge badge-dark">{{ value.date }}</span>
                                             {% endfor %}
                                           </td>
                                         </tr>
@@ -482,7 +472,7 @@
                                 <div class="card-body">
                                   <div class="d-sm-flex justify-content-between align-items-start">
                                     <div>
-                                      <h4 class="card-title card-title-dash">Symptoms History Chart</h4>
+                                      <h4 class="card-title card-title-dash" style="margin-bottom: 10px;">Symptoms History Chart</h4>
                                       <div class="dropdown">
                                         <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton8" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Select Symptom  </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton8">
@@ -544,6 +534,9 @@
                                           </div>
                                       </div>
                                     </div>
+
+                                    <div id="symptoms-legend" style="padding: 3px;"></div>
+
                                       </div>
                                     </div>
                                     <div id="rawRecordsDisplay"></div>
@@ -557,7 +550,6 @@
                                   
                                 <div style="width: 100%; height: 100%;">
                                   <canvas id="performanceLine"></canvas>
-                                  <div id="symptoms-legend"></div>
                                 </div>
                                 </div>
                               </div>
@@ -779,87 +771,77 @@ function updateLegend(symptomName) {
   var legendText = '';
   switch (symptomName) {
       case 'Shortness_Of_Breath':
-          legendText = `
-              <ul>
-                  <li>0: I only get breathless with strenuous exercise</li>
-                  <li>1: I get short of breath when hurrying on level ground or walking up a slight hill.</li>
-                  <li>2: On level ground, I walk slower than people of the same age because of breathlessness or have to stop for breath when walking at my own pace.</li>
-                  <li>3: I stop for breath after walking about 100 yards or after a few minutes on level ground.</li>
-                  <li>4: I am too breathless to leave the house, or I am breathless when dressing.</li>
-              </ul>`;
-          break;
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I only get breathless with strenuous exercise.<br>
+          <b>1</b>: I get short of breath when hurrying on level ground or walking up a slight hill.<br>
+          <b>2</b>: On level ground, I walk slower than people of the same age because I have to stop for breath when walking at my own pace.<br>
+          <b>3</b>: I stop for breath after walking about 100 yards or after a few minutes on level ground.<br>
+          <b>4</b>: I am too breathless to leave the house, or I am breathless when dressing.</p>`;
+        break;
       case 'Energy_Level':
-          legendText = `
-              <ul>
-                  <li>0: I have normal energy levels and do not feel fatigued.</li>
-                  <li>1: I feel slightly fatigued but can carry out most activities.</li>
-                  <li>2: I experience moderate fatigue and need to rest occasionally.</li>
-                  <li>3: I feel fatigued most of the time and struggle with daily activities.</li>
-                  <li>4: I am too fatigued to do even basic activities and mostly stay in bed.</li>
-              </ul>`;
-          break;
-      // Add similar cases for other symptoms...
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I have normal energy levels and do not feel fatigued.<br>
+          <b>1</b>: I feel slightly fatigued but can carry out most activities.<br>
+          <b>2</b>: I experience moderate fatigue and need to rest occasionally.<br>
+          <b>3</b>: I feel fatigued most of the time and struggle with daily activities.<br>
+          <b>4</b>: I am too fatigued to do even basic activities and mostly stay in bed.</p>`;
+        break;
       case 'Confidence_In_Doing_Activities':
-          legendText = `
-              <ul>
-                  <li>0: I am fully confident in doing all activities without assistance.</li>
-                  <li>1: I feel slightly less confident but can still perform most tasks.</li>
-                  <li>2: I often need to rest and sometimes avoid certain activities.</li>
-                  <li>3: I avoid most activities and need help frequently.</li>
-                  <li>4: I am unable to perform any activities without full assistance.</li>
-              </ul>`;
-          break;
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I am fully confident in doing all activities without assistance.<br>
+          <b>1</b>: I feel slightly less confident but can still perform most tasks.<br>
+          <b>2</b>: I often need to rest and sometimes avoid certain activities.<br>
+          <b>3</b>: I avoid most activities and need help frequently.<br>
+          <b>4</b>: I am unable to perform any activities without full assistance.</p>`;
+        break;
       case 'Phlegm_In_Chest':
-          legendText = `
-              <ul>
-                  <li>0: I do not experience phlegm in my chest.</li>
-                  <li>1: I have occasional phlegm, but it does not affect my activities.</li>
-                  <li>2: I have frequent phlegm and need to clear my throat regularly.</li>
-                  <li>3: I have constant phlegm that interferes with daily activities.</li>
-                  <li>4: Phlegm is so severe that it severely limits my ability to function.</li>
-              </ul>`;
-          break;
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I do not experience phlegm in my chest.<br>
+          <b>1</b>: I have occasional phlegm, but it does not affect my activities.<br>
+          <b>2</b>: I have frequent phlegm and need to clear my throat regularly.<br>
+          <b>3</b>: I have constant phlegm that interferes with daily activities.<br>
+          <b>4</b>: Phlegm is so severe that it severely limits my ability to function.</p>`;
+        break;
       case 'Wheezing':
-          legendText = `
-              <ul>
-                  <li>0: I do not experience wheezing.</li>
-                  <li>1: I have occasional wheezing, usually with exertion.</li>
-                  <li>2: Wheezing occurs frequently and disrupts some activities.</li>
-                  <li>3: Wheezing is constant and limits most activities.</li>
-                  <li>4: Wheezing is so severe that I am unable to do any activities.</li>
-              </ul>`;
-          break;
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I do not experience wheezing.<br>
+          <b>1</b>: I have occasional wheezing, usually with exertion.<br>
+          <b>2</b>: Wheezing occurs frequently and disrupts some activities.<br>
+          <b>3</b>: Wheezing is constant and limits most activities.<br>
+          <b>4</b>: Wheezing is so severe that I am unable to do any activities.</p>`;
+        break;
       case 'Chest_Discomfort':
-          legendText = `
-              <ul>
-                  <li>0: I do not experience chest discomfort.</li>
-                  <li>1: I feel mild chest discomfort occasionally.</li>
-                  <li>2: I have moderate chest discomfort that occurs daily.</li>
-                  <li>3: Chest discomfort is severe and limits my activities.</li>
-                  <li>4: Chest discomfort is constant and prevents me from doing any activities.</li>
-              </ul>`;
-          break;
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I do not experience chest discomfort.<br>
+          <b>1</b>: I feel mild chest discomfort occasionally.<br>
+          <b>2</b>: I have moderate chest discomfort that occurs daily.<br>
+          <b>3</b>: Chest discomfort is severe and limits my activities.<br>
+          <b>4</b>: Chest discomfort is constant and prevents me from doing any activities.</p>`;
+        break;
       case 'Sleeps_Soundly':
-          legendText = `
-              <ul>
-                  <li>0: I sleep soundly through the night.</li>
-                  <li>1: I have occasional trouble sleeping but usually get enough rest.</li>
-                  <li>2: I frequently wake up during the night and feel tired in the morning.</li>
-                  <li>3: I rarely sleep well and often feel exhausted.</li>
-                  <li>4: I am unable to sleep well at all and am constantly fatigued.</li>
-              </ul>`;
-          break;
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I sleep soundly through the night.<br>
+          <b>1</b>: I have occasional trouble sleeping but usually get enough rest.<br>
+          <b>2</b>: I frequently wake up during the night and feel tired in the morning.<br>
+          <b>3</b>: I rarely sleep well and often feel exhausted.<br>
+          <b>4</b>: I am unable to sleep well at all and am constantly fatigued.</p>`;
+        break;
       case 'Coughing':
-          legendText = `
-              <ul>
-                  <li>0: I do not cough at all.</li>
-                  <li>1: I cough occasionally, especially in the morning.</li>
-                  <li>2: I have frequent coughing spells throughout the day.</li>
-                  <li>3: I cough constantly and find it difficult to stop.</li>
-                  <li>4: Coughing is so severe that it disrupts my daily activities and sleep.</li>
-              </ul>`;
-          break;
-      // Add cases for other symptoms here...
+        legendText = `
+          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p><b>0</b>: I do not cough at all.<br>
+          <b>1</b>: I cough occasionally, especially in the morning.<br>
+          <b>2</b>: I have frequent coughing spells throughout the day.<br>
+          <b>3</b>: I cough constantly and find it difficult to stop.<br>
+          <b>4</b>: Coughing is so severe that it disrupts my daily activities and sleep.</p>`;
+        break;
   }
   document.getElementById('symptoms-legend').innerHTML = legendText;
 }
@@ -987,7 +969,7 @@ function updateLegend(symptomName) {
                 // Display insights
                 var insightsElement = document.getElementById('performanceLine-legend');
                 insightsElement.innerHTML = `
-                    <p><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
+                    <p style="font-size: 14px;"><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
                     <p>Date Range: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</p>
                     <p>Maximum Severity: ${maxSeverity}</p>
                     <p>Minimum Severity: ${minSeverity}</p>
