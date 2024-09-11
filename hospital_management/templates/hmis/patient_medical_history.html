@@ -534,9 +534,6 @@
                                           </div>
                                       </div>
                                     </div>
-
-                                    <div id="symptoms-legend" style="padding: 3px;"></div>
-
                                       </div>
                                     </div>
                                     <div id="rawRecordsDisplay"></div>
@@ -550,6 +547,7 @@
                                   
                                 <div style="width: 100%; height: 100%;">
                                   <canvas id="performanceLine"></canvas>
+                                  <div id="symptoms-legend" style="padding: 3px;"></div>
                                 </div>
                                 </div>
                               </div>
@@ -772,7 +770,7 @@ function updateLegend(symptomName) {
   switch (symptomName) {
       case 'Shortness_Of_Breath':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I only get breathless with strenuous exercise.<br>
           <b>1</b>: I get short of breath when hurrying on level ground or walking up a slight hill.<br>
           <b>2</b>: On level ground, I walk slower than people of the same age because I have to stop for breath when walking at my own pace.<br>
@@ -781,7 +779,7 @@ function updateLegend(symptomName) {
         break;
       case 'Energy_Level':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I have normal energy levels and do not feel fatigued.<br>
           <b>1</b>: I feel slightly fatigued but can carry out most activities.<br>
           <b>2</b>: I experience moderate fatigue and need to rest occasionally.<br>
@@ -790,7 +788,7 @@ function updateLegend(symptomName) {
         break;
       case 'Confidence_In_Doing_Activities':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I am fully confident in doing all activities without assistance.<br>
           <b>1</b>: I feel slightly less confident but can still perform most tasks.<br>
           <b>2</b>: I often need to rest and sometimes avoid certain activities.<br>
@@ -799,7 +797,7 @@ function updateLegend(symptomName) {
         break;
       case 'Phlegm_In_Chest':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I do not experience phlegm in my chest.<br>
           <b>1</b>: I have occasional phlegm, but it does not affect my activities.<br>
           <b>2</b>: I have frequent phlegm and need to clear my throat regularly.<br>
@@ -808,7 +806,7 @@ function updateLegend(symptomName) {
         break;
       case 'Wheezing':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I do not experience wheezing.<br>
           <b>1</b>: I have occasional wheezing, usually with exertion.<br>
           <b>2</b>: Wheezing occurs frequently and disrupts some activities.<br>
@@ -817,7 +815,7 @@ function updateLegend(symptomName) {
         break;
       case 'Chest_Discomfort':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I do not experience chest discomfort.<br>
           <b>1</b>: I feel mild chest discomfort occasionally.<br>
           <b>2</b>: I have moderate chest discomfort that occurs daily.<br>
@@ -826,7 +824,7 @@ function updateLegend(symptomName) {
         break;
       case 'Sleeps_Soundly':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I sleep soundly through the night.<br>
           <b>1</b>: I have occasional trouble sleeping but usually get enough rest.<br>
           <b>2</b>: I frequently wake up during the night and feel tired in the morning.<br>
@@ -835,7 +833,7 @@ function updateLegend(symptomName) {
         break;
       case 'Coughing':
         legendText = `
-          <p style="font-size: 14px;"><b>Level of Severity Legend: </b></p>
+          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
           <p><b>0</b>: I do not cough at all.<br>
           <b>1</b>: I cough occasionally, especially in the morning.<br>
           <b>2</b>: I have frequent coughing spells throughout the day.<br>
