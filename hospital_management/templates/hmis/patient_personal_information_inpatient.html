@@ -197,11 +197,53 @@
                     </ul>
 
                     <div class="btn-wrapper">
+                      <!-- CREATE PRESCRIPTION -->
                       {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                         {% if chosenPatientConsulNotes_data.diagnosis %}
                           <a  class="btn btn-primary text-white me-0" a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatient}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}"><i class="fa fa-file-powerpoint-o"></i> Create Prescription</a>
                         {% endif %}
                       {% endfor %}
+
+                      <!-- REFERRAL / SHARE PATIENT DATA -->
+                      <a href="#" class="openModalBtn btn btn-primary text-white me-0"><i class="icon-share"></i>Refer Patient</a>
+                      <div class="myModal modal">
+                        <div class="modal-content">
+                          <span class="close">&times;</span>
+                          <i class="fa-regular fa-circle-check"></i>
+                          <h2 style="margin-bottom: 20px;">Refer Patient</h2>
+                          <form method="POST" action="{% url 'refer_patient' %}?chosenPatient={{chosenPatient}}">
+                            {% csrf_token%}
+                            <div class="detail-wrapper">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 18px;">
+                                Clinic:
+                              </div>
+                              <div class="detail-dropdown">
+                                <select class="btn btn-inverse-success btn-sm" id="clinicDropdown" name="clinicDropdown" onchange="updateDoctorsDropdown()">
+                                  <option selected disabled style="color: green;">- Select a Clinic -</option>
+                                  {% for clinic_id, clinic_data in clinics.items %}
+                                    <option value="{{ clinic_data.uid }}">{{ clinic_data.name }}</option>
+                                  {% endfor %}
+                                </select><br>
+                              </div>
+                            </div>
+                          
+                            <div class="detail-wrapper">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 18px;">
+                                Doctor:
+                              </div>
+                              <div class="detail-dropdown">
+                                <select class="btn btn-inverse-success btn-sm" id="doctorDropdown" name="doctorDropdown" disabled>
+                                  <option selected disabled style="color: green;"></option>>- Select a Doctor -</option>
+                                </select><br>
+                              </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-sm" style="margin-top: 16px;" name="confirmReferral" value={{endAppointment}}><i class="fa fa-check"></i>Confirm Referral</button>
+                          </form>
+                        </div>
+                      </div> 
+
+                      <!-- END APPOINTMENT -->
                       <a href="#" class="openModalBtn1 btn btn-primary text-white me-0"><i class="icon-download"></i> End </a>
                       <div class="myModal modal">
                         <div class="modal-content">
@@ -244,67 +286,7 @@
                                 <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="endingAppointment" value="{{endAppointment}}">End</button>
                             </form>
                         </div>
-                    </div>
-                      {% comment %} <a href="#" class="openModalBtn btn btn-otline-dark align-items-center"><i class="fa fa-share-alt"></i> Share</a> {% endcomment %}
-                      <div class="myModal modal">
-                        <div class="modal-content">
-                          <span class="close">&times;</span>
-                          <i class="fa-regular fa-circle-check"></i>
-                          <h2 style="margin-bottom: 20px;">Referrals</h2>
-                          <form method="post">
-                            {% csrf_token%}
-                            <div class="detail-wrapper">
-                              <div class="detailname" style="font-weight: bold;">
-                                Clinic:
-                              </div>
-                              <div class="dropdown">
-                                {% for clinic_id, clinic_data in clinics.items %}
-                                  {% for appointment_id, appointment_data in upcomings.items %}
-                                    {% if clinic_id == appointment_data.clinicUID and appointmentIDurl == appointment_id %}
-                                      <button class="btn btn-info btn-sm dropdown-toggle" type="button" value="{{ clinic_id }}" id="clinicDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        {{ clinic_data.name }}
-                                      </button>
-                                    {% endif %}
-                                  {% endfor %}
-                                {% endfor %}
-                                
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton3">
-                                  {% for doctors_id, doctors_data in doctors.items %}
-                                    {% for doctorClinic in doctors_data.clinic %}
-                                      {% for clinic_id, clinic_data in clinics.items %}
-                                        {% if clinic_id == doctorClinic and doctors_id == uid %}
-                                          <a class="dropdown-item preview-item" href="#" onclick="updateScheduleAndTimeSlots('{{ clinic_id }}', '{{ appointment_id }}'); return false;">
-                                            <div class="preview-item-content flex-grow py-2" id="clinicName_{{ clinic_id }}" name="clinic_referring">
-                                              {{ clinic_data.name }}
-                                            </div>
-                                          </a>
-                                        {% endif %}
-                                      {% endfor %}
-                                    {% endfor %} 
-                                  {% endfor %}   
-                                </div>
-                              </div>
-                            </div>
-                          
-
-                            <div class="detail-wrapper">
-                              <div class="detailname" style="font-weight: bold;" >Doctor: </div>
-                              <select id="doctors_listahan" name="doctors_listahan" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                              </select><br>
-                            </div>
-
-                            <div class="detail-wrapper">
-                              <div class="form-check form-check-primary">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" required> I have explained to the patient what this would implicate and the patient understood and gave their consent. </label>
-                              </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="confirmReferral" value={{endAppointment}}>Confirm Referral</button>
-                          </form>
-                        </div>
-                      </div> 
-
+                      </div>
                     </div>
                   </div>
 
@@ -999,31 +981,30 @@
 </script>
 
     <script>
-      function updateScheduleAndTimeSlots(clinicId, appointmentId) {
+      function updateDoctorsDropdown() {
+        const clinicID = document.getElementById('clinicDropdown').value;
+
         // Simulated clinic data list (replace with actual data)
         const clinicDataList = {{ clinic_doctor_list|safe }};
         
-        // Find the clinic data by clinicId
-        const clinicData = clinicDataList.find(clinic => clinic.clinic_id === clinicId);
+        // Find the clinic data by clinicID
+        const clinicData = clinicDataList.find(clinic => clinic.clinic_id === clinicID);
         
-
         if (clinicData) {
-          // Update clinic name display
-          document.getElementById('clinicDropdown').innerText = clinicData.name;
-          document.getElementById('clinicDropdown').value  = clinicId;
+          doctorDropdown.disabled = false;
 
-          // Update time slots dropdown
-          const doctorSelect = document.getElementById('doctors_listahan');
+          // Update doctors dropdown
+          const doctorSelect = document.getElementById('doctorDropdown');
           doctorSelect.innerHTML = ''; 
 
-          clinicData.doctorNames.forEach(doctor => {
+          clinicData.doctors.forEach(doctor => {
             const option = document.createElement('option');
-            option.value = doctor;
-            option.textContent = doctor;
+            option.value = doctor.id;
+            option.textContent = doctor.name;
             doctorSelect.appendChild(option);
           });
         } else {
-          console.error(`Clinic data not found for clinic ID: ${clinicId}`);
+          console.error(`Clinic data not found for clinic ID: ${clinicID}`);
         }
       }
     </script>

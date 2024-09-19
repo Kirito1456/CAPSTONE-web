@@ -29,6 +29,7 @@ urlpatterns = [
     path('delete_appointment/', views.delete_appointment, name='delete_appointment'),
     path('update_appointment/', views.update_appointment, name='update_appointment'),
     path('followup_appointment/', views.followup_appointment, name='followup_appointment'),
+    path('refer_patient/', views.refer_patient, name='refer_patient'),
     # path('clinics/', views.clinics, name='clinics'),
 
     # Patient Data Module

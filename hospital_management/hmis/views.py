@@ -337,7 +337,7 @@ def get_clinic_doctor_list():
 
     # Iterate through each clinic
     for clinic_id, clinic_data in clinics_ref.items():
-        doctor_names = []
+        doctor_info = []
 
         # Iterate through each doctor
         for doctor_id, doctor_data in doctors_ref.items():
@@ -345,13 +345,16 @@ def get_clinic_doctor_list():
                 # Check if the doctor's clinics contain the current clinic ID
                 if clinic_id in doctor_data['clinic']:  # Check directly against the list
                     # Add doctor's full name to the list
-                    doctor_names.append(f"{doctor_data['fname']} {doctor_data['lname']}")
+                    doctor_info.append({
+                        'id': doctor_id,
+                        'name': f"{doctor_data['fname']} {doctor_data['lname']}"
+                    })
 
         # Append to the clinic_doctor_list
         clinic_doctor_list.append({
             'clinic_id': clinic_id,
             'name': clinic_data['name'],
-            'doctorNames': doctor_names,
+            'doctors': doctor_info,
         })
 
     return clinic_doctor_list
@@ -657,6 +660,45 @@ def delete_appointment(request):
     # Render a template if the request method is not POST
     return render(request, 'hmis/AppointmentUpcoming.html')
 
+def refer_patient(request):
+    if request.method == 'POST':
+        patientID = request.GET.get('chosenPatient', '')    #PatientID
+        status = "Pending"                                  #Status (Pending, Rejected, Confirmed)
+        doctorID = request.session['uid']                   #Original Doctor ID
+        referredDoctor = request.POST.get('doctorDropdown') #Referred Doctor ID
+        clinicID = request.POST.get('clinicDropdown')       #Clinic ID of Referred Doctor
+        todaydate = datetime.now().strftime("%Y-%m-%d")     #Date
+        
+        # Generate unique ID for the referrals table in database
+        referral_uid = str(uuid.uuid1())
+
+        data = {
+            'patient_id': patientID,
+            'status': status,
+            'doctor_id': doctorID,
+            'referred_doctor': referredDoctor,
+            'clinic_id': clinicID,
+            'date': todaydate
+        }
+
+        # Construct the path to the appointment data in Firebase
+        db_path = f"/referralRequest/{referral_uid}"
+
+        db.child(db_path).update( {
+            'patient_id': patientID,
+            'status': status,
+            'doctor_id': doctorID,
+            'referred_doctor': referredDoctor,
+            'clinic_id': clinicID,
+            'date': todaydate,
+        })
+
+        db.child("referrals").child(referral_uid).set(data)
+        messages.success(request, f'Patient referred')
+        
+        return redirect('DoctorDashboard')  # Redirect to the appointments list page
+
+    return render(request, 'hmis/AppointmentUpcoming.html')
 
 def followup_appointment(request):
     uid = request.session['uid'] 
