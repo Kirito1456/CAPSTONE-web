@@ -219,20 +219,22 @@
                               </div>
                               <div class="detail-dropdown">
                                 <select class="btn btn-inverse-success btn-sm" id="clinicDropdown" name="clinicDropdown" onchange="updateDoctorsDropdown()">
-                                  <option selected disabled style="color: green;">- Select a Clinic -</option>
-                                  {% for clinic_id, clinic_data in clinics.items %}
-                                    <option value="{{ clinic_data.uid }}">{{ clinic_data.name }}</option>
+                                  {% for chosenAppointmentData_id, chosenAppointmentData_data in chosenAppointmentData.items %}
+                                    {% for clinic_id, clinic_data in clinics.items %}
+                                      <option value="{{ clinic_data.uid }}" {% if clinic_data.uid == chosenAppointmentData_data.clinicUID %} selected {% endif %}>
+                                        {{ clinic_data.name }}
+                                      </option>
+                                    {% endfor %}
                                   {% endfor %}
                                 </select><br>
                               </div>
                             </div>
-                          
                             <div class="detail-wrapper">
                               <div class="detailname" style="font-weight: bold; margin-bottom: 18px;">
                                 Doctor:
                               </div>
                               <div class="detail-dropdown">
-                                <select class="btn btn-inverse-success btn-sm" id="doctorDropdown" name="doctorDropdown" disabled>
+                                <select class="btn btn-inverse-success btn-sm" id="doctorDropdown" name="doctorDropdown">
                                   <option selected disabled style="color: green;"></option>>- Select a Doctor -</option>
                                 </select><br>
                               </div>
@@ -991,8 +993,6 @@
         const clinicData = clinicDataList.find(clinic => clinic.clinic_id === clinicID);
         
         if (clinicData) {
-          doctorDropdown.disabled = false;
-
           // Update doctors dropdown
           const doctorSelect = document.getElementById('doctorDropdown');
           doctorSelect.innerHTML = ''; 
@@ -1029,6 +1029,13 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+
+        // Populate doctorDropdown (Since clinicDropdown is already on default clinic based on the current appointment)
+        const clinicDropdown = document.getElementById('clinicDropdown');
+        if (clinicDropdown.value) {
+            updateDoctorsDropdown();
+        }
+
         document.body.addEventListener('click', function (event) {
           // Open modal button clicked
           if (event.target.classList.contains('openModalBtn')) {

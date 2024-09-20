@@ -662,6 +662,8 @@ def delete_appointment(request):
 
 def refer_patient(request):
     if request.method == 'POST':
+        previous_url = request.META.get('HTTP_REFERER')
+
         patientID = request.GET.get('chosenPatient', '')    #PatientID
         status = "Pending"                                  #Status (Pending, Rejected, Confirmed)
         doctorID = request.session['uid']                   #Original Doctor ID
@@ -694,9 +696,9 @@ def refer_patient(request):
         })
 
         db.child("referrals").child(referral_uid).set(data)
-        messages.success(request, f'Patient referred')
+        messages.success(request, f'Patient successfully referred to another doctor')
         
-        return redirect('DoctorDashboard')  # Redirect to the appointments list page
+        return redirect(previous_url)
 
     return render(request, 'hmis/AppointmentUpcoming.html')
 
@@ -1561,10 +1563,11 @@ def patient_personal_information_inpatient(request):
         if chosenPatient == patients_data["uid"]:
             chosenPatientData[patients_id] = patients_data
 
-            #retrieve patient birthdate
-            chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
-            #calculate patient age function
-            # chosenPatientAge = calculate_age(chosenPatientBirthday)
+    #Get Clinic Data of Appointment Schedule
+    chosenAppointmentData = {}
+    for chosenAppointment_id, chosenAppointment_data in appointments.items():
+        if endAppointment == chosenAppointment_id:      #endAppointment is current UID of appointment
+            chosenAppointmentData[chosenAppointment_id] = chosenAppointment_data
 
     chosenPatientDatas = {}
     for patientsdata_id, patientsdata_data in patientsdata.items():
@@ -2017,6 +2020,7 @@ def patient_personal_information_inpatient(request):
 
     return render(request, 'hmis/patient_personal_information_inpatient.html', {'chosenPatientData': chosenPatientData, 
                                                                                 'chosenPatientDatas': chosenPatientDatas, 
+                                                                                'chosenAppointmentData': chosenAppointmentData,
                                                                                 'chosenPatientVitalEntryData': chosenPatientVitalEntryData,
                                                                                 'chosenPatientConsulNotes': chosenPatientConsulNotes,
                                                                                 'doctors': doctors,
