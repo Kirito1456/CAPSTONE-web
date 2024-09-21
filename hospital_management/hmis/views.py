@@ -670,6 +670,7 @@ def refer_patient(request):
         referredDoctor = request.POST.get('doctorDropdown') #Referred Doctor ID
         clinicID = request.POST.get('clinicDropdown')       #Clinic ID of Referred Doctor
         todaydate = datetime.now().strftime("%Y-%m-%d")     #Date
+        refer_reason = request.POST.get('refer_reason')     #Doctor's Reason for Referral
         
         # Generate unique ID for the referrals table in database
         referral_uid = str(uuid.uuid1())
@@ -680,7 +681,8 @@ def refer_patient(request):
             'doctor_id': doctorID,
             'referred_doctor': referredDoctor,
             'clinic_id': clinicID,
-            'date': todaydate
+            'date': todaydate,
+            'reason': refer_reason
         }
 
         # Construct the path to the appointment data in Firebase
@@ -693,6 +695,7 @@ def refer_patient(request):
             'referred_doctor': referredDoctor,
             'clinic_id': clinicID,
             'date': todaydate,
+            'reason': refer_reason
         })
 
         db.child("referrals").child(referral_uid).set(data)
@@ -1948,7 +1951,7 @@ def patient_personal_information_inpatient(request):
             #retrieve patient birthdate
             chosenPatientBirthday = chosenPatientData[chosenPatient].get("bday")
             #calculate patient age function
-            # chosenPatientAge = calculate_age(chosenPatientBirthday)
+            chosenPatientAge = calculate_age(chosenPatientBirthday)
 
     chosenPatientDatas = {}
     for patientsdata_id, patientsdata_data in patientsdata.items():
@@ -2052,6 +2055,7 @@ def patient_personal_information_inpatient(request):
                                                                                 'clinic_doctor_list': clinic_doctor_list,
                                                                                 'chosenPatient': chosenPatient,
                                                                                 'chosenPatientSymptoms1': chosenPatientSymptoms1,
+                                                                                'chosenPatientAge': chosenPatientAge,
                                                                                 'todays_complaints': todays_complaints,
                                                                                 'showOthers': showOthers,
                                                                                 'prescriptionsorders': prescriptionsorders,

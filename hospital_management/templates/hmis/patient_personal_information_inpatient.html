@@ -208,17 +208,51 @@
                       <a href="#" class="openModalBtn btn btn-primary text-white me-0"><i class="icon-share"></i>Refer Patient</a>
                       <div class="myModal modal">
                         <div class="modal-content">
-                          <span class="close">&times;</span>
+                          <span class="close" style="margin-right: 8px;">&times;</span>
                           <i class="fa-regular fa-circle-check"></i>
                           <h2 style="margin-bottom: 20px;">Refer Patient</h2>
                           <form method="POST" action="{% url 'refer_patient' %}?chosenPatient={{chosenPatient}}">
                             {% csrf_token%}
-                            <div class="detail-wrapper">
+
+                            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                              <div class="detail-wrapper">
+                                <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                  Name:
+                                </div>
+                                  <input type="text" class="form-control" id="refer_patientName" name="refer_patientName" value="{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}" style="margin-left: 34px; width: 250px;" disabled><br>
+                              </div>
+
+                              <div class="detail-wrapper" style="margin-top: 8px;">
+                                <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                  Age:
+                                </div>
+                                  <input type="text" class="form-control" id="refer_patientAge" name="refer_patientAge" value="{{ chosenPatientAge }}" style="margin-left: 48px; width: 250px;" disabled><br>
+                              </div>
+                            {% endfor %}
+
+                            <div class="detail-wrapper" style="margin-top: 8px;">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                Diagnosis:
+                              </div>
+                              {% if chosenPatientConsulNotes %}
+                                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                  {% if chosenPatientConsulNotes_data.diagnosis %}
+                                    <input type="text" class="form-control" id="refer_diagnosis" name="refer_diagnosis" value="{{ chosenPatientConsulNotes_data.diagnosis }}" style="margin-left: 2px; width: 250px;" disabled><br>
+                                  {% else %} 
+                                    <input type="text" class="form-control" id="refer_diagnosis" name="refer_diagnosis" value="No Current Diagnosis" style="margin-left: 2px; width: 250px;" disabled><br>
+                                  {% endif %} 
+                                {% endfor %}
+                              {% else %} 
+                              <input type="text" class="form-control" id="refer_diagnosis" name="refer_diagnosis" value="No Current Diagnosis" style="margin-left: 2px; width: 250px;" disabled><br>
+                              {% endif %} 
+                            </div>
+
+                            <div class="detail-wrapper" style="margin-top: 12px;">
                               <div class="detailname" style="font-weight: bold; margin-bottom: 18px;">
                                 Clinic:
                               </div>
                               <div class="detail-dropdown">
-                                <select class="btn btn-inverse-success btn-sm" id="clinicDropdown" name="clinicDropdown" onchange="updateDoctorsDropdown()">
+                                <select class="btn btn-inverse-success btn-sm" id="clinicDropdown" name="clinicDropdown" style="margin-left: 32px;" onchange="updateDoctorsDropdown()">
                                   {% for chosenAppointmentData_id, chosenAppointmentData_data in chosenAppointmentData.items %}
                                     {% for clinic_id, clinic_data in clinics.items %}
                                       <option value="{{ clinic_data.uid }}" {% if clinic_data.uid == chosenAppointmentData_data.clinicUID %} selected {% endif %}>
@@ -229,16 +263,24 @@
                                 </select><br>
                               </div>
                             </div>
+
                             <div class="detail-wrapper">
                               <div class="detailname" style="font-weight: bold; margin-bottom: 18px;">
                                 Doctor:
                               </div>
                               <div class="detail-dropdown">
-                                <select class="btn btn-inverse-success btn-sm" id="doctorDropdown" name="doctorDropdown">
+                                <select class="btn btn-inverse-success btn-sm" id="doctorDropdown" name="doctorDropdown" style="margin-left: 24px;">
                                   <option selected disabled style="color: green;"></option>>- Select a Doctor -</option>
                                 </select><br>
                               </div>
                             </div>
+
+                            <div class="detail-wrapper" style="margin-top: 10px;">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                Reason for Referral:
+                              </div>
+                            </div>
+                            <input type="text" class="form-control" id="refer_reason" name="refer_reason" style="margin-top: 4px; height: 60px; width: 336px; font-size: 13px;"><br>
 
                             <button type="submit" class="btn btn-success btn-sm" style="margin-top: 16px;" name="confirmReferral" value={{endAppointment}}><i class="fa fa-check"></i>Confirm Referral</button>
                           </form>
