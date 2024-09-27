@@ -682,7 +682,8 @@ def refer_patient(request):
             'referred_doctor': referredDoctor,
             'clinic_id': clinicID,
             'date': todaydate,
-            'reason': refer_reason
+            'reason': refer_reason,
+            'referral_id': referral_uid
         }
 
         # Construct the path to the appointment data in Firebase
@@ -1296,7 +1297,7 @@ def patient_personal_information_inpatient(request):
     consulnotes = db.child("consultationNotes").get().val()
     progressnotes = db.child("progressnotes").get().val()
     
-
+    referrals = db.child("referrals").get().val()
     patientsymptoms = db.child("symptoms").get().val()
     symptoms_list = db.child("symptomsList").get().val()
 
@@ -2026,6 +2027,7 @@ def patient_personal_information_inpatient(request):
                                                                                 'chosenAppointmentData': chosenAppointmentData,
                                                                                 'chosenPatientVitalEntryData': chosenPatientVitalEntryData,
                                                                                 'chosenPatientConsulNotes': chosenPatientConsulNotes,
+                                                                                'referrals': referrals,
                                                                                 'doctors': doctors,
                                                                                 'uid': uid,
                                                                                 'medicines_list': medicines_list,
