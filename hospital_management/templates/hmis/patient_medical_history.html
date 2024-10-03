@@ -474,76 +474,76 @@
                                     <div>
                                       <h4 class="card-title card-title-dash" style="margin-bottom: 10px;">Symptoms History Chart</h4>
                                       <div class="dropdown">
-                                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton8" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Select Symptom  </button>
+                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownMenuButton8" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Select Symptom  </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton8">
                                           {% for symptom_name in chosenPatientSymptoms1 %}
                                             <a class="dropdown-item" href="#" data-symptom-name="{{ symptom_name }}">{{ symptom_name }}</a>
                                           {% endfor %}
                                         </div>
-                                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton99" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Time</button>                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton99">
+                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownMenuButton99" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Time</button>                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton99">
                                           <a class="dropdown-item" href="#" data-value="Show All">Show All</a>
                                           <a class="dropdown-item" href="#" data-value="1 month">1 month</a>
                                           <a class="dropdown-item" href="#" data-value="3 months">3 months</a>
                                           <a class="dropdown-item" href="#" data-value="6 months">6 months</a>
                                       </div>
-                                      <!-- Additional Dropdowns for Specific Time Selections -->
-                                    <div id="timeSelection" style="display: none;">
-                                      <div id="monthSelection" style="display: none;">
-                                          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMonthButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Month</button>
-                                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMonth">
-                                            <a class="dropdown-item" href="#" data-month="1">January</a>
-                                            <a class="dropdown-item" href="#" data-month="2">February</a>
-                                            <a class="dropdown-item" href="#" data-month="3">March</a>
-                                            <a class="dropdown-item" href="#" data-month="4">April</a>
-                                            <a class="dropdown-item" href="#" data-month="5">May</a>
-                                            <a class="dropdown-item" href="#" data-month="6">June</a>
-                                            <a class="dropdown-item" href="#" data-month="7">July</a>
-                                            <a class="dropdown-item" href="#" data-month="8">August</a>
-                                            <a class="dropdown-item" href="#" data-month="9">September</a>
-                                            <a class="dropdown-item" href="#" data-month="10">October</a>
-                                            <a class="dropdown-item" href="#" data-month="11">November</a>
-                                            <a class="dropdown-item" href="#" data-month="12">December</a>
-                                          </div>
 
-                                      </div>
-                                      <div id="weekSelection" style="display: none;">
-                                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownWeekButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Week</button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonWeek">
-                                            <a class="dropdown-item" href="#" data-week="1">Week 1</a>
-                                            <a class="dropdown-item" href="#" data-week="2">Week 2</a>
-                                            <a class="dropdown-item" href="#" data-week="3">Week 3</a>
-                                            <a class="dropdown-item" href="#" data-week="4">Week 4</a>
+                                  <!-- Additional Dropdowns for Specific Time Selections -->
+                                  <div id="timeSelection" style="display: none;">
+                                    <div id="monthSelection" style="display: none;">
+                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownMonthButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Month</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMonth">
+                                          <a class="dropdown-item" href="#" data-month="1">January</a>
+                                          <a class="dropdown-item" href="#" data-month="2">February</a>
+                                          <a class="dropdown-item" href="#" data-month="3">March</a>
+                                          <a class="dropdown-item" href="#" data-month="4">April</a>
+                                          <a class="dropdown-item" href="#" data-month="5">May</a>
+                                          <a class="dropdown-item" href="#" data-month="6">June</a>
+                                          <a class="dropdown-item" href="#" data-month="7">July</a>
+                                          <a class="dropdown-item" href="#" data-month="8">August</a>
+                                          <a class="dropdown-item" href="#" data-month="9">September</a>
+                                          <a class="dropdown-item" href="#" data-month="10">October</a>
+                                          <a class="dropdown-item" href="#" data-month="11">November</a>
+                                          <a class="dropdown-item" href="#" data-month="12">December</a>
                                         </div>
+
+                                    </div>
+                                    <div id="weekSelection" style="display: none;">
+                                      <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownWeekButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Week</button>
+                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonWeek">
+                                          <a class="dropdown-item" href="#" data-week="1">Week 1</a>
+                                          <a class="dropdown-item" href="#" data-week="2">Week 2</a>
+                                          <a class="dropdown-item" href="#" data-week="3">Week 3</a>
+                                          <a class="dropdown-item" href="#" data-week="4">Week 4</a>
                                       </div>
-                                      <div id="quarterSelection" style="display: none;">
-                                          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownQuarterButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Quarter</button>
-                                          <div class="dropdown-menu" aria-labelledby="dropdownQuarterButton">
-                                              <!-- Quarters -->
-                                              <a class="dropdown-item" href="#" data-quarter="Q1">Q1</a>
-                                              <a class="dropdown-item" href="#" data-quarter="Q2">Q2</a>
-                                              <a class="dropdown-item" href="#" data-quarter="Q3">Q3</a>
-                                              <a class="dropdown-item" href="#" data-quarter="Q4">Q4</a>
-                                          </div>
-                                      </div>
-                                      <div id="halfSelection" style="display: none;">
-                                          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownHalfButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Half</button>
+                                    </div>
+                                    <div id="quarterSelection" style="display: none;">
+                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownQuarterButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Quarter</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownQuarterButton">
+                                            <!-- Quarters -->
+                                            <a class="dropdown-item" href="#" data-quarter="Q1">Q1</a>
+                                            <a class="dropdown-item" href="#" data-quarter="Q2">Q2</a>
+                                            <a class="dropdown-item" href="#" data-quarter="Q3">Q3</a>
+                                            <a class="dropdown-item" href="#" data-quarter="Q4">Q4</a>
+                                        </div>
+                                    </div>
+                                        <div id="halfSelection" style="display: none;">
+                                          <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownHalfButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Half</button>
                                           <div class="dropdown-menu" aria-labelledby="dropdownHalfButton">
                                               <!-- Halves -->
                                               <a class="dropdown-item" href="#" data-half="H1">First Half</a>
                                               <a class="dropdown-item" href="#" data-half="H2">Second Half</a>
                                           </div>
+                                        </div>
                                       </div>
                                     </div>
-                                      </div>
-                                    </div>
+                                  </div>
+
                                     {% comment %} <div id="rawRecordsDisplay"></div>
                                     <div id="dateRangeDisplay"></div>
                                     <div id="rawRecordsDisplay"></div> {% endcomment %}
 
-                                    
-
-                                    <div id="performanceLine-legend"></div>
-                                  </div>
+                                  <div id="performanceLine-legend"></div>
+                                </div>
                                   
                                 <div style="width: 100%; height: 100%;">
                                   <canvas id="performanceLine"></canvas>
@@ -751,8 +751,8 @@ function updateLegend(symptomName) {
   switch (symptomName) {
       case 'Shortness_Of_Breath':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I only get breathless with strenuous exercise.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I only get breathless with strenuous exercise.<br>
           <b>1</b>: I get short of breath when hurrying on level ground or walking up a slight hill.<br>
           <b>2</b>: On level ground, I walk slower than people of the same age because I have to stop for breath when walking at my own pace.<br>
           <b>3</b>: I stop for breath after walking about 100 yards or after a few minutes on level ground.<br>
@@ -760,8 +760,8 @@ function updateLegend(symptomName) {
         break;
       case 'Energy_Level':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I have normal energy levels and do not feel fatigued.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I have normal energy levels and do not feel fatigued.<br>
           <b>1</b>: I feel slightly fatigued but can carry out most activities.<br>
           <b>2</b>: I experience moderate fatigue and need to rest occasionally.<br>
           <b>3</b>: I feel fatigued most of the time and struggle with daily activities.<br>
@@ -769,8 +769,8 @@ function updateLegend(symptomName) {
         break;
       case 'Confidence_In_Doing_Activities':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I am fully confident in doing all activities without assistance.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I am fully confident in doing all activities without assistance.<br>
           <b>1</b>: I feel slightly less confident but can still perform most tasks.<br>
           <b>2</b>: I often need to rest and sometimes avoid certain activities.<br>
           <b>3</b>: I avoid most activities and need help frequently.<br>
@@ -778,8 +778,8 @@ function updateLegend(symptomName) {
         break;
       case 'Phlegm_In_Chest':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I do not experience phlegm in my chest.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I do not experience phlegm in my chest.<br>
           <b>1</b>: I have occasional phlegm, but it does not affect my activities.<br>
           <b>2</b>: I have frequent phlegm and need to clear my throat regularly.<br>
           <b>3</b>: I have constant phlegm that interferes with daily activities.<br>
@@ -787,8 +787,8 @@ function updateLegend(symptomName) {
         break;
       case 'Wheezing':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I do not experience wheezing.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I do not experience wheezing.<br>
           <b>1</b>: I have occasional wheezing, usually with exertion.<br>
           <b>2</b>: Wheezing occurs frequently and disrupts some activities.<br>
           <b>3</b>: Wheezing is constant and limits most activities.<br>
@@ -796,8 +796,8 @@ function updateLegend(symptomName) {
         break;
       case 'Chest_Discomfort':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I do not experience chest discomfort.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I do not experience chest discomfort.<br>
           <b>1</b>: I feel mild chest discomfort occasionally.<br>
           <b>2</b>: I have moderate chest discomfort that occurs daily.<br>
           <b>3</b>: Chest discomfort is severe and limits my activities.<br>
@@ -805,8 +805,8 @@ function updateLegend(symptomName) {
         break;
       case 'Sleeps_Soundly':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I sleep soundly through the night.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I sleep soundly through the night.<br>
           <b>1</b>: I have occasional trouble sleeping but usually get enough rest.<br>
           <b>2</b>: I frequently wake up during the night and feel tired in the morning.<br>
           <b>3</b>: I rarely sleep well and often feel exhausted.<br>
@@ -814,8 +814,8 @@ function updateLegend(symptomName) {
         break;
       case 'Coughing':
         legendText = `
-          <p style="font-size: 15px;"><b><br>Level of Severity Legend: </b></p>
-          <p><b>0</b>: I do not cough at all.<br>
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I do not cough at all.<br>
           <b>1</b>: I cough occasionally, especially in the morning.<br>
           <b>2</b>: I have frequent coughing spells throughout the day.<br>
           <b>3</b>: I cough constantly and find it difficult to stop.<br>
