@@ -462,7 +462,7 @@
                       </div>
                     </div>
       
-
+                    <!-- Symptoms Chart -->
                     <div class="tab-pane fade" id="symptoms" role="tabpanel" aria-labelledby="symptoms">
                       <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
@@ -536,9 +536,9 @@
                                     </div>
                                       </div>
                                     </div>
-                                    <div id="rawRecordsDisplay"></div>
+                                    {% comment %} <div id="rawRecordsDisplay"></div>
                                     <div id="dateRangeDisplay"></div>
-                                    <div id="rawRecordsDisplay"></div>
+                                    <div id="rawRecordsDisplay"></div> {% endcomment %}
 
                                     
 
@@ -666,11 +666,6 @@ var severityGradient = ctx.createLinearGradient(0, 0, 0, 400);
 severityGradient.addColorStop(0, 'rgba(75, 192, 192, 1)');   // Start with full color
 severityGradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)'); // Fade to transparency
 
-// Create gradient for medication records
-var medicationGradient = ctx.createLinearGradient(0, 0, 0, 400);
-medicationGradient.addColorStop(0, 'rgba(54, 162, 235, 1)');   // Start with full color
-medicationGradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)'); // Fade to transparency
-
 var myLineChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -696,19 +691,7 @@ var myLineChart = new Chart(ctx, {
             borderDash: [5, 5],
             tension: 0.4,
             fill: false
-        }, {
-            label: 'Medication Records',
-            //data: [4, 4, 4],  // Dummy data for medication records
-            borderColor: 'rgba(54, 162, 235, 1)',
-            backgroundColor: medicationGradient,
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true,
-            shadowOffsetX: 2,
-            shadowOffsetY: 2,
-            shadowBlur: 5,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }]
+        }, ]
     },
     options: {
         responsive: true,
@@ -741,9 +724,7 @@ var myLineChart = new Chart(ctx, {
                             return 'Severity: ' + tooltipItem.raw;
                         } else if (tooltipItem.datasetIndex === 1) {
                             return 'Forecast: ' + tooltipItem.raw;
-                        } else {
-                            return 'Medication: ' + tooltipItem.raw;
-                        }
+                        } 
                     }
                 }
             },
