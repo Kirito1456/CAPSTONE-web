@@ -538,10 +538,9 @@
                                     </div>
                                   </div>
 
-                                    {% comment %} <div id="rawRecordsDisplay"></div>
+                                     <div id="rawRecordsDisplay"></div>
                                     <div id="dateRangeDisplay"></div>
-                                    <div id="rawRecordsDisplay"></div> {% endcomment %}
-
+                                    <div id="rawRecordsDisplay"></div> 
                                   <div id="performanceLine-legend"></div>
                                 </div>
                                   
@@ -654,6 +653,7 @@
 
    <script>
    var chosenPatientSymptoms = {{ chosenPatientSymptoms|safe }};
+   var chosenPatientOrders = {{ chosenPatientOrders|safe }};
   </script> 
 
   <script>
@@ -691,7 +691,17 @@ var myLineChart = new Chart(ctx, {
             borderDash: [5, 5],
             tension: 0.4,
             fill: false
-        }, ]
+        }, 
+        {
+          label: 'Medications',
+          //data: [2, 3, 4, 5],  // Example forecast data
+          borderColor: 'rgba(249, 215, 28, 1)',
+          backgroundColor: 'rgba(249, 215, 28, 0.2)',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          tension: 0.4,
+          fill: false
+        },]
     },
     options: {
         responsive: true,
@@ -724,6 +734,8 @@ var myLineChart = new Chart(ctx, {
                             return 'Severity: ' + tooltipItem.raw;
                         } else if (tooltipItem.datasetIndex === 1) {
                             return 'Forecast: ' + tooltipItem.raw;
+                        } else if (tooltipItem.datasetIndex === 2) {
+                          return 'Medication: ' + tooltipItem.raw;
                         } 
                     }
                 }
@@ -830,27 +842,62 @@ function updateLegend(symptomName) {
           var patientId = Object.keys(chosenPatientSymptoms)[0];
           var symptomData = chosenPatientSymptoms[patientId][symptomName];
           var severityRecords = [];
+          var medicationTimes = []; 
   
           if (symptomData && symptomData.severityRecords) {
               for (var date in symptomData.severityRecords) {
                   for (var time in symptomData.severityRecords[date]) {
                       severityRecords.push({
                           datetime: new Date(date + ' ' + time),
-                          severity: symptomData.severityRecords[date][time]
+                          severity: symptomData.severityRecords[date][time],
+                          time: time
                       });
                   }
               }
   
-              severityRecords.sort(function (a, b) {
-                  return a.datetime - b.datetime;
-              });
+              
+
+               // Get medication orders
+               if (chosenPatientOrders) {
+                for (var orderDate in chosenPatientOrders) {
+                    var order = chosenPatientOrders[orderDate];
+            
+                    // Only store relevant times (breakfast, lunch, dinner)
+                    if (order.times) {
+                        const severityMap = {
+                            Breakfast: 1,
+                            Lunch: 2,
+                            Dinner: 3
+                        };
+            
+                        var severity = severityMap[order.times];
+                            // Combine order date and time into a single datetime string
+                            var datetimeString = `${order.date} ${order.time}`;
+            
+                            medicationTimes.push({
+                                datetime: new Date(datetimeString),
+                                medication: order.medicines.join(', '), // Use 'medicines' as it's an array
+                                time: order.time,
+                                severity: severity
+                            });
+                    }
+                }
+            }
+          severityRecords.sort(function (a, b) {
+            return a.datetime - b.datetime;
+        });
+        medicationTimes.sort(function (a, b) {
+          return a.datetime - b.datetime;
+      });
   
               // Filter data based on the selected time period
               var filteredRecords;
+              var medicationRecords;
               var now = new Date();
 
               if (timePeriod === 'Show All') {
                 filteredRecords = severityRecords;
+                medicationRecords = medicationTimes;
                 startDate = new Date(severityRecords[0]?.datetime);
                 endDate = new Date(severityRecords[severityRecords.length - 1]?.datetime);
             } else if (timePeriod === '1 month') {
@@ -859,6 +906,7 @@ function updateLegend(symptomName) {
                 var cutoffStart = new Date(startYear, startMonth - 1, 1);
                 var cutoffEnd = new Date(startYear, startMonth, 0);
                 filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
+                medicationRecords = medicationTimes.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
 
                 if (week !== null) {
                   var periodStartDate = new Date(cutoffStart); // Start of the month
@@ -872,6 +920,10 @@ function updateLegend(symptomName) {
                       var recordDate = new Date(record.datetime);
                       return recordDate >= periodStartDate && recordDate <= periodEndDate;
                   });
+                  medicationRecords = medicationRecords.filter(record => {
+                    var recordDate = new Date(record.datetime);
+                    return recordDate >= periodStartDate && recordDate <= periodEndDate;
+                });
                   startDate = periodStartDate;
                   endDate = periodEndDate;
 
@@ -909,6 +961,7 @@ function updateLegend(symptomName) {
                 var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
                 var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
                 filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+                medicationRecords = medicationTimes.filter(record => record.datetime >= start && record.datetime <= end);
 
                 startDate = start;
                 endDate = end;
@@ -921,17 +974,27 @@ function updateLegend(symptomName) {
                 var start = new Date(now.getFullYear(), halves[half][0], 1);
                 var end = new Date(now.getFullYear(), halves[half][1], 0);
                 filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+                medicationRecords = medicationTimes.filter(record => record.datetime >= start && record.datetime <= end);
 
                 startDate = start;
                 endDate = end;
             }
   
-              var labels = filteredRecords.map(record => record.datetime.toLocaleDateString());
-              var data = filteredRecords.map(record => record.severity);
-              
-  
-              myLineChart.data.labels = labels;
-              myLineChart.data.datasets[0].data = data;
+            var labels = filteredRecords.map(record => record.datetime.toLocaleDateString());
+            var data = filteredRecords.map(record => record.severity);
+            var medicationLabels = medicationRecords.map(record => record.datetime.toLocaleDateString());
+            var medicineData = medicationRecords.map(record => record.severity);
+            // Combine both label arrays
+            var combinedLabels = [...labels, ...medicationLabels];
+
+            // Remove duplicates using a Set
+            //combinedLabels = [...new Set(combinedLabels)];
+
+            // Sort labels in chronological order
+            combinedLabels.sort((a, b) => new Date(a) - new Date(b));
+            myLineChart.data.labels = combinedLabels;
+            myLineChart.data.datasets[0].data = data;
+            myLineChart.data.datasets[2].data = medicineData;
   
               if (data.length > 0) {
                 // Forecasting
@@ -959,6 +1022,7 @@ function updateLegend(symptomName) {
                 myLineChart.data.labels = [];
                 myLineChart.data.datasets[0].data = [];
                 myLineChart.data.datasets[1].data = [];
+                myLineChart.data.datasets[2].data = [];
                 myLineChart.update();
 
                 var insightsElement = document.getElementById('performanceLine-legend');
@@ -969,6 +1033,7 @@ function updateLegend(symptomName) {
             myLineChart.data.labels = [];
             myLineChart.data.datasets[0].data = [];
             myLineChart.data.datasets[1].data = [];
+            myLineChart.data.datasets[2].data = [];
             myLineChart.update();
 
             var insightsElement = document.getElementById('performanceLine-legend');
@@ -1062,7 +1127,6 @@ function updateLegend(symptomName) {
     });      
   
 </script>
-
    
 
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
