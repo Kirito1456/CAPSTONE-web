@@ -1304,6 +1304,8 @@ def patient_personal_information_inpatient(request):
     date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
+    current_uid = request.session['uid'] 
+    testrequest = db.child("testrequest").child(current_uid).get().val()
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
     medicines_set = {medication['Disease'] for medication in medications_cursor}
     medicines_list = list(medicines_set)
@@ -2063,7 +2065,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'prescriptionsorders': prescriptionsorders,
                                                                                 'latest_complains': latest_complains,
                                                                                 'dates': dates,
-                                                                                'available_days_list': available_days_list})
+                                                                                'available_days_list': available_days_list,
+                                                                                'testrequest': testrequest})
 
 def save_chiefComplaint(request):
         
@@ -3167,11 +3170,14 @@ def requestTest(request):
         # Construct the path to the appointment data in Firebase
         db_path = f"/testrequest/{patient_uid}/{testRequest_id}"
 
+        tests_list = request.POST.getlist('test')  # Get the list of tests
+        tests_dict = {test: "Ongoing" for test in tests_list}
+
         db.child(db_path).update( {
             'patient_id': patient_uid,
             'doctor': doctor_uid,
             'dateCreated': todaydate,
-            'tests': request.POST.getlist('test'),
+            'tests': tests_dict,
             'status': "Ongoing",
         })
 
