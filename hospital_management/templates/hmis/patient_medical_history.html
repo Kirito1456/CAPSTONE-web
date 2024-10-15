@@ -672,11 +672,18 @@ var myLineChart = new Chart(ctx, {
     labels: [],
     datasets: [
       {
-        label: 'Severity', // Dataset for severity
-        data: [],
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        yAxisID: 'y',  // Link this dataset to the 'y' axis
+        label: 'Level of Severity',
+            //data: [3, 2, 5, 4],  // Example severity data
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: severityGradient,
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            shadowOffsetX: 2,
+            shadowOffsetY: 2,
+            shadowBlur: 5,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            yAxisID: 'y',
       },
       {
         label: 'Forecast',  // Dataset for forecast
@@ -686,25 +693,34 @@ var myLineChart = new Chart(ctx, {
         yAxisID: 'y',  // Link to 'y' axis (same as Severity)
       },
       {
-        label: 'Breakfast',  // Dataset for Breakfast medication intake
+        label: 'Medication Intake - Breakfast',  // Dataset for Breakfast medication intake
         data: [],
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
         yAxisID: 'y1',  // Link to 'y1' axis for medication intake
+        borderWidth: 1,
+        type: 'bar',
+        barPercentage: 0.2,
       },
       {
-        label: 'Lunch',  // Dataset for Lunch medication intake
+        label: 'Medication Intake - Lunch',  // Dataset for Lunch medication intake
         data: [],
         borderColor: 'rgba(153, 102, 255, 1)',
         backgroundColor: 'rgba(153, 102, 255, 0.2)',
         yAxisID: 'y1',  // Link to 'y1' axis
+        borderWidth: 1,
+        type: 'bar',
+        barPercentage: 0.2,
       },
       {
-        label: 'Dinner',  // Dataset for Dinner medication intake
+        label: 'Medication Intake - Dinner',  // Dataset for Dinner medication intake
         data: [],
         borderColor: 'rgba(255, 159, 64, 1)',
         backgroundColor: 'rgba(255, 159, 64, 0.2)',
         yAxisID: 'y1',  // Link to 'y1' axis
+        borderWidth: 1,
+        type: 'bar',
+        barPercentage: 0.2,
       }
     ]
   },
@@ -745,10 +761,11 @@ var myLineChart = new Chart(ctx, {
                           3: 'Dinner'
                       };
                       return labels[value] || value;
-                  }
+                  },
+                  display: false,
               },
               title: {
-                  display: true,
+                  display: false,
                   text: 'Medication Intake'
               },
               grid: {
@@ -773,10 +790,6 @@ var myLineChart = new Chart(ctx, {
               }
           }
       },
-      interaction: {
-          mode: 'index',
-          intersect: false,
-      }
   }
 });
 
@@ -877,7 +890,8 @@ function updateChart(symptomName, timePeriod, specificTime, week) {
               severityRecords.push({
                   datetime: new Date(date + ' ' + time),
                   severity: symptomData.severityRecords[date][time],
-                  time: time
+                  time: time,
+                  intake: 0
               });
           }
       }
@@ -901,7 +915,7 @@ function updateChart(symptomName, timePeriod, specificTime, week) {
                       datetime: new Date(datetimeString),
                       medication: order.medicines.join(', '), // Use 'medicines' as it's an array
                       time: order.time,
-                      severity: severity
+                      intake: severity
                   });
               }
           }
@@ -979,30 +993,19 @@ function updateChart(symptomName, timePeriod, specificTime, week) {
           endDate = end;
       }
 
-       // Collect labels and data for the chart
-       var labels = [];
-       var severityData = [];
-       var medicationData = {
-           Breakfast: [],
-           Lunch: [],
-           Dinner: []
-       };
+            // Combine both label arrays and medication data properly
+      var allRecords = [...filteredRecords, ...Object.values(filteredMedicationTimes).flat()];
+      allRecords.sort((a, b) => a.datetime - b.datetime); // Sort all records
 
-       // Process filtered records
-       filteredRecords.forEach(record => {
-           const dateStr = record.datetime.toLocaleDateString();
-           if (!labels.includes(dateStr)) {
-               labels.push(dateStr);
-           }
-           severityData.push(record.severity);
-       });
+      var labels = allRecords.map(record => record.datetime.toLocaleDateString() + '-' + record.datetime.toLocaleTimeString());
+      var severityData = filteredRecords.map(record => record.severity);
 
-       // Process filtered medication times
-       Object.keys(filteredMedicationTimes).forEach(meal => {
-           filteredMedicationTimes[meal].forEach(record => {
-               medicationData[meal].push(record.severity); // Assuming you want to reflect severity
-           });
-       });
+      var medicationData = {
+        Breakfast: allRecords.map(record => record.intake === 1 ? 1 : 0),
+        Lunch: allRecords.map(record => record.intake === 2 ? 1 : 0),
+        Dinner: allRecords.map(record => record.intake === 3 ? 1 : 0)
+      };
+
 
       // Update chart
       myLineChart.data.labels = labels;
@@ -1037,6 +1040,8 @@ function updateChart(symptomName, timePeriod, specificTime, week) {
           myLineChart.data.datasets[0].data = [];
           myLineChart.data.datasets[1].data = [];
           myLineChart.data.datasets[2].data = [];
+          myLineChart.data.datasets[3].data = []; 
+          myLineChart.data.datasets[4].data = [];
           myLineChart.update();
 
           var insightsElement = document.getElementById('performanceLine-legend');
@@ -1048,6 +1053,8 @@ function updateChart(symptomName, timePeriod, specificTime, week) {
       myLineChart.data.datasets[0].data = [];
       myLineChart.data.datasets[1].data = [];
       myLineChart.data.datasets[2].data = [];
+      myLineChart.data.datasets[3].data = []; 
+      myLineChart.data.datasets[4].data = [];
       myLineChart.update();
 
       var insightsElement = document.getElementById('performanceLine-legend');
@@ -1055,8 +1062,9 @@ function updateChart(symptomName, timePeriod, specificTime, week) {
   }
 
   // Display raw filtered records for debugging
+  
   var rawRecordsDisplay = document.getElementById('rawRecordsDisplay');
-  rawRecordsDisplay.innerHTML = '<h5>Filtered Records:</h5><pre>' + JSON.stringify(filteredRecords, null, 2) + '</pre>';
+  rawRecordsDisplay.innerHTML = '<h5>Filtered Records:</h5><pre>' + JSON.stringify(allFilteredRecords, null, 2) + '</pre>';
 
   var medicationDisplay = document.getElementById('medicationDisplay');
   medicationDisplay.innerHTML = '<h5>Medication Records:</h5><pre>' + JSON.stringify(filteredMedicationTimes, null, 2) + '</pre>';
