@@ -540,7 +540,7 @@
 
                                      <div id="rawRecordsDisplay"></div>
                                     <div id="dateRangeDisplay"></div>
-                                    <div id="rawRecordsDisplay"></div> 
+                                    <div id="medicationDisplay"></div> 
                                   <div id="performanceLine-legend"></div>
                                 </div>
                                   
@@ -667,11 +667,12 @@ severityGradient.addColorStop(0, 'rgba(75, 192, 192, 1)');   // Start with full 
 severityGradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)'); // Fade to transparency
 
 var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        //labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],  // Example week labels
-        datasets: [{
-            label: 'Level of Severity',
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: 'Level of Severity',
             //data: [3, 2, 5, 4],  // Example severity data
             borderColor: 'rgba(75, 192, 192, 1)',
             backgroundColor: severityGradient,
@@ -681,82 +682,117 @@ var myLineChart = new Chart(ctx, {
             shadowOffsetX: 2,
             shadowOffsetY: 2,
             shadowBlur: 5,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }, {
-            label: 'Forecast',
-            //data: [2, 3, 4, 5],  // Example forecast data
-            borderColor: 'rgba(255, 99, 132, 1)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderWidth: 2,
-            borderDash: [5, 5],
-            tension: 0.4,
-            fill: false
-        }, 
-        {
-          label: 'Medications',
-          //data: [2, 3, 4, 5],  // Example forecast data
-          borderColor: 'rgba(249, 215, 28, 1)',
-          backgroundColor: 'rgba(249, 215, 28, 0.2)',
-          borderWidth: 2,
-          borderDash: [5, 5],
-          tension: 0.4,
-          fill: false
-        },]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    precision: 0
-                },
-                grid: {
-                    color: 'rgba(200, 200, 200, 0.2)', // Grid line color
-                    borderDash: [5, 5]
-                }
-            },
-            x: {
-                grid: {
-                    color: 'rgba(200, 200, 200, 0.2)', // Grid line color
-                    borderDash: [5, 5]
-                }
-            }
-        },
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    title: function(tooltipItems) {
-                        return 'Date: ' + tooltipItems[0].label;
-                    },
-                    label: function(tooltipItem) {
-                        if (tooltipItem.datasetIndex === 0) {
-                            return 'Severity: ' + tooltipItem.raw;
-                        } else if (tooltipItem.datasetIndex === 1) {
-                            return 'Forecast: ' + tooltipItem.raw;
-                        } else if (tooltipItem.datasetIndex === 2) {
-                          return 'Medication: ' + tooltipItem.raw;
-                        } 
-                    }
-                }
-            },
-            legend: {
-                labels: {
-                    usePointStyle: true,  // Use point style instead of lines
-                }
-            }
-        },
-        interaction: {
-            mode: 'index',
-            intersect: false
-        },
-        elements: {
-            line: {
-                borderJoinStyle: 'round'
-            }
-        }
-    }
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            yAxisID: 'y',
+      },
+      {
+        label: 'Forecast',  // Dataset for forecast
+        data: [],
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        yAxisID: 'y',  // Link to 'y' axis (same as Severity)
+      },
+      {
+        label: 'Medication Intake - Breakfast',  // Dataset for Breakfast medication intake
+        data: [],
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        yAxisID: 'y1',  // Link to 'y1' axis for medication intake
+        borderWidth: 1,
+        type: 'bar',
+        barPercentage: 0.2,
+      },
+      {
+        label: 'Medication Intake - Lunch',  // Dataset for Lunch medication intake
+        data: [],
+        borderColor: 'rgba(153, 102, 255, 1)',
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        yAxisID: 'y1',  // Link to 'y1' axis
+        borderWidth: 1,
+        type: 'bar',
+        barPercentage: 0.2,
+      },
+      {
+        label: 'Medication Intake - Dinner',  // Dataset for Dinner medication intake
+        data: [],
+        borderColor: 'rgba(255, 159, 64, 1)',
+        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+        yAxisID: 'y1',  // Link to 'y1' axis
+        borderWidth: 1,
+        type: 'bar',
+        barPercentage: 0.2,
+      }
+    ]
+  },
+  options: {
+      responsive: true,
+      scales: {
+          x: {
+              title: {
+                  display: true,
+                  text: 'Date',
+              }
+          },
+          y: {  // Left Y-axis for Severity and Forecast
+              type: 'linear',
+              position: 'left',
+              ticks: {
+                  beginAtZero: true,
+                  stepSize: 1,
+                  max: 4,
+                  min: 0,
+              },
+              title: {
+                  display: true,
+                  text: 'Severity / Forecast',
+              }
+          },
+          y1: {  // Right Y-axis for Medication Intake
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                  beginAtZero: true,
+                  stepSize: 1,
+                  max: 3,
+                  callback: function(value) {
+                      const labels = {
+                          1: 'Breakfast',
+                          2: 'Lunch',
+                          3: 'Dinner'
+                      };
+                      return labels[value] || value;
+                  },
+                  display: false,
+              },
+              title: {
+                  display: false,
+                  text: 'Medication Intake'
+              },
+              grid: {
+                  drawOnChartArea: false,
+              }
+          }
+      },
+      plugins: {
+          tooltip: {
+              callbacks: {
+                  label: function(tooltipItem) {
+                      const datasetLabel = tooltipItem.dataset.label || '';
+                      const value = tooltipItem.raw;
+                      if (datasetLabel === 'Severity' || datasetLabel === 'Forecast') {
+                          return `${datasetLabel}: ${value}`;
+                      }
+                      if (datasetLabel === 'Breakfast' || datasetLabel === 'Lunch' || datasetLabel === 'Dinner') {
+                          return `${datasetLabel}: Taken`;
+                      }
+                      return `${datasetLabel}: ${value}`;
+                  }
+              }
+          }
+      },
+  }
 });
+
 
 function updateLegend(symptomName) {
   var legendText = '';
@@ -838,212 +874,202 @@ function updateLegend(symptomName) {
 }
 
 
-      function updateChart(symptomName, timePeriod, specificTime, week) {
-          var patientId = Object.keys(chosenPatientSymptoms)[0];
-          var symptomData = chosenPatientSymptoms[patientId][symptomName];
-          var severityRecords = [];
-          var medicationTimes = []; 
-  
-          if (symptomData && symptomData.severityRecords) {
-              for (var date in symptomData.severityRecords) {
-                  for (var time in symptomData.severityRecords[date]) {
-                      severityRecords.push({
-                          datetime: new Date(date + ' ' + time),
-                          severity: symptomData.severityRecords[date][time],
-                          time: time
-                      });
-                  }
-              }
-  
-              
+function updateChart(symptomName, timePeriod, specificTime, week) {
+  var patientId = Object.keys(chosenPatientSymptoms)[0];
+  var symptomData = chosenPatientSymptoms[patientId][symptomName];
+  var severityRecords = [];
+  var medicationTimes = {
+    Breakfast: [],
+    Lunch: [],
+    Dinner: []
+  };
 
-               // Get medication orders
-               if (chosenPatientOrders) {
-                for (var orderDate in chosenPatientOrders) {
-                    var order = chosenPatientOrders[orderDate];
-            
-                    // Only store relevant times (breakfast, lunch, dinner)
-                    if (order.times) {
-                        const severityMap = {
-                            Breakfast: 1,
-                            Lunch: 2,
-                            Dinner: 3
-                        };
-            
-                        var severity = severityMap[order.times];
-                            // Combine order date and time into a single datetime string
-                            var datetimeString = `${order.date} ${order.time}`;
-            
-                            medicationTimes.push({
-                                datetime: new Date(datetimeString),
-                                medication: order.medicines.join(', '), // Use 'medicines' as it's an array
-                                time: order.time,
-                                severity: severity
-                            });
-                    }
-                }
-            }
-          severityRecords.sort(function (a, b) {
-            return a.datetime - b.datetime;
-        });
-        medicationTimes.sort(function (a, b) {
+  if (symptomData && symptomData.severityRecords) {
+      for (var date in symptomData.severityRecords) {
+          for (var time in symptomData.severityRecords[date]) {
+              severityRecords.push({
+                  datetime: new Date(date + ' ' + time),
+                  severity: symptomData.severityRecords[date][time],
+                  time: time,
+                  intake: 0
+              });
+          }
+      }
+
+      // Get medication orders
+      if (chosenPatientOrders) {
+          for (var orderDate in chosenPatientOrders) {
+              var order = chosenPatientOrders[orderDate];
+
+              if (order.times) {
+                  const severityMap = {
+                      Breakfast: 1,
+                      Lunch: 2,
+                      Dinner: 3
+                  };
+
+                  var severity = severityMap[order.times];
+                  var datetimeString = `${order.date} ${order.time}`;
+
+                  medicationTimes[order.times].push({
+                      datetime: new Date(datetimeString),
+                      medication: order.medicines.join(', '), // Use 'medicines' as it's an array
+                      time: order.time,
+                      intake: severity
+                  });
+              }
+          }
+      }
+
+      severityRecords.sort(function (a, b) {
           return a.datetime - b.datetime;
       });
+      Object.keys(medicationTimes).forEach(meal => {
+          medicationTimes[meal].sort(function (a, b) {
+              return a.datetime - b.datetime;
+          });
+      });
+
+      // Filter data based on the selected time period
+      var filteredRecords;
+      var filteredMedicationTimes = {
+        Breakfast: [],
+        Lunch: [],
+        Dinner: []
+      };
+      var now = new Date();
+
+      if (timePeriod === 'Show All') {
+          filteredRecords = severityRecords;
+          filteredMedicationTimes = medicationTimes;
+          startDate = new Date(severityRecords[0]?.datetime);
+          endDate = new Date(severityRecords[severityRecords.length - 1]?.datetime);
+      } else if (timePeriod === '1 month') {
+          var startMonth = specificTime;
+          var startYear = now.getFullYear();
+          var cutoffStart = new Date(startYear, startMonth - 1, 1);
+          var cutoffEnd = new Date(startYear, startMonth, 0);
+          filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
+
+          Object.keys(medicationTimes).forEach(meal => {
+              filteredMedicationTimes[meal] = medicationTimes[meal].filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
+          });
+
+          if (week !== null) {
+              var periodStartDate = new Date(cutoffStart);
+              periodStartDate.setDate(cutoffStart.getDate() + (week - 1) * 7);
+
+              var periodEndDate = new Date(periodStartDate);
+              periodEndDate.setDate(periodStartDate.getDate() + 6);
+
+              filteredRecords = filteredRecords.filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
+              Object.keys(filteredMedicationTimes).forEach(meal => {
+                  filteredMedicationTimes[meal] = filteredMedicationTimes[meal].filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
+              });
+
+              startDate = periodStartDate;
+              endDate = periodEndDate;
+          } else {
+              startDate = cutoffStart;
+              endDate = cutoffEnd;
+          }
+      } else if (timePeriod === '3 months') {
+          var quarter = specificTime;
+          var quarters = {
+              'Q1': [0, 3],
+              'Q2': [3, 6],
+              'Q3': [6, 9],
+              'Q4': [9, 12]
+          };
+          var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
+          var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
+          filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+
+          Object.keys(medicationTimes).forEach(meal => {
+              filteredMedicationTimes[meal] = medicationTimes[meal].filter(record => record.datetime >= start && record.datetime <= end);
+          });
+
+          startDate = start;
+          endDate = end;
+      }
+
+            // Combine both label arrays and medication data properly
+      var allRecords = [...filteredRecords, ...Object.values(filteredMedicationTimes).flat()];
+      allRecords.sort((a, b) => a.datetime - b.datetime); // Sort all records
+
+      var labels = allRecords.map(record => record.datetime.toLocaleDateString() + '-' + record.datetime.toLocaleTimeString());
+      var severityData = filteredRecords.map(record => record.severity);
+
+      var medicationData = {
+        Breakfast: allRecords.map(record => record.intake === 1 ? 1 : 0),
+        Lunch: allRecords.map(record => record.intake === 2 ? 1 : 0),
+        Dinner: allRecords.map(record => record.intake === 3 ? 1 : 0)
+      };
+
+
+      // Update chart
+      myLineChart.data.labels = labels;
+      myLineChart.data.datasets[0].data = severityData; // Severity
+      myLineChart.data.datasets[2].data = medicationData.Breakfast;  // Breakfast intake
+      myLineChart.data.datasets[3].data = medicationData.Lunch;  // Lunch intake
+      myLineChart.data.datasets[4].data = medicationData.Dinner;  // Dinner intake
+
+      if (severityData.length > 0) {
+          var forecastData = forecast(severityData);
+          myLineChart.data.datasets[1].data = forecastData; // Forecast
+
+          myLineChart.update();
+
+          // Calculate insights
+          var maxSeverity = Math.max(...severityData);
+          var minSeverity = Math.min(...severityData);
+          var averageSeverity = severityData.reduce((acc, val) => acc + val, 0) / severityData.length;
+
+          // Display insights
+          var insightsElement = document.getElementById('performanceLine-legend');
+          insightsElement.innerHTML = `
+              <p style="font-size: 14px;"><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
+              <p>Date Range: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</p>
+              <p>Maximum Severity: ${maxSeverity}</p>
+              <p>Minimum Severity: ${minSeverity}</p>
+              <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
+          `;
+      } else {
+          // Display message when no data is available
+          myLineChart.data.labels = [];
+          myLineChart.data.datasets[0].data = [];
+          myLineChart.data.datasets[1].data = [];
+          myLineChart.data.datasets[2].data = [];
+          myLineChart.data.datasets[3].data = []; 
+          myLineChart.data.datasets[4].data = [];
+          myLineChart.update();
+
+          var insightsElement = document.getElementById('performanceLine-legend');
+          insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
+      }
+  } else {
+      // Display message when no data is available
+      myLineChart.data.labels = [];
+      myLineChart.data.datasets[0].data = [];
+      myLineChart.data.datasets[1].data = [];
+      myLineChart.data.datasets[2].data = [];
+      myLineChart.data.datasets[3].data = []; 
+      myLineChart.data.datasets[4].data = [];
+      myLineChart.update();
+
+      var insightsElement = document.getElementById('performanceLine-legend');
+      insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
+  }
+
+  // Display raw filtered records for debugging
   
-              // Filter data based on the selected time period
-              var filteredRecords;
-              var medicationRecords;
-              var now = new Date();
+  var rawRecordsDisplay = document.getElementById('rawRecordsDisplay');
+  rawRecordsDisplay.innerHTML = '<h5>Filtered Records:</h5><pre>' + JSON.stringify(allFilteredRecords, null, 2) + '</pre>';
 
-              if (timePeriod === 'Show All') {
-                filteredRecords = severityRecords;
-                medicationRecords = medicationTimes;
-                startDate = new Date(severityRecords[0]?.datetime);
-                endDate = new Date(severityRecords[severityRecords.length - 1]?.datetime);
-            } else if (timePeriod === '1 month') {
-                var startMonth = specificTime;
-                var startYear = now.getFullYear();
-                var cutoffStart = new Date(startYear, startMonth - 1, 1);
-                var cutoffEnd = new Date(startYear, startMonth, 0);
-                filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
-                medicationRecords = medicationTimes.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
+  var medicationDisplay = document.getElementById('medicationDisplay');
+  medicationDisplay.innerHTML = '<h5>Medication Records:</h5><pre>' + JSON.stringify(filteredMedicationTimes, null, 2) + '</pre>';
+}
 
-                if (week !== null) {
-                  var periodStartDate = new Date(cutoffStart); // Start of the month
-                  periodStartDate.setDate(cutoffStart.getDate() + (week - 1) * 7); // Move to the selected week
-
-                  var periodEndDate = new Date(periodStartDate); // End of the 7-day period
-                  periodEndDate.setDate(periodStartDate.getDate() + 6); // Add 6 days to get end date
-
-                  // Filter records within the 7-day period
-                  filteredRecords = filteredRecords.filter(record => {
-                      var recordDate = new Date(record.datetime);
-                      return recordDate >= periodStartDate && recordDate <= periodEndDate;
-                  });
-                  medicationRecords = medicationRecords.filter(record => {
-                    var recordDate = new Date(record.datetime);
-                    return recordDate >= periodStartDate && recordDate <= periodEndDate;
-                });
-                  startDate = periodStartDate;
-                  endDate = periodEndDate;
-
-                  // Display period start and end dates
-                  var dateRangeDisplay = document.getElementById('dateRangeDisplay');
-                  dateRangeDisplay.innerHTML = `
-                      <p><strong>7-Day Period:</strong></p>
-                      <p>Start Date: ${startDate.toDateString()}</p>
-                      <p>End Date: ${endDate.toDateString()}</p>
-                      <p>Week: ${specificTime}</p>
-                  `;
-              } else {
-                  startDate = cutoffStart;
-                  endDate = cutoffEnd;
-
-                  // Display period start and end dates
-                  var dateRangeDisplay = document.getElementById('dateRangeDisplay');
-                  dateRangeDisplay.innerHTML = `
-                      <p><strong>7-Day Period:</strong></p>
-                      <p>Start Date: ${startDate.toDateString()}</p>
-                      <p>End Date: ${endDate.toDateString()}</p>
-                      <p>Week: ${specificTime}</p>
-                  `;
-              }
-              
-              
-            } else if (timePeriod === '3 months') {
-                var quarter = specificTime;
-                var quarters = {
-                    'Q1': [0, 3],
-                    'Q2': [3, 6],
-                    'Q3': [6, 9],
-                    'Q4': [9, 12]
-                };
-                var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
-                var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
-                filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
-                medicationRecords = medicationTimes.filter(record => record.datetime >= start && record.datetime <= end);
-
-                startDate = start;
-                endDate = end;
-            } else if (timePeriod === '6 months') {
-                var half = specificTime;
-                var halves = {
-                    'H1': [0, 6],
-                    'H2': [6, 12]
-                };
-                var start = new Date(now.getFullYear(), halves[half][0], 1);
-                var end = new Date(now.getFullYear(), halves[half][1], 0);
-                filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
-                medicationRecords = medicationTimes.filter(record => record.datetime >= start && record.datetime <= end);
-
-                startDate = start;
-                endDate = end;
-            }
-  
-            var labels = filteredRecords.map(record => record.datetime.toLocaleDateString());
-            var data = filteredRecords.map(record => record.severity);
-            var medicationLabels = medicationRecords.map(record => record.datetime.toLocaleDateString());
-            var medicineData = medicationRecords.map(record => record.severity);
-            // Combine both label arrays
-            var combinedLabels = [...labels, ...medicationLabels];
-
-            // Remove duplicates using a Set
-            //combinedLabels = [...new Set(combinedLabels)];
-
-            // Sort labels in chronological order
-            combinedLabels.sort((a, b) => new Date(a) - new Date(b));
-            myLineChart.data.labels = combinedLabels;
-            myLineChart.data.datasets[0].data = data;
-            myLineChart.data.datasets[2].data = medicineData;
-  
-              if (data.length > 0) {
-                // Forecasting
-                var forecastData = forecast(data);
-                myLineChart.data.datasets[1].data = forecastData;
-
-                myLineChart.update();
-
-                // Calculate insights
-                var maxSeverity = Math.max(...data);
-                var minSeverity = Math.min(...data);
-                var averageSeverity = data.reduce((acc, val) => acc + val, 0) / data.length;
-
-                // Display insights
-                var insightsElement = document.getElementById('performanceLine-legend');
-                insightsElement.innerHTML = `
-                    <p style="font-size: 14px;"><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
-                    <p>Date Range: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</p>
-                    <p>Maximum Severity: ${maxSeverity}</p>
-                    <p>Minimum Severity: ${minSeverity}</p>
-                    <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
-                `;
-            } else {
-                // Display message when no data is available
-                myLineChart.data.labels = [];
-                myLineChart.data.datasets[0].data = [];
-                myLineChart.data.datasets[1].data = [];
-                myLineChart.data.datasets[2].data = [];
-                myLineChart.update();
-
-                var insightsElement = document.getElementById('performanceLine-legend');
-                insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
-            }
-        } else {
-            // Display message when no data is available
-            myLineChart.data.labels = [];
-            myLineChart.data.datasets[0].data = [];
-            myLineChart.data.datasets[1].data = [];
-            myLineChart.data.datasets[2].data = [];
-            myLineChart.update();
-
-            var insightsElement = document.getElementById('performanceLine-legend');
-            insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
-        }
-
-        // Display raw filtered records for debugging
-        var rawRecordsDisplay = document.getElementById('rawRecordsDisplay');
-        rawRecordsDisplay.innerHTML = '<h5>Filtered Records:</h5><pre>' + JSON.stringify(filteredRecords, null, 2) + '</pre>';
-    }
 
       function forecast(data) {
           // Simple linear forecasting
