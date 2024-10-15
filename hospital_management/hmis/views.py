@@ -1,7 +1,6 @@
 from collections import defaultdict
 from datetime import datetime , timedelta
 import datetime as date
-import re
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
 from hospital_management.settings import auth as firebase_auth
@@ -16,6 +15,12 @@ import random
 from operator import itemgetter
 from collections import OrderedDict
 
+import requests
+import pytesseract
+from PIL import Image
+from io import BytesIO
+import re
+
 from hmis.models import Medications, Notification
 from hospital_management.settings import collection 
 from django.conf import settings
@@ -26,11 +31,10 @@ import uuid
 import json
 
 from django.http import HttpResponse, JsonResponse
-from PIL import Image
+
 import base64
 from firebase_admin import db
 
-from io import BytesIO
 from django.template.loader import get_template
 
 # Use the firebase_database object directly
@@ -41,8 +45,6 @@ import firebase_admin
 from firebase_admin import storage
 from .forms import ImageUploadForm
 
-
-import requests
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch, cm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -1284,7 +1286,17 @@ def patient_data_doctor_view(request):
         'sorted_patients': sorted_patients,
         'notifications': notifications
     }) 
-    
+
+def extract_value(ocr_text, key):
+    # This function extracts the numeric value for the given key (FEV1 or FVC)
+    lines = ocr_text.splitlines()
+    for line in lines:
+        if key in line:
+            # Assuming the format is 'FEV1: [value]' or similar
+            parts = line.split(':')
+            if len(parts) > 1:
+                return parts[1].strip()  # Return the value after the key
+    return None
 
 def patient_personal_information_inpatient(request):
     
@@ -1304,8 +1316,10 @@ def patient_personal_information_inpatient(request):
     date1 = datetime.today().strftime('%Y-%m-%d')
     doctors = db.child("doctors").get().val()
     uid = request.session['uid'] 
-    current_uid = request.session['uid'] 
-    testrequest = db.child("testrequest").child(current_uid).get().val()
+    chosenPatient = request.GET.get('chosenPatient', '')
+    testrequest = db.child("testrequest").child(chosenPatient).get().val()
+    submittedTest = db.child("submittedTest").child(chosenPatient).get().val()
+
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
     medicines_set = {medication['Disease'] for medication in medications_cursor}
     medicines_list = list(medicines_set)
@@ -1345,6 +1359,39 @@ def patient_personal_information_inpatient(request):
 
     available_days_list = list(available_days)
 
+    # if submittedTest:
+    #     for test_key, test_value in submittedTest.items():
+    #         if test_key == 'Spirometry':
+    #             # Iterate over tests and perform OCR if date is earlier than today
+    #             for key, value in test_value.items():
+    #                 # Access the image URL
+    #                 # image_url = value['downloadURL']
+    #                 image_url = "https://www.copdfoundation.org/Portals/0/Users/064/28/56128/9274B126-FF23-4739-9949-539B92016248.jpeg?ver=2021-03-29-144647-710"
+    #                 response = requests.get(image_url)
+                    
+    #                 image = Image.open(BytesIO(response.content))
+
+
+    #                 extracted_text = pytesseract.image_to_string(image)
+    #                 print('extracted_text is ', extracted_text)
+
+    #                 # Download the image
+    #                 # response = requests.get(image_url)
+    #                 # image = Image.open(BytesIO(response.content))
+
+    #                 # Perform OCR on the image
+    #                 # ocr_result = pytesseract.image_to_string(image)
+
+    #                 # # Extract FEV1 and FVC values
+    #                 # fev1 = extract_value(ocr_result, 'FEV1')
+    #                 # fvc = extract_value(ocr_result, 'FVC')
+
+    #                 # # Save the extracted values back to Firebase
+    #                 # if fev1 is not None and fvc is not None:
+    #                 #     db.child("submittedTest").child(chosenPatient).child('Spirometry').child(key).update({
+    #                 #         'FEV1': fev1,
+    #                 #         'FVC': fvc
+    #                 #     })
     
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -1629,9 +1676,13 @@ def patient_personal_information_inpatient(request):
     
 
     # Extract and sort the dates
-    sorted_dates = sorted(consultation_notes.keys(), reverse=True)
-    latest_date = sorted_dates[0]
-    latest_complains = db.child("consultationNotes").child(chosenPatient).child(latest_date).child('complains').get().val()
+    if consultation_notes is not None:
+        sorted_dates = sorted(consultation_notes.keys(), reverse=True)
+        latest_date = sorted_dates[0]
+        latest_complains = db.child("consultationNotes").child(chosenPatient).child(latest_date).child('complains').get().val()
+    else:
+        sorted_dates = []
+        latest_complains = None
 
     cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
     pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
@@ -2066,7 +2117,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'latest_complains': latest_complains,
                                                                                 'dates': dates,
                                                                                 'available_days_list': available_days_list,
-                                                                                'testrequest': testrequest})
+                                                                                'testrequest': testrequest,
+                                                                                'submittedTest': submittedTest})
 
 def save_chiefComplaint(request):
         
