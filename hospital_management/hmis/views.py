@@ -2358,7 +2358,7 @@ def patient_medical_history(request):
                                 }
     # Example Output after combining records
 
-    print(chosenPatientOrders)
+    print('chosenPatientOrders is ', chosenPatientOrders)
 
     patientsymptoms = db.child("symptoms").get().val()
     symptoms_list = db.child("symptomsList").get().val()

@@ -774,25 +774,49 @@ var myLineChart = new Chart(ctx, {
           }
       },
       plugins: {
-          tooltip: {
-              callbacks: {
-                  label: function(tooltipItem) {
-                      const datasetLabel = tooltipItem.dataset.label || '';
-                      const value = tooltipItem.raw;
-                      if (datasetLabel === 'Severity' || datasetLabel === 'Forecast') {
-                          return `${datasetLabel}: ${value}`;
-                      }
-                      if (datasetLabel === 'Breakfast' || datasetLabel === 'Lunch' || datasetLabel === 'Dinner') {
-                          return `${datasetLabel}: Taken`;
-                      }
-                      return `${datasetLabel}: ${value}`;
-                  }
-              }
-          }
-      },
+        tooltip: {
+            callbacks: {
+                label: function(tooltipItem) {
+                    const datasetLabel = tooltipItem.dataset.label || '';
+                    const value = tooltipItem.raw;
+                    const formattedDate = convertTooltipLabel(tooltipItem.label);
+    
+                    // Check for severity and forecast
+                    if (datasetLabel === 'Severity' || datasetLabel === 'Forecast') {
+                        return `${datasetLabel}: ${value}`;
+                    }
+    
+                    let mealTime = '';
+                    if (datasetLabel === 'Medication Intake - Breakfast') {
+                        mealTime = 'Breakfast';
+                        const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
+                        return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
+                    } else if (datasetLabel === 'Medication Intake - Lunch') {
+                        mealTime = 'Lunch';
+                        const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
+                        return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
+                    } else if (datasetLabel === 'Medication Intake - Dinner') {
+                        mealTime = 'Dinner';
+                        const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
+                        return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
+                    }
+    
+                  
+                    return `${datasetLabel}: ${value}`;
+                }
+            }
+        }
+    }
+    
   }
 });
 
+function convertTooltipLabel(tooltipLabel) {
+  const [datePart] = tooltipLabel.split('-');
+  const [month, day, year] = datePart.split('/');
+  const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  return formattedDate;
+}
 
 function updateLegend(symptomName) {
   var legendText = '';
