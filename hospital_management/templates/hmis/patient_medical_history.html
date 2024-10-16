@@ -949,6 +949,15 @@ function updateLegend(symptomName) {
           <b>3</b>: I cough constantly and find it difficult to stop.<br>
           <b>4</b>: Coughing is so severe that it disrupts my daily activities and sleep.</p>`;
         break;
+        default:
+        legendText = `
+          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+          <p style="font-size: 16px;"><b>0</b>: I feel perfectly fine<br>
+          <b>1</b>: I feel a little bit off<br>
+          <b>2</b>: I feel some discomfort but I can manage<br>
+          <b>3</b>: I feel quite uncomfortable and it affects my daily activities<br>
+          <b>4</b>: I need urgent help</p>`;
+        break;
   }
   document.getElementById('symptoms-legend').innerHTML = legendText;
 }
