@@ -506,7 +506,7 @@
                                             </button>
                                             <button class="btn btn-inverse-success btn-sm" id="requestLabTestButton">
                                               <i class="fa fa-plus"></i>
-                                              <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}">Request New Test</a>
+                                              <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}&appointmentID={{endAppointment}}">Request New Test</a>
                                             </button>
                                           </div>
                                         </div>
@@ -582,23 +582,22 @@
                                   </thead>
                                   <tbody>
                                     {% for test_id, test_data in testrequest.items %}
-                                      <tr>
-                                        {% if test_data == 'Spirometry'%}
+                                      {% if 'Spirometry' in test_data.tests.keys %}
+                                        <tr>
                                           <td>{{ test_data.dateCreated }}</td>
                                           <td><a href="{{ test_data.testURL }}">Open</a></td>
-                                        {% endif %}
-
-                                        {% for test_key, test_value in submittedTest.items %}
-                                          {% for key, value in test_value.items %}
-                                            {% if test_key == 'Spirometry' and test_id == value.testrequestid %}
-                                              <td>{{ value.date }}</td>
-                                              <td><a href="{{ value.downloadURL }}">Open</a></td>
-                                              <td>{{ value.pre_ratio }}</td>
-                                              <td>{{ value.post_ratio }}</td>
-                                            {% endif %}
+                                          {% for test_key, test_value in submittedTest.items %}
+                                            {% for key, value in test_value.items %}
+                                              {% if test_key == 'Spirometry' and test_id == value.testrequestid %}
+                                                <td>{{ value.date }}</td>
+                                                <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                                <td>{{ value.pre_ratio }}</td>
+                                                <td>{{ value.post_ratio }}</td>
+                                              {% endif %}
+                                            {% endfor %}
                                           {% endfor %}
-                                        {% endfor %}
-                                      </tr>
+                                        </tr>
+                                      {% endif %}
                                     {% endfor %}
                                   </tbody>
                                 </table>
@@ -624,23 +623,22 @@
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {% for test_id, test_data in testrequest.tests.items %}
-                                      <tr>
-                                        {% if test_data == 'Peak flow monitor'%}
+                                    {% for test_id, test_data in testrequest.items %}
+                                      {% if 'Peak flow monitor' in test_data.tests.keys %}
+                                        <tr>
                                           <td>{{ test_data.dateCreated }}</td>
                                           <td><a href="{{ test_data.testURL }}">Open</a></td>
-                                        {% endif %}
-
-                                        {% for test_key, test_value in submittedTest.items %}
-                                          {% for key, value in test_value.items %}
-                                            {% if test_key == 'Peak flow monitor' and test_id == value.testrequestid %}
-                                              <td>{{ value.date }}</td>
-                                              <td><a href="{{ value.downloadURL }}">Open</a></td>
-                                              <td>{{ value.reading }}</td>
-                                            {% endif %}
+                                          {% for test_key, test_value in submittedTest.items %}
+                                            {% for key, value in test_value.items %}
+                                              {% if test_key == 'Peak flow monitor' and test_id == value.testrequestid %}
+                                                <td>{{ value.date }}</td>
+                                                <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                                <td>{{ value.reading }}</td>
+                                              {% endif %}
+                                            {% endfor %}
                                           {% endfor %}
-                                        {% endfor %}
-                                      </tr>
+                                        </tr>
+                                      {% endif %}
                                     {% endfor %}
                                   </tbody>
                                 </table>
@@ -667,24 +665,28 @@
                                   </thead>
                                   <tbody>
                                     {% for test_id, test_data in testrequest.items %}
-                                      <tr>
-                                        {% if test_data != 'Peak flow monitor' and test_data != 'Spirometry' %}
-                                          <td>{{ test_data.dateCreated }}</td>
-                                          <td><a href="{{ test_data.testURL }}">Open</a></td>
-                                        {% endif %}
-
-                                        {% for test_key, test_value in submittedTest.items %}
-                                          {% for key, value in test_value.items %}
-                                            {% if test_key == 'Others' and test_id == value.testrequestid %}
-                                              <td>{{ value.date }}</td>
-                                              <td>{{ value.testRequestKey }}</td>
-                                              <td><a href="{{ value.downloadURL }}">Open</a></td>
-                                            {% endif %}
-                                          {% endfor %}
-                                        {% endfor %}
-                                      </tr>
+                                    <tr>
+                                        <td>{{ test_data.dateCreated }}</td>
+                                        <td><a href="{{ test_data.testURL }}">Open</a></td>
+                                        <td colspan="3">
+                                            <table class="table table-bordered">
+                                                {% for test_key, test_value in submittedTest.items %}
+                                                    {% for key, value in test_value.items %}
+                                                        {% if test_key != 'Spirometry' and test_key != 'Peak flow monitor' and test_id == value.testrequestid %}
+                                                        <tr>
+                                                            <td>{{ value.date }}</td>
+                                                            <td>{{ value.testRequestKey }}</td>
+                                                            <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                                        </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </table>
+                                        </td>
+                                    </tr>
                                     {% endfor %}
-                                  </tbody>
+                                </tbody>
+                                
                                 </table>
                               </div>
                             </div>
