@@ -2588,6 +2588,45 @@ def patient_history(request, notification_id):
     # Calculate COPD risk
     copd_risk = round((calculate_copd_risk(baseline_risk, odds_ratio, num_family_members_with_copd, smoking_factor))*100, 2)
 
+    patientsorders = db.child("patientsorders").get().val()
+
+    # Get Patient Orders with Combined Records for Same Date and Times from medicationRecords
+    chosenPatientOrders = {}
+
+    for patientorder_id, patientorder_data in patientsorders.items():
+        if patientorder_id == chosenPatient:
+            # Iterate through each date in the patient's orders
+            for order_date, orders in patientorder_data.items():
+                for order_id, order_data in orders.items():
+                    # Access medicineRecords from the order data
+                    medicineRecords = order_data.get('medicineRecords', {})
+
+                    # Iterate through each medicine record
+                    for med_date, time in medicineRecords.items():
+                        # Get other relevant fields
+                        medicine_name = order_data.get('medicine_name')
+                        times = order_data.get('times')
+
+                        # Check if all necessary fields are present
+                        if times and medicine_name and med_date:
+                            # Combine the date and times into a unique key
+                            combined_key = f"{med_date}_{times}"
+
+                            # If this combination already exists, append the medicine to the list
+                            if combined_key in chosenPatientOrders:
+                                chosenPatientOrders[combined_key]['medicines'].append(medicine_name)
+                            else:
+                                # Otherwise, create a new entry for this combination
+                                chosenPatientOrders[combined_key] = {
+                                    'date': med_date,
+                                    'times': times,
+                                    'medicines': [medicine_name],
+                                    'time': time  # Store the specific time for the record
+                                }
+    # Example Output after combining records
+
+    print('chosenPatientOrders is ', chosenPatientOrders)
+
     patientsymptoms = db.child("symptoms").get().val()
     symptoms_list = db.child("symptomsList").get().val()
 
@@ -2596,6 +2635,8 @@ def patient_history(request, notification_id):
     for patientsymptoms_id, patientsymptoms_data in patientsymptoms.items():
         if patientsymptoms_id == chosenPatient:
             chosenPatientSymptoms[patientsymptoms_id] = patientsymptoms_data
+
+    # print(chosenPatientSymptoms)
 
     chosenPatientSymptoms1 = []
 
@@ -2612,6 +2653,28 @@ def patient_history(request, notification_id):
             for appointment_id, appointment_data in appointments.items():
                 if appointment_data['doctorUID'] == uid and patientsdata_id == appointment_data['patientName']:
                     chosenPatientData[patientsdata_id] = patientsdata_data
+
+    medical_history_ref = db.child("patientmedicalhistory").child(chosenPatient).child("vaccineHistory")
+    vaccine_history = medical_history_ref.get().val()
+
+    # Filter out vaccines with null/None values
+    filtered_vaccine_history = {}
+    if vaccine_history:
+        for vaccine, details in vaccine_history.items():
+            if details.get('lastDate') != "none":
+            # Sort the dates within each vaccine, from latest to earliest
+                sorted_dates = sorted(
+                    {key: value for key, value in details.items() if isinstance(value, dict) and 'date' in value}.items(),
+                    key=lambda x: x[1]['date'], 
+                    reverse=True
+                )
+                filtered_vaccine_history[vaccine] = {
+                    'lastDate': details.get('lastDate'),
+                    'dates': OrderedDict(sorted_dates)
+                }
+
+    #print(filtered_vaccine_history)
+
 
     if request.method == 'POST':
         if 'saveMedicalHistoryButton' in request.POST:
@@ -2703,7 +2766,7 @@ def patient_history(request, notification_id):
 
     sorted_symptoms = sorted(symptom_counter.items(), key=lambda item: item[1], reverse=True)
 
-    # Step 4: Get the top 3 most recurring symptoms and their total numbers
+    # Step 4: Get the top 3 most recurring symptoms and their total numbersN  
     top_3_symptoms = sorted_symptoms[:3]
 
 
@@ -2722,7 +2785,9 @@ def patient_history(request, notification_id):
                                                                  'doctor_prescriptions': doctor_prescriptions,
                                                                 'chosenPatientSymptoms1': chosenPatientSymptoms1,
                                                                 'chosenPatientSymptoms': chosenPatientSymptoms,
-                                                                'symptoms_list': symptoms_list
+                                                                'symptoms_list': symptoms_list,
+                                                                'vaccine_history': filtered_vaccine_history,
+                                                                'chosenPatientOrders': chosenPatientOrders,
                                                                      })
 
 from datetime import datetime
