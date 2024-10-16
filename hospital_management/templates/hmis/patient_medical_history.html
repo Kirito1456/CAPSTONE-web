@@ -295,51 +295,7 @@
                           </div>
                         </div>
 
-                        <div class="col-lg-12 grid-margin stretch-card">
-                          <div class="card">
-                            <div class="card-body">
-                              <div class="table-responsive">
-                                <table class="table table-striped">
-                                  <thead>
-                                    <tr>
-                                      <th>Environment Exposure</th>
-                                      <th>Months Exposed (If Applicable)</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      {% for social_id, social_data in patientMedical.items %}
-                                        {% if social_id == chosenPatient%}
-                                          {% for s_id, s_data in social_data.items %}
-                                            {% if s_id == 'socialHistory'%}
-                                              <tr>
-                                                <td> 
-                                                  {% if s_data.exposureStatus %} 
-                                                  Yes, the patient was exposed / is currently exposed to risky environments.
-                                                  {%else %}
-                                                  -
-                                                  {%endif%}
-                                                </td>
-                                                <td> 
-                                                  {% if s_data.monthExposed %}
-                                                  {{s_data.monthExposed}} months
-                                                  {%else %}
-                                                  -
-                                                  {%endif%}
-                                                </td>
-                                              </tr>
-                                           
-                                            {% endif %}
-                                          {% endfor %}
-                                        {% endif %}
-                                      {% endfor %}
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        
                       </div>
                     </div>
 
@@ -356,7 +312,6 @@
                                       <th>Vaccine</th>
                                       <th>Last Date</th>
                                       <th>Previous Vaccination Dates</th>
-                                      <th>Lot Number</th>
                                       <th>Dose</th>
                                     </tr>
                                   </thead>
@@ -373,7 +328,6 @@
                                                   <td>
                                                       <span class="badge badge-dark">{{ value.date }}</span>
                                                   </td>
-                                                  <td>{{ value.lotNumber }}</td>
                                                   <td>{{ value.dose }}</td>
                                                 </tr>
                                               {% endfor %}

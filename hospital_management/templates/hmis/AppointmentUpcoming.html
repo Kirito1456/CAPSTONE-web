@@ -279,7 +279,15 @@
                                   {% endif %}
                                 {% endfor %}
 
-                                <td>{{ appointment_data.appointmentVisitType }}</td>
+                                {% if appointment_data.appointmentVisitType == 'Urgent Visit' %}
+                                <td style="color: red;">
+                                  {{ appointment_data.appointmentVisitType }}
+                                </td>
+                                {% else %}
+                                <td>
+                                  {{ appointment_data.appointmentVisitType }}
+                                </td>
+                                {% endif %}
 
                                 <form method="post">
                                   {% csrf_token %}

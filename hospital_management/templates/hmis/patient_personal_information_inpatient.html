@@ -500,10 +500,10 @@
                                       <div class="wrapper d-flex align-items-center justify-content-between py-2">
                                         <div class="d-flex">
                                           <div class="wrapper ms-3">
-                                            <button class="btn btn-inverse-success btn-sm">
+                                            {% comment %} <button class="btn btn-inverse-success btn-sm">
                                               <i class="fa fa-folder-open"></i>
                                               <a href = "{% url 'diagnostic_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Test Results</a>
-                                            </button>
+                                            </button> {% endcomment %}
                                             <button class="btn btn-inverse-success btn-sm" id="requestLabTestButton">
                                               <i class="fa fa-plus"></i>
                                               <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}&appointmentID={{endAppointment}}">Request New Test</a>
@@ -569,8 +569,6 @@
                                 <table class="table table-striped">
                                   <thead>
                                     <tr>
-                                      <th rowspan="2">Date Requested</th>
-                                      <th rowspan="2">Test Requisition Form</th>
                                       <th rowspan="2">Date Received</th>
                                       <th rowspan="2">Test Result</th>
                                       <th colspan="2" style="text-align:center">FEV1/FVC Ratio</th>
@@ -584,8 +582,6 @@
                                     {% for test_id, test_data in testrequest.items %}
                                       {% if 'Spirometry' in test_data.tests.keys %}
                                         <tr>
-                                          <td>{{ test_data.dateCreated }}</td>
-                                          <td><a href="{{ test_data.testURL }}">Open</a></td>
                                           {% for test_key, test_value in submittedTest.items %}
                                             {% for key, value in test_value.items %}
                                               {% if test_key == 'Spirometry' and test_id == value.testrequestid %}
@@ -615,8 +611,6 @@
                                 <table class="table table-striped">
                                   <thead>
                                     <tr>
-                                      <th>Date Requested</th>
-                                      <th>Test Requisition Form</th>
                                       <th>Date Received</th>
                                       <th>Test Result</th>
                                       <th>Reading</th>
@@ -626,8 +620,6 @@
                                     {% for test_id, test_data in testrequest.items %}
                                       {% if 'Peak flow monitor' in test_data.tests.keys %}
                                         <tr>
-                                          <td>{{ test_data.dateCreated }}</td>
-                                          <td><a href="{{ test_data.testURL }}">Open</a></td>
                                           {% for test_key, test_value in submittedTest.items %}
                                             {% for key, value in test_value.items %}
                                               {% if test_key == 'Peak flow monitor' and test_id == value.testrequestid %}
