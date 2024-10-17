@@ -1328,24 +1328,25 @@ def patient_personal_information_inpatient(request):
     tests_list_pulse_oximetry = []
     tests_list_chest_xray = []
 
-    for test_key, test_value in submittedTest.items():
-        for key, value in test_value.items():
-            if test_key == 'Spirometry':
-                tests_list_spirometry.append(value)
-            elif test_key == 'Peak flow monitor':
-                tests_list_peak_flow_monitor.append(value)
-            elif test_key == 'CT scan':
-                tests_list_ct_scan.append(value)
-            elif test_key == 'Arterial blood gas':
-                tests_list_arterial_blood_gas.append(value)
-            elif test_key == 'Sputum examination':
-                tests_list_sputum.append(value)
-            elif test_key == 'High-resolution computed tomography':
-                tests_list_hrct.append(value)
-            elif test_key == 'Pulse oximetry':
-                tests_list_pulse_oximetry.append(value)
-            elif test_key == 'Chest X-ray':
-                tests_list_chest_xray.append(value)
+    if submittedTest:
+        for test_key, test_value in submittedTest.items():
+            for key, value in test_value.items():
+                if test_key == 'Spirometry':
+                    tests_list_spirometry.append(value)
+                elif test_key == 'Peak flow monitor':
+                    tests_list_peak_flow_monitor.append(value)
+                elif test_key == 'CT scan':
+                    tests_list_ct_scan.append(value)
+                elif test_key == 'Arterial blood gas':
+                    tests_list_arterial_blood_gas.append(value)
+                elif test_key == 'Sputum examination':
+                    tests_list_sputum.append(value)
+                elif test_key == 'High-resolution computed tomography':
+                    tests_list_hrct.append(value)
+                elif test_key == 'Pulse oximetry':
+                    tests_list_pulse_oximetry.append(value)
+                elif test_key == 'Chest X-ray':
+                    tests_list_chest_xray.append(value)
 
 
     tests_list_spirometry.sort(key=lambda x: x['date'], reverse=True) 
