@@ -1319,6 +1319,52 @@ def patient_personal_information_inpatient(request):
     chosenPatient = request.GET.get('chosenPatient', '')
     testrequest = db.child("testrequest").child(chosenPatient).get().val()
     submittedTest = db.child("submittedTest").child(chosenPatient).get().val()
+    tests_list_spirometry = []
+    tests_list_peak_flow_monitor = []
+    tests_list_ct_scan = []
+    tests_list_arterial_blood_gas = []
+    tests_list_sputum = []
+    tests_list_hrct = []
+    tests_list_pulse_oximetry = []
+    tests_list_chest_xray = []
+
+    for test_key, test_value in submittedTest.items():
+        for key, value in test_value.items():
+            if test_key == 'Spirometry':
+                tests_list_spirometry.append(value)
+            elif test_key == 'Peak flow monitor':
+                tests_list_peak_flow_monitor.append(value)
+            elif test_key == 'CT scan':
+                tests_list_ct_scan.append(value)
+            elif test_key == 'Arterial blood gas':
+                tests_list_arterial_blood_gas.append(value)
+            elif test_key == 'Sputum examination':
+                tests_list_sputum.append(value)
+            elif test_key == 'High-resolution computed tomography':
+                tests_list_hrct.append(value)
+            elif test_key == 'Pulse oximetry':
+                tests_list_pulse_oximetry.append(value)
+            elif test_key == 'Chest X-ray':
+                tests_list_chest_xray.append(value)
+
+
+    tests_list_spirometry.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_peak_flow_monitor.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_ct_scan.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_arterial_blood_gas.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_sputum.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_hrct.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_pulse_oximetry.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_chest_xray.sort(key=lambda x: x['date'], reverse=True) 
+    most_recent_tests_spirometry = tests_list_spirometry[:2]
+    most_recent_tests_peak_flow_monitor = tests_list_peak_flow_monitor[:2]
+    most_recent_tests_ct_scan = tests_list_ct_scan[:2]
+    most_recent_tests_arterial_blood_gas = tests_list_arterial_blood_gas[:2]
+    most_recent_tests_sputum = tests_list_sputum[:2]
+    most_recent_tests_hrct = tests_list_hrct[:2]
+    most_recent_tests_pulse_oximetry = tests_list_pulse_oximetry[:2]
+    most_recent_tests_chest_xray = tests_list_chest_xray[:2]
+
 
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0})
     medicines_set = {medication['Disease'] for medication in medications_cursor}
@@ -2118,7 +2164,16 @@ def patient_personal_information_inpatient(request):
                                                                                 'dates': dates,
                                                                                 'available_days_list': available_days_list,
                                                                                 'testrequest': testrequest,
-                                                                                'submittedTest': submittedTest})
+                                                                                'submittedTest': submittedTest,
+                                                                                'most_recent_tests_spirometry': most_recent_tests_spirometry,
+                                                                                'most_recent_tests_peak_flow_monitor': most_recent_tests_peak_flow_monitor,
+                                                                                'most_recent_tests_ct_scan': most_recent_tests_ct_scan,
+                                                                                'most_recent_tests_arterial_blood_gas': most_recent_tests_arterial_blood_gas,
+                                                                                'most_recent_tests_sputum': most_recent_tests_sputum,
+                                                                                'most_recent_tests_hrct': most_recent_tests_hrct,
+                                                                                'most_recent_tests_pulse_oximetry': most_recent_tests_pulse_oximetry,
+                                                                                'most_recent_tests_chest_xray': most_recent_tests_chest_xray,
+                                                                                'chosenPatient': chosenPatient})
 
 def save_chiefComplaint(request):
         
@@ -3110,6 +3165,44 @@ def diagnostic_reports(request):
     testRequests = db.child("testrequest").get().val()  
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
 
+    submittedTest_1 = db.child("submittedTest").child(chosenPatient).get().val()
+    tests_list_spirometry = []
+    tests_list_peak_flow_monitor = []
+    tests_list_ct_scan = []
+    tests_list_arterial_blood_gas = []
+    tests_list_sputum = []
+    tests_list_hrct = []
+    tests_list_pulse_oximetry = []
+    tests_list_chest_xray = []
+
+    for test_key, test_value in submittedTest_1.items():
+        for key, value in test_value.items():
+            if test_key == 'Spirometry':
+                tests_list_spirometry.append(value)
+            elif test_key == 'Peak flow monitor':
+                tests_list_peak_flow_monitor.append(value)
+            elif test_key == 'CT scan':
+                tests_list_ct_scan.append(value)
+            elif test_key == 'Arterial blood gas':
+                tests_list_arterial_blood_gas.append(value)
+            elif test_key == 'Sputum examination':
+                tests_list_sputum.append(value)
+            elif test_key == 'High-resolution computed tomography':
+                tests_list_hrct.append(value)
+            elif test_key == 'Pulse oximetry':
+                tests_list_pulse_oximetry.append(value)
+            elif test_key == 'Chest X-ray':
+                tests_list_chest_xray.append(value)
+
+    tests_list_spirometry.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_peak_flow_monitor.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_ct_scan.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_arterial_blood_gas.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_sputum.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_hrct.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_pulse_oximetry.sort(key=lambda x: x['date'], reverse=True) 
+    tests_list_chest_xray.sort(key=lambda x: x['date'], reverse=True)
+
     
     return render(request, 'hmis/diagnostic_imagery_reports.html', {'patients': patients,
                                                                     'testRequest': testRequests,
@@ -3117,7 +3210,15 @@ def diagnostic_reports(request):
                                                                     'chosenPatient': chosenPatient, 
                                                                     'doctors': doctors, 
                                                                     'uid': uid,
-                                                                    'notifications': notifications})
+                                                                    'notifications': notifications,
+                                                                    'tests_list_spirometry': tests_list_spirometry,
+                                                                    'tests_list_peak_flow_monitor': tests_list_peak_flow_monitor,
+                                                                    'tests_list_ct_scan': tests_list_ct_scan,
+                                                                    'tests_list_arterial_blood_gas': tests_list_arterial_blood_gas,
+                                                                    'tests_list_sputum': tests_list_sputum,
+                                                                    'tests_list_hrct': tests_list_hrct,
+                                                                    'tests_list_pulse_oximetry': tests_list_pulse_oximetry,
+                                                                    'tests_list_chest_xray': tests_list_chest_xray,})
 
 def download_image(url, file_path):
     response = requests.get(url)

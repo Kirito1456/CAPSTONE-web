@@ -158,72 +158,191 @@
         <div class="main-panel">
             <div class="content-wrapper">
               <div class="row">
-                
                 <div class="col-lg-12 grid-margin stretch-card">
-                  <div class="card">
+                  <div class="card card-rounded">
                     <div class="card-body">
-                      <h4 class="card-title">Diagnostic Test Results</h4>
-                      <p class="card-description"> View test results sent by the patient here </p>
-
+                      <div class="justify-content-between align-items-start">
+                        <h4 class="card-title card-title-dash">Spirometry Results</h4>
+                      </div>
                       <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped">
                           <thead>
                             <tr>
-                              <th>Date Requested</th>
-                              <th>Test Requisition Form</th>
-                              <th>Date Received</th>
-                              <th>Test Type</th>
-                              <th>Result</th>
+                              <th rowspan="2">Date Received</th>
+                              <th rowspan="2">Test Result</th>
+                              <th colspan="2" style="text-align:center">FEV1/FVC Ratio</th>
+                            </tr>
+                            <tr>
+                              <th>PRE</th>
+                              <th>POST</th>
                             </tr>
                           </thead>
                           <tbody>
-                              {% if testRequest %}
-                        {% for testRequest_id, testRequest_data in testRequest.items %}
-                            {% if testRequest_id == chosenPatient %}
-                                {% for request_id, request_data in testRequest_data.items %}
-                                {% if request_data.doctor == uid %}
-                                    <tr>
-                                        <td>{{ request_data.dateCreated }}</td>
-                                        <td><a href="{{ request_data.testURL }}"> View Test Request</a></td>
-                                        <td colspan='3'>
-                                          <table class="table">
-                                            <tbody>
-                                              {% for submittedTest_id, submittedTest_data in submittedTest.items %}
-                                                {% if submittedTest_id == chosenPatient %}
-                                                    {% for test_id, test_data in submittedTest_data.items %}
-                                                        {% if request_id == test_data.testrequestid %}
-                                                            <tr>
-                                                              <td>{{ test_data.date }}</td>
-                                                            <td>{{ test_data.testRequestKey }}</td>
-                                                            <td><a href="{{ test_data.downloadURL }}">Download Test</a></td>
-                                                            </tr>
-                                                            {% endif %}
-                                                    {% endfor %}
-                                                  {% else %}
-                                                    {% comment %} <td>-</td>
-                                                    <td>-</td> {% endcomment %}
-                                                    <td>-</td>
-                                                {% endif %}
-                                              {% endfor %}
-                                            </tbody>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                      {% endif %}
-                                {% endfor %}
-                                {% endif %}
-                        {% endfor %}
-                        {% else %}
-                        <td colspan='5'>No test requests yet!</td>
-                        {% endif %}
-                              
+                            {% for value in tests_list_spirometry %}
+                              <tr>
+                                <td>{{ value.date }}</td>
+                                <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                <td>{{ value.pre_ratio }}</td>
+                                <td>{{ value.post_ratio }}</td>
+                              </tr>
+                            {% endfor %}
                           </tbody>
                         </table>
                       </div>
                     </div>
                   </div>
                 </div>
-            </div>
+                <div class="col-lg-12 grid-margin stretch-card">
+                  <div class="card card-rounded">
+                    <div class="card-body">
+                      <div class="justify-content-between align-items-start">
+                        <h4 class="card-title card-title-dash">Peak Flow Monitor Results</h4>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>Date Received</th>
+                              <th>Test Result</th>
+                              <th>Reading</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for value in tests_list_peak_flow_monitor %}
+                              <tr>
+                                <td>{{ value.date }}</td>
+                                <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                <td>{{ value.reading }}</td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12 grid-margin stretch-card">
+                  <div class="card card-rounded">
+                    <div class="card-body">
+                      <div class="justify-content-between align-items-start">
+                        <h4 class="card-title card-title-dash">Other Tests</h4>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          {% if tests_list_ct_scan %}
+                            <thead>
+                              <tr>
+                                <th>Test Type</th>
+                                <th>Date Received</th>
+                                <th>Test Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for value in tests_list_ct_scan %}
+                                <tr>
+                                  <td>{{ value.testRequestKey }}</td>
+                                  <td>{{ value.date }}</td>
+                                  <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          {% endif %}
+                          {% if tests_list_arterial_blood_gas %}
+                            <thead>
+                              <tr>
+                                <th>Test Type</th>
+                                <th>Date Received</th>
+                                <th>Test Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for value in tests_list_arterial_blood_gas %}
+                                <tr>
+                                  <td>{{ value.testRequestKey }}</td>
+                                  <td>{{ value.date }}</td>
+                                  <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          {% endif %}
+                          {% if tests_list_sputum %}
+                            <thead>
+                              <tr>
+                                <th>Test Type</th>
+                                <th>Date Received</th>
+                                <th>Test Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for value in tests_list_sputum %}
+                                <tr>
+                                  <td>{{ value.testRequestKey }}</td>
+                                  <td>{{ value.date }}</td>
+                                  <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          {% endif %}
+                          {% if tests_list_hrct %}
+                            <thead>
+                              <tr>
+                                <th>Test Type</th>
+                                <th>Date Received</th>
+                                <th>Test Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for value in tests_list_hrct %}
+                                <tr>
+                                  <td>{{ value.testRequestKey }}</td>
+                                  <td>{{ value.date }}</td>
+                                  <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          {% endif %}
+                          {% if tests_list_pulse_oximetry %}
+                            <thead>
+                              <tr>
+                                <th>Test Type</th>
+                                <th>Date Received</th>
+                                <th>Test Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for value in tests_list_pulse_oximetry %}
+                                <tr>
+                                  <td>{{ value.testRequestKey }}</td>
+                                  <td>{{ value.date }}</td>
+                                  <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          {% endif %}
+                          {% if tests_list_chest_xray %}
+                            <thead>
+                              <tr>
+                                <th>Test Type</th>
+                                <th>Date Received</th>
+                                <th>Test Result</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for value in tests_list_chest_xray %}
+                                <tr>
+                                  <td>{{ value.testRequestKey }}</td>
+                                  <td>{{ value.date }}</td>
+                                  <td><a href="{{ value.downloadURL }}">Open</a></td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          {% endif %}
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
         </div>
       </div>
