@@ -3,6 +3,7 @@ from datetime import datetime , timedelta
 import datetime as date
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
+from paddleocr import PaddleOCR
 from hospital_management.settings import auth as firebase_auth
 from hospital_management.settings import database as firebase_database, storage as firebase_storage
 from hmis.forms import StaffRegistrationForm, AppointmentScheduleForm, MedicationsListForm
@@ -1287,16 +1288,164 @@ def patient_data_doctor_view(request):
         'notifications': notifications
     }) 
 
-def extract_value(ocr_text, key):
-    # This function extracts the numeric value for the given key (FEV1 or FVC)
-    lines = ocr_text.splitlines()
-    for line in lines:
-        if key in line:
-            # Assuming the format is 'FEV1: [value]' or similar
-            parts = line.split(':')
-            if len(parts) > 1:
-                return parts[1].strip()  # Return the value after the key
-    return None
+def convert_to_decimal(value):
+    try:
+        # Convert string to float and then divide by 100
+        number = float(value)  # Convert to float
+        return number / 100  # Convert to decimal
+    except ValueError:
+        return value
+
+def perform_ocr(image_url, chosen_patient, key):
+    # Step 1: Download the image
+    response = requests.get(image_url)
+
+    # Save the image to a local file
+    img_path = "spirometry_image.jpg"
+    with open(img_path, "wb") as file:
+        file.write(response.content)
+
+    # Step 2: Initialize the PaddleOCR model
+    ocr = PaddleOCR(use_angle_cls=True, lang='en')
+
+    # Step 3: Perform OCR on the local image
+    result = ocr.ocr(img_path, cls=True)
+
+    # Initialize pre_ratio and post_ratio
+    pre_ratio = None
+    post_ratio = None
+
+    # Step 4: Determine which lines to extract based on the first line's content
+    if result and len(result[0]) > 0:
+        first_line = result[0][0][1][0].strip()  # Extract the first line
+
+        if first_line == "Pre":
+            # Extract 31st and 33rd lines
+            if len(result[0]) >= 34:
+                line_31 = result[0][30][1][0]
+                line_33 = result[0][32][1][0]
+                pre_ratio = line_31
+                post_ratio = line_33
+                print(f"PRE - 31st line (pre_ratio): {pre_ratio}")
+                print(f"PRE - 33rd line (post_ratio): {post_ratio}")
+            else:
+                print("The image does not contain enough lines to extract the 31st and 33rd lines.")
+
+        elif first_line == "Spirometry":
+            # Extract 29th and 31st lines
+            if len(result[0]) >= 32:
+                line_29 = result[0][28][1][0]
+                line_31 = result[0][30][1][0]
+                pre_ratio = convert_to_decimal(str(line_29))  # Convert to decimal
+                post_ratio = convert_to_decimal(str(line_31))  # Convert to decimal
+                print(f"Spirometry - 29th line (pre_ratio): {pre_ratio}")
+                print(f"Spirometry - 31st line (post_ratio): {post_ratio}")
+            else:
+                print("The image does not contain enough lines to extract the 29th and 31st lines.")
+
+        elif first_line == "FVC (ex only)":
+            # Extract 59th and 66th lines
+            if len(result[0]) >= 66:
+                line_59 = result[0][58][1][0]
+                line_66 = result[0][65][1][0]
+                pre_ratio = line_59
+                post_ratio = line_66
+                print(f"FVC (ex only) - 59th line (pre_ratio): {pre_ratio}")
+                print(f"FVC (ex only) - 66th line (post_ratio): {post_ratio}")
+            else:
+                print("The image does not contain enough lines to extract the 59th and 66th lines.")
+    else:
+        print("No results found from OCR.")
+
+    # Save the results to Firebase if both ratios are found
+    if pre_ratio is not None and post_ratio is not None:
+        db.child("submittedTest").child(chosen_patient).child('Spirometry').child(key).update({
+            'post_ratio': post_ratio,
+            'pre_ratio': pre_ratio
+        })
+        print(f"Results saved to Firebase: pre_ratio={pre_ratio}, post_ratio={post_ratio}")
+    else:
+        print("Could not save results, pre_ratio or post_ratio is None.")
+
+
+def perform_peak_flow_ocr(image_url, chosen_patient, key):
+    # Step 1: Download the image and save it to a local file
+    response = requests.get(image_url)
+    img_path = "peak_flow_image.jpg"
+    with open(img_path, "wb") as file:
+        file.write(response.content)
+
+    # Step 2: Initialize the PaddleOCR model
+    ocr = PaddleOCR(use_angle_cls=True, lang='en') 
+
+    # Step 3: Perform OCR on the local image
+    result = ocr.ocr(img_path, cls=True)
+
+    reading = None
+
+    # Check if there are any results
+    if result and len(result[0]) > 0:
+        # Extract the recognized lines
+        extracted_lines = [line[1][0] for line in result[0]]  # List comprehension to gather all lines
+
+        # Check the first line
+        first_line = extracted_lines[0].strip()  # Remove any extra whitespace
+
+        if first_line.lower() == "microlife":
+            # Get the 9th line if the first line is "microlife"
+            if len(extracted_lines) >= 9:
+                line_9 = extracted_lines[8]  # Lines are 0-indexed
+                reading = line_9
+                print("Line 9:", line_9)
+            else:
+                print("Not enough lines extracted to retrieve line 9.")
+
+        elif first_line == "15/5":
+            # Combine recognized text from line 4 and line 5 if the first line is "15/5"
+            if len(extracted_lines) >= 5:
+                combined_line = extracted_lines[3] + extracted_lines[4]  # Lines are 0-indexed
+                print("Combined Line 4 and 5:", combined_line)
+                
+                # Convert the combined string to a number
+                try:
+                    # Convert combined_line to a float
+                    combined_value = float(combined_line)
+                    
+                    # Multiply by 100
+                    result_value = combined_value * 100
+                    
+                    # Format as a three-digit number (integer)
+                    three_digit_result = f"{int(result_value):03d}"
+                    reading = three_digit_result
+                    
+                    print("Three-digit Result:", three_digit_result)
+                except ValueError:
+                    print("Error: The combined string cannot be converted to a number.")
+            else:
+                print("Not enough lines extracted to combine line 4 and 5.")
+    else:
+        print("No results found from OCR.")
+
+    # Save the results to Firebase if both ratios are found
+    if reading is not None:
+        db.child("submittedTest").child(chosen_patient).child('Peak flow monitor').child(key).update({
+            'reading': reading
+        })
+        print(f"Results saved to Firebase: reading={reading}")
+    else:
+        print("Could not save results, reading is None.")
+
+def check_existing_ratios(chosen_patient, key):
+    existing_data = db.child("submittedTest").child(chosen_patient).child('Spirometry').child(key).get()
+    if existing_data.val():
+        return 'pre_ratio' in existing_data.val() or 'post_ratio' in existing_data.val()
+    return False
+
+def check_existing_readings(chosen_patient, key):
+    existing_data = db.child("submittedTest").child(chosen_patient).child('Peak flow monitor').child(key).get()
+    if existing_data.val():
+        return 'reading' in existing_data.val()
+    return False
 
 def patient_personal_information_inpatient(request):
     
@@ -1389,7 +1538,7 @@ def patient_personal_information_inpatient(request):
     
     next_available_date = None
     current_date = datetime.now()
-    next_available_date1 = None  # Initialize the variable to store the next available date
+    next_available_date1 = None  
     doctors_data_list = []
     clinic_doctor_list = []
     chosenPatient = request.GET.get('chosenPatient', '')
@@ -1406,39 +1555,25 @@ def patient_personal_information_inpatient(request):
 
     available_days_list = list(available_days)
 
-    # if submittedTest:
-    #     for test_key, test_value in submittedTest.items():
-    #         if test_key == 'Spirometry':
-    #             # Iterate over tests and perform OCR if date is earlier than today
-    #             for key, value in test_value.items():
-    #                 # Access the image URL
-    #                 # image_url = value['downloadURL']
-    #                 image_url = "https://www.copdfoundation.org/Portals/0/Users/064/28/56128/9274B126-FF23-4739-9949-539B92016248.jpeg?ver=2021-03-29-144647-710"
-    #                 response = requests.get(image_url)
-                    
-    #                 image = Image.open(BytesIO(response.content))
+    if submittedTest:
+        for test_key, test_value in submittedTest.items():
+            if test_key == 'Spirometry':
+                for key, value in test_value.items():
+                    image_url = value['downloadURL']
+                    if check_existing_ratios(chosenPatient, key):
+                        print(f"Skipping processing for {key}: pre_ratio or post_ratio already exists.")
+                    else:
+                        print(f"Processing image from: {image_url} for patient: {chosenPatient}")
+                        perform_ocr(image_url, chosenPatient, key)
+            elif test_key == 'Peak flow monitor':
+                for key, value in test_value.items():
+                    image_url = value['downloadURL']
+                    if check_existing_readings(chosenPatient, key):
+                        print(f"Skipping processing for {key}: pre_ratio or post_ratio already exists.")
+                    else:
+                        print(f"Processing image from: {image_url} for patient: {chosenPatient}")
+                        perform_peak_flow_ocr(image_url, chosenPatient, key)
 
-
-    #                 extracted_text = pytesseract.image_to_string(image)
-    #                 print('extracted_text is ', extracted_text)
-
-    #                 # Download the image
-    #                 # response = requests.get(image_url)
-    #                 # image = Image.open(BytesIO(response.content))
-
-    #                 # Perform OCR on the image
-    #                 # ocr_result = pytesseract.image_to_string(image)
-
-    #                 # # Extract FEV1 and FVC values
-    #                 # fev1 = extract_value(ocr_result, 'FEV1')
-    #                 # fvc = extract_value(ocr_result, 'FVC')
-
-    #                 # # Save the extracted values back to Firebase
-    #                 # if fev1 is not None and fvc is not None:
-    #                 #     db.child("submittedTest").child(chosenPatient).child('Spirometry').child(key).update({
-    #                 #         'FEV1': fev1,
-    #                 #         'FVC': fvc
-    #                 #     })
     
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
