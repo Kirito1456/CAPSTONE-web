@@ -1,98 +1,110 @@
-{% extends 'hmis/base.html' %}
 {%load static%}
-{% block title %}Admin Create Account Page{% endblock %}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}MediMatrix Register{% endblock %}</title>
+    <!-- plugins:css -->
+     
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- endinject -->
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    {% endblock styles%}
+  </head>
 
-{% block styles%} 
-<!-- Stylesheet for the program <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'> -->
-<link rel="stylesheet" href="{% static 'css/style-usermanagement.css' %}">
-{% endblock styles%}
+  {% block content %}
+  <body>
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+          <div class="content-wrapper d-flex align-items-center auth px-0">
+            <div class="row w-100 mx-0">
+              <div class="col-lg-4 mx-auto">
+                <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+                  <div class="brand-logo">
+                    <img src="{% static 'logo-color.png' %}" alt="logo">
+                  </div>
+                  <h4>New here?</h4>
+                  <h6 class="fw-light">Please enter the needed information to create an account.</h6>
+                  <form method="post" action="{% url 'create' %}" class="signup_table">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input class="form-control form-control-lg" type="email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-lg" type="text" name="fname" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-lg" type="text" name="lname" placeholder="Last Name" required>
+                    </div>
 
-{% block content %}
-<div id="whole-screen">
-    <div id="side-menu">
-        <div id="user-info"> 
-            <div id="information">
-                <div id="user_admin" class="admin_lbl"> ADMIN </div>
+                    <div class="form-group" style="border: 1px solid #ddd; padding: 10px; text-align: center; ">
+                        <label class="signup_lbl">Sex &ensp;</label>
+                        &ensp;  &ensp;  &ensp;
+                        <input type="radio" Name="sex" Value="Male"><label class="signup_lbl2">Male &ensp;</label>
+                        <input type="radio" Name="sex" Value="Female"><label class="signup_lbl2">Female</label>
+                    </div>
+                    
+                    <div class="form-group">
+                      <select class="form-select form-select-lg" name="specialization" id="jobTitleSelect" style="color: black;">
+                        <option>Select</option>
+                        <option value="General Practitioner" style="color: black;">General Practitioner</option>
+                        <option value="Pulmonologist" style="color: black;">Pulmonologist</option>
+                        <option value="Pediatrician" style="color: black;">Pediatrician</option>
+                      </select>
+                    </div>
+                    
+
+                    <div class="form-group">
+                        <input class="form-control form-control-lg" type="password" name="password" placeholder="Password" required>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control form-control-lg" type="password" name="confirmpassword" placeholder="Confirm Password" required>
+                    </div>
+
+                    <div class="mt-3 d-grid gap-2">
+                      <button class="btn btn-block btn-primary btn-lg fw-medium auth-form-btn" id="signup_btn" type="submit">SIGN UP</button>
+                    </div>
+                    <div class="text-center mt-4 fw-light"> Already have an account? <a href="{%  url 'home'%}" class="text-primary">Login</a>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
+          </div>
+          <!-- content-wrapper ends -->
         </div>
-        <div id="menu"> 
-            <div id = "a1"><a href="{% url 'dashboard' %}">Dashboard</a></div>
-            <div id = "a2"><a href="{% url 'register' %}">Create Account</a></div>
-    </div>
-</div>
-<div class="admin-screen">
-    <form method="post" action="{% url 'create' %}" class="signup_table">
-        {% csrf_token %}
-        <div class="form-group">
-            <label class="signup_lbl">Email <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox" type="email" name="email" placeholder="Enter Email" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">First Name <span class="red-asterisk">*</span></label>
-            <input class="signup_txtboxname" type="text" name="fname" placeholder="Enter First Name" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Last Name <span class="red-asterisk">*</span></label>
-            <input class="signup_txtboxname" type="text" name="lname" placeholder="Enter Last Name" required>
-        </div>
+        <!-- page-body-wrapper ends -->
+      </div>
 
-        <div class="form-group">
-            <label class="signup_lbl">Contact Number <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox"type="number" name="cnumber" placeholder="Enter Phone #" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Birthday <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox" type="date" name="birthday" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Sex <span class="red-asterisk">*</span></label>
-            <input type="radio" Name="sex" Value="Male"><label class="signup_lbl2">Male &ensp;</label>
-            <input type="radio" Name="sex" Value="Female"><label class="signup_lbl2">Female</label>
-        </div>
-        
-        <div class="form-group">
-            <label class="signup_lbl">Role <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-jobtitle" name="role" id="roleSelect" required>
-                <option value="">- Select Role -</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Nurse">Nurse</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label class="signup_lbl">Department <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-department" name="department" required>
-                <option value="">- Select Department -</option>
-                <option value="General Ward">General Ward</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label class="signup_lbl">Job Title <span class="red-asterisk">*</span></label>
-            <select class="signup_dd-jobtitle" name="jobTitle" id="jobTitleSelect" required>
-                <option value="">- Select Job Title -</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label class="signup_lbl">Password <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox"type="password" name="password" placeholder="Enter Password" required>
-        </div>
-        <div class="form-group">
-            <label class="signup_lbl">Confirm Password <span class="red-asterisk">*</span></label>
-            <input class="signup_txtbox"type="password" name="confirmpassword" placeholder="Enter Password" required>
-        </div>
-        <button id="signup_btn" type="submit">Create Account</button>
-        {% if messages %}
+      {% if messages %}
         <ul>
             {% for message in messages %}
                 <li>{{ message }}</li>
             {% endfor %}
         </ul>
-        {% endif %}
-    </form>
-</div>   
+    {% endif %}
 
-<script src="{% static 'js/register.js' %}"></script>
-{% endblock %}
+<script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+<script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+
+<script src="{% static 'assets/js/off-canvas.js' %}"></script>
+<script src="{% static 'assets/js/template.js' %}"></script>
+<script src="{% static 'assets/js/settings.js' %}"></script>
+<script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+<script src="{% static 'assets/js/todolist.js' %}"></script>
+
+
+    <!-- <script src="assets/js/Chart.roundedBarCharts.js"></script> -->
+    <!-- End custom js for this page-->
+  </body>
+  {% endblock %}

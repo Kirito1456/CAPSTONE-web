@@ -1,0 +1,430 @@
+body{
+    margin: 0;
+}
+
+.whole-screen{
+    font-family: 'Inter';
+     width: 100%;
+    height: 95%;
+}
+
+#side-menu{
+    width: 16%;
+    height: 100%;
+    
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    background-color: #85AA9B;
+}
+
+#other-information{
+    width: 77%;
+    height: 90%;
+    
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -50%);
+
+    justify-content: center;
+}
+
+#all-info{
+    padding-top: -10%;
+}
+
+#user-info{
+    padding-bottom: 2%;
+}
+
+#image{
+    padding-top: 10%;
+    padding-bottom: 5%;
+}
+
+#image, #display-photo{
+    border-radius: 50%;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#information{
+    text-align: center;
+    
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#name{
+    font-size: 24;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+#role{
+    font-size: 12;
+}
+
+#menu{
+    justify-content: center;
+    text-align: center;
+    
+}
+
+#title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+
+#left {
+    display: flex;
+}
+
+#right {
+    display: flex;
+}
+
+
+#create-medication, #view-medication{
+    width: fit-content;
+
+    align-self: center;
+    text-align: center;
+
+    background-color: white;
+    padding: 8px;
+    margin-right: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+}
+
+.search-bar {
+    text-align: right;
+}
+
+#searchInput {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#searchButton {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #799c8d;
+    color: #fff;
+    cursor: pointer;
+}
+
+#header{
+    margin-left: 2%;
+    float: left;
+
+    font-size: 18;
+
+    font-weight: bold;
+
+    padding-top: 5px;
+}
+
+#side{
+    justify-content: flex-end;
+
+    display: flex;
+    flex-direction: row;
+
+    width: 50%;
+
+}
+
+
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 20;
+    padding: 10;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+
+    border: 10px;
+    border-radius: 10px;
+    border-color: black;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    font-weight: bold;
+}
+
+.table{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#user-information{
+    text-align: center;
+    
+    margin-left: 1%;
+    margin-right: 1%;
+    width: 100%;
+}
+
+#head{
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#uname, #gender, #birthday, #disease, #last-update, #room, #status, #followup, #bed{
+    text-align: center;
+
+    font-size: 14px;
+    padding: 8px;
+}
+
+#uname{
+    width: 180px;
+}
+
+#gender{
+    width: 7%;
+}
+
+#birthday{
+    width: 15%;
+}
+
+#last-update, #followup, #disease{
+    width: 100px;
+}
+
+#status{
+    width: 80px;
+}
+
+#room, #bed{
+    width: 50px;
+}
+
+#photo-icon, #photo{
+    border-radius: 50%;
+
+    width: 45px;
+    height: 45px;
+
+    padding-left: 5px;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    margin-right: 10px;
+}
+
+#patient-name{
+    display: flex;
+    align-items: flex-start;
+
+    align-items: center;
+    text-align: justify;
+
+    margin-right: 10px;
+}
+
+#user-name{
+    font-size: 14px;
+}
+
+.pagination{
+    display: flex;
+
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+
+    bottom: 0px;
+}
+
+.pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+}
+
+.pagination a.active {
+    background-color: #85AA9B;
+    color: white;
+    border: 1px solid #85AA9B;
+}
+
+#treatment-plan{
+    background-color: white;
+    margin-left: 1%;
+    margin-right: 1%;
+    border: 1px solid #ccc;
+}
+
+#patient-information{
+    display: flex;
+    align-items: center;
+
+}
+
+#first, #bday, #gender, #age{
+    width: fit-content;
+    text-align: center;
+    margin: 10px;
+}
+
+#fname, #lname, #gender-view, #birthday-view, #age-view{
+    padding: 8px;
+    background-color: #D9D9D9;
+    color: black;
+    border-radius: 10px;
+    font-size: 14px;
+    border: 1px solid black;
+}
+
+#fname-label, #lname-label, #gender-label, #bday-label, #age-label{
+    text-align: center;
+    font-size: 12;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#medication-list{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin: 0 0 10 0;
+}
+
+#medication-table{
+    width: 90%;
+
+    border-bottom: #85AA9B solid 1px;
+}
+
+
+th{
+    text-align: center;
+    font-weight: bold;
+
+    font-size: 16;
+
+    padding: 5 0 5 0;
+
+    background-color: #85AA9B;
+    color: #fff;   
+}
+
+td{
+    text-align: center;
+
+    padding: 5 0 5 0;
+
+    font-size: 14;
+}
+
+#update-with-new-order{
+    display: flex;
+    justify-content: space-between;
+
+    margin: 0 40 0 40;
+
+    font-size: 14;
+}
+
+#update{
+    font-size: 12;
+}
+
+#new-medication-order, #medication-order-button{
+    margin-bottom: 20;
+    padding: 5;
+
+    background-color: #85AA9B;
+
+    color: white;
+    font-style: normal;
+    text-decoration: none;
+
+    border: 10px;
+    border-radius: 10px;
+    border-color: black;
+}
+
+#upload {
+    padding: 10px;
+}
+
+#upload-button {
+    background-color: green;
+    color: white;
+    padding: 2px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#remove-button{
+    background-color: red;
+    color: white;
+    padding: 2px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#upload-button:hover {
+    background-color: darkgreen;
+}
+
+#remove-button:hover {
+    background-color: darkred;
+}
+
+#file-label{
+    padding: 8px;
+    background-color: #D9D9D9;
+    color: black;
+    border-radius: 10px;
+    font-size: 12px;
+    border: 1px solid black;
+}
+
+#uploading-photo{
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#uploading-header{
+    font-size: 12;
+    font-weight: bold;
+}
+
+
+#upload-form{
+    margin: 0;
+}

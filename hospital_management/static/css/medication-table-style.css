@@ -1,0 +1,393 @@
+#whole-screen{
+    width: 100%;
+    height: 95%;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#side-menu{
+    width: 16%;
+    height: 100%;
+    
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    background-color: #85AA9B;
+}
+
+#other-information{
+    width: 77%;
+    height: 90%;
+    
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -50%);
+    
+    border-radius: 2%;
+    
+    background-color: #E9E9E9;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#all-info{
+    padding-top: -10%;
+}
+
+#user-info{
+    padding-bottom: 2%;
+}
+
+#image{
+    padding-top: 10%;
+    padding-bottom: 5%;
+}
+
+#image, #display-photo{
+    border-radius: 50%;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#information{
+    text-align: center;
+    
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#name{
+    font-size: 24;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+#role{
+    font-size: 12;
+}
+
+#menu{
+    justify-content: center;
+    text-align: center;
+    
+}
+
+#title{
+    padding-top: 20px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+
+    margin-left: 10px;
+
+    display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+}
+
+#header{
+    margin-left: 2%;
+    float: left;
+
+    font-size: 18;
+
+    font-weight: bold;
+
+    padding-top: 5px;
+}
+
+#side{
+    justify-content: flex-end;
+
+    display: flex;
+    flex-direction: row;
+
+    width: 50%;
+
+}
+
+#create-medication{
+    width: 35%;
+
+    align-self: center;
+    text-align: center;
+
+    background-color: #85AA9B;
+    border-radius: 10px;
+    padding: 5px;
+    padding-left: 10;
+    padding-right: 10;
+    
+    margin-right: 10px;
+    font-size: 14;
+}
+
+#search{
+    width: 250px;
+
+    margin-right: 2%;
+
+    float: right;
+}
+
+#search-bar{
+    border-radius: 25px;
+
+    width: 100%;
+    
+    padding: 5px;
+    padding-left: 10px;
+    border: 0ch;
+    background-color: #D9D9D9;
+}
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 20;
+    padding: 10;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+
+    border: 10px;
+    border-radius: 10px;
+    border-color: black;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    font-weight: bold;
+}
+
+#information-table{
+    width: 96%;
+    
+    margin-right: 10px;
+    margin-left: -5px;
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+#user-information{
+    text-align: center;
+    
+    margin-left: 1%;
+    width: 100%;
+}
+
+#head{
+    font-weight: bold;
+
+    background-color: #85AA9B;
+    border-color: #85AA9B;
+    border-width: 0%;
+}
+
+#uname, #gender, #birthday, #disease, #last-visit, #room, #status{
+    text-align: center;
+
+    font-size: 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#uname{
+    width: 35%;
+}
+
+#gender{
+    width: 7%;
+}
+
+#birthday{
+    width: 10%;
+}
+
+#disease{
+    width: 13%;
+}
+
+#last-visit{
+    width: 10%;
+}
+
+#room{
+    width: 7%;
+}
+
+#status{
+    width: 15%;
+}
+
+#photo-icon, #photo{
+    border-radius: 50%;
+
+    width: 45px;
+    height: 45px;
+
+    padding-left: 5px;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    margin-right: 10px;
+}
+
+#patient-name{
+    display: flex;
+    align-items: flex-start;
+
+    align-items: center;
+    text-align: justify;
+
+    margin-right: 10px;
+}
+
+#user-name{
+    width: 100%;
+}
+
+.table{
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination{
+    display: flex;
+
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+
+    bottom: 0px;
+}
+
+.pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+}
+
+.pagination a.active {
+    background-color: #85AA9B;
+    color: white;
+    border: 1px solid #85AA9B;
+}
+
+th{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#patient-information{
+    margin: 0 23 0 28;
+
+    padding-top: 5;
+    padding-bottom: 5;
+
+    display: flex;
+    flex-direction: row;    
+}
+
+#title-head{
+    margin: 0 23 0 28;
+    background-color: #85AA9B;
+
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+
+    padding-top: 10;
+    padding-bottom: 10;
+}
+
+#first, #last{
+    width: 24%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#bday{
+    width: 20%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#gender{
+    width: 18%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+
+    padding: 0;
+}
+
+
+#age{
+    width: 13%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+#fname, #lname, #gender-view, #birthday, #age-view{
+    padding: 5 10 5 10;
+
+    margin-bottom: -8;
+
+    background-color: #D9D9D9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border-radius: 10px;
+    border-color: black;
+
+    margin: 10 20 10 20;
+
+    font-size: 14;
+    word-wrap: break-word;
+}
+
+#birthday{
+    width: 70%;
+}
+
+#fname-label, #lname-label, #gender-label, #bday-label, #age-label{
+    text-align: center;
+
+    margin-top: -8px;
+
+    font-size: 12;
+}

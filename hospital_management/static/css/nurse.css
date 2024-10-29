@@ -1,0 +1,322 @@
+body {
+    background-color: #F5F5F5;
+    font-family: 'Inter';
+    margin-left: 0px;
+}
+
+#whole-screen {
+    display: flex;
+    height: 100%; /* Set the whole-screen height to fill the viewport */
+}
+
+#side-menu {
+    width: 16%;
+    height: 100%;
+    
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    background-color: #091f5b;
+}
+
+#all-info{
+    padding: 10%;
+}
+
+#user-info{
+    padding-bottom: 10%;
+}
+
+#image{
+    padding-top: 10%;
+    padding-bottom: 5%;
+}
+
+#image, #display-photo{
+    border-radius: 50%;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#information{
+    text-align: center;
+}
+
+#name{
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+}
+
+#role{
+    font-size: 14px;
+    color: #fff;
+}
+
+#menu{
+    justify-content: center;
+    text-align: center;
+}
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 10px;
+    padding: 8px;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    font-size: 14px;
+
+    border-radius: 10px;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+#appointment-screen{
+    width: 80%;
+    height: 85%;
+    position: absolute;
+    top: 45%;
+    left: 45.5%;
+    transform: translate(-35%, -45%);
+    flex: 1; /* Take remaining space */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    padding: 20px; /* Add padding for space between cards and viewport edge */
+}
+
+
+#searchInput {
+    padding: 8px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    margin-right: 5px;
+}
+
+#searchButton {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 30px;
+    background-color: #091f5b;
+    color: #fff;
+    cursor: pointer;
+}
+
+#searchButton:hover {
+    background-color: #091f5b;
+}
+
+#notification-icon {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#notification-icon-img {
+    font-size: 24px; /* Adjust the size as needed */
+}
+
+/* CSS for Notification Popup */
+#notification-popup {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* CSS for Notification List */
+#notification-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#notification-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+#notification-list li:last-child {
+    border-bottom: none;
+}
+
+#patient-cards {
+    display: flex;
+    flex-wrap: nowrap; 
+    margin-bottom: 20px;
+}
+
+.patient-card {
+    width: calc(50% - 20px);
+    margin-right: 20px;
+    
+}
+
+@media screen and (max-width: 768px) {
+    .patient-card {
+        width: calc(100% - 20px); 
+        margin-right: 0; 
+    }
+}
+
+.patient-card-info {
+    background-color: #091f5b; 
+    color: #fff;
+    padding: 10px;
+}
+
+.patient-card-info h3 {
+    margin-top: 0;
+    font-size: 16px;
+}
+
+.patient-card-info p {
+    margin-bottom: 5px;
+    font-size: 12px; 
+}
+
+.patient-card-medication {
+    background-color: #fff; 
+    padding: 10px;
+}
+
+.patient-card button {
+    font-size: 12px;
+}
+
+.patient-card.finished {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.button {
+    padding: 5px;
+    width: fit-content;
+    background-color: #091f5b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.button:hover {
+    font-weight: bold; /* Making the text bold on hover */
+}
+
+.clients_table {
+    padding-top: 24px;
+    text-align: left;
+    width: 100%;
+}
+
+.clients_table th {
+    border-radius: 10px;
+    background-color: #091f5b;
+    color: #fff;
+    
+    padding: 8px;
+    text-align: center;
+}
+
+.clients_table td {
+    border-radius: 10px;
+    padding: 8px;
+}
+
+#floor, #room{
+    text-align: center;
+}
+
+.accountT_lbl {
+    font-size: 14px;
+    color: black;
+    text-align: left;
+}
+
+/* Alternate row colors */
+.clients_table tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Lighter color */
+}
+
+.clients_table tr:nth-child(even) {
+    background-color: #D3D3D3; /* Darker color */
+}
+
+.clients_table th:nth-child(1),
+.clients_table td:nth-child(1) {
+    width: 5%; /* Date column width */
+}
+
+.clients_table th:nth-child(2),
+.clients_table td:nth-child(2) {
+    width: 5%; /* Time column width */
+}
+
+.clients_table th:nth-child(3),
+.clients_table td:nth-child(3) {
+    width: 5%; /* Name column width */
+}
+
+.clients_table th:nth-child(4),
+.clients_table td:nth-child(4) {
+    width: 5%; /* Visit Type column width */
+}
+
+.clients_table th:nth-child(5),
+.clients_table td:nth-child(5) {
+    width: 5%; /* Status column width */
+}
+
+.clients_table th:nth-child(6),
+.clients_table td:nth-child(6) {
+    width: 10%; /* Details column width */
+}
+
+.save-button{
+    background-color: #091f5b;
+    color: #f9f9f9;
+
+    border: 0px;
+
+    padding: 5px 20px;
+
+    margin-top: 20px;
+    margin-bottom: -10px;
+
+    border-radius: 10px;
+}
+
+.save-button:hover{
+    font-weight: bold;
+}

@@ -1,0 +1,426 @@
+body {
+    background-color: #F5F5F5;
+    font-family: 'Inter';
+    margin-left: 0px;
+}
+
+#whole-screen{
+    width: 100%;
+    height: 100%;
+
+    font-family: 'Inter';
+}
+
+#side-menu{
+    width: 16%;
+    height: 100%;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    background-color: #5c7c89;
+}
+
+#all-info{
+    padding: 10%;
+}
+
+#user-info{
+    padding-bottom: 10%;
+}
+
+#image{
+    padding-top: 10%;
+    padding-bottom: 5%;
+}
+
+#image, #display-photo{
+    border-radius: 50%;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#information{
+    text-align: center;
+}
+
+#name{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#role{
+    font-size: 14px;
+}
+
+#menu{
+    justify-content: center;
+    text-align: center;
+}
+
+#a1, #a2, #a3, #a4{
+    margin: 10px;
+    padding: 8px;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    font-size: 14px;
+
+    border-radius: 10px;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+#appointment-screen{
+    width: 80%;
+    height: 95%;
+    position: absolute;
+    top: 50%;
+    left: 46%;
+    transform: translate(-35%, -50%);
+}
+
+.signup_table {
+    padding-top: 10px;
+    text-align: left;
+}
+
+.signup_table td {
+    padding: 5px 2px;
+}
+
+.signup_txtbox {
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 10px 8px;
+    margin: 8px 0px;
+    width: 95%;
+}
+
+.signup_txtboxname {
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 10px 8px;
+    margin: 8px 0px;
+    width: 20%;
+}
+
+.signup_lbl2 {
+    font-size: 16px;
+    color: black;
+    text-align: left;
+}
+
+.signup_lbl{
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    text-align: left;
+
+    display: flex;
+    align-items: center;
+
+    margin-right: 20px;
+}
+
+.signup_dd-birthmonth, .signup_dd-birthday, .signup_dd-birthyear, .signup_dd-department, .signup_dd-jobtitle {
+    border-radius: 10px;
+    margin: 8px 0px;
+    padding: 10px 8px;
+}
+
+.signup_dd-birthmonth {
+    margin: 8px 0px;
+    width: 200px;
+}
+
+.signup_dd-birthday {
+    width: 145px;
+}
+
+.signup_dd-birthyear {
+    margin-right: 8px;
+    width: 170px;
+}
+
+.signup_dd-department, .signup_dd-jobtitle {
+    width: 35%;
+}
+
+#signup_btn {
+    color: #F5F5F5;
+    background-color: #5c7c89;
+    border-radius: 10px;
+    margin: 2px 25%;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: right;
+}
+
+#signup_btn:hover {
+    background-color: #5c7c89;
+}
+
+.red-asterisk {
+    font-size: 16px;
+    font-weight: bold;
+    color: red;
+    text-align: left;
+}
+
+.form-group {
+    padding: 2px;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.admin_lbl{
+    font-size: 24px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Tahoma, sans-serif;
+}
+
+.header1 {
+    background-color: #5c7c89;
+    color: white; 
+    font-weight: bolder;
+    font-size: 200;
+    text-align: center;
+    padding: 5px;
+    padding-bottom: 0;
+    margin-left: 0px;
+}
+
+.tab {
+    display: inline-block;
+    margin-left: 2em;
+}
+
+.login_container {
+    padding: 25px;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.login_lbl,.fp_lbl {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    text-align: left;
+}
+
+.login_txtbox {
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 8px 0;
+    width: 30%;
+    display: inline-block;
+}
+
+#login_fp, #login_su, #login_noacc-lb {
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+}
+
+#login_fp:hover{
+    text-decoration: underline;
+}
+
+#login_btn, #sendlink_btn {
+    background-color: #5c7c89;
+    border-radius: 10px;
+    margin: 10px 0px;
+    padding: 10px;
+    width: 15%;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 18px;
+    color: #F5F5F5;
+}
+
+#login_btn:hover, #sendlink_btn:hover {
+    background-color: #5c7c89;
+}
+
+#forgetpassword_lb {
+    font-size: 12px;
+}
+
+.forgotpassword_table {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 50%;
+}
+
+.fp_txtbox {
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 8px 0;
+    width: 100%;
+    display: inline-block;
+}
+
+.accounts_table {
+    padding-top: 24px;
+    margin-bottom: 20px;
+    text-align: left;
+    width: 100%;
+}
+
+.accounts_table th {
+    border-radius: 10px;
+    background-color: #5c7c89;
+    
+    padding: 10px;
+    text-align: center;
+}
+
+.accounts_table td {
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.accountT_lbl {
+    font-size: 14px;
+    color: black;
+    text-align: left;
+}
+
+
+.accounts_table tr:nth-child(odd) {
+    background-color: #f9f9f9; 
+}
+
+.accounts_table tr:nth-child(even) {
+    background-color: #D3D3D3; 
+}
+
+#container{
+    display: flex;
+}
+
+
+.search-bar {
+    flex: 1;
+    text-align: right;
+}
+
+#searchInput {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#searchButton {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #5c7c89;
+    color: #fff;
+    cursor: pointer;
+}
+
+#searchButton:hover {
+    background-color: #5c7c89;
+}
+
+.button-bar {
+    flex: 1;
+    justify-content: flex-start;
+}
+
+.button-bar button {
+    padding: 8px 12px;
+    background-color: #5c7c89;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.button-bar button:hover {
+    background-color: #5c7c89;
+}
+
+.container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px; 
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  
+  .previous {
+    background-color: #f1f1f1;
+    color: black;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  
+  .next {
+    background-color: #5c7c89;
+    color: white;
+    border-radius: 5px;
+    margin-left: 11px;
+    padding: 5px;
+  }
+  
+.pagination a {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+}
+
+.pagination a.active {
+    background-color: #5c7c89;
+    color: white;
+    border: 1px solid #5c7c89;
+}
+
+#login{
+    width: 66%;
+    height: 50%;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 17%;
+    margin-top: 8%;
+
+    background-color: #fff;
+}
+
+.admin-screen{
+    margin: 0 20px;
+
+
+}
+
+.signup_txtbox{
+    width: 25%
+}

@@ -1,0 +1,902 @@
+
+body {
+    background-color: #F5F5F5;
+    font-family: 'Inter';
+    margin-left: 0px;
+}
+
+#whole-screen{
+    width: 100%;
+    height: 100%;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    flex-direction: column;
+}
+
+#side-menu{
+    width: 16%;
+    height: 100%;
+    
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: white;
+    
+    background-color: #334a7c;
+}
+
+#user-info{
+    padding-bottom: 2%;
+}
+
+#image{
+    padding-top: 10%;
+    padding-bottom: 5%;
+}
+
+#image, #display-photo{
+    border-radius: 50%;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#information{
+    text-align: center;
+    
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#name{
+    font-size: 24;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+#role{
+    font-size: 12;
+}
+
+#menu div {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+#menu div a {
+    margin-left: 10px;
+}
+
+#title{
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#header{
+    margin-left: 2%;
+    float: left;
+
+    font-size: 18;
+
+    font-weight: bold;
+}
+
+#a1, #a2, #a3, #a4, #a5, #a6, #a7{
+    margin: 20px;
+    padding: 5px;
+
+    background-color: #E9E9E9;
+
+    color: black;
+    font-style: normal;
+    text-decoration: none;
+
+    border: 10px;
+    border-radius: 5px;
+    border-color: black;
+}
+
+#a1:hover, #a2:hover, #a3:hover, #a4:hover, #a5:hover, #a6:hover, #a7:hover{
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+a:hover{
+    font-weight: bold;
+}
+
+.clients_table {
+    padding-top: 10px;
+    text-align: left;
+    width: 90%;
+
+    margin-left: 5%;
+
+    margin-top: 2%;
+}
+
+.clients_table th {
+    border-radius: 10px;
+    background-color: #334a7c;
+    
+    padding: 8px;
+    text-align: center;
+
+    width: 100%;
+
+    color: #D3D3D3;
+}
+
+.clients_table td {
+    border-radius: 10px;
+    padding: 8px;
+
+    text-align: center;
+}
+
+.accountT_lbl {
+    font-size: 14px;
+    color: black;
+    text-align: left;
+}
+
+/* Alternate row colors */
+.clients_table tr:nth-child(odd) {
+    background-color: #adb8ce; /* Lighter color */
+}
+
+.clients_table tr:nth-child(even) {
+    background-color: #c8cfde; /* Darker color */
+}
+
+.clients_table th:nth-child(1),
+.clients_table td:nth-child(1) {
+    width: 5%; /* Date column width */
+}
+
+.clients_table th:nth-child(2),
+.clients_table td:nth-child(2) {
+    width: 5%; /* Time column width */
+}
+
+.clients_table th:nth-child(3),
+.clients_table td:nth-child(3) {
+    width: 5%; /* Name column width */
+}
+
+.clients_table th:nth-child(4),
+.clients_table td:nth-child(4) {
+    width: 5%; /* Visit Type column width */
+}
+
+.clients_table th:nth-child(5),
+.clients_table td:nth-child(5) {
+    width: 5%; /* Status column width */
+}
+
+.clients_table th:nth-child(6),
+.clients_table td:nth-child(6) {
+    width: 10%; /* Details column width */
+}
+
+#appointment-screen{
+    width: 80%;
+    height: 95%;
+    position: absolute;
+    top: 50%;
+    left: 46%;
+    transform: translate(-35%, -50%);
+}
+
+#searchInput {
+    padding: 5px 8px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    margin-right: 5px;
+}
+
+#searchButton {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 30px;
+    background-color: #334a7c;
+    color: #fff;
+    cursor: pointer;
+}
+
+.apt-header-btns{
+    display: flex;
+    justify-content: space-between;
+}
+
+.apt-header-left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#apt-btn{
+    margin: 2px 4px;
+    padding: 8px;
+    font-size: 14px;
+    width: fit-content;
+
+    border: 10px;
+    border-radius: 10px;
+
+    color: black;
+    background-color: #E9E9E9;
+
+    text-align: center;
+}
+
+.apt_lbl {
+    font-weight: bold;
+    color: black;
+    text-align: left;
+}
+
+.details-link {
+    color: blue;
+    cursor: pointer; 
+}
+
+.details-container {
+    margin-top: 10px;
+}
+
+.detail-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.detailname {
+    font-weight: bold;
+    font-size: 12px;
+    width: 100px;
+}
+
+.detailvalue {
+    font-size: 12px;
+    margin-left: 6px;
+    flex: 1;
+}
+
+.reschedule-button,
+.cancel-button,
+.notes-button,
+.message-button {
+    padding: 6px 12px;
+    margin-top: 8px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-size: 12px;
+}
+
+.message-button{
+    background-color: rgb(0, 147, 173);
+    color: white; 
+}
+
+.reschedule-button {
+    background-color: #4CAF50;
+    color: white; 
+}
+
+.cancel-button {
+    background-color: #f44336; 
+    color: white;
+}
+
+.notes-button {
+    background-color: rgb(0, 147, 173); 
+    color: white;
+}
+
+.reschedule-button:hover,
+.cancel-button:hover, .notes-button:hover {
+    opacity: 0.8; 
+}
+
+.modal {
+    display: none;
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4); 
+}
+
+/* Modal content */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: fit-content;
+    border-radius: 20px;
+    line-height: 1.5;
+}
+
+.modal-content label,
+.modal-content input,
+.modal-content select,
+.modal-content button {
+    margin-bottom: 10px; 
+}
+
+
+/* CALENDAR PAGE */
+
+#apt-calendar{
+    width: 99%;
+    height: 45%;
+    
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    background-color: lightgray;
+    border-radius: 1%;
+
+    margin: 0 auto;
+    justify-content: center;
+    
+}
+
+#apt-schedule {
+    width: 97%;
+    height: 45%;
+    
+    position: absolute;
+    top: 78%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    padding: 10px;
+    background-color: lightgray;
+    border-radius: 1%;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+.schedule-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.apt_schedule-cell {
+    width:15% ; /* Adjust cell width and spacing as needed */
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: auto; 
+    margin-right: auto;/* Adjust spacing between rows as needed */
+
+    text-align: center;
+    padding: 15px;
+    border-radius: 20px;
+    background-color: #F5F5F5;
+}
+
+#apt_schedule-booked{
+    height: 40px;
+
+    text-align: center;
+    padding: 15px;
+    border-radius: 20px;
+    background-color: #334A7C;
+}
+
+#apt_schedule-notbooked{
+    height: 40px;
+
+    text-align: center;
+    padding: 15px;
+    border-radius: 20px;
+    background-color: #F5F5F5;
+}
+
+#apt_schedule-lbl {
+    color: black;
+}
+
+.apt_lbl-schname:hover {
+    cursor: pointer;
+}
+
+.apt_lbl-schdate:hover {
+    cursor: pointer;
+}
+
+#apt-requests {
+    width: 38%;
+    height: 51%;
+    
+    position: absolute;
+    top: 73%;
+    left: 70%;
+    transform: translate(-27%, -50%);
+    
+    background-color: lightgray;
+    border-radius: 1%;
+
+    padding: 10px 12px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.apt_request {
+    width: 95%;
+    height: 45px;
+
+    margin-top: 10px;
+
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #334A7C;
+
+    line-height: 1.3;
+}
+
+.apt_req-backbutton{
+    width: 30px;
+    height: 30px;
+    margin-top: 1px;
+    opacity: 60%;
+}
+
+.apt_lbl-reqname, .apt_lbl-schdate {
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+    text-align: left;
+}
+
+.apt_lbl-reqdate, .apt_lbl-schname, .apt_lbl-reqcnumber,.apt_lbl-reqemail {
+    font-size: 14px;
+    color: black;
+    text-align: left;
+}
+
+#apt_reqdetails{
+    width: 95%;
+    height: 75px;
+
+    margin-top: 10px;
+
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #334A7C;
+
+    line-height: 1.2;
+}
+
+#apt_reqdetails-patientinfo{
+    margin-bottom: 20px;
+}
+
+#apt-reqs-viewMR-btn {
+    margin: 10px -10px;
+    padding: 8px;
+
+    border: 10px;
+    border-radius: 10px;
+    border-color: black;
+
+    background-color: #334A7C;
+
+    text-align: center;
+    width: 170px;
+}
+
+#apt-reqs-viewMR-btn:hover{
+    font-weight: bold;
+}
+
+.apt-reqbtn-lbl {
+    font-size: 15px;
+    color: white;
+}
+
+.apt_req-mark{
+    width: 30px;
+    height: 30px;
+}
+
+#apt_req-mark1 {
+    margin-top: -32px;
+    margin-left: 80%;
+}
+
+#apt_req-mark0 {
+    margin-top: -30px;
+    margin-left: 90%;
+}
+
+/* Calendar API */
+
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+.wrapper{
+  width: 450px;
+  height: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+.wrapper header{
+  display: flex;
+  align-items: center;
+  padding: 2px 24px 2px;
+  justify-content: space-between;
+}
+header .icons{
+  display: flex;
+}
+header .icons span{
+  height: 38px;
+  width: 38px;
+  margin: 0 1px;
+  cursor: pointer;
+  color: #878787;
+  text-align: center;
+  line-height: 38px;
+  font-size: 1.7rem;
+  user-select: none;
+  border-radius: 50%;
+}
+.icons span:last-child{
+  margin-right: -10px;
+}
+header .icons span:hover{
+  background: #f2f2f2;
+}
+header .current-date{
+  font-size: 18px;
+  font-weight: bold;
+}
+.calendar{
+  padding: 1px;
+  margin-top: -22px;
+  margin-left: -18px;
+}
+.calendar ul{
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  text-align: center;
+}
+.calendar .days{
+  margin-bottom: 2px;
+}
+.calendar li{
+  color: #333;
+  width: calc(100% / 7);
+  font-size: 16px;
+}
+.calendar .weeks li{
+  cursor: default;
+  height: 12px;
+}
+.calendar .days li{
+  z-index: 1;
+  cursor: pointer;
+  position: relative;
+  margin-top: 14px;
+}
+.days li.inactive{
+  color: #aaa;
+}
+.days li.active{
+  color: #fff;
+}
+.days li::before{
+  position: absolute;
+  content: "";
+  left: 50%;
+  top: 50%;
+  height: 36px;
+  width: 36px;
+  z-index: -1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.days li.active::before{
+  background: #85AA9B;
+}
+.days li:not(.active):hover::before{
+  background: #f2f2f2;
+  opacity: 90%;
+}
+
+/* End of Calendar API */
+
+
+/* History Page CSS */
+
+#appointment-screen-history{
+    width: 75%;
+    height: 95%;
+    
+    position: absolute;
+    top: 50%;
+    left: 49%;
+    transform: translate(-35%, -50%);
+    
+    border-radius: 2%;
+
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.history_table {
+    border-spacing: 10px 2px;
+    padding-top: 24px;
+    text-align: left;
+    width: 100%;
+}
+
+.history_table th {
+    border-radius: 10px;
+    background-color: #E9E9E9;
+    padding: 10px;
+    text-align: center;
+}
+
+.history_table td {
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.accountH_lbl {
+    font-size: 14px;
+    color: black;
+    text-align: left;
+}
+
+#day-selection, #time-selection, #btn-container {
+    margin: 20px;
+}
+
+#day-selection, #time-selection, #btn-container{
+    margin-left: 5px;
+}
+
+.day-checkboxes {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex; 
+}
+
+.day-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.day-checkbox label {
+    display: inline-block;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.day-checkbox input[type="checkbox"]:checked + label {
+    background-color: #334a7c;
+    color: #fff;
+}
+
+/* Timepicker styling */
+.time-slot {
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.time-slot label {
+    display: block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+.timepicker {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 150px;
+    margin-right: 10px;
+}
+
+/* Button styling */
+#save-btn, #cncl-btn, #edit-btn {
+    padding: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: green;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+#cncl-btn {
+    background-color: #dc3545;
+    margin-left: 5px;
+}
+
+#edit-btn {
+    background-color: #334a7c;
+}
+
+#notification-icon {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#notification-icon-img {
+    font-size: 24px; /* Adjust the size as needed */
+}
+
+/* CSS for Notification Popup */
+#notification-popup {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* CSS for Notification List */
+#notification-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#notification-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+#notification-list li:last-child {
+    border-bottom: none;
+}
+
+.patient-card {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    font-size: 14px;
+}
+.patient-card-info {
+    background-color: #334A7C;
+    color: #fff;
+    padding: 8px; 
+    flex: 0 0 30%;
+}
+.patient-card-medication {
+    background-color: #fff;
+    padding: 8px; 
+    flex: 1; 
+}
+.patient-card h3 {
+    margin-top: 0;
+    font-size: 16px;
+}
+.patient-card p {
+    margin-bottom: 3px;
+}
+
+#none, #inpatient-table{
+    margin-left: 1%;
+
+    width: 98%;
+
+    margin-top: 1%;
+}
+
+.inpatients_table{
+    width: 100%;
+
+    padding-top: 10px;
+}
+
+.inpatients_table th{
+    background-color: #334a7c;
+
+    padding: 10px;
+    border-radius: 10px;
+
+    color: #D3D3D3;
+
+    margin: 0;
+}
+
+#disease{
+    width: 40%;
+}
+
+#patient-name, #roomno{
+    width: 30%;
+}
+
+.inpatients_table td{
+    text-align: center;
+
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Alternate row colors */
+.inpatients_table tr:nth-child(odd) {
+    background-color: #adb8ce; /* Lighter color */
+}
+
+.inpatients_table tr:nth-child(even) {
+    background-color: #c8cfde; /* Darker color */
+}
+
+#top{
+    display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: -20px;
+
+    margin-right: 10px;
+}
+
+.side{
+    height: 50%;
+}
+
+#inpatient{
+    background-color: white;
+
+    height: 350px;
+
+    margin-left: 10px;
+    margin-right: 10px;
+
+    border: 1px solid #ccc
+}

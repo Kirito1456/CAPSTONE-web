@@ -1,0 +1,10 @@
+django
+djlint
+pyrebase4 
+firebase-admin
+tesseract
+pytesseract
+djongo
+pillow
+pymongo
+python-firebase

@@ -15,7 +15,9 @@ import os
 import firebase_admin
 from firebase_admin import credentials
 import pyrebase
-
+import pytesseract
+from hmis.database import connect_to_mongodb
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,6 +57,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'error',
+}
+
 ROOT_URLCONF = 'hospital_management.urls'
 
 TEMPLATES = [
@@ -74,6 +86,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'hospital_management.wsgi.application'
+ASGI_APPLICATION = 'hospital_management.asgi.application'
 
 # Firebase Configuration
 #FIREBASE_CONFIG_FILE = 'firebase_config.json'
@@ -93,7 +106,7 @@ firebase=pyrebase.initialize_app(config)
 auth = firebase.auth()
 database=firebase.database()
 #firestore=firebase.firestore()
-#storage = firebase.storage()
+storage = firebase.storage()
 
 # Initialize Firestore
 #firestore_db = firestore.Client()
@@ -105,8 +118,23 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'mongodb': {
+        'ENGINE': 'djongo',
+        'NAME': 'pharmacy',
+        'CLIENT': {
+            'host': 'pharmacy.h3k6bxm.mongodb.net',
+            'port': 27017,
+            'username': 'admin',
+            'password': 'Qvr4tlGx4qFPdgoU',
+            'authSource': 'pharmacy',
+            'authMechanism': 'SCRAM-SHA-1',
+        },
     }
 }
+
+collection = connect_to_mongodb()
+
 
 
 # Password validation
@@ -127,13 +155,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jmmojica0701@gmail.com'
+EMAIL_HOST_PASSWORD = 'bnny bwpl rnmd orkp'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 

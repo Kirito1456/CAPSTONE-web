@@ -1,0 +1,297 @@
+{%load static%}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
+    <title>{% block title %}My Schedule{% endblock %}</title>
+     
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+      #day-selection, #time-selection, #btn-container {
+        margin: 20px;
+      }
+      
+      #day-selection, #time-selection, #btn-container{
+        margin-left: 5px;
+      }
+      
+      .day-checkboxes {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: flex; 
+      }
+      
+      .day-checkbox input[type="checkbox"] {
+        display: none;
+      }
+      
+      .day-checkbox label {
+        display: inline-block;
+        cursor: pointer;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 5px;
+      }
+      
+      .day-checkbox input[type="checkbox"]:checked + label {
+        background-color: #334a7c;
+        color: #fff;
+      }
+    </style>
+
+    {% endblock styles%}
+  </head>
+
+{% block content %}
+  <body>
+    <div class="container-scroller">
+      <!-- partial:../../partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <b>MediMatrix</b>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav ms-auto">
+            {% comment %} Notifs {% endcomment %}
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                <i class="icon-bell"></i>
+                <span class="count">{{ notifications.count }}</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+                <a class="dropdown-item py-3 border-bottom">
+                  <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                </a>
+                {% for notification in notifications %}
+                {% if notification.type == 'diagnostic' %}
+                <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+                  <div class="preview-thumbnail">
+                        <i class="mdi mdi-alert m-auto text-primary"></i>
+                    </div>
+                    <div class="preview-item-content">
+                        <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                        <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                    </div>
+                </a>
+                {% elif notification.type == 'appointment' %}
+                <a class="dropdown-item preview-item py-3" href="{% url 'AppointmentUpcomingNotif' notification.id %}">
+                  <div class="preview-thumbnail">
+                        <i class="mdi mdi-alert m-auto text-primary"></i>
+                    </div>
+                    <div class="preview-item-content">
+                        <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                        <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                    </div>
+                </a>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </li>
+            
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  {% for doctor_id, doctor_data in doctors.items %}
+                    {% if doctor_data.uid == uid %}
+                      <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                      <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:../../partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Menu</li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Appointments</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Patients</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+
+        
+
+        <div class="main-panel">
+
+          <div class="content-wrapper">
+            {% if messages %}
+                      <div class="alert-messages">
+                        {% for message in messages %}
+                          <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+            <div class="row">
+              {% for doctors_id, doctors_data in doctors.items %}
+                {% if doctors_data.clinic %}
+                  {% for doctorClinic in doctors_data.clinic %}
+                    {% for clinic_id, clinic_data in clinics.items %}
+                      {% if clinic_id == doctorClinic and doctors_id == uid %}
+                        <div class="col-12 grid-margin stretch-card">
+                          <div class="card">
+                            <div class="card-body">
+                              <h4 class="card-title">{{ clinic_data.name }}</h4>
+                              <p class="card-description">{{ clinic_data.address }}</p>
+                              <p class="card-description">{{ clinic_data.onumber }}</p>
+                              <form method="post" action="{% url 'AppointmentScheduling' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="clinic" value="{{ clinic_id }}">
+                                <label style="font-weight: bold;">Select Days:</label>
+                                <div class="day-checkboxes">
+                                  {% for day in days_of_week %}
+                                    <div class="day-checkbox">
+                                      <input type="checkbox" id="{{ day }}_{{ clinic_id }}" name="selected_days_{{ clinic_id }}" value="{{ day }}"
+                                      {% for schedule in clinic_schedules %}
+                                        {% if schedule.clinic_id == clinic_id and day in schedule.selected_days %}checked{% endif %}
+                                      {% endfor %}>
+                                      <label for="{{ day }}_{{ clinic_id }}">{{ day|capfirst }}</label>
+                                    </div>
+                                  {% endfor %}
+                  </div>
+                  <div class="time-slot" style="padding: 5px;">
+                    <label for="morning-start_{{ clinic_id }}" style="font-weight: bold;">Morning Start:&emsp;</label>
+                    <input type="text" id="morning-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_start_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_start }}{% endif %}{% endfor %}">
+                    &emsp;<label for="morning-end_{{ clinic_id }}" style="font-weight: bold;">Morning End:&emsp;</label>
+                    <input type="text" id="morning-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="morning_end_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.morning_end }}{% endif %}{% endfor %}">
+                  </div>
+                  <div class="time-slot" style="padding: 5px;">
+                    <label for="afternoon-start_{{ clinic_id }}" style="font-weight: bold;">Afternoon Start:&nbsp</label>
+                    <input type="text" id="afternoon-start_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_start_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_start }}{% endif %}{% endfor %}">
+                    &emsp;<label for="afternoon-end_{{ clinic_id }}" style="font-weight: bold;">Afternoon End:</label>
+                    <input type="text" id="afternoon-end_{{ clinic_id }}" class="timepicker" placeholder="Select time" name="afternoon_end_{{ clinic_id }}"
+                          value="{% for schedule in clinic_schedules %}{% if schedule.clinic_id == clinic_id %}{{ schedule.afternoon_end }}{% endif %}{% endfor %}">
+                  </div>
+                  <button id="save-btn" style="font-weight: bold; font-size: 15px;" value="{{ clinic_id }}" type="submit" class="btn btn-primary btn-sm" name="clinic"><i class="ti-file btn-icon-prepend"></i> Save</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+{% if not found_clinic %}
+  You have not joined any clinic yet.
+{% endif %}
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    
+    {% comment %} <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('appID').addEventListener('click', function () {
+          alert('Appointment rescheduled successfully!');
+        });
+      });
+    </script> {% endcomment %}
+    
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/template.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+
+    <script src="{% static 'js/appointment.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+      flatpickr('.timepicker', {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: false
+      });
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('save-btn').addEventListener('click', function () {
+          //alert('New Schedule Saved!');
+        });
+      });
+    </script>
+    
+  </body>
+{% endblock %}

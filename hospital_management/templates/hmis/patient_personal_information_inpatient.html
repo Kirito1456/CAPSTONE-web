@@ -1,0 +1,1543 @@
+{%load static%}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
+    <title>{% block title %}Consultation{% endblock %}</title>
+
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/select2/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    <style>
+      .modal1 { 
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        z-index: 9999; /* Ensure it's higher than the header or other content */
+    }
+    
+    .modal1-content {
+        width: 30%; /* Adjust as needed */
+        max-width: 500px; /* Optional: Limit max width */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
+        border-radius: 8px; /* Optional: Add rounded corners */
+        z-index: 10000; /* Ensure modal content is above overlay */
+    }
+    
+    .close1 { 
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 30px;
+        cursor: pointer;
+        color: #000; /* Change color if needed */
+    }
+    
+    
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        width: 30%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+      }
+
+      .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 30px;
+        cursor: pointer;
+      }
+        .detail-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .detailname {
+            margin-right: 4px; 
+        }
+        #health-conditions {
+            margin-bottom: 15px;
+        }
+    </style>
+    {% endblock styles%}
+  </head>
+
+{% block content %}
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <b>MediMatrix</b>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Patient: 
+                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                  <span class="text-black fw-bold">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</span>
+                {% endfor %}
+              </h1>
+              {% if chosenPatientConsulNotes %}
+                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                  {% if chosenPatientConsulNotes_data.diagnosis %}
+                    <h3 class="welcome-sub-text">Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</h3>
+                  {% else %} 
+                    <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
+                  {% endif %} 
+                {% endfor %}   
+              {% else %} 
+                <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
+              {% endif %} 
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image">
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  {% for doctor_id, doctor_data in doctors.items %}
+                    {% if doctor_data.uid == uid %}
+                      <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                      <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Menu</li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Appointments</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Patients</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="home-tab">
+                  <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Consultation</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="past-tab" data-bs-toggle="tab" href="#past" role="tab" aria-controls="past" aria-selected="false">Past Consultation</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="diagnostic-tab" data-bs-toggle="tab" href="#testresult" role="tab" aria-controls="testresult" aria-selected="false">View Recent Test Result</a>
+                      </li>
+                      {% comment %} <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#medicalhistory" role="tab" aria-selected="false">Symptoms History</a>
+                      </li> {% endcomment %}
+                      {% comment %} <li class="nav-item">
+                        <a class="nav-link" id="treatment-tab" data-bs-toggle="tab" href="#treatment" role="tab" aria-selected="false">Medications</a>
+                      </li> {% endcomment %}
+                      <li class="nav-item">
+                        <a class="nav-link" id="history-tab" href="{% url 'patient_medical_history' %}?chosenPatient={{chosenPatient}}" role="tab" aria-selected="false" >Medical History</a>
+                      </li>
+                    </ul>
+
+                    <div class="btn-wrapper">
+                      <!-- CREATE PRESCRIPTION -->
+                      {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                        {% if chosenPatientConsulNotes_data.diagnosis %}
+                          <a  class="btn btn-primary text-white me-0" a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatient}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}"><i class="fa fa-file-powerpoint-o"></i> Create Prescription</a>
+                        {% endif %}
+                      {% endfor %}
+
+                      <!-- REFERRAL / SHARE PATIENT DATA -->
+                      <a href="#" class="openModalBtn btn btn-primary text-white me-0"><i class="icon-share"></i>Refer Patient</a>
+                      <div class="myModal modal">
+                        <div class="modal-content">
+                          <span class="close" style="margin-right: 8px;">&times;</span>
+                          <i class="fa-regular fa-circle-check"></i>
+                          <h2 style="margin-bottom: 20px;">Refer Patient</h2>
+                          <form method="POST" action="{% url 'refer_patient' %}?chosenPatient={{chosenPatient}}">
+                            {% csrf_token%}
+
+                            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                              <div class="detail-wrapper">
+                                <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                  Name:
+                                </div>
+                                  <input type="text" class="form-control" id="refer_patientName" name="refer_patientName" value="{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}" style="margin-left: 34px; width: 250px;" disabled><br>
+                              </div>
+
+                              <div class="detail-wrapper" style="margin-top: 8px;">
+                                <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                  Age:
+                                </div>
+                                  <input type="text" class="form-control" id="refer_patientAge" name="refer_patientAge" value="{{ chosenPatientAge }}" style="margin-left: 48px; width: 250px;" disabled><br>
+                              </div>
+                            {% endfor %}
+
+                            <div class="detail-wrapper" style="margin-top: 8px;">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                Diagnosis:
+                              </div>
+                              {% if chosenPatientConsulNotes %}
+                                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
+                                  {% if chosenPatientConsulNotes_data.diagnosis %}
+                                    <input type="text" class="form-control" id="refer_diagnosis" name="refer_diagnosis" value="{{ chosenPatientConsulNotes_data.diagnosis }}" style="margin-left: 2px; width: 250px;" disabled><br>
+                                  {% else %} 
+                                    <input type="text" class="form-control" id="refer_diagnosis" name="refer_diagnosis" value="No Current Diagnosis" style="margin-left: 2px; width: 250px;" disabled><br>
+                                  {% endif %} 
+                                {% endfor %}
+                              {% else %} 
+                              <input type="text" class="form-control" id="refer_diagnosis" name="refer_diagnosis" value="No Current Diagnosis" style="margin-left: 2px; width: 250px;" disabled><br>
+                              {% endif %} 
+                            </div>
+
+                            <div class="detail-wrapper" style="margin-top: 12px;">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 18px;">
+                                Clinic:
+                              </div>
+                              <div class="detail-dropdown">
+                                <select class="btn btn-inverse-success btn-sm" id="clinicDropdown" name="clinicDropdown" style="margin-left: 32px;" onchange="updateDoctorsDropdown()">
+                                  {% for chosenAppointmentData_id, chosenAppointmentData_data in chosenAppointmentData.items %}
+                                    {% for clinic_id, clinic_data in clinics.items %}
+                                      <option value="{{ clinic_data.uid }}" {% if clinic_data.uid == chosenAppointmentData_data.clinicUID %} selected {% endif %}>
+                                        {{ clinic_data.name }}
+                                      </option>
+                                    {% endfor %}
+                                  {% endfor %}
+                                </select><br>
+                              </div>
+                            </div>
+
+                            <div class="detail-wrapper">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 18px;">
+                                Doctor:
+                              </div>
+                              <div class="detail-dropdown">
+                                <select class="btn btn-inverse-success btn-sm" id="doctorDropdown" name="doctorDropdown" style="margin-left: 24px;">
+                                  <option selected disabled style="color: green;"></option>>- Select a Doctor -</option>
+                                </select><br>
+                              </div>
+                            </div>
+
+                            <div class="detail-wrapper" style="margin-top: 10px;">
+                              <div class="detailname" style="font-weight: bold; margin-bottom: 8px;">
+                                Reason for Referral:
+                              </div>
+                            </div>
+                            <input type="text" class="form-control" id="refer_reason" name="refer_reason" style="margin-top: 4px; height: 60px; width: 336px; font-size: 13px;"><br>
+
+                            <button type="submit" class="btn btn-success btn-sm" style="margin-top: 16px;" name="confirmReferral" value={{endAppointment}}><i class="fa fa-check"></i>Confirm Referral</button>
+                          </form>
+                        </div>
+                      </div> 
+
+                      <!-- END APPOINTMENT -->
+                      <a href="#" class="openModalBtn1 btn btn-primary text-white me-0"><i class="icon-download"></i> End </a>
+                      <div class="myModal modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <i class="fa-regular fa-circle-check"></i>
+                            <h2 style="margin-bottom: 20px;">Ending Appointment...</h2>
+                            <form method="POST" action="{% url 'followup_appointment' %}?chosenPatient={{chosenPatient}}">
+                                {% csrf_token %}
+                                <div class="detail-wrapper">
+                                    <div class="form-check form-check-primary">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" id="followUpCheckbox" name="followupCheckbox" value="{{endAppointment}}"> Follow-up Appointment
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="followUpDetails" style="display: none;">
+                                    <div id="onceFP" class="detail-wrapper">
+                                        <label for="followUpDate" class="detailname" style="font-weight: bold;">Next follow-up:</label>
+                                        <input type="date" class="jsdatepicker" id="followUpDate" name="follow_up_date" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                    </div>
+
+
+                                    <div class="detail-wrapper">
+                                        <div class="form-check form-check-primary">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" id="reoccuringCheckbox" name="reoccuringCheckbox" value="{{endAppointment}}"> Reoccuring
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="occuringDetails" class="detail-wrapper" style="display: none;">
+                                        <label for="followUpInterval" class="detailname" style="font-weight: bold;">Follow-up for monitoring every:</label>
+                                        <select id="followUpInterval" name="follow_up_interval" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                            <option value="1_month" name="1_month">1 month</option>
+                                            <option value="3_months" name="3_months">3 months</option>
+                                            <option value="6_months" name="6_months">6 months</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                                <button type="submit" class="btn btn-primary btn-sm" style="color: white;" name="endingAppointment" value="{{endAppointment}}">End</button>
+                            </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="tab-content tab-content-basic">
+                    {% if messages %}
+                      <div class="alert-messages">
+                        {% for message in messages %}
+                          <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                      
+                      <!-- IF APPOINTMENT TYPE IS FROM A REFERRAL -->
+                      {% for chosenAppointmentData_id, chosenAppointmentData_data in chosenAppointmentData.items %}
+                        {% if chosenAppointmentData_data.appointmentVisitType == "Referral" %}
+                          {% for referrals_id, referrals_data in referrals.items %}
+                            {% if chosenAppointmentData_data.referralUID == referrals_id %}
+                            <div class="row">
+                              <div class="col-lg-12 d-flex flex-column">     
+                                <div class="card card-rounded">
+                                  <div class="card-body" style="font-size: 15px;">
+                                    <h4 class="card-title card-title-dash" style="font-size: 18px;">Referral Information:</h4>
+                                    <label>Date of Referral: &nbsp;</label><label>{{ referrals_data.date }}</label><br>
+
+                                    {% for doctors_id, doctors_data in doctors.items %}
+                                      {% if referrals_data.doctor_id == doctors_id %}
+                                      <label>Referred by: &emsp;&emsp;</label><label>{{ doctors_data.fname }} {{ doctors_data.lname }}</label><br>
+                                      {% endif %}
+                                    {% endfor %}
+
+                                    <label>Reason: &emsp;&emsp;&emsp;&ensp;&nbsp;&nbsp;</label><label>{{ referrals_data.reason }}</label><br>
+                                  </div>
+                                </div>
+                              </div>
+                            </div><br>
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+                      {% endfor %}
+
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Consultation Notes</h4>
+                                      <p class="card-subtitle card-subtitle-dash">Record your observations</p>
+                                    </div>
+                                  </div>
+                                  <div class="table-responsive mt-1">
+                                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                      <form method="POST">
+                                        {% csrf_token %}
+                                      
+                                      <table>
+                                        <tr>
+                                          <td><input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Shortness of Breath </label></td>
+                                          <td><input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in dates %}{{ dates.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="coughCheck" {% if 'coughInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Cough </label></td>
+                                          <td><input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in dates %}{{ dates.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Production of Phlegm </label></td>
+                                          <td><input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in dates %}{{ dates.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Wheezing </label></td>
+                                          <td><input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in dates %}{{ dates.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Coughing up Blood </label></td>
+                                          <td><input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in dates %}{{ dates.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Chest Pain </label></td>
+                                          <td><input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in dates %}{{ dates.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="feverCheck" {% if 'feverInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Fever </label></td>
+                                          <td><input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in dates %}{{ dates.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Heart Murmur </label></td>
+                                          <td><input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in dates %}{{ dates.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                        <tr>
+                                          <td><input type="checkbox" id="othersCheck" {% if 'othersInput' in dates %} checked {% endif %}>&ensp;</td>
+                                          <td><label style="font-size: 15px;"> Others </label></td>
+                                          <td><input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in dates %}{{ dates.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}></td>
+                                        </tr>
+                                      </table><br>
+                                        
+                                        <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }} >
+                                            <i class="fa fa-check"></i> Save </button>
+                                      </form>
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="col-lg-4 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <form id="diagnosis" method='post'>
+                                      {% csrf_token %}
+                                      <div class="detailname" style="font-weight: bold;">
+                                        Diagnosis:
+                                      </div>
+                                      <div class="detail-dropdown" style="margin-top: 15px;">
+                                        <select id="health-conditions" name="diagnosis" list="disease_name_suggestions" onchange="toggleOther()" class="btn btn-inverse-success btn-sm">
+                                          <datalist id="disease_name_suggestion">
+                                            <option value="">Select</option>
+                                            {% for disease in disease_list %}
+                                              <option value="{{ disease }}">{{ disease }}</option>
+                                            {% endfor %}
+                                          </datalist>
+                                          <option value="Other">Other</option>
+                                        </select>
+                                      </div>
+                                      <input type="text" id="otherdiagnosis" name='otherdiagnosis' style="display: none; margin-bottom: 15px;" placeholder="Specify other diagnosis"></input>
+                                      <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatient }} style="position: absolute; right: 0; bottom: 0;">
+                                        <i class="fa fa-check"></i> Save </button>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                      <div class="d-sm-flex justify-content-between align-items-start">
+                                        <div>
+                                          <h4 class="card-title card-title-dash">Diagnostic Tests</h4>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="mt-3">
+                                      <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                                        <div class="d-flex">
+                                          <div class="wrapper ms-3">
+                                            {% comment %} <button class="btn btn-inverse-success btn-sm">
+                                              <i class="fa fa-folder-open"></i>
+                                              <a href = "{% url 'diagnostic_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Test Results</a>
+                                            </button> {% endcomment %}
+                                            <button class="btn btn-inverse-success btn-sm" id="requestLabTestButton">
+                                              <i class="fa fa-plus"></i>
+                                              <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}&appointmentID={{endAppointment}}">Request New Test</a>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  {% endfor %}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-lg-12">
+                                      <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div>
+                                          <h4 class="card-title card-title-dash">Personal Information</h4>
+                                        </div>
+                                      </div>
+                                      <div class="mt-1">
+                                        <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                                          <div class="d-flex">
+                                            <div class="wrapper ms-3">
+                                              {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Sex: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.gender }}</span><br>
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Birthday: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.bday }}</span><br>
+                                              {% endfor %}
+                                              {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Blood Type: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.bloodType }}</span><br>
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Height: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.height }} cm</span><br>
+                                                <span class="ms-0 mb-0 fs-6 fw-bold">Weight: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.weight }} kg</span><br>
+                                              {% endfor %}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="testresult" role="tabpanel" aria-labelledby="testresult">
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="card card-rounded">
+                            <div class="card-body">
+                              <div class="justify-content-between align-items-start">
+                                <h4 class="card-title card-title-dash">Spirometry Results</h4>
+                              </div>
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  <thead>
+                                    <tr>
+                                      <th rowspan="2">Date Received</th>
+                                      <th rowspan="2">Test Result</th>
+                                      <th colspan="2" style="text-align:center">FEV1/FVC Ratio</th>
+                                    </tr>
+                                    <tr style="text-align:center">
+                                      <th>PRE</th>
+                                      <th>POST</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for value in most_recent_tests_spirometry %}
+                                      <tr>
+                                        <td>{{ value.date }}</td>
+                                        <td>
+                                          <object data="{{ value.downloadURL }}" type="image/png" style="width: auto; height: 200px;">
+                                        </td>
+                                        <td>{{ value.pre_ratio }}</td>
+                                        <td>{{ value.post_ratio }}</td>
+                                      </tr>
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="card card-rounded">
+                            <div class="card-body">
+                              <div class="justify-content-between align-items-start">
+                                <h4 class="card-title card-title-dash">Peak Flow Monitor Results</h4>
+                              </div>
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  <thead>
+                                    <tr>
+                                      <th>Date Received</th>
+                                      <th>Test Result</th>
+                                      <th>Reading</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for value in most_recent_tests_peak_flow_monitor %}
+                                      <tr>
+                                        <td>{{ value.date }}</td>
+                                        <td>
+                                          <object data="{{ value.downloadURL }}" type="image/png" style="width: auto; height: 200px;">
+                                        </td>
+                                        <td>{{ value.reading }}</td>
+                                      </tr>
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="card card-rounded">
+                            <div class="card-body">
+                              <div class="justify-content-between align-items-start">
+                                <h4 class="card-title card-title-dash">Other Tests</h4>
+                              </div>
+                              <div class="table-responsive">
+                                <table class="table table-striped">
+                                  {% if most_recent_tests_ct_scan %}
+                                    <thead>
+                                      <tr>
+                                        <th>Test Type</th>
+                                        <th>Date Received</th>
+                                        <th>Test Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for value in most_recent_tests_ct_scan %}
+                                        <tr>
+                                          <td>{{ value.testRequestKey }}</td>
+                                          <td>{{ value.date }}</td>
+                                          <td>
+                                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                                              <i class="fa fa-eye"></i> View
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  {% endif %}
+                                  {% if most_recent_tests_arterial_blood_gas %}
+                                    <thead>
+                                      <tr>
+                                        <th>Test Type</th>
+                                        <th>Date Received</th>
+                                        <th>Test Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for value in most_recent_tests_arterial_blood_gas %}
+                                        <tr>
+                                          <td>{{ value.testRequestKey }}</td>
+                                          <td>{{ value.date }}</td>
+                                          <td>
+                                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                                              <i class="fa fa-eye"></i> View
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  {% endif %}
+                                  {% if most_recent_tests_sputum %}
+                                    <thead>
+                                      <tr>
+                                        <th>Test Type</th>
+                                        <th>Date Received</th>
+                                        <th>Test Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for value in most_recent_tests_sputum %}
+                                        <tr>
+                                          <td>{{ value.testRequestKey }}</td>
+                                          <td>{{ value.date }}</td>
+                                          <td>
+                                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                                              <i class="fa fa-eye"></i> View
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  {% endif %}
+                                  {% if most_recent_tests_hrct %}
+                                    <thead>
+                                      <tr>
+                                        <th>Test Type</th>
+                                        <th>Date Received</th>
+                                        <th>Test Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for value in most_recent_tests_hrct %}
+                                        <tr>
+                                          <td>{{ value.testRequestKey }}</td>
+                                          <td>{{ value.date }}</td>
+                                          <td>
+                                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                                              <i class="fa fa-eye"></i> View
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  {% endif %}
+                                  {% if most_recent_tests_pulse_oximetry %}
+                                    <thead>
+                                      <tr>
+                                        <th>Test Type</th>
+                                        <th>Date Received</th>
+                                        <th>Test Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for value in most_recent_tests_pulse_oximetry %}
+                                        <tr>
+                                          <td>{{ value.testRequestKey }}</td>
+                                          <td>{{ value.date }}</td>
+                                          <td>
+                                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                                              <i class="fa fa-eye"></i> View
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  {% endif %}
+                                  {% if most_recent_tests_chest_xray %}
+                                    <thead>
+                                      <tr>
+                                        <th>Test Type</th>
+                                        <th>Date Received</th>
+                                        <th>Test Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for value in most_recent_tests_chest_xray %}
+                                        <tr>
+                                          <td>{{ value.testRequestKey }}</td>
+                                          <td>{{ value.date }}</td>
+                                          <td>
+                                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                                              <i class="fa fa-eye"></i> View
+                                            </a>
+                                          </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                  {% endif %}
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="btn-wrapper" style="text-align: right">
+                          <a href = "{% url 'diagnostic_reports' %}?chosenPatient={{chosenPatient}}" class="btn btn-primary text-white me-0" >View All Test Results</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="all">
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Past Consultation Notes</h4>
+                                      {% comment %} <p class="card-subtitle card-subtitle-dash">Record your observations</p> {% endcomment %}
+                                    </div>
+                                  </div>
+                                  <div class="table-responsive mt-1">
+                                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                      <form method="POST">
+                                        {% csrf_token %}
+
+                                        <table>
+                                          <tr>
+                                            <td><input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Shortness of Breath </label></td>
+                                            <td><input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in latest_complains %}{{ latest_complains.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="coughCheck" {% if 'coughInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Cough </label></td>
+                                            <td><input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in latest_complains %}{{ latest_complains.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Production of Phlegm </label></td>
+                                            <td><input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in latest_complains %}{{ latest_complains.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Wheezing </label></td>
+                                            <td><input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in latest_complains %}{{ latest_complains.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Coughing up Blood </label></td>
+                                            <td><input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in latest_complains %}{{ latest_complains.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Chest Pain </label></td>
+                                            <td><input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in latest_complains %}{{ latest_complains.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="feverCheck" {% if 'feverInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Fever </label></td>
+                                            <td><input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in latest_complains %}{{ latest_complains.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Heart Murmur </label></td>
+                                            <td><input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in latest_complains %}{{ latest_complains.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="othersCheck" {% if 'othersInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Others </label></td>
+                                            <td><input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in latest_complains %}{{ latest_complains.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                        </table>
+                                       
+                                        {% comment %} <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }} >
+                                            <i class="fa fa-check"></i> Save </button> {% endcomment %}
+                                      </form>
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Past Consultation Tab -->
+                    <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past">
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Past Consultation Notes</h4>
+                                      {% comment %} <p class="card-subtitle card-subtitle-dash">Record your observations</p> {% endcomment %}
+                                    </div>
+                                  </div>
+                                  <div class="table-responsive mt-1">
+                                    {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                      <form method="POST">
+                                        {% csrf_token %}
+
+                                        <table>
+                                          <tr>
+                                            <td><input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Shortness of Breath </label></td>
+                                            <td><input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in latest_complains %}{{ latest_complains.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="coughCheck" {% if 'coughInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Cough </label></td>
+                                            <td><input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in latest_complains %}{{ latest_complains.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Production of Phlegm </label></td>
+                                            <td><input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in latest_complains %}{{ latest_complains.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Wheezing </label></td>
+                                            <td><input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in latest_complains %}{{ latest_complains.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Coughing up Blood </label></td>
+                                            <td><input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in latest_complains %}{{ latest_complains.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Chest Pain </label></td>
+                                            <td><input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in latest_complains %}{{ latest_complains.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="feverCheck" {% if 'feverInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Fever </label></td>
+                                            <td><input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in latest_complains %}{{ latest_complains.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Heart Murmur </label></td>
+                                            <td><input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in latest_complains %}{{ latest_complains.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                          <tr>
+                                            <td><input type="checkbox" id="othersCheck" {% if 'othersInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                                            <td><label style="font-size: 15px;"> Others </label></td>
+                                            <td><input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in latest_complains %}{{ latest_complains.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}></td>
+                                          </tr>
+                                        </table>
+                                       
+                                        {% comment %} <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }} >
+                                            <i class="fa fa-check"></i> Save </button> {% endcomment %}
+                                      </form>
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Symptom Tab -->
+                    <div class="tab-pane fade" id="medicalhistory" role="tabpanel" aria-labelledby="medicalhistory">
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="row flex-grow">
+                            <div class="col-12 col-lg-4 col-lg-12 grid-margin">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Symptoms History Chart</h4>
+                                      <div class="dropdown">
+                                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton8" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Select Symptom  </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton8">
+                                          {% for symptom_name in chosenPatientSymptoms1 %}
+                                            <a class="dropdown-item" href="#" data-symptom-name="{{ symptom_name }}">{{ symptom_name }}</a>
+                                          {% endfor %}
+                                        </div>
+                                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton99" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Time</button>                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton99">
+                                          <a class="dropdown-item" href="#" data-value="Show All">Show All</a>
+                                          <a class="dropdown-item" href="#" data-value="1 month">1 month</a>
+                                          <a class="dropdown-item" href="#" data-value="3 months">3 months</a>
+                                          <a class="dropdown-item" href="#" data-value="6 months">6 months</a>
+                                      </div>
+                                      <!-- Additional Dropdowns for Specific Time Selections -->
+                                    <div id="timeSelection" style="display: none;">
+                                      <div id="monthSelection" style="display: none;">
+                                          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMonthButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Month</button>
+                                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMonth">
+                                            <a class="dropdown-item" href="#" data-month="1">January</a>
+                                            <a class="dropdown-item" href="#" data-month="2">February</a>
+                                            <a class="dropdown-item" href="#" data-month="3">March</a>
+                                            <a class="dropdown-item" href="#" data-month="4">April</a>
+                                            <a class="dropdown-item" href="#" data-month="5">May</a>
+                                            <a class="dropdown-item" href="#" data-month="6">June</a>
+                                            <a class="dropdown-item" href="#" data-month="7">July</a>
+                                            <a class="dropdown-item" href="#" data-month="8">August</a>
+                                            <a class="dropdown-item" href="#" data-month="9">September</a>
+                                            <a class="dropdown-item" href="#" data-month="10">October</a>
+                                            <a class="dropdown-item" href="#" data-month="11">November</a>
+                                            <a class="dropdown-item" href="#" data-month="12">December</a>
+                                        </div>
+                                      </div>
+                                      <div id="quarterSelection" style="display: none;">
+                                          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownQuarterButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Quarter</button>
+                                          <div class="dropdown-menu" aria-labelledby="dropdownQuarterButton">
+                                              <!-- Quarters -->
+                                              <a class="dropdown-item" href="#" data-quarter="Q1">Q1</a>
+                                              <a class="dropdown-item" href="#" data-quarter="Q2">Q2</a>
+                                              <a class="dropdown-item" href="#" data-quarter="Q3">Q3</a>
+                                              <a class="dropdown-item" href="#" data-quarter="Q4">Q4</a>
+                                          </div>
+                                      </div>
+                                      <div id="halfSelection" style="display: none;">
+                                          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownHalfButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Half</button>
+                                          <div class="dropdown-menu" aria-labelledby="dropdownHalfButton">
+                                              <!-- Halves -->
+                                              <a class="dropdown-item" href="#" data-half="H1">First Half</a>
+                                              <a class="dropdown-item" href="#" data-half="H2">Second Half</a>
+                                          </div>
+                                      </div>
+                                    </div>
+                                      </div>
+                                    </div>
+
+                                    
+
+                                    <div id="performanceLine-legend"></div>
+                                  </div>
+                                  
+                                <div style="width: 100%; height: 100%;">
+                                  <canvas id="performanceLine"></canvas>
+                                </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="treatment" role="tabpanel" aria-labelledby="treatment">
+                      <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                          <div class="row flex-grow">
+                            <div class="col-12 col-lg-4 col-lg-12 grid-margin">
+                              <div class="card">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                      <h4 class="card-title card-title-dash">Lastest Prescription</h4>
+                                      {% if latest_prescription_url%}
+                                      <object data="{{ latest_prescription_url }}" type="application/pdf" width="100%" height="600px">    
+                                        {%else%}                                
+                                        Patient is not taking any medications.
+                                        {%endif%}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const openModalLinks = document.querySelectorAll('.open-modal1');
+        const closeModalButtons = document.querySelectorAll('.close1');
+    
+        // Open modal when clicking the "Open" link
+        openModalLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const modalId = this.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'block';
+            });
+        });
+    
+        // Close modal when clicking the "×" button
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = this.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'none';
+            });
+        });
+    
+        // Close modal when clicking outside of the modal content
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal1')) {
+                event.target.style.display = 'none';
+            }
+        });
+    });
+    
+    </script>
+
+    <script>
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        var availableDays = {{ available_days_list|safe }};
+        
+        // Convert available days to a format we can use
+        var availableDaysMap = {
+            'Monday': 1,
+            'Tuesday': 2,
+            'Wednesday': 3,
+            'Thursday': 4,
+            'Friday': 5,
+            'Saturday': 6,
+            'Sunday': 0,
+            'monday': 1,
+            'tuesday': 2,
+            'wednesday': 3,
+            'thursday': 4,
+            'friday': 5,
+            'saturday': 6,
+            'sunday': 0,
+        };
+    
+        var availableDayNumbers = new Set(availableDays.map(day => availableDaysMap[day]));
+    
+        var dateInputs = document.querySelectorAll('.jsdatepicker');
+    
+        // Function to check if a date should be enabled or disabled
+        function isDateAvailable(date) {
+            var dayNumber = date.getDay();
+            return availableDayNumbers.has(dayNumber);
+        }
+    
+        function disableUnavailableDates() {
+            var today = new Date();
+            var minDate = today.toISOString().split('T')[0];
+            
+            var maxDate = new Date();
+            maxDate.setFullYear(maxDate.getFullYear() + 1);  // Example: 1 year from now
+            var maxDateStr = maxDate.toISOString().split('T')[0];
+            
+            var currentDate = new Date(today);
+            var endDate = new Date(maxDate);
+            
+            var disabledDates = [];
+    
+            while (currentDate <= endDate) {
+                if (!isDateAvailable(currentDate)) {
+                    disabledDates.push(currentDate.toISOString().split('T')[0]);
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+    
+            dateInputs.forEach(function(dateInput) {
+                dateInput.setAttribute('min', minDate);
+                dateInput.setAttribute('max', maxDateStr);
+                
+                dateInput.addEventListener('input', function() {
+                    var selectedDate = new Date(dateInput.value);
+                    if (disabledDates.includes(dateInput.value)) {
+                        alert('The selected date is not available. Your schedule does not accomodate this day.');
+                        dateInput.value = '';
+                    }
+                });
+            });
+        }
+    
+        disableUnavailableDates();
+      });
+    </script>
+
+    <script>
+      document.getElementById('followUpCheckbox').addEventListener('change', function() {
+          document.getElementById('followUpDetails').style.display = this.checked ? 'block' : 'none';
+      });
+      document.getElementById('reoccuringCheckbox').addEventListener('change', function() {
+          document.getElementById('occuringDetails').style.display = this.checked ? 'block' : 'none';
+          document.getElementById('onceFP').style.display = this.checked ? 'none' : 'block';
+      });
+      </script>
+
+   <script>
+   var chosenPatientSymptoms = {{ chosenPatientSymptoms|safe }};
+  </script> 
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      var ctx = document.getElementById('performanceLine').getContext('2d');
+      var myLineChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: [],
+              datasets: [{
+                  label: 'Level of Severity',
+                  data: [],
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  borderWidth: 1
+              }, {
+                  label: 'Forecast',
+                  data: [],
+                  borderColor: 'rgba(255, 99, 132, 1)',
+                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                  borderWidth: 1,
+                  borderDash: [5, 5],
+                  fill: false
+              }]
+          },
+          options: {
+              responsive: true,
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      ticks: {
+                          precision: 0
+                      }
+                  }
+              },
+              plugins: {
+                  tooltip: {
+                      callbacks: {
+                          title: function(tooltipItems) {
+                              return 'Date: ' + tooltipItems[0].label;
+                          },
+                          label: function(tooltipItem) {
+                              return 'Severity: ' + tooltipItem.raw;
+                          }
+                      }
+                  }
+              }
+          }
+      });
+  
+      function updateChart(symptomName, timePeriod, specificTime) {
+          var patientId = Object.keys(chosenPatientSymptoms)[0];
+          var symptomData = chosenPatientSymptoms[patientId][symptomName];
+          var severityRecords = [];
+  
+          if (symptomData && symptomData.severityRecords) {
+              for (var date in symptomData.severityRecords) {
+                  for (var time in symptomData.severityRecords[date]) {
+                      severityRecords.push({
+                          datetime: new Date(date + ' ' + time),
+                          severity: symptomData.severityRecords[date][time]
+                      });
+                  }
+              }
+  
+              severityRecords.sort(function (a, b) {
+                  return a.datetime - b.datetime;
+              });
+  
+              // Filter data based on the selected time period
+              var filteredRecords;
+              var now = new Date();
+
+              if (timePeriod === 'Show All') {
+                  filteredRecords = severityRecords;
+              } else if (timePeriod === '1 month') {
+                var startMonth = specificTime;
+                var startYear = now.getFullYear();
+                var cutoffStart = new Date(startYear, startMonth, 1);
+                var cutoffEnd = new Date(startYear, startMonth + 1, 0);
+                filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
+              } else if (timePeriod === '3 months') {
+                  var quarter = specificTime;
+                  var quarters = {
+                      'Q1': [0, 3],
+                      'Q2': [3, 6],
+                      'Q3': [6, 9],
+                      'Q4': [9, 12]
+                  };
+                  var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
+                  var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
+                  filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+              } else if (timePeriod === '6 months') {
+                  var half = specificTime;
+                  var halves = {
+                      'H1': [0, 6],
+                      'H2': [6, 12]
+                  };
+                  var start = new Date(now.getFullYear(), halves[half][0], 1);
+                  var end = new Date(now.getFullYear(), halves[half][1], 0);
+                  filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+              }
+  
+              var labels = filteredRecords.map(record => record.datetime.toLocaleString());
+              var data = filteredRecords.map(record => record.severity);
+              
+  
+              myLineChart.data.labels = labels;
+              myLineChart.data.datasets[0].data = data;
+  
+              if (data.length > 0) {
+                // Forecasting
+                var forecastData = forecast(data);
+                myLineChart.data.datasets[1].data = forecastData;
+
+                myLineChart.update();
+
+                // Calculate insights
+                var maxSeverity = Math.max(...data);
+                var minSeverity = Math.min(...data);
+                var averageSeverity = data.reduce((acc, val) => acc + val, 0) / data.length;
+
+                // Display insights
+                var insightsElement = document.getElementById('performanceLine-legend');
+                insightsElement.innerHTML = `
+                    <p><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
+                    <p>Maximum Severity: ${maxSeverity}</p>
+                    <p>Minimum Severity: ${minSeverity}</p>
+                    <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
+                `;
+            } else {
+                // Display message when no data is available
+                myLineChart.data.labels = [];
+                myLineChart.data.datasets[0].data = [];
+                myLineChart.data.datasets[1].data = [];
+                myLineChart.update();
+
+                var insightsElement = document.getElementById('performanceLine-legend');
+                insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
+            }
+        } else {
+            // Display message when no data is available
+            myLineChart.data.labels = [];
+            myLineChart.data.datasets[0].data = [];
+            myLineChart.data.datasets[1].data = [];
+            myLineChart.update();
+
+            var insightsElement = document.getElementById('performanceLine-legend');
+            insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
+        }
+    }
+      function forecast(data) {
+          // Simple linear forecasting
+          var n = data.length;
+          var slope = (data[n - 1] - data[0]) / (n - 1);
+          var forecastData = [];
+          for (var i = 0; i < n; i++) {
+              forecastData.push(data[0] + slope * i);
+            }
+            return forecastData;
+        }
+    
+        // Add event listeners to the dropdown items
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function (event) {
+                event.preventDefault();
+                var symptomName = document.querySelector('#dropdownMenuButton8').innerText;
+                var timePeriod = document.querySelector('#dropdownMenuButton99').innerText;
+    
+                // Check if a symptom or time period was selected
+                if (this.hasAttribute('data-symptom-name')) {
+                    symptomName = this.getAttribute('data-symptom-name');
+                    document.getElementById('dropdownMenuButton8').innerText = symptomName.replace(/_/g, ' ');
+                }
+    
+                if (this.hasAttribute('data-value')) {
+                    timePeriod = this.getAttribute('data-value');
+                    document.getElementById('dropdownMenuButton99').innerText = timePeriod;
+                    
+                    // Show or hide specific time selections based on the time period
+                    document.getElementById('timeSelection').style.display = timePeriod !== 'Show All' ? 'block' : 'none';
+                    document.getElementById('monthSelection').style.display = timePeriod === '1 month' ? 'block' : 'none';
+                    document.getElementById('quarterSelection').style.display = timePeriod === '3 months' ? 'block' : 'none';
+                    document.getElementById('halfSelection').style.display = timePeriod === '6 months' ? 'block' : 'none';
+                    
+                    // Update chart with selected time period
+                    updateChart(symptomName, timePeriod, null);
+                }
+    
+                // Handle specific time selections
+                if (this.hasAttribute('data-month')) {
+                    var month = parseInt(this.getAttribute('data-month'));
+                    document.getElementById('dropdownMonthButton').innerText = this.innerText; // Update button text
+                    updateChart(symptomName, '1 month', month - 1); // Months are 0-based in JavaScript Date
+                }
+    
+                if (this.hasAttribute('data-quarter')) {
+                    var quarter = this.getAttribute('data-quarter');
+                    document.getElementById('dropdownQuarterButton').innerText = this.innerText; // Update button text
+                    updateChart(symptomName, '3 months', quarter);
+                }
+    
+                if (this.hasAttribute('data-half')) {
+                    var half = this.getAttribute('data-half');
+                    document.getElementById('dropdownHalfButton').innerText = this.innerText; // Update button text
+                    updateChart(symptomName, '6 months', half);
+                }
+            });
+        });
+    
+    });      
+  
+</script>
+
+    <script>
+      function updateDoctorsDropdown() {
+        const clinicID = document.getElementById('clinicDropdown').value;
+
+        // Simulated clinic data list (replace with actual data)
+        const clinicDataList = {{ clinic_doctor_list|safe }};
+        
+        // Find the clinic data by clinicID
+        const clinicData = clinicDataList.find(clinic => clinic.clinic_id === clinicID);
+        
+        if (clinicData) {
+          // Update doctors dropdown
+          const doctorSelect = document.getElementById('doctorDropdown');
+          doctorSelect.innerHTML = ''; 
+
+          clinicData.doctors.forEach(doctor => {
+            const option = document.createElement('option');
+            option.value = doctor.id;
+            option.textContent = doctor.name;
+            doctorSelect.appendChild(option);
+          });
+        } else {
+          console.error(`Clinic data not found for clinic ID: ${clinicID}`);
+        }
+      }
+    </script>
+
+    <script>
+      function toggleInput(checkbox, input) {
+        checkbox.addEventListener('change', function() {
+          input.disabled = !this.checked;
+        });
+      }
+
+      toggleInput(document.getElementById('shortnessOfBreathCheck'), document.getElementById('shortnessOfBreathInput'));
+      toggleInput(document.getElementById('coughCheck'), document.getElementById('coughInput'));
+      toggleInput(document.getElementById('phlegmCheck'), document.getElementById('phlegmInput'));
+      toggleInput(document.getElementById('wheezingCheck'), document.getElementById('wheezingInput'));
+      toggleInput(document.getElementById('coughingBloodCheck'), document.getElementById('coughingBloodInput'));
+      toggleInput(document.getElementById('chestPainCheck'), document.getElementById('chestPainInput'));
+      toggleInput(document.getElementById('feverCheck'), document.getElementById('feverInput'));
+      toggleInput(document.getElementById('heartMurmurCheck'), document.getElementById('heartMurmurInput'));
+      toggleInput(document.getElementById('othersCheck'), document.getElementById('othersInput'));
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+
+        // Populate doctorDropdown (Since clinicDropdown is already on default clinic based on the current appointment)
+        const clinicDropdown = document.getElementById('clinicDropdown');
+        if (clinicDropdown.value) {
+            updateDoctorsDropdown();
+        }
+
+        document.body.addEventListener('click', function (event) {
+          // Open modal button clicked
+          if (event.target.classList.contains('openModalBtn')) {
+            var modal = event.target.nextElementSibling;
+            modal.style.display = 'block';
+          }
+
+          if (event.target.classList.contains('openModalBtn1')) {
+            var modal = event.target.nextElementSibling;
+            modal.style.display = 'block';
+          }
+    
+          // Close modal button clicked
+          if (event.target.classList.contains('close')) {
+            var modal = event.target.closest('.modal');
+            modal.style.display = 'none';
+          }
+    
+          // Submit appointment reschedule button clicked
+          if (event.target.classList.contains('appID')) {
+            alert('Appointment rescheduled successfully!');
+          }
+        });
+    
+        // Close modal if clicked outside the content
+        window.addEventListener('click', function (event) {
+          if (event.target.classList.contains('myModal')) {
+            event.target.style.display = 'none';
+          }
+        });
+      });
+    </script>
+
+    <script>
+      function toggleOther() {
+        var selectBox = document.getElementById("health-conditions");
+        var otherDiagnosisInput = document.getElementById("otherdiagnosis");
+    
+        if (selectBox.value === "Other") {
+          otherDiagnosisInput.style.display = "inline-block"; // Show the input field
+        } else {
+          otherDiagnosisInput.style.display = "none"; // Hide the input field
+        }
+      }
+    </script>
+    
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+
+    <script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
+    <script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <script src="{% static 'assets/vendors/select2/select2.min.js' %}"></script>
+
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/template.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+ 
+    <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script src="{% static 'assets/js/select2.js' %}"></script>
+
+  </body>
+{% endblock %}

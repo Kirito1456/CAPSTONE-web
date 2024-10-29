@@ -1,0 +1,452 @@
+{%load static%}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
+    <title>{% block title %}Patient Data{% endblock %}</title>
+    <!-- plugins:css -->
+     
+    {% block styles%} 
+    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
+
+    <style>
+      .modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+          width: 30%; /* Modal content width */
+          max-width: 500px; /* Optional: Limit max width */
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: #fff;
+          padding: 20px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
+      }
+
+      .close {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          font-size: 30px;
+          cursor: pointer;
+      }
+  </style>
+    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <!-- endinject -->
+    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+    {% endblock styles%}
+  </head>
+
+  {% block content %}
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <b>MediMatrix</b>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Hello, 
+                {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                        <span class="text-black fw-bold"> {{ doctor_data.fname }} {{ doctor_data.lname }}</span>
+                        {% endif %}
+                    {% endfor %}
+                
+            </h1>
+              <h3 class="welcome-sub-text">Thank you for your dedicated care.</h3>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            
+            {% comment %} Notifs {% endcomment %}
+            <li class="nav-item dropdown">
+              <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="icon-bell"></i>
+                  <span class="count">{{ non_symptom_notifications_count }}</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown" style="max-height: 300px; overflow-y: auto;">
+                  <a class="dropdown-item py-3 border-bottom">
+                      <p class="mb-0 fw-medium float-start">You have {{ non_symptom_notifications_count }} new notifications</p>
+                  </a>
+                  {% for notification in notifications %}
+                  {% if notification.type == 'diagnostic' %}
+                  <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+                    <div class="preview-thumbnail">
+                          <i class="mdi mdi-alert m-auto text-primary"></i>
+                      </div>
+                      <div class="preview-item-content">
+                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      </div>
+                  </a>
+                  {% elif notification.type == 'appointment' %}
+                  <a class="dropdown-item preview-item py-3" href="{% url 'AppointmentUpcomingNotif' notification.id %}">
+                    <div class="preview-thumbnail">
+                          <i class="mdi mdi-alert m-auto text-primary"></i>
+                      </div>
+                      <div class="preview-item-content">
+                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      </div>
+                  </a>
+                  {% comment %} {% elif notification.type == 'symptom' %}
+                  <a class="dropdown-item preview-item py-3" href="{% url 'patient_history' notification.id %}?chosenPatient={{notification.patient_id}}">
+                    <div class="preview-thumbnail">
+                          <i class="mdi mdi-alert m-auto text-primary"></i>
+                      </div>
+                      <div class="preview-item-content">
+                          <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                          <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                      </div>
+                  </a> {% endcomment %}
+                  {% endif %}
+                  {% endfor %}
+              </div>
+          </li>
+            {% comment %} Messages Notif {% endcomment %}
+            
+            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                <div class="dropdown-header text-center">
+                  {% for doctor_id, doctor_data in doctors.items %}
+                        {% if doctor_data.uid == uid %}
+                            <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                            <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              </div>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
+                <i class="mdi mdi-grid-large menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item nav-category">Menu</li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <i class="menu-icon mdi mdi-floor-plan"></i>
+                <span class="menu-title">Appointments</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="menu-icon mdi mdi-card-text-outline"></i>
+                <span class="menu-title">Patients</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="home-tab">
+                  <div class="tab-content tab-content-basic">
+
+        
+
+                  <div class="tab-content tab-content-basic">
+                    {% if messages %}
+                      <div class="alert-messages">
+                        {% for message in messages %}
+                          <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+                      <div class="row">
+                        <div class="col-lg-8 d-flex flex-column">
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <div class="d-sm-flex justify-content-between align-items-start">
+                                    <div>
+                                      <h4 class="card-title card-title-dash">Monitor Patient Treatment Plan</h4>
+                                      {% comment %} <p class="card-subtitle card-subtitle-dash">Track your patient</p> {% endcomment %}
+                                    </div>
+                                  </div>
+                                  <div class="table-responsive  mt-1">
+                                    <table class="table select-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Patient Name</th>
+                                          <th>Medication Progress</th>
+                                          <th>Medication End</th>
+                                          
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+
+                                      {% if sorted_patients %}
+                                        {% for patient_data in sorted_patients %}
+                                          <tr id = "patient-info">
+                                            
+                                                  <td>
+                                                    <a href="#" class="open-modal" data-modal-id="modal-{{ patient_data.uid }}" style="font-size: 13;">
+                                                      {{ patient_data.fname }} {{ patient_data.lname }}
+                                                    </a>
+                                                    <p>
+                                                      {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                                                        {% if patient_data.uid == chosenPatientData_id %}
+                                                          {{ chosenPatientData_data.disease }}
+                                                        {% endif %}
+                                                      {% endfor %}
+                                                    </p>
+                                                  </td>
+                                                  
+                                                  {% if total_average_adherence %}
+                                              {% for total_average_adherence_id, total_average_adherence_data in total_average_adherence.items %}
+                                                {% if patient_data.uid == total_average_adherence_id and total_average_adherence_data.doctor_uid == uid%}
+
+                                            
+                                                <div id="modal-{{ patient_data.uid }}" class="modal">
+                                                    <div class="modal-content">
+                                                      <span class="close" data-modal-id="modal-{{ patient_data.uid }}">&times;</span>
+                                                      <i class="fa-regular fa-circle-check"></i>
+                                                      <h2 style="margin-bottom: 20px;">Latest Prescription </h2>
+                                                      {% if total_average_adherence_data.presURL%}
+                                                        <object data="{{ total_average_adherence_data.presURL }}" type="application/pdf" width="100%" height="500px">    
+                                                      {%else%}                                
+                                                        Patient is not taking any medications.
+                                                      {%endif%} 
+                                                    </div>
+                                                  </div>  
+                                            
+                                                    
+                                                  <td>
+                                                    <div>
+                                                      <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                                        <p class="text-success">
+                                                          {{ total_average_adherence_data.total_average_adherence }}%
+                                                        </p>
+                                                      </div>
+                                                      <div class="progress progress-md">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ total_average_adherence_data.total_average_adherence }}%" aria-valuenow="{{ total_average_adherence_data.total_average_adherence }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                      </div>
+                                                    </div>
+                                                  </td>
+                                                  <td>{{ total_average_adherence_data.dateEnd }}</td>
+                                                {% endif %}
+                                              {% endfor %}
+                                            {% endif %}
+
+                                          </tr>
+                                        {% endfor %}
+                                      {% else %}
+                                        <td colspan="3" style="padding: 15px; text-align: center;">No current patients!</td>
+                                      {% endif %}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4 d-flex flex-column">
+                            <div class="row flex-grow">
+                                <div class="col-12 grid-margin stretch-card">
+                                  <div class="card card-rounded">
+                                    <div class="card-body">
+                                      <div class="row">
+                                        <div class="col-lg-12">
+                                          <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div>
+                                              <h4 class="card-title card-title-dash">Appointments for Today</h4>
+                                            </div>
+                                          </div>
+                                          <div class="mt-3">
+                                            {% if appointments %}
+                                              {% for appointment_id, appointment_data in appointments.items %}
+                                                  {% for patient_id, patient_data in patients.items %}
+                                                  {% if patient_data.uid == appointment_data.patientName %}
+                                            <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
+                                              <div class="d-flex">
+                                                <img class="img-sm rounded-10" src="{% static 'acc.png' %}" alt="profile">
+                                                <div class="wrapper ms-3">
+                                                  <p class="ms-1 mb-1 fw-bold"><a href="{% url 'patient_personal_information_inpatient' %}?chosenPatient={{patient_data.uid}}&appointmentID={{appointment_id}}">{{ patient_data.lname }}, {{ patient_data.fname }}</a></p>
+                                                  <small class="text-muted mb-0">{{ appointment_data.appointmentTime }} at </small>
+                                                  {% for clinic_id, clinic_data in clinics.items%}
+                                                    {% if clinic_id == appointment_data.clinicUID%}
+                                                      <small class="text-muted mb-0">{{ clinic_data.name }}</small>
+                                                    {% endif %}
+                                                  {% endfor %}
+                                                </div>
+                                              </div>
+                                            </div>
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% endfor %}
+                                            {% else %}
+                                            <p class="ms-1 mb-1 fw-bold">No Upcoming Appointments for Today</p>
+                                            {% endif %}
+
+                                            
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row flex-grow">
+                                <div class="col-12 grid-margin stretch-card">
+                                    <div class="card card-rounded">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div>
+                                                            <h4 class="card-title card-title-dash">Patient Symptom Update</h4>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Add this div wrapper for scrollable content -->
+                                                    <div class="mt-3" style="max-height: 400px; overflow-y: auto;">
+                                                        {% for notification in notifications %}
+                                                        {% if notification.type == 'symptom' %}
+                                                        <a class="dropdown-item preview-item py-3 d-flex align-items-center" href="{% url 'patient_history' notification.id %}?chosenPatient={{notification.patient_id}}">
+                                                            <div class="preview-thumbnail d-flex align-items-center me-3">
+                                                                <i class="mdi mdi-alert m-auto text-primary"></i>
+                                                            </div>
+                                                            <div class="preview-item-content w-100 text-wrap pe-3">
+                                                                <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                                                                <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                                                            </div>
+                                                        </a>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            </div>
+                            
+                          
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const openModalLinks = document.querySelectorAll('.open-modal');
+        const closeModalButtons = document.querySelectorAll('.close');
+    
+        openModalLinks.forEach(link => {
+          link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const modalId = this.getAttribute('data-modal-id');
+            document.getElementById(modalId).style.display = 'block';
+          });
+        });
+    
+        closeModalButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const modalId = this.getAttribute('data-modal-id');
+            document.getElementById(modalId).style.display = 'none';
+          });
+        });
+    
+        window.addEventListener('click', function(event) {
+          if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+          }
+        });
+      });
+
+    </script>
+
+    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
+    <script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
+    <script src="{% static 'assets/js/template.js' %}"></script>
+    <script src="{% static 'assets/js/settings.js' %}"></script>
+    <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static 'assets/js/todolist.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+  </body>
+  {% endblock %}
