@@ -1346,7 +1346,10 @@ def perform_ocr(image_url, chosen_patient, key):
             'pre_ratio': pre_ratio
         })
     else:
-        print("Could not save results, pre_ratio or post_ratio is None.")
+        db.child("submittedTest").child(chosen_patient).child('Spirometry').child(key).update({
+            'post_ratio': "None",
+            'pre_ratio': "None"
+        })
 
 
 def perform_peak_flow_ocr(image_url, chosen_patient, key):
@@ -1390,7 +1393,9 @@ def perform_peak_flow_ocr(image_url, chosen_patient, key):
             'reading': reading
         })
     else:
-        print("Could not save results, reading is None.")
+        db.child("submittedTest").child(chosen_patient).child('Peak flow monitor').child(key).update({
+            'reading': "None"
+        })
 
 def check_existing_ratios(chosen_patient, key):
     existing_data = db.child("submittedTest").child(chosen_patient).child('Spirometry').child(key).get()
