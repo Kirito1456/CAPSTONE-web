@@ -1,0 +1,209 @@
+<div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+    <!-- IF APPOINTMENT TYPE IS FROM A REFERRAL -->
+    {% for chosenAppointmentData_id, chosenAppointmentData_data in chosenAppointmentData.items %}
+      {% if chosenAppointmentData_data.appointmentVisitType == "Referral" %}
+        {% for referrals_id, referrals_data in referrals.items %}
+          {% if chosenAppointmentData_data.referralUID == referrals_id %}
+          <div class="row">
+            <div class="col-lg-12 d-flex flex-column">     
+              <div class="card card-rounded">
+                <div class="card-body" style="font-size: 15px;">
+                  <h4 class="card-title card-title-dash" style="font-size: 18px;">Referral Information:</h4>
+                  <label>Date of Referral: &nbsp;</label><label>{{ referrals_data.date }}</label><br>
+
+                  {% for doctors_id, doctors_data in doctors.items %}
+                    {% if referrals_data.doctor_id == doctors_id %}
+                    <label>Referred by: &emsp;&emsp;</label><label>{{ doctors_data.fname }} {{ doctors_data.lname }}</label><br>
+                    {% endif %}
+                  {% endfor %}
+
+                  <label>Reason: &emsp;&emsp;&emsp;&ensp;&nbsp;&nbsp;</label><label>{{ referrals_data.reason }}</label><br>
+                </div>
+              </div>
+            </div>
+          </div><br>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+    <div class="row">
+      <div class="col-lg-8 d-flex flex-column">
+        <div class="row flex-grow">
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+              <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                  <div>
+                    <h4 class="card-title card-title-dash">Consultation Notes</h4>
+                    <p class="card-subtitle card-subtitle-dash">Record your observations</p>
+                  </div>
+                </div>
+                <div class="table-responsive mt-1">
+                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                    <form method="POST">
+                      {% csrf_token %}
+                    
+                    <table>
+                      <tr>
+                        <td><input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Shortness of Breath </label></td>
+                        <td><input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in dates %}{{ dates.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="coughCheck" {% if 'coughInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Cough </label></td>
+                        <td><input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in dates %}{{ dates.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Production of Phlegm </label></td>
+                        <td><input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in dates %}{{ dates.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Wheezing </label></td>
+                        <td><input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in dates %}{{ dates.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Coughing up Blood </label></td>
+                        <td><input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in dates %}{{ dates.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Chest Pain </label></td>
+                        <td><input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in dates %}{{ dates.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="feverCheck" {% if 'feverInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Fever </label></td>
+                        <td><input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in dates %}{{ dates.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Heart Murmur </label></td>
+                        <td><input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in dates %}{{ dates.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                      <tr>
+                        <td><input type="checkbox" id="othersCheck" {% if 'othersInput' in dates %} checked {% endif %}>&ensp;</td>
+                        <td><label style="font-size: 15px;"> Others </label></td>
+                        <td><input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in dates %}{{ dates.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}></td>
+                      </tr>
+                    </table><br>
+                      
+                      <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }} >
+                          <i class="fa fa-check"></i> Save </button>
+                    </form>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 d-flex flex-column">
+        <div class="row flex-grow">
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+              <div class="card-body">
+                <div class="row">
+                  <form id="diagnosis" method='post'>
+                    {% csrf_token %}
+                    <div class="detailname" style="font-weight: bold;">
+                      Diagnosis:
+                    </div>
+                    <div class="detail-dropdown" style="margin-top: 15px;">
+                      <select id="health-conditions" name="diagnosis" list="disease_name_suggestions" onchange="toggleOther()" class="btn btn-inverse-success btn-sm">
+                        <datalist id="disease_name_suggestion">
+                          <option value="">Select</option>
+                          {% for disease in disease_list %}
+                            <option value="{{ disease }}">{{ disease }}</option>
+                          {% endfor %}
+                        </datalist>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <input type="text" id="otherdiagnosis" name='otherdiagnosis' style="display: none; margin-bottom: 15px;" placeholder="Specify other diagnosis"></input>
+                    <button id="submitdiagnosis" type="submit" class="btn btn-success btn-sm" name="diagnosisButton" value={{ chosenPatient }} style="position: absolute; right: 0; bottom: 0;">
+                      <i class="fa fa-check"></i> Save </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row flex-grow">
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+              <div class="card-body">
+                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="d-sm-flex justify-content-between align-items-start">
+                      <div>
+                        <h4 class="card-title card-title-dash">Diagnostic Tests</h4>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                      <div class="d-flex">
+                        <div class="wrapper ms-3">
+                          {% comment %} <button class="btn btn-inverse-success btn-sm">
+                            <i class="fa fa-folder-open"></i>
+                            <a href = "{% url 'diagnostic_reports' %}?chosenPatient={{chosenPatientData_data.uid}}">View Test Results</a>
+                          </button> {% endcomment %}
+                          <button class="btn btn-inverse-success btn-sm" id="requestLabTestButton">
+                            <i class="fa fa-plus"></i>
+                            <a href = "{% url 'requestTest' %}?chosenPatient={{chosenPatientData_data.uid}}&appointmentID={{endAppointment}}">Request New Test</a>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row flex-grow">
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <div>
+                        <h4 class="card-title card-title-dash">Personal Information</h4>
+                      </div>
+                    </div>
+                    <div class="mt-1">
+                      <div class="wrapper d-flex align-items-center justify-content-between py-2">
+                        <div class="d-flex">
+                          <div class="wrapper ms-3">
+                            {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                              <span class="ms-0 mb-0 fs-6 fw-bold">Sex: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.gender }}</span><br>
+                              <span class="ms-0 mb-0 fs-6 fw-bold">Birthday: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientData_data.bday }}</span><br>
+                            {% endfor %}
+                            {% for chosenPatientDatas_id, chosenPatientDatas_data in chosenPatientDatas.items %}
+                              <span class="ms-0 mb-0 fs-6 fw-bold">Blood Type: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.bloodType }}</span><br>
+                              <span class="ms-0 mb-0 fs-6 fw-bold">Height: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.height }} cm</span><br>
+                              <span class="ms-0 mb-0 fs-6 fw-bold">Weight: </span><span class="ms-0 mb-0 fs-6">{{ chosenPatientDatas_data.weight }} kg</span><br>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>

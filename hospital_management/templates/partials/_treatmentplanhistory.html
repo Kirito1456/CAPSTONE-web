@@ -1,0 +1,35 @@
+<div class="tab-pane fade show" id="treatment" role="tabpanel" aria-labelledby="treatment">
+  <div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Prescription</th>
+                </tr>
+              </thead>
+              <tbody class="name_table">
+                {% if doctor_prescriptions %}
+                  {% for po_id, po_data in doctor_prescriptions.items %}
+                    <tr>
+                      <td>{{ po_data.dateCreated }}</td>
+                      <td><a href="{{ po_data.prescriptionURL }}">Open Prescription</a></td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="2" style="text-align: center;">You Have No Prescriptions Created For This Patient</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

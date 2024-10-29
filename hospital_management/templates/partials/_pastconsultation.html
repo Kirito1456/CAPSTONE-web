@@ -1,0 +1,80 @@
+<div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past">
+    <div class="row">
+      <div class="col-lg-8 d-flex flex-column">
+        <div class="row flex-grow">
+          <div class="col-12 grid-margin stretch-card">
+            <div class="card card-rounded">
+              <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                  <div>
+                    <h4 class="card-title card-title-dash">Past Consultation Notes</h4>
+                    {% comment %} <p class="card-subtitle card-subtitle-dash">Record your observations</p> {% endcomment %}
+                  </div>
+                </div>
+                <div class="table-responsive mt-1">
+                  {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
+                    <form method="POST">
+                      {% csrf_token %}
+
+                      <table>
+                        <tr>
+                          <td><input type="checkbox" id="shortnessOfBreathCheck" {% if 'shortnessOfBreathInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Shortness of Breath </label></td>
+                          <td><input type="text" class="form-control" id="shortnessOfBreathInput" name="shortnessOfBreathInput" value="{% if 'shortnessOfBreathInput' in latest_complains %}{{ latest_complains.shortnessOfBreathInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'shortnessOfBreathInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="coughCheck" {% if 'coughInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Cough </label></td>
+                          <td><input type="text" class="form-control" id="coughInput" name="coughInput" value="{% if 'coughInput' in latest_complains %}{{ latest_complains.coughInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="phlegmCheck" {% if 'phlegmInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Production of Phlegm </label></td>
+                          <td><input type="text" class="form-control" id="phlegmInput" name="phlegmInput" value="{% if 'phlegmInput' in latest_complains %}{{ latest_complains.phlegmInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'phlegmInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="wheezingCheck" {% if 'wheezingInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Wheezing </label></td>
+                          <td><input type="text" class="form-control" id="wheezingInput" name="wheezingInput" value="{% if 'wheezingInput' in latest_complains %}{{ latest_complains.wheezingInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'wheezingInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="coughingBloodCheck" {% if 'coughingBloodInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Coughing up Blood </label></td>
+                          <td><input type="text" class="form-control" id="coughingBloodInput" name="coughingBloodInput" value="{% if 'coughingBloodInput' in latest_complains %}{{ latest_complains.coughingBloodInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'coughingBloodInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="chestPainCheck" {% if 'chestPainInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Chest Pain </label></td>
+                          <td><input type="text" class="form-control" id="chestPainInput" name="chestPainInput" value="{% if 'chestPainInput' in latest_complains %}{{ latest_complains.chestPainInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'chestPainInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="feverCheck" {% if 'feverInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Fever </label></td>
+                          <td><input type="text" class="form-control" id="feverInput" name="feverInput" value="{% if 'feverInput' in latest_complains %}{{ latest_complains.feverInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'feverInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="heartMurmurCheck" {% if 'heartMurmurInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Heart Murmur </label></td>
+                          <td><input type="text" class="form-control" id="heartMurmurInput" name="heartMurmurInput" value="{% if 'heartMurmurInput' in latest_complains %}{{ latest_complains.heartMurmurInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'heartMurmurInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                        <tr>
+                          <td><input type="checkbox" id="othersCheck" {% if 'othersInput' in latest_complains %} checked {% endif %}>&ensp;</td>
+                          <td><label style="font-size: 15px;"> Others </label></td>
+                          <td><input type="text" class="form-control" id="othersInput" name="othersInput" value="{% if 'othersInput' in latest_complains %}{{ latest_complains.othersInput }}{% endif %}" style="margin-left: 20px; width: 400px;" {% if 'othersInput' not in dates %} disabled {% endif %}></td>
+                        </tr>
+                      </table>
+                     
+                      {% comment %} <button id="saveChiefComplaintButton" type="submit" class="btn btn-success btn-sm" name="complaintButton" value={{ chosenPatientData_id }} >
+                          <i class="fa fa-check"></i> Save </button> {% endcomment %}
+                    </form>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+  </div>

@@ -1,49 +1,44 @@
 {%load static%}
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
-    <title>{% block title %}Medical History{% endblock %}</title>
-     
-    {% block styles%} 
-    <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-    <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/select2/select2.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/png" href="{% static 'logo-color.png' %}">
+  <title>{% block title %}Medical History{% endblock %}</title>
+    
+  {% block styles%} 
+  <link rel="stylesheet" href="{% static 'assets/vendors/feather/feather.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/typicons/typicons.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css' %}">
 
-    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/select2/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'assets/js/select.dataTables.min.css' %}">
 
-    <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
-    {% endblock styles%}
+  <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
 
-  </head>
+  <link rel="stylesheet" href="{% static 'assets/images/favicon.png' %}">
+  {% endblock styles%}
+
+</head>
 
 {% block content %}
   <body class="with-welcome-text">
     <div class="container-scroller">
-      <!-- partial:partials/_navbar.html -->
       {% include "../partials/_medhistorynavbar.html" %}
-
-      <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         {% include "../partials/_sidebar.html" %}
-        
-        <!-- partial -->
         <div class="main-panel">
           <div class="content-wrapper">
             <div class="row">
               <div class="col-sm-12">
                 <div class="home-tab">
-
                   <!-- Options -->
                   <div class="d-sm-flex align-items-center justify-content-between border-bottom">
                     <ul class="nav nav-tabs" role="tablist">
@@ -67,1033 +62,630 @@
 
                   <!-- Tabs of All Medical History -->
                   <div class="tab-content tab-content-basic">
-
                     <!-- Family History -->
-                    <div class="tab-pane fade show active" id="family" role="tabpanel" aria-labelledby="family">
-                      <div class="statistics-details d-flex align-items-center">
-                        <!-- Relative Risk: Estimate the likelihood of developing certain diseases compared to the general population based on family history. -->
-                        {% comment %} <div style="margin-right: 40px;">
-                          <p class="statistics-title">Relative Risk</p>
-                          <h3 class="rate-percentage">32.53%</h3>
-                          <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>
-                        </div> {% endcomment %}
-                        <div style="margin-right: 40px;">
-                          <p class="statistics-title">Probability for COPD-related disease</p>
-                          <h3 class="rate-percentage">{{copd_risk}}%</h3>
-                          <p class="text-success d-flex"><span>Based on Parental and Social History</span></p>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                          <div class="card">
-                            <div class="card-body">
-                              <div class="table-responsive">
-                                <table class="table table-striped">
-                                  <thead>
-                                    <tr>
-                                      <th>Family Member</th>
-                                      <th>Diagnosis</th>
-                                      <th>Age of Onset</th>
-                                      <th>Deceased</th>
-                                      <th>Age of Death</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {% for family_id, family_data in patientMedical.items %}
-                                      {% if family_id == chosenPatient%}
-                                        {% for f_id, f_data in family_data.items %}
-                                          {% if f_id == 'familyHistory'%}
-                                            {% for fh_id, fh_data in f_data.items %}
-                                              <tr>
-                                                <td>
-                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="familyMember" placeholder="Family Member" value="{{fh_data.family_member}}" disabled>
-                                                </td>
-                                                <td>
-                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="diagnosis" placeholder="Diagnosis" value="{{ fh_data.diagnosis }}" disabled>
-                                                </td>                                                
-                                                <td>
-                                                  <input type="number" style="background-color: transparent; border: none; font-size: 13px;" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.age}} disabled>
-                                                </td>  
-                                                <td>
-                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="ageOfOnset" placeholder="Age of Onset" value={{fh_data.deceased}} disabled>
-                                                </td>                                                
-                                                <td>
-                                                  <input type="text" style="background-color: transparent; border: none; font-size: 13px;" id="ageofDeath" placeholder="Age of Death" value={{fh_data.ageDeath}} disabled>
-                                                </td>
-                                              </tr>
-                                            {% endfor %}
-                                          {% endif %}
-                                        {% endfor %}
-                                      {% endif %}
-                                    {% endfor %}
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                          
-                        </div>
-                        <div class="col-lg-12 grid-margin stretch-card">
-                          <div class="card">
-                            <div class="card-body">
-                              <div class="table-responsive">
-                                <table class="table table-striped">
-                                  <thead>
-                                    <tr>
-                                      <th>Tobacco/Cigarette Use</th>
-                                      <th>Months Smoking (If Applicable)</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      {% for social_id, social_data in patientMedical.items %}
-                                        {% if social_id == chosenPatient%}
-                                          {% for s_id, s_data in social_data.items %}
-                                            {% if s_id == 'socialHistory'%}
-                                              <tr>
-                                                <td> {{s_data.smokingStatus}} </td>
-                                                <td> 
-                                                  {% if s_data.monthSmoking %}
-                                                  {{s_data.monthSmoking}} months
-                                                  {%else %}
-                                                  -
-                                                  {%endif%}
-                                                </td>
-                                              </tr>
-                                           
-                                            {% endif %}
-                                          {% endfor %}
-                                        {% endif %}
-                                      {% endfor %}
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        
-                      </div>
-                    </div>
-
+                    {% include "../partials/_familyhistory.html" %}
+                    
                     <!-- Vaccination History -->
-                    <div class="tab-pane fade show" id="vaccine" role="tabpanel" aria-labelledby="vaccine">
-                      <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                          <div class="card">
-                            <div class="card-body">
-                              <div class="table-responsive">
-                                <table class="table table-striped">
-                                  <thead>
-                                    <tr>
-                                      <th>Vaccine</th>
-                                      <th>Last Date</th>
-                                      <th>Previous Vaccination Dates</th>
-                                      <th>Dose</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {% if vaccine_history %}
-                                      {% for vaccine, details in vaccine_history.items %}
-                                        <tr>
-                                          <td>{{ vaccine|capfirst }}</td>
-                                          <td>{{ details.lastDate }}</td>
-                                          <td colspan="3">
-                                            <table class="table table-bordered">
-                                              {% for key, value in details.dates.items %}
-                                                <tr>
-                                                  <td>
-                                                      <span class="badge badge-dark">{{ value.date }}</span>
-                                                  </td>
-                                                  <td>{{ value.dose }}</td>
-                                                </tr>
-                                              {% endfor %}
-                                            </table>
-                                          </td>
-                                        </tr>
-                                      {% endfor %}
-                                    {% else %}
-                                      <tr>
-                                        <td colspan="3">No vaccination history available.</td>
-                                      </tr>
-                                    {% endif %}
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
+                    {% include "../partials/_vaccinationhistory.html" %}
                    
                     <!-- Consultation Notes HIstory -->
-                    <div class="tab-pane fade show" id="consultation" role="tabpanel" aria-labelledby="consultation">
-                      
-                      <div class="statistics-details d-flex align-items-center">
-                        {% for symptom, occurrence_times in top_3_symptoms %}
-                        <div style="margin-right: 40px;">
-                            <p class="statistics-title">Most Reoccurring Symptom #{{ forloop.counter }}</p>
-                            <h3 class="rate-percentage">{{ occurrence_times }}</h3>
-                            <p class="text-success d-flex"><span>{{ symptom }}</span></p>
-                        </div>
-                        {% endfor %}
-                          </div>
-                    
-                       <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                          <div class="card">
-                            <div class="card-body">
-                              <div class="table-responsive">
-                                {% if top_3_symptoms %}
-
-                                <table class="table table-striped">
-                                  <thead>
-                                    <tr>
-                                      <th>Date of Consultation</th>
-                                      <th>Chief Complaint</th>
-                                      <th>Diagnosis</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {% for consul_id, consul_data in consulNotes.items %}
-                                    
-                                      {% if consul_id == chosenPatient%}
-                                        {% for c_id, c_data in consul_data.items %}
-                                        {% if uid == c_data.doctorID %}
-                                          <tr>
-                                            <td> {{c_id}} </td>
-                                            <td> 
-                                              {% if c_data.complains%}
-                                                {% for specific_id, specific_data in c_data.items %}
-                                                  {% if c_data.doctorID == uid %}
-                                                    {% for s_id, s_data in specific_data.items %}
-                                                        <p>Patient complains of <b>
-                                                          {% if s_id == 'shortnessOfBreathInput' %}
-                                                              Shortness of Breath
-                                                          {% elif s_id == 'coughInput' %}
-                                                              Cough
-                                                          {% elif s_id == 'phlegmInput' %}
-                                                              Phlegm
-                                                          {% elif s_id == 'wheezingInput' %}
-                                                              Wheezing
-                                                          {% elif s_id == 'coughingBloodInput' %}
-                                                              Coughing Blood
-                                                          {% elif s_id == 'chestPainInput' %}
-                                                              Chest Pain
-                                                          {% elif s_id == 'feverInput' %}
-                                                              Fever
-                                                          {% elif s_id == 'heartMurmurInput' %}
-                                                              Heart Murmur
-                                                          {% endif %}:</b> {{ s_data }} <br>
-                                                        </p>
-                                                    {% endfor %}
-                                                  {% endif %}
-                                                {% endfor %}
-                                             {% endif %}
-                                            </td>
-                                            <td> {{c_data.diagnosis}} </td>  
-                                          </tr>
-                                      {% endif %}
-
-                                        {% endfor %}
-                                      {% endif %}
-                                    {% endfor %}
-                                    
-                                  </tbody>
-                                </table>
-                                {%else%}
-                                Patient have not yet consulted with you previously.
-                                {%endif%}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div> 
-                    </div>
+                    {% include "../partials/_consulnoteshistory.html" %}
 
                     <!-- Treatment Plan -->
-                    <div class="tab-pane fade show" id="treatment" role="tabpanel" aria-labelledby="treatment">
-                      <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                          <div class="card">
-                            <div class="card-body">
-                              <div class="table-responsive">
-                                <table class="table table-striped">
-                                  <thead>
-                                    <tr>
-                                      <th>Date</th>
-                                      <th>Prescription</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody class="name_table">
-                                    {% if doctor_prescriptions %}
-                                      {% for po_id, po_data in doctor_prescriptions.items %}
-                                        <tr>
-                                          <td>{{ po_data.dateCreated }}</td>
-                                          <td><a href="{{ po_data.prescriptionURL }}">Open Prescription</a></td>
-                                        </tr>
-                                      {% endfor %}
-                                    {% else %}
-                                      <tr>
-                                        <td colspan="2" style="text-align: center;">You Have No Prescriptions Created For This Patient</td>
-                                      </tr>
-                                    {% endif %}
-                                  </tbody>
-                                </table>
-                                
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    {% include "../partials/_treatmentplanhistory.html" %}
       
                     <!-- Symptoms Chart -->
-                    <div class="tab-pane fade" id="symptoms" role="tabpanel" aria-labelledby="symptoms">
-                      <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
-                          <div class="row flex-grow">
-                            <div class="col-12 col-lg-4 col-lg-12 grid-margin">
-                              <div class="card card-rounded">
-                                <div class="card-body">
-                                  <div class="d-sm-flex justify-content-between align-items-start">
-                                    <div>
-                                      <h4 class="card-title card-title-dash" style="margin-bottom: 10px;">Symptoms History Chart</h4>
-                                      <div class="dropdown">
-                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownMenuButton8" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> Select Symptom  </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton8">
-                                          {% for symptom_name in chosenPatientSymptoms1 %}
-                                            <a class="dropdown-item" href="#" data-symptom-name="{{ symptom_name }}">{{ symptom_name }}</a>
-                                          {% endfor %}
-                                        </div>
-                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownMenuButton99" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Time</button>                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton99">
-                                          <a class="dropdown-item" href="#" data-value="Show All">Show All</a>
-                                          <a class="dropdown-item" href="#" data-value="1 month">1 month</a>
-                                          <a class="dropdown-item" href="#" data-value="3 months">3 months</a>
-                                          <a class="dropdown-item" href="#" data-value="6 months">6 months</a>
-                                      </div>
-
-                                  <!-- Additional Dropdowns for Specific Time Selections -->
-                                  <div id="timeSelection" style="display: none;">
-                                    <div id="monthSelection" style="display: none;">
-                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownMonthButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Month</button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMonth">
-                                          <a class="dropdown-item" href="#" data-month="1">January</a>
-                                          <a class="dropdown-item" href="#" data-month="2">February</a>
-                                          <a class="dropdown-item" href="#" data-month="3">March</a>
-                                          <a class="dropdown-item" href="#" data-month="4">April</a>
-                                          <a class="dropdown-item" href="#" data-month="5">May</a>
-                                          <a class="dropdown-item" href="#" data-month="6">June</a>
-                                          <a class="dropdown-item" href="#" data-month="7">July</a>
-                                          <a class="dropdown-item" href="#" data-month="8">August</a>
-                                          <a class="dropdown-item" href="#" data-month="9">September</a>
-                                          <a class="dropdown-item" href="#" data-month="10">October</a>
-                                          <a class="dropdown-item" href="#" data-month="11">November</a>
-                                          <a class="dropdown-item" href="#" data-month="12">December</a>
-                                        </div>
-
-                                    </div>
-                                    <div id="weekSelection" style="display: none;">
-                                      <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownWeekButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Week</button>
-                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonWeek">
-                                          <a class="dropdown-item" href="#" data-week="1">Week 1</a>
-                                          <a class="dropdown-item" href="#" data-week="2">Week 2</a>
-                                          <a class="dropdown-item" href="#" data-week="3">Week 3</a>
-                                          <a class="dropdown-item" href="#" data-week="4">Week 4</a>
-                                      </div>
-                                    </div>
-                                    <div id="quarterSelection" style="display: none;">
-                                        <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownQuarterButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Quarter</button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownQuarterButton">
-                                            <!-- Quarters -->
-                                            <a class="dropdown-item" href="#" data-quarter="Q1">Q1</a>
-                                            <a class="dropdown-item" href="#" data-quarter="Q2">Q2</a>
-                                            <a class="dropdown-item" href="#" data-quarter="Q3">Q3</a>
-                                            <a class="dropdown-item" href="#" data-quarter="Q4">Q4</a>
-                                        </div>
-                                    </div>
-                                        <div id="halfSelection" style="display: none;">
-                                          <button class="btn btn-inverse-success dropdown-toggle btn-sm" type="button" id="dropdownHalfButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Select Half</button>
-                                          <div class="dropdown-menu" aria-labelledby="dropdownHalfButton">
-                                              <!-- Halves -->
-                                              <a class="dropdown-item" href="#" data-half="H1">First Half</a>
-                                              <a class="dropdown-item" href="#" data-half="H2">Second Half</a>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                     <div id="rawRecordsDisplay"></div>
-                                    <div id="dateRangeDisplay"></div>
-                                    <div id="medicationDisplay"></div> 
-                                  <div id="performanceLine-legend"></div>
-                                </div>
-                                  
-                                <div style="width: 100%; height: 100%;">
-                                  <canvas id="performanceLine"></canvas>
-                                  <div id="symptoms-legend" style="padding: 3px;"></div>
-                                </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-
+                    {% include "../partials/_symptomschart.html" %}
                   </div>
-
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- main-panel ends -->
       </div>
-      <!-- page-body-wrapper ends -->
     </div>
 
     <script>
-      
       document.addEventListener('DOMContentLoaded', function() {
         var availableDays = {{ available_days_list|safe }};
-        
         // Convert available days to a format we can use
         var availableDaysMap = {
-            'Monday': 1,
-            'Tuesday': 2,
-            'Wednesday': 3,
-            'Thursday': 4,
-            'Friday': 5,
-            'Saturday': 6,
-            'Sunday': 0,
-            'monday': 1,
-            'tuesday': 2,
-            'wednesday': 3,
-            'thursday': 4,
-            'friday': 5,
-            'saturday': 6,
-            'sunday': 0,
+          'Monday': 1,
+          'Tuesday': 2,
+          'Wednesday': 3,
+          'Thursday': 4,
+          'Friday': 5,
+          'Saturday': 6,
+          'Sunday': 0,
+          'monday': 1,
+          'tuesday': 2,
+          'wednesday': 3,
+          'thursday': 4,
+          'friday': 5,
+          'saturday': 6,
+          'sunday': 0,
         };
-    
         var availableDayNumbers = new Set(availableDays.map(day => availableDaysMap[day]));
-    
         var dateInputs = document.querySelectorAll('.jsdatepicker');
-    
         // Function to check if a date should be enabled or disabled
         function isDateAvailable(date) {
-            var dayNumber = date.getDay();
-            return availableDayNumbers.has(dayNumber);
+          var dayNumber = date.getDay();
+          return availableDayNumbers.has(dayNumber);
         }
-    
         function disableUnavailableDates() {
-            var today = new Date();
-            var minDate = today.toISOString().split('T')[0];
-            
-            var maxDate = new Date();
-            maxDate.setFullYear(maxDate.getFullYear() + 1);  // Example: 1 year from now
-            var maxDateStr = maxDate.toISOString().split('T')[0];
-            
-            var currentDate = new Date(today);
-            var endDate = new Date(maxDate);
-            
-            var disabledDates = [];
-    
-            while (currentDate <= endDate) {
-                if (!isDateAvailable(currentDate)) {
-                    disabledDates.push(currentDate.toISOString().split('T')[0]);
-                }
-                currentDate.setDate(currentDate.getDate() + 1);
+          var today = new Date();
+          var minDate = today.toISOString().split('T')[0];
+          
+          var maxDate = new Date();
+          maxDate.setFullYear(maxDate.getFullYear() + 1);  // Example: 1 year from now
+          var maxDateStr = maxDate.toISOString().split('T')[0];
+          
+          var currentDate = new Date(today);
+          var endDate = new Date(maxDate);
+          
+          var disabledDates = [];
+
+          while (currentDate <= endDate) {
+            if (!isDateAvailable(currentDate)) {
+              disabledDates.push(currentDate.toISOString().split('T')[0]);
             }
-    
-            dateInputs.forEach(function(dateInput) {
-                dateInput.setAttribute('min', minDate);
-                dateInput.setAttribute('max', maxDateStr);
-                
-                dateInput.addEventListener('input', function() {
-                    var selectedDate = new Date(dateInput.value);
-                    if (disabledDates.includes(dateInput.value)) {
-                        alert('The selected date is not available. Your schedule does not accomodate this day.');
-                        dateInput.value = '';
-                    }
-                });
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+
+          dateInputs.forEach(function(dateInput) {
+            dateInput.setAttribute('min', minDate);
+            dateInput.setAttribute('max', maxDateStr);
+            
+            dateInput.addEventListener('input', function() {
+              var selectedDate = new Date(dateInput.value);
+              if (disabledDates.includes(dateInput.value)) {
+                alert('The selected date is not available. Your schedule does not accomodate this day.');
+                dateInput.value = '';
+              }
             });
+          });
         }
-    
         disableUnavailableDates();
       });
     </script>
 
     <script>
       document.getElementById('followUpCheckbox').addEventListener('change', function() {
-          document.getElementById('followUpDetails').style.display = this.checked ? 'block' : 'none';
+        document.getElementById('followUpDetails').style.display = this.checked ? 'block' : 'none';
       });
       document.getElementById('reoccuringCheckbox').addEventListener('change', function() {
-          document.getElementById('occuringDetails').style.display = this.checked ? 'block' : 'none';
-          document.getElementById('onceFP').style.display = this.checked ? 'none' : 'block';
+        document.getElementById('occuringDetails').style.display = this.checked ? 'block' : 'none';
+        document.getElementById('onceFP').style.display = this.checked ? 'none' : 'block';
       });
-      </script>
+    </script>
 
-   <script>
-   var chosenPatientSymptoms = {{ chosenPatientSymptoms|safe }};
-   var chosenPatientOrders = {{ chosenPatientOrders|safe }};
-  </script> 
+    <script>
+      var chosenPatientSymptoms = {{ chosenPatientSymptoms|safe }};
+      var chosenPatientOrders = {{ chosenPatientOrders|safe }};
+    </script> 
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('performanceLine').getContext('2d');
+        // Create gradient for severity line
+        var severityGradient = ctx.createLinearGradient(0, 0, 0, 400);
+        severityGradient.addColorStop(0, 'rgba(75, 192, 192, 1)');   // Start with full color
+        severityGradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)'); // Fade to transparency
 
-      var ctx = document.getElementById('performanceLine').getContext('2d');
-
-// Create gradient for severity line
-var severityGradient = ctx.createLinearGradient(0, 0, 0, 400);
-severityGradient.addColorStop(0, 'rgba(75, 192, 192, 1)');   // Start with full color
-severityGradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)'); // Fade to transparency
-
-var myLineChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: [],
-    datasets: [
-      {
-        label: 'Level of Severity',
-            //data: [3, 2, 5, 4],  // Example severity data
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: severityGradient,
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true,
-            shadowOffsetX: 2,
-            shadowOffsetY: 2,
-            shadowBlur: 5,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
-            yAxisID: 'y',
-      },
-      {
-        label: 'Forecast',  // Dataset for forecast
-        data: [],
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        yAxisID: 'y',  // Link to 'y' axis (same as Severity)
-      },
-      {
-        label: 'Medication Intake - Breakfast',  // Dataset for Breakfast medication intake
-        data: [],
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        yAxisID: 'y1',  // Link to 'y1' axis for medication intake
-        borderWidth: 1,
-        type: 'bar',
-        barPercentage: 0.2,
-      },
-      {
-        label: 'Medication Intake - Lunch',  // Dataset for Lunch medication intake
-        data: [],
-        borderColor: 'rgba(153, 102, 255, 1)',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-        yAxisID: 'y1',  // Link to 'y1' axis
-        borderWidth: 1,
-        type: 'bar',
-        barPercentage: 0.2,
-      },
-      {
-        label: 'Medication Intake - Dinner',  // Dataset for Dinner medication intake
-        data: [],
-        borderColor: 'rgba(255, 159, 64, 1)',
-        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-        yAxisID: 'y1',  // Link to 'y1' axis
-        borderWidth: 1,
-        type: 'bar',
-        barPercentage: 0.2,
-      }
-    ]
-  },
-  options: {
-      responsive: true,
-      scales: {
-          x: {
-              title: {
+        var myLineChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: 'Level of Severity',
+                //data: [3, 2, 5, 4],  // Example severity data
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: severityGradient,
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                shadowOffsetX: 2,
+                shadowOffsetY: 2,
+                shadowBlur: 5,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+                yAxisID: 'y',
+              },
+              {
+                label: 'Forecast',  // Dataset for forecast
+                data: [],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                yAxisID: 'y',  // Link to 'y' axis (same as Severity)
+              },
+              {
+                label: 'Medication Intake - Breakfast',  // Dataset for Breakfast medication intake
+                data: [],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                yAxisID: 'y1',  // Link to 'y1' axis for medication intake
+                borderWidth: 1,
+                type: 'bar',
+                barPercentage: 0.2,
+              },
+              {
+                label: 'Medication Intake - Lunch',  // Dataset for Lunch medication intake
+                data: [],
+                borderColor: 'rgba(153, 102, 255, 1)',
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                yAxisID: 'y1',  // Link to 'y1' axis
+                borderWidth: 1,
+                type: 'bar',
+                barPercentage: 0.2,
+              },
+              {
+                label: 'Medication Intake - Dinner',  // Dataset for Dinner medication intake
+                data: [],
+                borderColor: 'rgba(255, 159, 64, 1)',
+                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                yAxisID: 'y1',  // Link to 'y1' axis
+                borderWidth: 1,
+                type: 'bar',
+                barPercentage: 0.2,
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                title: {
                   display: true,
                   text: 'Date',
-              }
-          },
-          y: {  // Left Y-axis for Severity and Forecast
-              type: 'linear',
-              position: 'left',
-              ticks: {
+                }
+              },
+              y: {  // Left Y-axis for Severity and Forecast
+                type: 'linear',
+                position: 'left',
+                ticks: {
                   beginAtZero: true,
                   stepSize: 1,
                   max: 4,
                   min: 0,
-              },
-              title: {
+                },
+                title: {
                   display: true,
                   text: 'Severity / Forecast',
-              }
-          },
-          y1: {  // Right Y-axis for Medication Intake
-              type: 'linear',
-              position: 'right',
-              ticks: {
+                }
+              },
+              y1: {  // Right Y-axis for Medication Intake
+                type: 'linear',
+                position: 'right',
+                ticks: {
                   beginAtZero: true,
                   stepSize: 1,
                   max: 3,
                   callback: function(value) {
-                      const labels = {
-                          1: 'Breakfast',
-                          2: 'Lunch',
-                          3: 'Dinner'
-                      };
-                      return labels[value] || value;
+                    const labels = {
+                      1: 'Breakfast',
+                      2: 'Lunch',
+                      3: 'Dinner'
+                    };
+                    return labels[value] || value;
                   },
                   display: false,
-              },
-              title: {
+                },
+                title: {
                   display: false,
                   text: 'Medication Intake'
-              },
-              grid: {
+                },
+                grid: {
                   drawOnChartArea: false,
+                }
               }
-          }
-      },
-      plugins: {
-        tooltip: {
-            callbacks: {
-                label: function(tooltipItem) {
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(tooltipItem) {
                     const datasetLabel = tooltipItem.dataset.label || '';
                     const value = tooltipItem.raw;
                     const formattedDate = convertTooltipLabel(tooltipItem.label);
-    
+
                     // Check for severity and forecast
                     if (datasetLabel === 'Severity' || datasetLabel === 'Forecast') {
-                        return `${datasetLabel}: ${value}`;
+                      return `${datasetLabel}: ${value}`;
                     }
-    
+
                     let mealTime = '';
                     if (datasetLabel === 'Medication Intake - Breakfast') {
-                        mealTime = 'Breakfast';
-                        const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
-                        return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
+                      mealTime = 'Breakfast';
+                      const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
+                      return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
                     } else if (datasetLabel === 'Medication Intake - Lunch') {
-                        mealTime = 'Lunch';
-                        const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
-                        return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
+                      mealTime = 'Lunch';
+                      const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
+                      return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
                     } else if (datasetLabel === 'Medication Intake - Dinner') {
-                        mealTime = 'Dinner';
-                        const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
-                        return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
+                      mealTime = 'Dinner';
+                      const medications = chosenPatientOrders[`${formattedDate}_${mealTime}`]?.medicines || [];
+                      return `${datasetLabel}: Taken Medicines are: ${medications.join(', ') || 'None'}`;
                     }
-    
-                  
                     return `${datasetLabel}: ${value}`;
+                  }
                 }
+              }
             }
+          }
+        });
+
+        function convertTooltipLabel(tooltipLabel) {
+          const [datePart] = tooltipLabel.split('-');
+          const [month, day, year] = datePart.split('/');
+          const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          return formattedDate;
         }
-    }
-    
-  }
-});
 
-function convertTooltipLabel(tooltipLabel) {
-  const [datePart] = tooltipLabel.split('-');
-  const [month, day, year] = datePart.split('/');
-  const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  return formattedDate;
-}
+        function updateLegend(symptomName) {
+          var legendText = '';
+          switch (symptomName) {
+            case 'Shortness Of Breath':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I only get breathless with strenuous exercise.<br>
+                <b>1</b>: I get short of breath when hurrying on level ground or walking up a slight hill.<br>
+                <b>2</b>: On level ground, I walk slower than people of the same age because I have to stop for breath when walking at my own pace.<br>
+                <b>3</b>: I stop for breath after walking about 100 yards or after a few minutes on level ground.<br>
+                <b>4</b>: I am too breathless to leave the house, or I am breathless when dressing.</p>`;
+              break;
+            case 'Energy Level':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I have normal energy levels and do not feel fatigued.<br>
+                <b>1</b>: I feel slightly fatigued but can carry out most activities.<br>
+                <b>2</b>: I experience moderate fatigue and need to rest occasionally.<br>
+                <b>3</b>: I feel fatigued most of the time and struggle with daily activities.<br>
+                <b>4</b>: I am too fatigued to do even basic activities and mostly stay in bed.</p>`;
+              break;
+            case 'Confidence In Doing Activities':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I am fully confident in doing all activities without assistance.<br>
+                <b>1</b>: I feel slightly less confident but can still perform most tasks.<br>
+                <b>2</b>: I often need to rest and sometimes avoid certain activities.<br>
+                <b>3</b>: I avoid most activities and need help frequently.<br>
+                <b>4</b>: I am unable to perform any activities without full assistance.</p>`;
+              break;
+            case 'Phlegm In Chest':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I do not experience phlegm in my chest.<br>
+                <b>1</b>: I have occasional phlegm, but it does not affect my activities.<br>
+                <b>2</b>: I have frequent phlegm and need to clear my throat regularly.<br>
+                <b>3</b>: I have constant phlegm that interferes with daily activities.<br>
+                <b>4</b>: Phlegm is so severe that it severely limits my ability to function.</p>`;
+              break;
+            case 'Wheezing':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I do not experience wheezing.<br>
+                <b>1</b>: I have occasional wheezing, usually with exertion.<br>
+                <b>2</b>: Wheezing occurs frequently and disrupts some activities.<br>
+                <b>3</b>: Wheezing is constant and limits most activities.<br>
+                <b>4</b>: Wheezing is so severe that I am unable to do any activities.</p>`;
+              break;
+            case 'Chest Discomfort':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I do not experience chest discomfort.<br>
+                <b>1</b>: I feel mild chest discomfort occasionally.<br>
+                <b>2</b>: I have moderate chest discomfort that occurs daily.<br>
+                <b>3</b>: Chest discomfort is severe and limits my activities.<br>
+                <b>4</b>: Chest discomfort is constant and prevents me from doing any activities.</p>`;
+              break;
+            case 'Sleeps Soundly':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I sleep soundly through the night.<br>
+                <b>1</b>: I have occasional trouble sleeping but usually get enough rest.<br>
+                <b>2</b>: I frequently wake up during the night and feel tired in the morning.<br>
+                <b>3</b>: I rarely sleep well and often feel exhausted.<br>
+                <b>4</b>: I am unable to sleep well at all and am constantly fatigued.</p>`;
+              break;
+            case 'Coughing':
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I do not cough at all.<br>
+                <b>1</b>: I cough occasionally, especially in the morning.<br>
+                <b>2</b>: I have frequent coughing spells throughout the day.<br>
+                <b>3</b>: I cough constantly and find it difficult to stop.<br>
+                <b>4</b>: Coughing is so severe that it disrupts my daily activities and sleep.</p>`;
+              break;
+            default:
+              legendText = `
+                <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
+                <p style="font-size: 16px;"><b>0</b>: I feel perfectly fine<br>
+                <b>1</b>: I feel a little bit off<br>
+                <b>2</b>: I feel some discomfort but I can manage<br>
+                <b>3</b>: I feel quite uncomfortable and it affects my daily activities<br>
+                <b>4</b>: I need urgent help</p>`;
+              break;
+          }
+          document.getElementById('symptoms-legend').innerHTML = legendText;
+        }
 
-function updateLegend(symptomName) {
-  var legendText = '';
-  switch (symptomName) {
-      case 'Shortness Of Breath':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I only get breathless with strenuous exercise.<br>
-          <b>1</b>: I get short of breath when hurrying on level ground or walking up a slight hill.<br>
-          <b>2</b>: On level ground, I walk slower than people of the same age because I have to stop for breath when walking at my own pace.<br>
-          <b>3</b>: I stop for breath after walking about 100 yards or after a few minutes on level ground.<br>
-          <b>4</b>: I am too breathless to leave the house, or I am breathless when dressing.</p>`;
-        break;
-      case 'Energy Level':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I have normal energy levels and do not feel fatigued.<br>
-          <b>1</b>: I feel slightly fatigued but can carry out most activities.<br>
-          <b>2</b>: I experience moderate fatigue and need to rest occasionally.<br>
-          <b>3</b>: I feel fatigued most of the time and struggle with daily activities.<br>
-          <b>4</b>: I am too fatigued to do even basic activities and mostly stay in bed.</p>`;
-        break;
-      case 'Confidence In Doing Activities':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I am fully confident in doing all activities without assistance.<br>
-          <b>1</b>: I feel slightly less confident but can still perform most tasks.<br>
-          <b>2</b>: I often need to rest and sometimes avoid certain activities.<br>
-          <b>3</b>: I avoid most activities and need help frequently.<br>
-          <b>4</b>: I am unable to perform any activities without full assistance.</p>`;
-        break;
-      case 'Phlegm In Chest':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I do not experience phlegm in my chest.<br>
-          <b>1</b>: I have occasional phlegm, but it does not affect my activities.<br>
-          <b>2</b>: I have frequent phlegm and need to clear my throat regularly.<br>
-          <b>3</b>: I have constant phlegm that interferes with daily activities.<br>
-          <b>4</b>: Phlegm is so severe that it severely limits my ability to function.</p>`;
-        break;
-      case 'Wheezing':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I do not experience wheezing.<br>
-          <b>1</b>: I have occasional wheezing, usually with exertion.<br>
-          <b>2</b>: Wheezing occurs frequently and disrupts some activities.<br>
-          <b>3</b>: Wheezing is constant and limits most activities.<br>
-          <b>4</b>: Wheezing is so severe that I am unable to do any activities.</p>`;
-        break;
-      case 'Chest Discomfort':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I do not experience chest discomfort.<br>
-          <b>1</b>: I feel mild chest discomfort occasionally.<br>
-          <b>2</b>: I have moderate chest discomfort that occurs daily.<br>
-          <b>3</b>: Chest discomfort is severe and limits my activities.<br>
-          <b>4</b>: Chest discomfort is constant and prevents me from doing any activities.</p>`;
-        break;
-      case 'Sleeps Soundly':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I sleep soundly through the night.<br>
-          <b>1</b>: I have occasional trouble sleeping but usually get enough rest.<br>
-          <b>2</b>: I frequently wake up during the night and feel tired in the morning.<br>
-          <b>3</b>: I rarely sleep well and often feel exhausted.<br>
-          <b>4</b>: I am unable to sleep well at all and am constantly fatigued.</p>`;
-        break;
-      case 'Coughing':
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I do not cough at all.<br>
-          <b>1</b>: I cough occasionally, especially in the morning.<br>
-          <b>2</b>: I have frequent coughing spells throughout the day.<br>
-          <b>3</b>: I cough constantly and find it difficult to stop.<br>
-          <b>4</b>: Coughing is so severe that it disrupts my daily activities and sleep.</p>`;
-        break;
-        default:
-        legendText = `
-          <p style="font-size: 18px;"><b><br>Level of Severity Legend: </b></p>
-          <p style="font-size: 16px;"><b>0</b>: I feel perfectly fine<br>
-          <b>1</b>: I feel a little bit off<br>
-          <b>2</b>: I feel some discomfort but I can manage<br>
-          <b>3</b>: I feel quite uncomfortable and it affects my daily activities<br>
-          <b>4</b>: I need urgent help</p>`;
-        break;
-  }
-  document.getElementById('symptoms-legend').innerHTML = legendText;
-}
+        function updateChart(symptomName, timePeriod, specificTime, week) {
+          var patientId = Object.keys(chosenPatientSymptoms)[0];
+          var symptomData = chosenPatientSymptoms[patientId][symptomName];
+          var severityRecords = [];
+          var medicationTimes = {
+            Breakfast: [],
+            Lunch: [],
+            Dinner: []
+          };
 
-
-function updateChart(symptomName, timePeriod, specificTime, week) {
-  var patientId = Object.keys(chosenPatientSymptoms)[0];
-  var symptomData = chosenPatientSymptoms[patientId][symptomName];
-  var severityRecords = [];
-  var medicationTimes = {
-    Breakfast: [],
-    Lunch: [],
-    Dinner: []
-  };
-
-  if (symptomData && symptomData.severityRecords) {
-      for (var date in symptomData.severityRecords) {
-          for (var time in symptomData.severityRecords[date]) {
-              severityRecords.push({
+          if (symptomData && symptomData.severityRecords) {
+            for (var date in symptomData.severityRecords) {
+              for (var time in symptomData.severityRecords[date]) {
+                severityRecords.push({
                   datetime: new Date(date + ' ' + time),
                   severity: symptomData.severityRecords[date][time],
                   time: time,
                   intake: 0
-              });
-          }
-      }
-
-      // Get medication orders
-      if (chosenPatientOrders) {
-          for (var orderDate in chosenPatientOrders) {
-              var order = chosenPatientOrders[orderDate];
-
-              if (order.times) {
+                });
+              }
+            }
+            // Get medication orders
+            if (chosenPatientOrders) {
+              for (var orderDate in chosenPatientOrders) {
+                var order = chosenPatientOrders[orderDate];
+                if (order.times) {
                   const severityMap = {
-                      Breakfast: 1,
-                      Lunch: 2,
-                      Dinner: 3
+                    Breakfast: 1,
+                    Lunch: 2,
+                    Dinner: 3
                   };
-
                   var severity = severityMap[order.times];
                   var datetimeString = `${order.date} ${order.time}`;
-
                   medicationTimes[order.times].push({
-                      datetime: new Date(datetimeString),
-                      medication: order.medicines.join(', '), // Use 'medicines' as it's an array
-                      time: order.time,
-                      intake: severity
+                    datetime: new Date(datetimeString),
+                    medication: order.medicines.join(', '), // Use 'medicines' as it's an array
+                    time: order.time,
+                    intake: severity
                   });
+                }
               }
-          }
-      }
-
-      severityRecords.sort(function (a, b) {
-          return a.datetime - b.datetime;
-      });
-      Object.keys(medicationTimes).forEach(meal => {
-          medicationTimes[meal].sort(function (a, b) {
+            }
+            severityRecords.sort(function (a, b) {
               return a.datetime - b.datetime;
-          });
-      });
+            });
+            Object.keys(medicationTimes).forEach(meal => {
+              medicationTimes[meal].sort(function (a, b) {
+                return a.datetime - b.datetime;
+              });
+            });
+            // Filter data based on the selected time period
+            var filteredRecords;
+            var filteredMedicationTimes = {
+              Breakfast: [],
+              Lunch: [],
+              Dinner: []
+            };
+            var now = new Date();
+            if (timePeriod === 'Show All') {
+              filteredRecords = severityRecords;
+              filteredMedicationTimes = medicationTimes;
+              startDate = new Date(severityRecords[0]?.datetime);
+              endDate = new Date(severityRecords[severityRecords.length - 1]?.datetime);
+            } else if (timePeriod === '1 month') {
+              var startMonth = specificTime;
+              var startYear = now.getFullYear();
+              var cutoffStart = new Date(startYear, startMonth - 1, 1);
+              var cutoffEnd = new Date(startYear, startMonth, 0);
+              filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
 
-      // Filter data based on the selected time period
-      var filteredRecords;
-      var filteredMedicationTimes = {
-        Breakfast: [],
-        Lunch: [],
-        Dinner: []
-      };
-      var now = new Date();
-
-      if (timePeriod === 'Show All') {
-          filteredRecords = severityRecords;
-          filteredMedicationTimes = medicationTimes;
-          startDate = new Date(severityRecords[0]?.datetime);
-          endDate = new Date(severityRecords[severityRecords.length - 1]?.datetime);
-      } else if (timePeriod === '1 month') {
-          var startMonth = specificTime;
-          var startYear = now.getFullYear();
-          var cutoffStart = new Date(startYear, startMonth - 1, 1);
-          var cutoffEnd = new Date(startYear, startMonth, 0);
-          filteredRecords = severityRecords.filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
-
-          Object.keys(medicationTimes).forEach(meal => {
-              filteredMedicationTimes[meal] = medicationTimes[meal].filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
-          });
-
-          if (week !== null) {
-              var periodStartDate = new Date(cutoffStart);
-              periodStartDate.setDate(cutoffStart.getDate() + (week - 1) * 7);
-
-              var periodEndDate = new Date(periodStartDate);
-              periodEndDate.setDate(periodStartDate.getDate() + 6);
-
-              filteredRecords = filteredRecords.filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
-              Object.keys(filteredMedicationTimes).forEach(meal => {
-                  filteredMedicationTimes[meal] = filteredMedicationTimes[meal].filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
+              Object.keys(medicationTimes).forEach(meal => {
+                filteredMedicationTimes[meal] = medicationTimes[meal].filter(record => record.datetime >= cutoffStart && record.datetime <= cutoffEnd);
               });
 
-              startDate = periodStartDate;
-              endDate = periodEndDate;
-          } else {
-              startDate = cutoffStart;
-              endDate = cutoffEnd;
-          }
-      } else if (timePeriod === '3 months') {
-          var quarter = specificTime;
-          var quarters = {
-              'Q1': [0, 3],
-              'Q2': [3, 6],
-              'Q3': [6, 9],
-              'Q4': [9, 12]
-          };
-          var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
-          var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
-          filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+              if (week !== null) {
+                var periodStartDate = new Date(cutoffStart);
+                periodStartDate.setDate(cutoffStart.getDate() + (week - 1) * 7);
 
-          Object.keys(medicationTimes).forEach(meal => {
-              filteredMedicationTimes[meal] = medicationTimes[meal].filter(record => record.datetime >= start && record.datetime <= end);
-          });
+                var periodEndDate = new Date(periodStartDate);
+                periodEndDate.setDate(periodStartDate.getDate() + 6);
 
-          startDate = start;
-          endDate = end;
-      }
+                filteredRecords = filteredRecords.filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
+                Object.keys(filteredMedicationTimes).forEach(meal => {
+                  filteredMedicationTimes[meal] = filteredMedicationTimes[meal].filter(record => record.datetime >= periodStartDate && record.datetime <= periodEndDate);
+                });
 
+                startDate = periodStartDate;
+                endDate = periodEndDate;
+              } else {
+                startDate = cutoffStart;
+                endDate = cutoffEnd;
+              }
+            } else if (timePeriod === '3 months') {
+              var quarter = specificTime;
+              var quarters = {
+                'Q1': [0, 3],
+                'Q2': [3, 6],
+                'Q3': [6, 9],
+                'Q4': [9, 12]
+              };
+              var start = new Date(now.getFullYear(), quarters[quarter][0], 1);
+              var end = new Date(now.getFullYear(), quarters[quarter][1], 0);
+              filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+
+              Object.keys(medicationTimes).forEach(meal => {
+                filteredMedicationTimes[meal] = medicationTimes[meal].filter(record => record.datetime >= start && record.datetime <= end);
+              });
+
+              startDate = start;
+              endDate = end;
+            }
             // Combine both label arrays and medication data properly
-      var allRecords = [...filteredRecords, ...Object.values(filteredMedicationTimes).flat()];
-      allRecords.sort((a, b) => a.datetime - b.datetime); // Sort all records
+            var allRecords = [...filteredRecords, ...Object.values(filteredMedicationTimes).flat()];
+            allRecords.sort((a, b) => a.datetime - b.datetime); // Sort all records
 
-      var labels = allRecords.map(record => record.datetime.toLocaleDateString() + '-' + record.datetime.toLocaleTimeString());
-      var severityData = filteredRecords.map(record => record.severity);
+            var labels = allRecords.map(record => record.datetime.toLocaleDateString() + '-' + record.datetime.toLocaleTimeString());
+            var severityData = filteredRecords.map(record => record.severity);
 
-      var medicationData = {
-        Breakfast: allRecords.map(record => record.intake === 1 ? 1 : 0),
-        Lunch: allRecords.map(record => record.intake === 2 ? 1 : 0),
-        Dinner: allRecords.map(record => record.intake === 3 ? 1 : 0)
-      };
+            var medicationData = {
+              Breakfast: allRecords.map(record => record.intake === 1 ? 1 : 0),
+              Lunch: allRecords.map(record => record.intake === 2 ? 1 : 0),
+              Dinner: allRecords.map(record => record.intake === 3 ? 1 : 0)
+            };
 
+            // Update chart
+            myLineChart.data.labels = labels;
+            myLineChart.data.datasets[0].data = severityData; // Severity
+            myLineChart.data.datasets[2].data = medicationData.Breakfast;  // Breakfast intake
+            myLineChart.data.datasets[3].data = medicationData.Lunch;  // Lunch intake
+            myLineChart.data.datasets[4].data = medicationData.Dinner;  // Dinner intake
 
-      // Update chart
-      myLineChart.data.labels = labels;
-      myLineChart.data.datasets[0].data = severityData; // Severity
-      myLineChart.data.datasets[2].data = medicationData.Breakfast;  // Breakfast intake
-      myLineChart.data.datasets[3].data = medicationData.Lunch;  // Lunch intake
-      myLineChart.data.datasets[4].data = medicationData.Dinner;  // Dinner intake
+            if (severityData.length > 0) {
+              var forecastData = forecast(severityData);
+              myLineChart.data.datasets[1].data = forecastData; // Forecast
 
-      if (severityData.length > 0) {
-          var forecastData = forecast(severityData);
-          myLineChart.data.datasets[1].data = forecastData; // Forecast
+              myLineChart.update();
 
-          myLineChart.update();
+              // Calculate insights
+              var maxSeverity = Math.max(...severityData);
+              var minSeverity = Math.min(...severityData);
+              var averageSeverity = severityData.reduce((acc, val) => acc + val, 0) / severityData.length;
 
-          // Calculate insights
-          var maxSeverity = Math.max(...severityData);
-          var minSeverity = Math.min(...severityData);
-          var averageSeverity = severityData.reduce((acc, val) => acc + val, 0) / severityData.length;
+              // Display insights
+              var insightsElement = document.getElementById('performanceLine-legend');
+              insightsElement.innerHTML = `
+                <p style="font-size: 14px;"><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
+                <p>Date Range: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</p>
+                <p>Maximum Severity: ${maxSeverity}</p>
+                <p>Minimum Severity: ${minSeverity}</p>
+                <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
+              `;
+            } else {
+              // Display message when no data is available
+              myLineChart.data.labels = [];
+              myLineChart.data.datasets[0].data = [];
+              myLineChart.data.datasets[1].data = [];
+              myLineChart.data.datasets[2].data = [];
+              myLineChart.data.datasets[3].data = []; 
+              myLineChart.data.datasets[4].data = [];
+              myLineChart.update();
 
-          // Display insights
-          var insightsElement = document.getElementById('performanceLine-legend');
-          insightsElement.innerHTML = `
-              <p style="font-size: 14px;"><strong>Insights for ${symptomName.replace(/_/g, ' ')}</strong></p>
-              <p>Date Range: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</p>
-              <p>Maximum Severity: ${maxSeverity}</p>
-              <p>Minimum Severity: ${minSeverity}</p>
-              <p>Average Severity: ${averageSeverity.toFixed(2)}</p>
-          `;
-      } else {
-          // Display message when no data is available
-          myLineChart.data.labels = [];
-          myLineChart.data.datasets[0].data = [];
-          myLineChart.data.datasets[1].data = [];
-          myLineChart.data.datasets[2].data = [];
-          myLineChart.data.datasets[3].data = []; 
-          myLineChart.data.datasets[4].data = [];
-          myLineChart.update();
+              var insightsElement = document.getElementById('performanceLine-legend');
+              insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
+            }
+          } else {
+            // Display message when no data is available
+            myLineChart.data.labels = [];
+            myLineChart.data.datasets[0].data = [];
+            myLineChart.data.datasets[1].data = [];
+            myLineChart.data.datasets[2].data = [];
+            myLineChart.data.datasets[3].data = []; 
+            myLineChart.data.datasets[4].data = [];
+            myLineChart.update();
 
-          var insightsElement = document.getElementById('performanceLine-legend');
-          insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
-      }
-  } else {
-      // Display message when no data is available
-      myLineChart.data.labels = [];
-      myLineChart.data.datasets[0].data = [];
-      myLineChart.data.datasets[1].data = [];
-      myLineChart.data.datasets[2].data = [];
-      myLineChart.data.datasets[3].data = []; 
-      myLineChart.data.datasets[4].data = [];
-      myLineChart.update();
+            var insightsElement = document.getElementById('performanceLine-legend');
+            insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
+          }
 
-      var insightsElement = document.getElementById('performanceLine-legend');
-      insightsElement.innerHTML = `<p>No data available for ${symptomName.replace(/_/g, ' ')}</p>`;
-  }
+          // Display raw filtered records for debugging
+          var rawRecordsDisplay = document.getElementById('rawRecordsDisplay');
+          rawRecordsDisplay.innerHTML = '<h5>Filtered Records:</h5><pre>' + JSON.stringify(allFilteredRecords, null, 2) + '</pre>';
 
-  // Display raw filtered records for debugging
-  
-  var rawRecordsDisplay = document.getElementById('rawRecordsDisplay');
-  rawRecordsDisplay.innerHTML = '<h5>Filtered Records:</h5><pre>' + JSON.stringify(allFilteredRecords, null, 2) + '</pre>';
+          var medicationDisplay = document.getElementById('medicationDisplay');
+          medicationDisplay.innerHTML = '<h5>Medication Records:</h5><pre>' + JSON.stringify(filteredMedicationTimes, null, 2) + '</pre>';
+        }
 
-  var medicationDisplay = document.getElementById('medicationDisplay');
-  medicationDisplay.innerHTML = '<h5>Medication Records:</h5><pre>' + JSON.stringify(filteredMedicationTimes, null, 2) + '</pre>';
-}
-
-
-      function forecast(data) {
+        function forecast(data) {
           // Simple linear forecasting
           var n = data.length;
           var slope = (data[n - 1] - data[0]) / (n - 1);
           var forecastData = [];
           for (var i = 0; i < n; i++) {
-              forecastData.push(data[0] + slope * i);
-            }
-            return forecastData;
+            forecastData.push(data[0] + slope * i);
+          }
+          return forecastData;
         }
-    
+        
         // Add event listeners to the dropdown items
         document.querySelectorAll('.dropdown-item').forEach(item => {
-            item.addEventListener('click', function (event) {
-                event.preventDefault();
-                var symptomName = document.querySelector('#dropdownMenuButton8').innerText;
-                var timePeriod = document.querySelector('#dropdownMenuButton99').innerText;
-    
-                // Check if a symptom or time period was selected
-                if (this.hasAttribute('data-symptom-name')) {
-                    symptomName = this.getAttribute('data-symptom-name');
-                    if (symptomName) {
-                      updateLegend(symptomName);
-                    }
-                    document.getElementById('dropdownMenuButton8').innerText = symptomName.replace(/_/g, ' ');
-                }
-    
-                if (this.hasAttribute('data-value')) {
-                    timePeriod = this.getAttribute('data-value');
-                    document.getElementById('dropdownMenuButton99').innerText = timePeriod;
-                    
-                    // Show or hide specific time selections based on the time period
-                    document.getElementById('timeSelection').style.display = timePeriod !== 'Show All' ? 'block' : 'none';
-                    document.getElementById('monthSelection').style.display = timePeriod === '1 month' ? 'block' : 'none';
-                    document.getElementById('quarterSelection').style.display = timePeriod === '3 months' ? 'block' : 'none';
-                    document.getElementById('halfSelection').style.display = timePeriod === '6 months' ? 'block' : 'none';
-                    document.getElementById('weekSelection').style.display = timePeriod === '1 month' ? 'block' : 'none';
-                    
-                    // Update chart with selected time period
-                    updateChart(symptomName, timePeriod, null, null);
-                }
-    
-                // Handle specific time selections
-                if (this.hasAttribute('data-month')) {
-                  var selectedMonth = parseInt(this.getAttribute('data-month'), 10);
-                  document.getElementById('dropdownMonthButton').innerText = this.innerText;
-                  document.getElementById('dropdownMonthButton').setAttribute('data-month', selectedMonth);
-      
-                  // Reset week selection when a new month is selected
-                  document.getElementById('dropdownWeekButton').innerText = 'Select Week';
-                  updateChart(symptomName, timePeriod, selectedMonth, null);
-                }
-      
-                if (this.hasAttribute('data-week')) {
-                    var selectedWeek = parseInt(this.getAttribute('data-week'), 10);
-                    var selectedMonth = document.getElementById('dropdownMonthButton').getAttribute('data-month');
-    
-                    // Ensure selectedMonth is valid before converting to an integer
-                    if (selectedMonth) {
-                        selectedMonth = parseInt(selectedMonth, 10);
-                    }
-                    document.getElementById('dropdownWeekButton').innerText = `Week ${selectedWeek}`;
-                    updateChart(symptomName, timePeriod, selectedMonth, selectedWeek);
-                }
-    
-                if (this.hasAttribute('data-quarter')) {
-                    var quarter = this.getAttribute('data-quarter');
-                    document.getElementById('dropdownQuarterButton').innerText = this.innerText; // Update button text
-                    updateChart(symptomName, '3 months', quarter, null);
-                }
-    
-                if (this.hasAttribute('data-half')) {
-                    var half = this.getAttribute('data-half');
-                    document.getElementById('dropdownHalfButton').innerText = this.innerText; // Update button text
-                    updateChart(symptomName, '6 months', half, null);
-                }
-            });
+          item.addEventListener('click', function (event) {
+            event.preventDefault();
+            var symptomName = document.querySelector('#dropdownMenuButton8').innerText;
+            var timePeriod = document.querySelector('#dropdownMenuButton99').innerText;
+
+            // Check if a symptom or time period was selected
+            if (this.hasAttribute('data-symptom-name')) {
+              symptomName = this.getAttribute('data-symptom-name');
+              if (symptomName) {
+                updateLegend(symptomName);
+              }
+              document.getElementById('dropdownMenuButton8').innerText = symptomName.replace(/_/g, ' ');
+            }
+
+            if (this.hasAttribute('data-value')) {
+              timePeriod = this.getAttribute('data-value');
+              document.getElementById('dropdownMenuButton99').innerText = timePeriod;
+              // Show or hide specific time selections based on the time period
+              document.getElementById('timeSelection').style.display = timePeriod !== 'Show All' ? 'block' : 'none';
+              document.getElementById('monthSelection').style.display = timePeriod === '1 month' ? 'block' : 'none';
+              document.getElementById('quarterSelection').style.display = timePeriod === '3 months' ? 'block' : 'none';
+              document.getElementById('halfSelection').style.display = timePeriod === '6 months' ? 'block' : 'none';
+              document.getElementById('weekSelection').style.display = timePeriod === '1 month' ? 'block' : 'none';
+              // Update chart with selected time period
+              updateChart(symptomName, timePeriod, null, null);
+            }
+
+            // Handle specific time selections
+            if (this.hasAttribute('data-month')) {
+              var selectedMonth = parseInt(this.getAttribute('data-month'), 10);
+              document.getElementById('dropdownMonthButton').innerText = this.innerText;
+              document.getElementById('dropdownMonthButton').setAttribute('data-month', selectedMonth);
+              // Reset week selection when a new month is selected
+              document.getElementById('dropdownWeekButton').innerText = 'Select Week';
+              updateChart(symptomName, timePeriod, selectedMonth, null);
+            }
+
+            if (this.hasAttribute('data-week')) {
+              var selectedWeek = parseInt(this.getAttribute('data-week'), 10);
+              var selectedMonth = document.getElementById('dropdownMonthButton').getAttribute('data-month');
+              // Ensure selectedMonth is valid before converting to an integer
+              if (selectedMonth) {
+                selectedMonth = parseInt(selectedMonth, 10);
+              }
+              document.getElementById('dropdownWeekButton').innerText = `Week ${selectedWeek}`;
+              updateChart(symptomName, timePeriod, selectedMonth, selectedWeek);
+            }
+
+            if (this.hasAttribute('data-quarter')) {
+              var quarter = this.getAttribute('data-quarter');
+              document.getElementById('dropdownQuarterButton').innerText = this.innerText; // Update button text
+              updateChart(symptomName, '3 months', quarter, null);
+            }
+
+            if (this.hasAttribute('data-half')) {
+              var half = this.getAttribute('data-half');
+              document.getElementById('dropdownHalfButton').innerText = this.innerText; // Update button text
+              updateChart(symptomName, '6 months', half, null);
+            }
+          });
         });
-    
-    });      
-  
-</script>
-   
+      });      
+    </script>
 
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
-
     <script src="{% static 'assets/vendors/chart.js/chart.umd.js' %}"></script>
     <script src="{% static 'assets/vendors/progressbar.js/progressbar.min.js' %}"></script>
     <script src="{% static 'assets/vendors/select2/select2.min.js' %}"></script>
-
-
     <script src="{% static 'assets/js/off-canvas.js' %}"></script>
     <script src="{% static 'assets/js/template.js' %}"></script>
     <script src="{% static 'assets/js/settings.js' %}"></script>
     <script src="{% static 'assets/js/hoverable-collapse.js' %}"></script>
     <script src="{% static 'assets/js/todolist.js' %}"></script>
-
     <script src="{% static 'assets/js/jquery.cookie.js' %}" type="text/javascript"></script>
     <script src="{% static 'assets/js/dashboard.js' %}"></script>
     <script src="{% static 'assets/js/select2.js' %}"></script>
 
-
   </body>
+
 {% endblock %}
