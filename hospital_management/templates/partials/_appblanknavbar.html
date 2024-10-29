@@ -1,0 +1,74 @@
+{% load static %}
+
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+    <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+      <div class="me-3">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+      <div>
+        <b>MediMatrix</b>
+      </div>
+    </div>
+    <div class="navbar-menu-wrapper d-flex align-items-top">
+      <ul class="navbar-nav ms-auto">
+        
+        {% comment %} Notifs {% endcomment %}
+        <li class="nav-item dropdown">
+          <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+            <i class="icon-bell"></i>
+            <span class="count">{{ notifications.count }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+            <a class="dropdown-item py-3 border-bottom">
+              <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+            </a>
+            {% for notification in notifications %}
+            {% if notification.type == 'diagnostic' %}
+            <a class="dropdown-item preview-item py-3" href="{% url 'diagnostic_imagery_reports' notification.id %}?chosenPatient={{notification.patient_id}}">
+              <div class="preview-thumbnail">
+                    <i class="mdi mdi-alert m-auto text-primary"></i>
+                </div>
+                <div class="preview-item-content">
+                    <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                    <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                </div>
+            </a>
+            {% elif notification.type == 'appointment' %}
+            <a class="dropdown-item preview-item py-3" href="{% url 'AppointmentUpcomingNotif' notification.id %}">
+              <div class="preview-thumbnail">
+                    <i class="mdi mdi-alert m-auto text-primary"></i>
+                </div>
+                <div class="preview-item-content">
+                    <h6 class="preview-subject fw-normal text-dark mb-1">{{ notification.message }}</h6>
+                    <p class="fw-light small-text mb-0">{{ notification.created_at }}</p>
+                </div>
+            </a>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </li>
+        <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+          <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image"> </a>
+          <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+            <div class="dropdown-header text-center">
+              {% for doctor_id, doctor_data in doctors.items %}
+                {% if doctor_data.uid == uid %}
+                  <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
+                  <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+            <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+          </div>
+        </li>
+      </ul>
+
+      <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+        <span class="mdi mdi-menu"></span>
+      </button>
+    </div>
+  </nav>

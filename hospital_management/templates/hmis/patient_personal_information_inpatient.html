@@ -104,62 +104,7 @@
   <body class="with-welcome-text">
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
-      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
-        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
-          <div class="me-3">
-            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
-              <span class="icon-menu"></span>
-            </button>
-          </div>
-          <div>
-            <b>MediMatrix</b>
-          </div>
-        </div>
-        <div class="navbar-menu-wrapper d-flex align-items-top">
-          <ul class="navbar-nav">
-            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
-              <h1 class="welcome-text">Patient: 
-                {% for chosenPatientData_id, chosenPatientData_data in chosenPatientData.items %}
-                  <span class="text-black fw-bold">{{ chosenPatientData_data.fname }} {{ chosenPatientData_data.lname }}</span>
-                {% endfor %}
-              </h1>
-              {% if chosenPatientConsulNotes %}
-                {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
-                  {% if chosenPatientConsulNotes_data.diagnosis %}
-                    <h3 class="welcome-sub-text">Diagnosis: {{ chosenPatientConsulNotes_data.diagnosis }}</h3>
-                  {% else %} 
-                    <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
-                  {% endif %} 
-                {% endfor %}   
-              {% else %} 
-                <h3 class="welcome-sub-text">Diagnosis: No Current Diagnosis</h3>
-              {% endif %} 
-            </li>
-          </ul>
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown d-none d-lg-block user-dropdown">
-              <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="img-xs rounded-circle" src="{% static 'doctorjohn.jpg' %}" alt="Profile image">
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
-                <div class="dropdown-header text-center">
-                  {% for doctor_id, doctor_data in doctors.items %}
-                    {% if doctor_data.uid == uid %}
-                      <p class="mb-1 mt-3 fw-semibold">{{ doctor_data.fname }} {{ doctor_data.lname }}</p>
-                      <p class="fw-light text-muted mb-0">{{ doctor_data.email }}</p>
-                    {% endif %}
-                  {% endfor %}
-                </div>
-                <a class="dropdown-item" href="{% url 'Profile' %}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
-                <a class="dropdown-item" href="{% url 'logout' %}"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
-              </div>
-            </li>
-          </ul>
-          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
-            <span class="mdi mdi-menu"></span>
-          </button>
-        </div>
-      </nav>
+      {% include "../partials/_patientnavbar.html" %}
 
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
