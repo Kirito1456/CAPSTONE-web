@@ -172,44 +172,7 @@
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         <!-- partial:../../partials/_sidebar.html -->
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
-          <ul class="nav">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'DoctorDashboard' %}">
-                <i class="mdi mdi-grid-large menu-icon"></i>
-                <span class="menu-title">Dashboard</span>
-              </a>
-            </li>
-            <li class="nav-item nav-category">Menu</li>
-            <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                <i class="menu-icon mdi mdi-floor-plan"></i>
-                <span class="menu-title">Appointments</span>
-                <i class="menu-arrow"></i>
-              </a>
-              <div class="collapse" id="ui-basic">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentCalendar' %}">Calendar</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentUpcoming' %}">Upcoming</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentPast' %}">Past</a></li>
-                  <li class="nav-item"> <a class="nav-link" href="{% url 'AppointmentScheduling' %}">Schedule</a></li>
-                </ul>
-              </div>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
-                <i class="menu-icon mdi mdi-card-text-outline"></i>
-                <span class="menu-title">Patients</span>
-                <i class="menu-arrow"></i>
-              </a>
-              <div class="collapse" id="form-elements">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"><a class="nav-link" href="{% url 'patient_data_doctor_view' %}">All</a></li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </nav>
+        {% include "../partials/_sidebar.html" %}
 
         <div class="main-panel">
           <div class="content-wrapper">
