@@ -28,11 +28,11 @@
         <li class="nav-item dropdown">
           <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
               <i class="icon-bell"></i>
-              <span class="count">{{ notifications.count }}</span>
+              <span class="count">{{ non_symptom_notifications_count }}</span>
           </a>
           <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
               <a class="dropdown-item py-3 border-bottom">
-                  <p class="mb-0 fw-medium float-start">You have {{ notifications.count }} new notifications</p>
+                  <p class="mb-0 fw-medium float-start">You have {{ non_symptom_notifications_count }} new notifications</p>
               </a>
               {% for notification in notifications %}
               {% if notification.type == 'diagnostic' %}

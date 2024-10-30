@@ -118,9 +118,10 @@ class Command(BaseCommand):
                             name = patient_data.get('fname') + ' ' + patient_data.get('lname')
                     appointment_date = appointment_data.get('appointmentDate')
                     appointment_time = appointment_data.get('appointmentTime')
+                    type_appointment = appointment_data.get('appointmentVisitType')
                     Notification.objects.create(
                         firebase_id=doctor_uid,
-                        message=f'Appointment with {name} on {appointment_date} at {appointment_time} has been confirmed.',
+                        message=f'You have an appointment with {name} ({type_appointment}) on {appointment_date} at {appointment_time}',
                         created_at=appointment_date,
                         is_read=False,
                         type = 'appointment'

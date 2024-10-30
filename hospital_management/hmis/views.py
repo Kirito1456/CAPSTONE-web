@@ -299,8 +299,13 @@ def profile(request):
     doctors = db.child("doctors").get().val()
     clinics = db.child("clinics").get().val()
     uid = request.session['uid'] 
+
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
+
     
-    return render(request, 'hmis/Profile.html', {'uid': uid, 'accounts': doctors, 'clinics': clinics})
+    return render(request, 'hmis/Profile.html', {'uid': uid, 'accounts': doctors, 'clinics': clinics, 'notifications' : notifications, 
+    'non_symptom_notifications_count': non_symptom_notifications_count})
 
 def update_profile (request):
     if request.method == 'POST':
@@ -469,7 +474,8 @@ def AppointmentUpcomingNotif(request, notification_id):
     uid = request.session['uid']
     clinics = db.child("clinics").get().val()
 
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     # Filter and sort upcoming appointments
     upcoming_appointments = {}
@@ -509,7 +515,8 @@ def AppointmentUpcomingNotif(request, notification_id):
         'doctors': doctors,
         'clinics': clinics,
         'clinic_data_list': clinic_data_list,
-        'notifications': notifications
+        'notifications': notifications,
+        'non_symptom_notifications_count': non_symptom_notifications_count,
     })
 
 def AppointmentUpcoming(request):
@@ -526,7 +533,8 @@ def AppointmentUpcoming(request):
     uid = request.session['uid']
     clinics = db.child("clinics").get().val()
 
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     clinic_schedule = db.child("appointmentschedule").child(uid).get().val()
     available_days = set()
@@ -578,7 +586,8 @@ def AppointmentUpcoming(request):
         'clinic_data_list': clinic_data_list,
         'notifications': notifications,
         'selected_date' : selected_date,
-        'available_days_list': available_days_list
+        'available_days_list': available_days_list,
+        'non_symptom_notifications_count': non_symptom_notifications_count,
     })
 
 def update_appointment(request):    
@@ -854,7 +863,8 @@ def AppointmentPast(request):
     consulNotes = db.child("consultationNotes").get().val()
     uid = request.session['uid']
     clinics = db.child("clinics").get().val()
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
 
     # Filter and sort upcoming appointments
@@ -882,7 +892,8 @@ def AppointmentPast(request):
     print(sorted_past_appointments)
     # Pass the combined data to the template
     return render(request, 'hmis/AppointmentPast.html', {'appointments': sorted_past_appointments, 'patients': patients,
-                                                         'uid': uid, 'doctors': doctors, 'clinics': clinics, 'notifications': notifications})
+                                                         'uid': uid, 'doctors': doctors, 'clinics': clinics, 'notifications': notifications,
+                                                         'non_symptom_notifications_count' : non_symptom_notifications_count})
     
 def AppointmentCalendar(request):
     
@@ -896,7 +907,8 @@ def AppointmentCalendar(request):
     patients = db.child("patients").get().val()
     appointments = db.child("appointments").get().val()
     clinics = db.child("clinics").get().val()
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     task = []
     if appointments:
@@ -916,7 +928,12 @@ def AppointmentCalendar(request):
     else:
         task_json = ''
     
-    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 'doctors': doctors, 'task_json': task_json, 'clinics': clinics, 'notifications': notifications})
+    return render(request, 'hmis/AppointmentCalendar.html', {'uid': uid, 
+                                                            'doctors': doctors, 
+                                                            'task_json': task_json, 
+                                                            'clinics': clinics, 
+                                                            'notifications': notifications,
+                                                            'non_symptom_notifications_count': non_symptom_notifications_count})
 
 def parse_time(time_str):
     return datetime.datetime.strptime(time_str, '%H:%M') if time_str else None
@@ -928,7 +945,8 @@ def AppointmentScheduling(request):
     
     clinics = db.child("clinics").get().val()
     uid = request.session.get('uid')
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     # Fetch appointment schedule data
     appointmentschedule_data = db.child("appointmentschedule").child(uid).get().val() or {}
@@ -1043,7 +1061,8 @@ def AppointmentScheduling(request):
         'notifications': notifications, 
         'days_of_week': days_of_week, 
         'clinic_schedules': preprocessed_clinic_schedules,
-        'found_clinic' : found_clinic
+        'found_clinic' : found_clinic,
+        'non_symptom_notifications_count': non_symptom_notifications_count
     })
 
 
@@ -1246,7 +1265,8 @@ def patient_data_doctor_view(request):
     doctors = db.child("doctors").get().val()
     clinics = db.child("clinics").get().val()
     uid = request.session['uid']
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     chosenPatients = {}
     if patients:
@@ -1283,7 +1303,8 @@ def patient_data_doctor_view(request):
         'appointments': appointments,
         'clinics': clinics,
         'sorted_patients': sorted_patients,
-        'notifications': notifications
+        'notifications': notifications,
+        'non_symptom_notifications_count' : non_symptom_notifications_count
     }) 
 
 # OCR Functions
@@ -1489,7 +1510,8 @@ def patient_personal_information_inpatient(request):
     upcomings = db.child("appointments").get().val()
     clinics = db.child("clinics").get().val()
     uid = request.session['uid']   
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     time_slots = []
     list_final = []
@@ -2271,7 +2293,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'most_recent_tests_hrct': most_recent_tests_hrct,
                                                                                 'most_recent_tests_pulse_oximetry': most_recent_tests_pulse_oximetry,
                                                                                 'most_recent_tests_chest_xray': most_recent_tests_chest_xray,
-                                                                                'chosenPatient': chosenPatient})
+                                                                                'chosenPatient': chosenPatient,
+                                                                                'non_symptom_notifications_count': non_symptom_notifications_count})
 
 def save_chiefComplaint(request):
         
@@ -2420,7 +2443,8 @@ def patient_medical_history(request):
     chosenPatient = request.GET.get('chosenPatient', '')
     consulNotes = db.child("consultationNotes").get().val()
     testrequest = db.child("testrequest").get().val()
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     prescriptionsorders = db.child("prescriptionorders").get().val()
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
@@ -2673,6 +2697,7 @@ def patient_medical_history(request):
                                                                 'symptoms_list': symptoms_list,
                                                                 'vaccine_history': filtered_vaccine_history,
                                                                 'chosenPatientOrders': chosenPatientOrders,
+                                                                'non_symptom_notifications_count' : non_symptom_notifications_count
                                                                      })
 
 def patient_history(request, notification_id):
@@ -2687,7 +2712,8 @@ def patient_history(request, notification_id):
     chosenPatient = request.GET.get('chosenPatient', '')
     consulNotes = db.child("consultationNotes").get().val()
     testrequest = db.child("testrequest").get().val()
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     prescriptionsorders = db.child("prescriptionorders").get().val()
     prescriptionsorders_ref = db.child("prescriptionsorders").child(chosen_patient_uid).get().val()
@@ -2940,6 +2966,7 @@ def patient_history(request, notification_id):
                                                                 'symptoms_list': symptoms_list,
                                                                 'vaccine_history': filtered_vaccine_history,
                                                                 'chosenPatientOrders': chosenPatientOrders,
+                                                                'non_symptom_notifications_count': non_symptom_notifications_count
                                                                      })
 
 from datetime import datetime
@@ -2987,10 +3014,14 @@ def patient_medication_doctor(request):
     patients = db.child("patients").get().val()
     patientsdata = db.child("patientdata").get().val()
     uid = request.session['uid'] 
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     # Pass the combined data to the template
-    return render(request, 'hmis/patient_medication_doctor.html', {'patients': patients, 'patientsdata': patientsdata, 'notifications': notifications})
+    return render(request, 'hmis/patient_medication_doctor.html', {'patients': patients, 
+                                                                    'patientsdata': patientsdata, 
+                                                                    'notifications': notifications, 
+                                                                    'non_symptom_notifications_count': non_symptom_notifications_count})
 
 def patient_medication_table(request):
     chosen_patient_uid = request.GET.get('chosenPatient', None)
@@ -3033,7 +3064,8 @@ def outpatient_medication_order(request):
     doctors = db.child('doctors').get().val()
     uid = request.session['uid']
     disease = request.GET.get('diagnosis')
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
     prescriptions = db.child("prescriptionsorders").child(patient_uid).get().val()
 
     # Sort prescriptions by date and get the latest one
@@ -3080,7 +3112,8 @@ def outpatient_medication_order(request):
                                                                      'patientData': patientData,
                                                                      'disease': disease,
                                                                      'notifications': notifications,
-                                                                     'maintenance_medicines': maintenance_medicines})
+                                                                     'maintenance_medicines': maintenance_medicines,
+                                                                     'non_symptom_notifications_count': non_symptom_notifications_count})
 
 @csrf_exempt
 def save_prescriptions(request):
@@ -3260,7 +3293,8 @@ def diagnostic_reports(request):
     uid = request.session['uid'] 
     chosenPatient = request.GET.get('chosenPatient', '')
     testRequests = db.child("testrequest").get().val()  
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     submittedTest_1 = db.child("submittedTest").child(chosenPatient).get().val()
     tests_list_spirometry = []
@@ -3315,7 +3349,8 @@ def diagnostic_reports(request):
                                                                     'tests_list_sputum': tests_list_sputum,
                                                                     'tests_list_hrct': tests_list_hrct,
                                                                     'tests_list_pulse_oximetry': tests_list_pulse_oximetry,
-                                                                    'tests_list_chest_xray': tests_list_chest_xray,})
+                                                                    'tests_list_chest_xray': tests_list_chest_xray,
+                                                                    'non_symptom_notifications_count': non_symptom_notifications_count})
 
 def download_image(url, file_path):
     response = requests.get(url)
@@ -3475,7 +3510,8 @@ def requestTest(request):
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 
     clinics = db.child("clinics").get().val()
-    notifications = Notification.objects.filter(firebase_id=uid, is_read=False)
+    notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
+    non_symptom_notifications_count = notifications.exclude(type='symptom').count()
 
     patientData = {}
     for patients_id, patients_data in patients.items():
@@ -3585,7 +3621,8 @@ def requestTest(request):
                                                         'clinics': clinics,
                                                         'uid': uid,
                                                         'todaydate': todaydate,
-                                                        'notifications': notifications})
+                                                        'notifications': notifications,
+                                                        'non_symptom_notifications_count': non_symptom_notifications_count})
 
 def create_tests_pdf(data, filename, signature_path=None):
     c = canvas.Canvas(filename, pagesize=letter)
