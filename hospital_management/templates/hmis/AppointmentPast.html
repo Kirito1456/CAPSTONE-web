@@ -103,6 +103,7 @@
                         <tbody>
                           {% if appointments %}
                             {% for appointment_id, appointment_data in appointments.items %}
+                            {% if appointment_data.status == 'Finished' %}
                               <tr data-clinic-id="{{ appointment_data.clinicUID}}">
                                 <td>{{ appointment_data.appointmentDate }}</td>
                                 <td>{{ appointment_data.appointmentTime }}</td>
@@ -126,8 +127,8 @@
                                 <td>
                                   {% if appointment_data.status == 'Finished' %}
                                     <label class="badge badge-success">Completed</label>
-                                  {% else %}
-                                    <label class="badge badge-warning">Pending</label>
+                                  {% comment %} {% else %}
+                                    <label class="badge badge-warning">Pending</label> {% endcomment %}
                                   {% endif %}
                                 </td>
 
@@ -158,6 +159,7 @@
                                     </div>    
                                 </td>
                               </tr>
+                              {% endif %}
                             {% endfor %}
                           {% else %}
                             <td colspan="7" style="text-align: center;">No past appointments!</td>

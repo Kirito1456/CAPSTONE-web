@@ -350,7 +350,7 @@
                         <div class="prescription-footer">
                             {% for doctor_id, doctor_data in doctors.items %}
                                 {% if doctor_data.uid == uid %}
-                                    <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature'></p>
+                                    <p style="font-size: 16;"> <b>Doctor's Signature: <input type='file' name='signature' required></p>
                                     <p style="font-size: 16;">License No.: {{ doctor_data.license }}</p>
                                     <p style="font-size: 16;">PTR No.: {{ doctor_data.ptr}}</p>
                                 {% endif %}

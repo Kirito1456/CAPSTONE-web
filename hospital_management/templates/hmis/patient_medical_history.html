@@ -519,6 +519,22 @@
 
               startDate = start;
               endDate = end;
+            }else if (timePeriod === '6 months') {
+              var half = specificTime;
+              var halves = {
+                  'H1': [0, 6],
+                  'H2': [6, 12]
+              };
+              var start = new Date(now.getFullYear(), halves[half][0], 1);
+              var end = new Date(now.getFullYear(), halves[half][1], 0);
+              filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);filteredRecords = severityRecords.filter(record => record.datetime >= start && record.datetime <= end);
+              Object.keys(medicationTimes).forEach(meal => {
+                filteredMedicationTimes[meal] = medicationTimes[meal].filter(record => record.datetime >= start && record.datetime <= end);
+              });
+
+
+              startDate = start;
+              endDate = end;
             }
             // Combine both label arrays and medication data properly
             var allRecords = [...filteredRecords, ...Object.values(filteredMedicationTimes).flat()];

@@ -194,6 +194,7 @@
                                           <div class="mt-3">
                                             {% if appointments %}
                                               {% for appointment_id, appointment_data in appointments.items %}
+                                              {% if appointment_data.status == 'Confirmed' %}
                                                   {% for patient_id, patient_data in patients.items %}
                                                   {% if patient_data.uid == appointment_data.patientName %}
                                             <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
@@ -212,6 +213,7 @@
                                             </div>
                                             {% endif %}
                                             {% endfor %}
+                                            {% endif %}
                                             {% endfor %}
                                             {% else %}
                                             <p class="ms-1 mb-1 fw-bold">No Upcoming Appointments for Today</p>
