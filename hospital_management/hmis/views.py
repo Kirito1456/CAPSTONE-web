@@ -139,7 +139,7 @@ def home(request):
                 return redirect('register')
 
         except Exception as e:
-            messages.error(request, f'Error: {str(e)}')
+            messages.error(request, 'Invalid Login Credentials')
 
     return render(request, 'hmis/home.html')
 
