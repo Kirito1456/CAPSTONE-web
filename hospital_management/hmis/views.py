@@ -3079,7 +3079,7 @@ def outpatient_medication_order(request):
         latest_prescription = None
 
     maintenance_medicines = []
-    if latest_prescription:
+    if latest_prescription and 'medicines' in latest_prescription and 'maintenance' in latest_prescription['medicines']:
         for idx, maintenance_flag in enumerate(latest_prescription['medicines']['maintenance']):
             if maintenance_flag == 'on':
                 maintenance_medicines.append({
@@ -3090,6 +3090,10 @@ def outpatient_medication_order(request):
                     'route': latest_prescription['medicines']['route'][idx],
                     'times': latest_prescription['medicines']['times'][idx],
                 })
+    else:
+        # Handle the case where 'maintenance' key doesn't exist
+        print("Maintenance key not found in latest_prescription.")
+
 
     print(maintenance_medicines)
 
@@ -3127,6 +3131,7 @@ def save_prescriptions(request):
     doctors = db.child('doctors').get().val()
     uid = request.session['uid'] 
     clinics = db.child("clinics").get().val()
+    endAppointment = request.GET.get('appointmentID', '')
 
     patientData = {}
     for patients_id, patients_data in patients.items():
@@ -3263,8 +3268,8 @@ def save_prescriptions(request):
             
         # Success message
         messages.success(request, 'Prescriptions created successfully.')           
-        # return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}')
-        return redirect(previous_url)
+        return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}&appointmentID={endAppointment}')  
+        # return redirect(previous_url)
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
         return redirect(reverse('outpatient_medication_order') + f'?chosenPatient={patient_uid}')

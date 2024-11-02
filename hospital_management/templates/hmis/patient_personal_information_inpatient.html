@@ -134,7 +134,7 @@
                       <!-- CREATE PRESCRIPTION -->
                       {% for chosenPatientConsulNotes_id, chosenPatientConsulNotes_data in chosenPatientConsulNotes.items %}
                         {% if chosenPatientConsulNotes_data.diagnosis %}
-                          <a  class="btn btn-primary text-white me-0" a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatient}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}"><i class="fa fa-file-powerpoint-o"></i> Create Prescription</a>
+                          <a  class="btn btn-primary text-white me-0" a href="{% url 'outpatient_medication_order' %}?chosenPatient={{chosenPatient}}&diagnosis={{chosenPatientConsulNotes_data.diagnosis}}&appointmentID={{endAppointment}}"><i class="fa fa-file-powerpoint-o"></i> Create Prescription</a>
                         {% endif %}
                       {% endfor %}
 
