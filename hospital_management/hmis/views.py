@@ -2150,7 +2150,10 @@ def patient_personal_information_inpatient(request):
         for app_id, app_data in appointments.items():
             if consultation_id == chosenPatient == app_data['patientName'] and endAppointment == app_id:
                 for id, dates_in_data in data.items():
-                    if id == today_date == app_data['appointmentDate']:
+                    print('id are ', id)
+                    print('today_date id are ', today_date)
+                    print(' are ', app_data['appointmentDate'])
+                    if id == today_date:
                         dates = dates_in_data  # Assign dates if the condition is met
                         if 'complains' in dates_in_data:  
                             for key, value in dates_in_data['complains'].items():  

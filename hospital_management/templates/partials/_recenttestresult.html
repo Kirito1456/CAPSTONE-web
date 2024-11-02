@@ -20,16 +20,42 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for value in most_recent_tests_spirometry %}
+                  {% if most_recent_tests_spirometry|length == 0 %}
                     <tr>
-                      <td>{{ value.date }}</td>
-                      <td>
-                        <object data="{{ value.downloadURL }}" type="image/png" style="width: auto; height: 200px;">
-                      </td>
-                      <td>{{ value.pre_ratio }}</td>
-                      <td>{{ value.post_ratio }}</td>
+                      <td colspan="3" class="text-center">No submitted tests yet</td>
                     </tr>
-                  {% endfor %}
+                  {% else %}
+                    {% for value in most_recent_tests_spirometry %}
+                      <tr>
+                        <td>{{ value.date }}</td>
+                        <td>
+                          <a href="javascript:void(0);" class="btn btn-success btn-icon-text view-test" data-url="{{ value.downloadURL }}">
+                            <i class="fa fa-eye"></i> View
+                          </a>
+                        </td>
+
+                        <div class="modal fade" id="spirometryModal" tabindex="-1" role="dialog" aria-labelledby="spirometryModalLabel" aria-hidden="true">
+                          <div class="modal-dialog d-flex align-items-center" role="document" style="width: 90vw; height: 100vh; margin: 0 auto;">
+                            <div class="modal-content" style="width: 1000px; height: 100%; border-radius: 10px; overflow: hidden; box-shadow: none;">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="spirometryModalLabel">Test Result Image</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body text-center" style="height: calc(100% - 56px);"> 
+                                <!-- The image will be loaded here -->
+                                <img id="spirometryImage" src="" alt="Spirometry Test" style="width: 100%; height: auto; max-height: 100%; max-width: 100%;">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <td>{{ value.pre_ratio }}</td>
+                        <td>{{ value.post_ratio }}</td>
+                      </tr>
+                    {% endfor %}
+                  {% endif %}
                 </tbody>
               </table>
             </div>
@@ -53,15 +79,40 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for value in most_recent_tests_peak_flow_monitor %}
+                  {% if most_recent_tests_peak_flow_monitor|length == 0 %}
                     <tr>
-                      <td>{{ value.date }}</td>
-                      <td>
-                        <object data="{{ value.downloadURL }}" type="image/png" style="width: auto; height: 200px;">
-                      </td>
-                      <td>{{ value.reading }}</td>
+                      <td colspan="3" class="text-center">No submitted tests yet</td>
                     </tr>
-                  {% endfor %}
+                  {% else %}
+                    {% for value in most_recent_tests_peak_flow_monitor %}
+                      <tr>
+                        <td>{{ value.date }}</td>
+                        <td>
+                          <a href="javascript:void(0);" class="btn btn-success btn-icon-text view-test" data-url="{{ value.downloadURL }}">
+                            <i class="fa fa-eye"></i> View
+                          </a>
+                        </td>
+
+                        <div class="modal fade" id="spirometryModal" tabindex="-1" role="dialog" aria-labelledby="spirometryModalLabel" aria-hidden="true">
+                          <div class="modal-dialog d-flex align-items-center" role="document" style="width: 90vw; height: 100vh; margin: 0 auto;">
+                            <div class="modal-content" style="width: 1000px; height: 100%; border-radius: 10px; overflow: hidden; box-shadow: none;">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="spirometryModalLabel">Peak Flow Monitor Image</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body text-center" style="height: calc(100% - 56px);"> 
+                                <!-- The image will be loaded here -->
+                                <img id="spirometryImage" src="" alt="Spirometry Test" style="width: 100%; height: auto; max-height: 100%; max-width: 100%;">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <td>{{ value.reading }}</td>
+                      </tr>
+                    {% endfor %}
+                  {% endif %}
                 </tbody>
               </table>
             </div>
@@ -76,137 +127,143 @@
             </div>
             <div class="table-responsive">
               <table class="table table-striped">
-                {% if most_recent_tests_ct_scan %}
-                  <thead>
-                    <tr>
-                      <th>Test Type</th>
-                      <th>Date Received</th>
-                      <th>Test Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for value in most_recent_tests_ct_scan %}
+                {% if not most_recent_tests_ct_scan and not most_recent_tests_arterial_blood_gas and not most_recent_tests_sputum and not most_recent_tests_hrct and not most_recent_tests_pulse_oximetry and not most_recent_tests_chest_xray %}
+                  <tr>
+                    <td colspan="3" class="text-center">No submitted tests yet</td>
+                  </tr>
+                {% else %}
+                  {% if most_recent_tests_ct_scan %}
+                    <thead>
                       <tr>
-                        <td>{{ value.testRequestKey }}</td>
-                        <td>{{ value.date }}</td>
-                        <td>
-                          <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
-                            <i class="fa fa-eye"></i> View
-                          </a>
-                        </td>
+                        <th>Test Type</th>
+                        <th>Date Received</th>
+                        <th>Test Result</th>
                       </tr>
-                    {% endfor %}
-                  </tbody>
-                {% endif %}
-                {% if most_recent_tests_arterial_blood_gas %}
-                  <thead>
-                    <tr>
-                      <th>Test Type</th>
-                      <th>Date Received</th>
-                      <th>Test Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for value in most_recent_tests_arterial_blood_gas %}
+                    </thead>
+                    <tbody>
+                      {% for value in most_recent_tests_ct_scan %}
+                        <tr>
+                          <td>{{ value.testRequestKey }}</td>
+                          <td>{{ value.date }}</td>
+                          <td>
+                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                              <i class="fa fa-eye"></i> View
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+                  {% if most_recent_tests_arterial_blood_gas %}
+                    <thead>
                       <tr>
-                        <td>{{ value.testRequestKey }}</td>
-                        <td>{{ value.date }}</td>
-                        <td>
-                          <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
-                            <i class="fa fa-eye"></i> View
-                          </a>
-                        </td>
+                        <th>Test Type</th>
+                        <th>Date Received</th>
+                        <th>Test Result</th>
                       </tr>
-                    {% endfor %}
-                  </tbody>
-                {% endif %}
-                {% if most_recent_tests_sputum %}
-                  <thead>
-                    <tr>
-                      <th>Test Type</th>
-                      <th>Date Received</th>
-                      <th>Test Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for value in most_recent_tests_sputum %}
+                    </thead>
+                    <tbody>
+                      {% for value in most_recent_tests_arterial_blood_gas %}
+                        <tr>
+                          <td>{{ value.testRequestKey }}</td>
+                          <td>{{ value.date }}</td>
+                          <td>
+                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                              <i class="fa fa-eye"></i> View
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+                  {% if most_recent_tests_sputum %}
+                    <thead>
                       <tr>
-                        <td>{{ value.testRequestKey }}</td>
-                        <td>{{ value.date }}</td>
-                        <td>
-                          <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
-                            <i class="fa fa-eye"></i> View
-                          </a>
-                        </td>
+                        <th>Test Type</th>
+                        <th>Date Received</th>
+                        <th>Test Result</th>
                       </tr>
-                    {% endfor %}
-                  </tbody>
-                {% endif %}
-                {% if most_recent_tests_hrct %}
-                  <thead>
-                    <tr>
-                      <th>Test Type</th>
-                      <th>Date Received</th>
-                      <th>Test Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for value in most_recent_tests_hrct %}
+                    </thead>
+                    <tbody>
+                      {% for value in most_recent_tests_sputum %}
+                        <tr>
+                          <td>{{ value.testRequestKey }}</td>
+                          <td>{{ value.date }}</td>
+                          <td>
+                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                              <i class="fa fa-eye"></i> View
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+                  {% if most_recent_tests_hrct %}
+                    <thead>
                       <tr>
-                        <td>{{ value.testRequestKey }}</td>
-                        <td>{{ value.date }}</td>
-                        <td>
-                          <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
-                            <i class="fa fa-eye"></i> View
-                          </a>
-                        </td>
+                        <th>Test Type</th>
+                        <th>Date Received</th>
+                        <th>Test Result</th>
                       </tr>
-                    {% endfor %}
-                  </tbody>
-                {% endif %}
-                {% if most_recent_tests_pulse_oximetry %}
-                  <thead>
-                    <tr>
-                      <th>Test Type</th>
-                      <th>Date Received</th>
-                      <th>Test Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for value in most_recent_tests_pulse_oximetry %}
+                    </thead>
+                    <tbody>
+                      {% for value in most_recent_tests_hrct %}
+                        <tr>
+                          <td>{{ value.testRequestKey }}</td>
+                          <td>{{ value.date }}</td>
+                          <td>
+                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                              <i class="fa fa-eye"></i> View
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+                  {% if most_recent_tests_pulse_oximetry %}
+                    <thead>
                       <tr>
-                        <td>{{ value.testRequestKey }}</td>
-                        <td>{{ value.date }}</td>
-                        <td>
-                          <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
-                            <i class="fa fa-eye"></i> View
-                          </a>
-                        </td>
+                        <th>Test Type</th>
+                        <th>Date Received</th>
+                        <th>Test Result</th>
                       </tr>
-                    {% endfor %}
-                  </tbody>
-                {% endif %}
-                {% if most_recent_tests_chest_xray %}
-                  <thead>
-                    <tr>
-                      <th>Test Type</th>
-                      <th>Date Received</th>
-                      <th>Test Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for value in most_recent_tests_chest_xray %}
+                    </thead>
+                    <tbody>
+                      {% for value in most_recent_tests_pulse_oximetry %}
+                        <tr>
+                          <td>{{ value.testRequestKey }}</td>
+                          <td>{{ value.date }}</td>
+                          <td>
+                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                              <i class="fa fa-eye"></i> View
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+                  {% if most_recent_tests_chest_xray %}
+                    <thead>
                       <tr>
-                        <td>{{ value.testRequestKey }}</td>
-                        <td>{{ value.date }}</td>
-                        <td>
-                          <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
-                            <i class="fa fa-eye"></i> View
-                          </a>
-                        </td>
+                        <th>Test Type</th>
+                        <th>Date Received</th>
+                        <th>Test Result</th>
                       </tr>
-                    {% endfor %}
-                  </tbody>
+                    </thead>
+                    <tbody>
+                      {% for value in most_recent_tests_chest_xray %}
+                        <tr>
+                          <td>{{ value.testRequestKey }}</td>
+                          <td>{{ value.date }}</td>
+                          <td>
+                            <a href="{{ value.downloadURL }}" class="btn btn-success btn-icon-text" target="_blank">
+                              <i class="fa fa-eye"></i> View
+                            </a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
                 {% endif %}
               </table>
             </div>
