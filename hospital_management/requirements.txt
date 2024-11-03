@@ -8,3 +8,5 @@ djongo
 pillow
 pymongo
 python-firebase
+paddlepaddle
+paddleocr
