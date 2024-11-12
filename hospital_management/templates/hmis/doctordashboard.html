@@ -73,11 +73,23 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="home-tab">
+
+                  <!-- Options -->
+                  <div class="d-sm-flex align-items-center justify-content-between border-bottom" style="margin-bottom:10px;">
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active ps-0" id="overview-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Appointments and Monitoring</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="reports-tab" data-bs-toggle="tab" href="#reports" role="tab" aria-controls="reports" aria-selected="false">Reports and Analytics</a>
+                      </li>
+                    </ul>
+                  </div>
+
+                  
+
                   <div class="tab-content tab-content-basic">
 
-        
-
-                  <div class="tab-content tab-content-basic">
                     {% if messages %}
                       <div class="alert-messages">
                         {% for message in messages %}
@@ -87,6 +99,7 @@
                         {% endfor %}
                       </div>
                     {% endif %}
+
 
                     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
                       <div class="row">
@@ -107,7 +120,7 @@
                                         <tr>
                                           <th>Patient Name</th>
                                           <th>Medication Progress</th>
-                                          <th>Medication End</th>
+                                          <th>End of Medication</th>
                                           
                                         </tr>
                                       </thead>
@@ -268,6 +281,68 @@
                       </div>
                       
                     </div>
+
+                    <div class="tab-pane fade show" id="reports" role="tabpanel" aria-labelledby="reports">
+                      <div class="row">
+                        <div class="col-lg-12 d-flex flex-column">
+                          <!-- Row for total counts and pie chart in one line -->
+                          <div class="row flex-grow">
+                            <!-- Total Number of Patients -->
+                            <div class="col-md-4 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <h4 class="card-title">Total Number of Patients</h4>
+                                  <p id="total-patients" class="text-muted">Loading...</p>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Total Number of Patients with Chronic Bronchitis -->
+                            <div class="col-md-4 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <h4 class="card-title">Total Patients with Chronic Bronchitis</h4>
+                                  <p id="chronic-bronchitis-patients" class="text-muted">Loading...</p>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Pie Chart for Patient Distribution -->
+                            <div class="col-md-4 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <h4 class="card-title">Patient Distribution</h4>
+                                  <canvas id="patient-pie-chart" style="height: 200px;"></canvas>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Line Graph for Chronic Bronchitis Cases Trend -->
+                          <div class="row flex-grow">
+                            <div class="col-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <h4 class="card-title">Trend of Chronic Bronchitis Cases</h4>
+                                  <!-- Dropdown for Year Selection -->
+                                  <label for="year-select">Select Year:</label>
+                                  <select id="year-select" class="form-select">
+                                    {% for year, cases in yearly_case_counts.items %}
+                                      <option value="{{ year }}">{{ year }}</option>
+                                    {% endfor %}
+                                  </select>
+                                  <canvas id="chronic-bronchitis-trend-chart" style="height: 250px;"></canvas>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    
+                    
+
                   </div>
                 </div>
               </div>
@@ -303,9 +378,107 @@
             event.target.style.display = 'none';
           }
         });
+
+            // Parse data from Django context
+        const yearlyCaseCounts = {{ yearly_case_counts|safe }};
+        const monthlyCaseCounts = {{ monthly_case_counts|safe }};
+        
+        // Initialize chart for total cases by year
+        const ctx = document.getElementById("chronic-bronchitis-trend-chart").getContext("2d");
+        const chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: Object.keys(yearlyCaseCounts), // Year labels
+            datasets: [{
+              label: "Number of Chronic Bronchitis Cases",
+              data: Object.values(yearlyCaseCounts), // Total cases per year
+              borderColor: "#FF6384",
+              fill: false,
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: { 
+                title: { 
+                  display: true, 
+                  text: "Number of Cases"
+                }
+              }
+            }
+          }
+        });
+
+        // Function to update chart with monthly data for a specific year
+        function updateChart(year) {
+          const dataForYear = monthlyCaseCounts[year] || {};
+          const monthlyData = Array.from({ length: 12 }, (_, i) => dataForYear[i + 1] || 0);
+          
+          // Update chart labels to months and data for the selected year
+          chart.data.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+          chart.data.datasets[0].data = monthlyData;
+          chart.data.datasets[0].label = `Number of Chronic Bronchitis Cases in ${year} (Monthly)`;
+          chart.update();
+        }
+
+        // Event listener for year selection
+        const yearSelect = document.getElementById("year-select");
+        yearSelect.addEventListener("change", function () {
+          const selectedYear = this.value;
+          if (selectedYear) {
+            updateChart(selectedYear); // Update chart to show monthly data for selected year
+          }
+        });
+
+        // Initialize chart with the default year (total cases per year)
+        const defaultYear = yearSelect.value;
+        updateChart(defaultYear);
       });
 
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script>
+  const totalPatients = {{ total_patients }};
+  const chronicBronchitisPatients = {{ total_copd_cases }};
+
+  document.getElementById("total-patients").textContent = totalPatients;
+  document.getElementById("chronic-bronchitis-patients").textContent = chronicBronchitisPatients;
+
+  // Pie Chart for Patient Distribution
+  const ctxPie = document.getElementById("patient-pie-chart").getContext("2d");
+  new Chart(ctxPie, {
+    type: "pie",
+    data: {
+      labels: ["Chronic Bronchitis", "Other Conditions"],
+      datasets: [{
+        data: [chronicBronchitisPatients, totalPatients - chronicBronchitisPatients],
+        backgroundColor: ["#FF6384", "#36A2EB"],
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        datalabels: {
+          formatter: (value, context) => {
+            const total = context.chart.data.datasets[0].data.reduce((sum, val) => sum + val, 0);
+            const percentage = ((value / total) * 100).toFixed(1) + "%";
+            return percentage;
+          },
+          color: "#fff",
+          font: {
+            weight: 'bold'
+          }
+        }
+      }
+    },
+    plugins: [ChartDataLabels],
+  });
+</script>
+
+
+
 
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
     <script src="{% static 'assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>

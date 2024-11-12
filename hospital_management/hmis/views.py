@@ -1144,6 +1144,33 @@ def DoctorDashboard(request):
 
     # Sort combined_data by lastVisited
     sorted_patients = sorted(combined_data, key=itemgetter('lastVisited'), reverse=True)
+    total_patients = len(sorted_patients)
+    total_copd_cases = sum(1 for patient in sorted_patients if patient.get('disease') == 'Chronic Bronchitis')
+    
+    patient_reports = db.child("patientReports").get().val()
+
+    yearly_case_counts = defaultdict(int)  # {year: total_count}
+    monthly_case_counts = defaultdict(lambda: defaultdict(int))  # {year: {month: count}}
+
+    for doctor_id, diseases in patient_reports.items():
+        if doctor_id == uid:
+            for disease, patients in diseases.items():
+                if disease == "chronic_bronchitis":
+                    for patient_id, report in patients.items():
+                        last_diagnosed = report.get("lastDiagnosed")
+                        # Check each diagnosis for the patient
+                        if last_diagnosed:
+                            # Parse the date to get the year and month
+                            diagnosis_date = datetime.strptime(last_diagnosed, "%Y-%m-%d")
+                            year = diagnosis_date.year
+                            month = diagnosis_date.month
+                            
+                            # Increment yearly case count
+                            yearly_case_counts[year] += 1
+                            
+                            # Increment monthly case count for the year
+                            monthly_case_counts[year][month] += 1
+
     adherence = defaultdict(list)
     dates = []
     total_average_adherence={}
@@ -1256,6 +1283,10 @@ def DoctorDashboard(request):
                                                              'notifications': notifications,
                                                              'sorted_patients': sorted_patients,
                                                              'non_symptom_notifications_count': non_symptom_notifications_count,
+                                                             'total_patients': total_patients,
+                                                             'total_copd_cases': total_copd_cases,
+                                                             'yearly_case_counts': dict(yearly_case_counts),
+                                                             'monthly_case_counts': dict(monthly_case_counts),
                                                              }) 
 
 def patient_data_doctor_view(request):
