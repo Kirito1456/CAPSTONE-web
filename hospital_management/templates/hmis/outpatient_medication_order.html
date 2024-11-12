@@ -324,7 +324,7 @@
                                                 
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
                                             </div>
-                                            <p>
+                                            <p style="margin-bottom:10px;">
                                                 Sig.: take through
                                                 <input type="text" name="route" id="route_input" value="{{ medicine.route }}" >
                                                 every
@@ -341,6 +341,11 @@
                                                 <input type="text" name="days" value="{{ medicine.days }}" size="2" >
                                                 days &nbsp;&nbsp;
                                                 <input type="checkbox" name="maintenance" checked > maintenance</input>
+                                            </p>
+                                            <p>
+                                                Purpose: 
+                                                <input type="text" name="purpose" id="purpose_input" placeholder="Enter Purpose of Medicine" style="width: 85%;" 
+                                                    value="{{ medicine.purpose }}">
                                                 <hr>
                                             </p>
                                         </div>
@@ -366,7 +371,7 @@
                                         {% endif %}
                                         <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
                                     </div>
-                                    <p>
+                                    <p style="margin-bottom:10px;">
                                         Sig.: take through
                                         <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                                         every
@@ -383,6 +388,11 @@
                                         <input type="text" name="days" size="2" required>
                                         days &nbsp;&nbsp;
                                         <input type="checkbox" name="maintenance" > maintenance</input>
+                                       
+                                    </p>
+                                    <p>
+                                        Purpose: 
+                                        <input type="text" name="purpose" id="purpose_input" placeholder="Enter Purpose of Medicine" style="width: 85%;">
                                         <hr>
                                     </p>
                                 </div>
@@ -511,7 +521,7 @@
                     {% endif %}
                     <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
                 </div>
-                <p>
+                <p style="margin-bottom:10px;">
                     Sig.: take through
                     <input type="text" name="route" id="route_input" placeholder="Enter Route Name">
                     every
@@ -528,6 +538,10 @@
                     <input type="text" name="days" size="2">
                     days &nbsp;&nbsp;
                     <input type="checkbox" name="maintenance" > maintenance</input>
+                </p>
+                <p>
+                    Purpose: 
+                    <input type="text" name="purpose" id="purpose_input" placeholder="Enter Purpose of Medicine" style="width: 85%;">
                     <hr>
                 </p>
             `;

@@ -2393,6 +2393,8 @@ def save_diagnosis(request):
     # Save Chief Compliant into Firebase Database
     appointment_path = f"/consultationNotes/{id}/{date}"  # Adjust the path as per your Firebase structure
     appointment_path1 = f"/patientdata/{id}"  # Adjust the path as per your Firebase structure
+    analytics_path = f"/patientReports/{uid}/{diagnosis.replace(' ', '_').lower()}"
+    analytics_path2 = f"/patientReports/{uid}/{otherdiagnosis.replace(' ', '_').lower()}"  # Adjust the path as per your Firebase structure
     
     # Update appointment data in Firebase
     if diagnosis != 'Other' and diagnosis:
@@ -2405,6 +2407,15 @@ def save_diagnosis(request):
         db.child(appointment_path1).update({
             'disease': diagnosis
         })
+
+        #existing_patient = db.child(analytics_path).child(diagnosis_key).get()
+
+        db.child(analytics_path).update({
+            id:{
+                'lastDiagnosed':date 
+            }
+        })
+
     elif diagnosis == 'Other' and otherdiagnosis:
         db.child(appointment_path).update({
             'patientID': id,
@@ -2414,6 +2425,12 @@ def save_diagnosis(request):
 
         db.child(appointment_path1).update({
             'disease': otherdiagnosis
+        })
+
+        db.child(analytics_path2).update({
+            id:{
+                'lastDiagnosed':date 
+            }
         })
     
     messages.success(request, 'Diagnosis Successfully Saved')
@@ -3178,6 +3195,7 @@ def save_prescriptions(request):
             'times': request.POST.getlist('times'),
             'days': request.POST.getlist('days'),
             'maintenance': request.POST.getlist('maintenance'),
+            'purpose': request.POST.getlist('purpose'),
         },
         'doctor': doctorName,
         'specialization': specialization,
@@ -3202,6 +3220,7 @@ def save_prescriptions(request):
             'times': request.POST.getlist('times'),
             'days': request.POST.getlist('days'),
             'maintenance': request.POST.getlist('maintenance'),
+            'purpose': request.POST.getlist('purpose'),
         },
         'status': "Ongoing",
     })
@@ -3243,6 +3262,7 @@ def save_prescriptions(request):
                 'medicine_name': medicines['name'][i],
                 'route': medicines['route'][i],
                 'times': medicines['times'][i],
+                'purpose': medicines['purpose'][i],
                 'counter': int(medicines['days'][i]),
                 'days': int(medicines['days'][i]),
                 'total': int(medicines['days'][i]),
