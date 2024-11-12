@@ -312,7 +312,7 @@
                               <div class="card card-rounded">
                                 <div class="card-body">
                                   <h4 class="card-title">Patient Distribution</h4>
-                                  <canvas id="patient-pie-chart" style="height: 200px;"></canvas>
+                                  <canvas id="patient-pie-chart" style="height: 100px;"></canvas>
                                 </div>
                               </div>
                             </div>
@@ -322,20 +322,26 @@
                           <div class="row flex-grow">
                             <div class="col-12 grid-margin stretch-card">
                               <div class="card card-rounded">
-                                <div class="card-body">
-                                  <h4 class="card-title">Trend of Chronic Bronchitis Cases</h4>
+                                <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                                  <h4 class="card-title" style="margin-right: 20px;">Trend of Chronic Bronchitis Cases</h4>
+                                  
                                   <!-- Dropdown for Year Selection -->
-                                  <label for="year-select">Select Year:</label>
-                                  <select id="year-select" class="form-select">
-                                    {% for year, cases in yearly_case_counts.items %}
-                                      <option value="{{ year }}">{{ year }}</option>
-                                    {% endfor %}
-                                  </select>
-                                  <canvas id="chronic-bronchitis-trend-chart" style="height: 250px;"></canvas>
+                                  <div style="display: flex; align-items: center;">
+                                    <label for="year-select" style="margin-right: 10px;">Select Year:</label>
+                                    <select id="year-select" class="form-select" style="width: 200px;">
+                                      <option value="" selected>Select Year</option>
+                                      {% for year, cases in yearly_case_counts.items %}
+                                        <option value="{{ year }}">{{ year }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                                  
                                 </div>
+                                <canvas id="chronic-bronchitis-trend-chart" style="height: 250px;"></canvas>
                               </div>
                             </div>
                           </div>
+
                           
                         </div>
                       </div>
@@ -379,61 +385,84 @@
           }
         });
 
-            // Parse data from Django context
-        const yearlyCaseCounts = {{ yearly_case_counts|safe }};
-        const monthlyCaseCounts = {{ monthly_case_counts|safe }};
-        
-        // Initialize chart for total cases by year
-        const ctx = document.getElementById("chronic-bronchitis-trend-chart").getContext("2d");
-        const chart = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: Object.keys(yearlyCaseCounts), // Year labels
-            datasets: [{
-              label: "Number of Chronic Bronchitis Cases",
-              data: Object.values(yearlyCaseCounts), // Total cases per year
-              borderColor: "#FF6384",
-              fill: false,
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: { 
-                title: { 
-                  display: true, 
-                  text: "Number of Cases"
-                }
-              }
-            }
-          }
-        });
+        // Parse data from Django context
+const yearlyCaseCounts = {{ yearly_case_counts|safe }};
+const monthlyCaseCounts = {{ monthly_case_counts|safe }};
 
-        // Function to update chart with monthly data for a specific year
-        function updateChart(year) {
-          const dataForYear = monthlyCaseCounts[year] || {};
-          const monthlyData = Array.from({ length: 12 }, (_, i) => dataForYear[i + 1] || 0);
-          
-          // Update chart labels to months and data for the selected year
-          chart.data.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-          chart.data.datasets[0].data = monthlyData;
-          chart.data.datasets[0].label = `Number of Chronic Bronchitis Cases in ${year} (Monthly)`;
-          chart.update();
+// Initialize chart for total cases by year
+const ctx = document.getElementById("chronic-bronchitis-trend-chart").getContext("2d");
+let chart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: Object.keys(yearlyCaseCounts), // Year labels
+    datasets: [{
+      label: "Number of Chronic Bronchitis Cases",
+      data: Object.values(yearlyCaseCounts), // Total cases per year
+      borderColor: "#FF6384",
+      fill: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Year"
+        },
+        ticks: {
+          stepSize: 1, // Makes sure each tick represents a single year
+        },
+      },
+      y: { 
+        title: { 
+          display: true, 
+          text: "Number of Cases"
+        },
+        ticks: {
+          stepSize: 10, // Forces the y-axis to display whole numbers only
+          beginAtZero: true
         }
+      }
+    }
+  }
+});
 
-        // Event listener for year selection
-        const yearSelect = document.getElementById("year-select");
-        yearSelect.addEventListener("change", function () {
-          const selectedYear = this.value;
-          if (selectedYear) {
-            updateChart(selectedYear); // Update chart to show monthly data for selected year
-          }
-        });
+// Function to update chart with monthly data for a specific year
+function updateChart(year) {
+  const dataForYear = monthlyCaseCounts[year] || {};
+  const monthlyData = Array.from({ length: 12 }, (_, i) => dataForYear[i + 1] || 0);
+  
+  // Update chart labels to months and data for the selected year
+  chart.data.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  chart.data.datasets[0].data = monthlyData;
+  chart.data.datasets[0].label = `Number of Chronic Bronchitis Cases in ${year} (Monthly)`;
+  chart.update();
+}
 
-        // Initialize chart with the default year (total cases per year)
-        const defaultYear = yearSelect.value;
-        updateChart(defaultYear);
-      });
+// Event listener for year selection
+const yearSelect = document.getElementById("year-select");
+yearSelect.addEventListener("change", function () {
+  const selectedYear = this.value;
+  if (selectedYear) {
+    updateChart(selectedYear); // Update chart to show monthly data for selected year
+  } else {
+    // Revert back to showing the total cases by year if "Select Year" is selected
+    chart.data.labels = Object.keys(yearlyCaseCounts); // Set labels to years
+    chart.data.datasets[0].data = Object.values(yearlyCaseCounts); // Set data to yearly cases
+    chart.data.datasets[0].label = "Number of Chronic Bronchitis Cases (Yearly)";
+    chart.update();
+  }
+});
+
+// Initialize chart with the default year (total cases per year)
+// Default view is total cases per year
+const defaultYear = yearSelect.value || Object.keys(yearlyCaseCounts)[0]; // Default to the first year if no selection
+chart.data.labels = Object.keys(yearlyCaseCounts); // Set labels to years
+chart.data.datasets[0].data = Object.values(yearlyCaseCounts); // Set data to yearly cases
+chart.data.datasets[0].label = "Number of Chronic Bronchitis Cases (Yearly)";
+chart.update();
+});
 
     </script>
 

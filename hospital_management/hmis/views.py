@@ -1149,8 +1149,8 @@ def DoctorDashboard(request):
     
     patient_reports = db.child("patientReports").get().val()
 
-    yearly_case_counts = defaultdict(int)  # {year: total_count}
-    monthly_case_counts = defaultdict(lambda: defaultdict(int))  # {year: {month: count}}
+    yearly_case_counts = {}  # {year: total cases}
+    monthly_case_counts = {}  # {year: {month: cases}}  # {year: {month: count}}
 
     for doctor_id, diseases in patient_reports.items():
         if doctor_id == uid:
@@ -1165,12 +1165,19 @@ def DoctorDashboard(request):
                             year = diagnosis_date.year
                             month = diagnosis_date.month
                             
-                            # Increment yearly case count
+                            # Update yearly case count
+                            if year not in yearly_case_counts:
+                                yearly_case_counts[year] = 0
                             yearly_case_counts[year] += 1
                             
-                            # Increment monthly case count for the year
+                            # Update monthly case count for the year
+                            if year not in monthly_case_counts:
+                                monthly_case_counts[year] = {}
+                            if month not in monthly_case_counts[year]:
+                                monthly_case_counts[year][month] = 0
                             monthly_case_counts[year][month] += 1
-
+    print(monthly_case_counts)
+    print(yearly_case_counts)
     adherence = defaultdict(list)
     dates = []
     total_average_adherence={}
@@ -1181,7 +1188,7 @@ def DoctorDashboard(request):
                 latest_date_pres = max(patientsorders[patients_id].keys())
                 adherence_percentages = {}
                 date_data = patientsorders[patients_id][latest_date_pres]
-                print(date_data)
+                #print(date_data)
                 max_days_prescribed = 0
                 
                 for inside_id, inside_data in date_data.items():
@@ -1285,8 +1292,8 @@ def DoctorDashboard(request):
                                                              'non_symptom_notifications_count': non_symptom_notifications_count,
                                                              'total_patients': total_patients,
                                                              'total_copd_cases': total_copd_cases,
-                                                             'yearly_case_counts': dict(yearly_case_counts),
-                                                             'monthly_case_counts': dict(monthly_case_counts),
+                                                             'yearly_case_counts': yearly_case_counts,
+                                                             'monthly_case_counts': monthly_case_counts,
                                                              }) 
 
 def patient_data_doctor_view(request):
