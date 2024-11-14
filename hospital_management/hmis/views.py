@@ -1119,9 +1119,6 @@ def DoctorDashboard(request):
                     notifications.update(firebase_id=uid)
                     chosenPatients[patients_id] = patients_data
 
-    # for patients_id, patients_data in patients.items():
-    #     notifications = Notification.objects.filter(patient_id=patients_id, type='symptom')
-    #     notifications.update(firebase_id=uid)
 
     notifications = Notification.objects.filter(firebase_id=uid, is_read=False).order_by('-created_at')
     non_symptom_notifications_count = notifications.exclude(type='symptom').count()
@@ -1143,6 +1140,7 @@ def DoctorDashboard(request):
             combined_data.append(patient_data)
 
     # Sort combined_data by lastVisited
+    #print("combined_data:", combined_data)
     sorted_patients = sorted(combined_data, key=itemgetter('lastVisited'), reverse=True)
     total_patients = len(sorted_patients)
     total_copd_cases = sum(1 for patient in sorted_patients if patient.get('disease') == 'Chronic Bronchitis')
@@ -1153,31 +1151,88 @@ def DoctorDashboard(request):
     monthly_case_counts = {}  # {year: {month: cases}}  # {year: {month: count}}
 
     for doctor_id, diseases in patient_reports.items():
-        if doctor_id == uid:
-            for disease, patients in diseases.items():
-                if disease == "chronic_bronchitis":
-                    for patient_id, report in patients.items():
-                        last_diagnosed = report.get("lastDiagnosed")
-                        # Check each diagnosis for the patient
-                        if last_diagnosed:
-                            # Parse the date to get the year and month
-                            diagnosis_date = datetime.strptime(last_diagnosed, "%Y-%m-%d")
-                            year = diagnosis_date.year
-                            month = diagnosis_date.month
-                            
-                            # Update yearly case count
-                            if year not in yearly_case_counts:
-                                yearly_case_counts[year] = 0
-                            yearly_case_counts[year] += 1
-                            
-                            # Update monthly case count for the year
-                            if year not in monthly_case_counts:
-                                monthly_case_counts[year] = {}
-                            if month not in monthly_case_counts[year]:
-                                monthly_case_counts[year][month] = 0
-                            monthly_case_counts[year][month] += 1
-    print(monthly_case_counts)
-    print(yearly_case_counts)
+        if doctor_id == uid:  # Only process reports for the logged-in doctor
+            for disease, patients in diseases.items():  # Iterate through each disease type
+                for patient_id, report in patients.items():  # Iterate through each patient under this disease
+                    last_diagnosed = report.get("lastDiagnosed")
+                    if last_diagnosed:
+                        # Parse thse date to get the year and month
+                        diagnosis_date = datetime.strptime(last_diagnosed, "%Y-%m-%d")
+                        year = diagnosis_date.year
+                        month = diagnosis_date.month
+
+                        # Initialize the disease in yearly and monthly case counts if not already present
+                        if disease not in yearly_case_counts:
+                            yearly_case_counts[disease] = {}
+                        if disease not in monthly_case_counts:
+                            monthly_case_counts[disease] = {}
+
+                        # Update yearly case count for the specific disease
+                        if year not in yearly_case_counts[disease]:
+                            yearly_case_counts[disease][year] = 0
+                        yearly_case_counts[disease][year] += 1
+
+                        # Update monthly case count for the specific disease and year
+                        if year not in monthly_case_counts[disease]:
+                            monthly_case_counts[disease][year] = {}
+                        if month not in monthly_case_counts[disease][year]:
+                            monthly_case_counts[disease][year][month] = 0
+                        monthly_case_counts[disease][year][month] += 1
+
+    #print("Monthly case counts:", monthly_case_counts)
+    #print("Yearly case counts:", yearly_case_counts)
+
+    # Preprocess unique years for the template
+    unique_years = set()
+    for disease, year_counts in yearly_case_counts.items():
+        for year in year_counts.keys():
+            unique_years.add(year)
+
+    # Convert the set back to a sorted list
+    unique_years = sorted(list(unique_years))
+
+    patients_meddata = db.child(f"medicineRecords/{uid}").get().val() or {}
+    
+    medication_records = {}
+    
+    # Iterate through each patient and their records
+    for patient_uid, medicines in patients_meddata.items():
+        patient_datatemp = {}
+        for medicine_name, prescription_dates in medicines.items():
+            # Count the prescriptions for each medicine by year
+            for prescription_date in prescription_dates:
+                # Extract the year from the date (assuming the date format is YYYY-MM-DD)
+                year = prescription_date.split('-')[0]
+                
+                # Initialize the year key if it doesn't exist
+                if year not in patient_datatemp:
+                    patient_datatemp[year] = {}
+
+                # Count the prescriptions for each medicine in the given year
+                if medicine_name not in patient_datatemp[year]:
+                    patient_datatemp[year][medicine_name] = 0
+                patient_datatemp[year][medicine_name] += 1
+
+        medication_records[patient_uid] = patient_datatemp
+
+    # Example for "All Patients" - summing up medications across all patients for each year
+    all_data = {}
+    for patient_data in medication_records.values():
+        for year, meds in patient_data.items():
+            for med, count in meds.items():
+                if year not in all_data:
+                    all_data[year] = {}
+                if med not in all_data[year]:
+                    all_data[year][med] = 0
+                all_data[year][med] += count
+
+    medication_records["all"] = all_data
+
+    # Get the current year
+    current_year = datetime.now().year
+
+    print("medication_records:", medication_records)
+
     adherence = defaultdict(list)
     dates = []
     total_average_adherence={}
@@ -1263,22 +1318,7 @@ def DoctorDashboard(request):
                                 # Add doctor's UID to total_average_adherence
                                 adherence_data['doctor_uid'] = prescription_data.get('doctor')
                 
-                #print(total_average_adherence)
-                    
-            
-    # # Dictionary to hold latest prescription dates for each patient
-    #     latest_prescriptions = {}
-    #     for patientsorders_id, adherence_data in total_average_adherence.items():
-    #         if adherence_data['doctor_uid'] == uid:
-    #             latest_prescriptions[patientsorders_id] = adherence_data
-        
-    #     print(latest_prescriptions)
 
-    # if prescriptionsorders:
-    #     for patient_id, prescriptions in prescriptionsorders.items():
-    #         # Find the latest prescription based on dateCreated
-    #         latest_prescription = max(prescriptions.items(), key=lambda item: item[1]['dateCreated'])[1]
-    #         latest_prescriptions[patient_id] = latest_prescription['dateCreated']
 
     return render(request, 'hmis/doctordashboard.html', {'appointments': sorted_upcoming_appointments, 
                                                              'patients': patients, 'uid': uid, 'doctors': doctors,
@@ -1294,6 +1334,9 @@ def DoctorDashboard(request):
                                                              'total_copd_cases': total_copd_cases,
                                                              'yearly_case_counts': yearly_case_counts,
                                                              'monthly_case_counts': monthly_case_counts,
+                                                             'unique_years': unique_years,
+                                                             'medication_records':medication_records,
+                                                             'current_year': current_year,
                                                              }) 
 
 def patient_data_doctor_view(request):
@@ -1884,9 +1927,13 @@ def patient_personal_information_inpatient(request):
         sorted_dates = sorted(consultation_notes.keys(), reverse=True)
         latest_date = sorted_dates[0]
         latest_complains = db.child("consultationNotes").child(chosenPatient).child(latest_date).child('complains').get().val()
+        physician_latestConsulNotes = db.child("consultationNotes").child(chosenPatient).child(latest_date).child('doctorID').get().val()
+        print("physician_latestConsulNotes",physician_latestConsulNotes)
     else:
         sorted_dates = []
         latest_complains = None
+    
+    print("latest complains:", latest_complains)
 
     cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2, "Strength": 3, "Route": 4})
     pharmacy_lists = [{'Drug': medication['Drug'], 'Strength': medication['Strength'], 'Route': medication['Route']} for medication in cursor]
@@ -2335,7 +2382,8 @@ def patient_personal_information_inpatient(request):
                                                                                 'most_recent_tests_pulse_oximetry': most_recent_tests_pulse_oximetry,
                                                                                 'most_recent_tests_chest_xray': most_recent_tests_chest_xray,
                                                                                 'chosenPatient': chosenPatient,
-                                                                                'non_symptom_notifications_count': non_symptom_notifications_count})
+                                                                                'non_symptom_notifications_count': non_symptom_notifications_count,
+                                                                                'physician_latestConsulNotes':physician_latestConsulNotes,})
 
 def save_chiefComplaint(request):
         
@@ -2446,13 +2494,15 @@ def save_diagnosis(request):
             'disease': diagnosis
         })
 
-        #existing_patient = db.child(analytics_path).child(diagnosis_key).get()
+        # Check if the patient ID already exists in patientReports
+        existing_patient = db.child(analytics_path).child(id).get()
 
-        db.child(analytics_path).update({
-            id:{
-                'lastDiagnosed':date 
-            }
-        })
+        if not existing_patient.val():  # If patient ID does not exist, add the report
+            db.child(analytics_path).update({
+                id: {
+                'lastDiagnosed': date
+                }
+            })
 
     elif diagnosis == 'Other' and otherdiagnosis:
         db.child(appointment_path).update({
@@ -2465,11 +2515,15 @@ def save_diagnosis(request):
             'disease': otherdiagnosis
         })
 
-        db.child(analytics_path2).update({
-            id:{
-                'lastDiagnosed':date 
-            }
-        })
+        # Check if the patient ID already exists in patientReports
+        existing_patient = db.child(analytics_path2).child(id).get()
+
+        if not existing_patient.val():  # If patient ID does not exist, add the report
+            db.child(analytics_path2).update({
+                id: {
+                'lastDiagnosed': date
+                }
+            })
     
     messages.success(request, 'Diagnosis Successfully Saved')
     
@@ -2521,6 +2575,8 @@ def patient_medical_history(request):
         for prescription_id, prescription_data in prescriptionsorders_ref.items():
             if prescription_data.get('doctor') == uid:
                 doctor_prescriptions[prescription_id] = prescription_data
+    
+    print("Pres", doctor_prescriptions)
     
     patientMedical = db.child("patientmedicalhistory").get().val()
 
@@ -3263,7 +3319,25 @@ def save_prescriptions(request):
         'status': "Ongoing",
     })
 
-     # Handle file upload
+    # List of medicine names from the request
+    medicine_names = request.POST.getlist('medicine_name')
+
+    # Loop through each medicine name to update the prescription dates
+    for medicine_name in medicine_names:
+        # Path for each medicine under the doctor and patient records
+        medicineRecords_path = f"medicineRecords/{doctor_uid}/{patient_uid}/{medicine_name}"
+        
+        # Retrieve the current list of prescription dates for this medicine, or start with an empty list
+        existing_dates = db.child(medicineRecords_path).get().val() or []
+        
+        # Append today's date if it's not already in the list (to avoid duplicate entries)
+        if todaydate not in existing_dates:
+            existing_dates.append(todaydate)
+        
+        # Update the list of prescription dates in Firebase
+        db.child(medicineRecords_path).set(existing_dates)
+
+    # Handle file upload
     signature = request.FILES.get('signature')
     #print(signature)
     signature_path = None

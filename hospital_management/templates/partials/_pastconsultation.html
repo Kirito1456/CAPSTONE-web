@@ -19,6 +19,7 @@
                         <thead>
                           <tr>
                             <th>Chief Complaint</th>
+                            <th>Physician</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -70,6 +71,13 @@
                                 </p>
                               {% endif %}
                             </td>
+                            
+                            {% for doctor_id, doctor_data in doctors.items %}
+                              {% if physician_latestConsulNotes == doctor_data.uid %}
+                                <td> Dr. {{doctor_data.fname}} {{doctor_data.lname}}</td> 
+                              {% endif %}
+                            {% endfor %}
+                            
                           </tr>
                         </tbody>
                       </table>

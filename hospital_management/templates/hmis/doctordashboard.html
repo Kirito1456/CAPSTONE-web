@@ -288,7 +288,7 @@
                           <!-- Row for total counts and pie chart in one line -->
                           <div class="row flex-grow">
                             <!-- Total Number of Patients -->
-                            <div class="col-md-4 grid-margin stretch-card">
+                            <div class="col-md-6 grid-margin stretch-card">
                               <div class="card card-rounded">
                                 <div class="card-body">
                                   <h4 class="card-title">Total Number of Patients</h4>
@@ -298,11 +298,30 @@
                             </div>
                             
                             <!-- Total Number of Patients with Chronic Bronchitis -->
+                            <div class="col-md-6 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <h4 class="card-title">Total Patients Currently Diagnosed with Chronic Bronchitis</h4>
+                                  <p id="chronic-bronchitis-patients" class="text-muted">Loading...</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Patient Distribution (Age and Gender) -->
                             <div class="col-md-4 grid-margin stretch-card">
                               <div class="card card-rounded">
                                 <div class="card-body">
-                                  <h4 class="card-title">Total Patients with Chronic Bronchitis</h4>
-                                  <p id="chronic-bronchitis-patients" class="text-muted">Loading...</p>
+                                  <h4 class="card-title">Age Distribution</h4>
+                                  <canvas id="age-pie-chart" style="height: 100px;"></canvas>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body">
+                                  <h4 class="card-title">Patients' Gender Distribution</h4>
+                                  <canvas id="gender-pie-chart" style="height: 100px;"></canvas>
                                 </div>
                               </div>
                             </div>
@@ -311,36 +330,78 @@
                             <div class="col-md-4 grid-margin stretch-card">
                               <div class="card card-rounded">
                                 <div class="card-body">
-                                  <h4 class="card-title">Patient Distribution</h4>
+                                  <h4 class="card-title">Patients' Distribution</h4>
                                   <canvas id="patient-pie-chart" style="height: 100px;"></canvas>
                                 </div>
                               </div>
                             </div>
                           </div>
                           
-                          <!-- Line Graph for Chronic Bronchitis Cases Trend -->
+                          <!-- Line Graph for Diseases Trend -->
                           <div class="row flex-grow">
-                            <div class="col-12 grid-margin stretch-card">
+                            <div class="col-md-12 grid-margin stretch-card">
                               <div class="card card-rounded">
                                 <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
-                                  <h4 class="card-title" style="margin-right: 20px;">Trend of Chronic Bronchitis Cases</h4>
+                                  <h4 class="card-title" style="margin-right: 20px;">Trend of Diseases Diagnosed</h4>
                                   
-                                  <!-- Dropdown for Year Selection -->
                                   <div style="display: flex; align-items: center;">
                                     <label for="year-select" style="margin-right: 10px;">Select Year:</label>
-                                    <select id="year-select" class="form-select" style="width: 200px;">
-                                      <option value="" selected>Select Year</option>
-                                      {% for year, cases in yearly_case_counts.items %}
-                                        <option value="{{ year }}">{{ year }}</option>
+                                    <select id="year-select" class="form-select" style="width: 200px; background-color: white; color: black;">
+                                      <option value="" selected style="color: black;">All</option>
+                                      {% for year in unique_years %}
+                                        <option value="{{ year }}" style="color: black;">{{ year }}</option>
                                       {% endfor %}
                                     </select>
                                   </div>
                                   
+
                                 </div>
-                                <canvas id="chronic-bronchitis-trend-chart" style="height: 250px;"></canvas>
+                                <canvas id="disease-trend-chart" style="height: 250px;"></canvas>
                               </div>
                             </div>
                           </div>
+
+                          <!-- Bar Graph for Common Medications Prescribed -->
+                          <div class="row flex-grow">
+                            <div class="col-md-12 grid-margin stretch-card">
+                              <div class="card card-rounded">
+                                <div class="card-body" style="display: flex; align-items: center; justify-content: space-between;">
+                                  <h4 class="card-title" style="margin-right: 20px;">Common Medications Prescribed</h4>
+                                  
+                                  <div style="display: flex; align-items: center;">
+                                    <label for="med-year-select" style="margin-right: 10px;">Select Year:</label>
+                                    <select id="med-year-select" class="form-select" style="width: 200px; background-color: white; color: black;">
+                                      <option value="{{ current_year }}" selected style="color: black;">{{ current_year }}</option>
+                                        {% for year in unique_years %}
+                                          {% if current_year != year %}
+                                            <option value="{{ year }}" style="color: black;">{{ year }}</option>
+                                          {% endif %}
+                                        {% endfor %}
+                                      <!--<option value="2025">2025</option>-->
+                                    </select>
+                                  </div>
+
+                                  <div style="display: flex; align-items: center;">
+                                    <label for="patient-select" style="margin-right: 10px;">Select Patient:</label>
+                                    <select id="patient-select" class="form-select" style="width: 200px; background-color: white; color: black;">
+                                      <option value="all" selected style="color: black;">All Patients</option>
+                                      {% for patient_data in sorted_patients %}
+                                      {% if patient_data.uid in medication_records %}
+                                        <option value="{{ patient_data.uid }}" style="color: black;">{{ patient_data.fname }} {{ patient_data.lname }}</option>
+                                      {% endif %}
+                                    {% endfor %}
+                                  
+                                    </select>
+                                  </div>
+
+                                  
+                                </div>
+                                
+                                <canvas id="medications-bar-chart" style="height: 250px;"></canvas>
+                              </div>
+                            </div>
+                          </div>
+
 
                           
                         </div>
@@ -386,84 +447,229 @@
         });
 
         // Parse data from Django context
-const yearlyCaseCounts = {{ yearly_case_counts|safe }};
-const monthlyCaseCounts = {{ monthly_case_counts|safe }};
+        const yearlyCaseCounts = {{ yearly_case_counts|safe }};  // Structure: { disease: { year: count } }
+        const monthlyCaseCounts = {{ monthly_case_counts|safe }};  // Structure: { disease: { year: { month: count } } }
 
-// Initialize chart for total cases by year
-const ctx = document.getElementById("chronic-bronchitis-trend-chart").getContext("2d");
-let chart = new Chart(ctx, {
-  type: "line",
+        // Generate a color palette for each disease
+        const colors = [
+          "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"
+        ];
+        let colorIndex = 0;
+
+        // Prepare datasets for each disease (yearly data)
+        const diseaseDatasets = Object.keys(yearlyCaseCounts).map(disease => {
+          const data = Object.keys(yearlyCaseCounts[disease]).map(year => yearlyCaseCounts[disease][year]);
+          const years = Object.keys(yearlyCaseCounts[disease]);
+          colorIndex = (colorIndex + 1) % colors.length;  // Cycle through colors
+
+          return {
+            label: `Number of ${disease.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase())} Cases (Yearly)`,
+            data: data,
+            borderColor: colors[colorIndex],
+            fill: false,
+            borderWidth: 2,
+            disease: disease  // Store disease name for later use
+          };
+        });
+
+        // Initialize the line chart with all diseases as separate lines (yearly data)
+        const ctxDiseaseTrend = document.getElementById("disease-trend-chart").getContext("2d");
+        let diseaseTrendChart = new Chart(ctxDiseaseTrend, {
+          type: "line",
+          data: {
+            labels: Object.keys(yearlyCaseCounts[Object.keys(yearlyCaseCounts)[0]] || {}),  // Get year labels from the first disease as a baseline
+            datasets: diseaseDatasets
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Year"
+                },
+                ticks: {
+                  stepSize: 1
+                }
+              },
+              y: { 
+                title: { 
+                  display: true, 
+                  text: "Number of Cases"
+                },
+                ticks: {
+                  stepSize: 10,
+                  beginAtZero: true
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: {
+                  boxWidth: 20,
+                  padding: 10,
+                }
+              }
+            }
+          }
+        });
+
+        // Function to update chart with monthly data for a specific year across all diseases
+        function updateDiseaseChart(year) {
+          diseaseDatasets.forEach((dataset, index) => {
+            const disease = dataset.disease;
+            const dataForYear = monthlyCaseCounts[disease]?.[year] || {};
+            dataset.data = Array.from({ length: 12 }, (_, i) => dataForYear[i + 1] || 0);  // Monthly data for each disease
+            dataset.label = `Number of ${disease.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase())} Cases in ${year} (Monthly)`;
+          });
+
+          // Update chart labels to months
+          diseaseTrendChart.data.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+          diseaseTrendChart.update();
+        }
+
+        // Event listener for year selection
+        const yearSelect = document.getElementById("year-select");
+        yearSelect.addEventListener("change", function () {
+          const selectedYear = this.value;
+
+          if (selectedYear) {
+            // If a specific year is selected, update the chart with monthly data
+            updateDiseaseChart(selectedYear);
+          } else {
+            // Revert back to showing the total cases by year for all diseases if "All" (or nothing) is selected
+            diseaseDatasets.forEach(dataset => {
+              const disease = dataset.disease;
+              dataset.data = Object.values(yearlyCaseCounts[disease] || {});
+              dataset.label = `Number of ${disease.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase())} Cases (Yearly)`;
+            });
+
+            // Revert to yearly case data (labels are years)
+            diseaseTrendChart.data.labels = Object.keys(yearlyCaseCounts[Object.keys(yearlyCaseCounts)[0]] || {});  // Set labels to years
+            diseaseTrendChart.update();
+          }
+        });
+
+        // Initialize chart with yearly totals by default
+        yearSelect.value = "";  // Ensure that the "Select Year" default is set
+        diseaseTrendChart.data.labels = Object.keys(yearlyCaseCounts[Object.keys(yearlyCaseCounts)[0]] || {});  // Set labels to years
+        diseaseTrendChart.update();
+
+
+        // Parse medications data passed from Django
+        const medicationsData = {{ medication_records|safe }};
+        const sortedPatients = {{ sorted_patients | safe }};
+
+        // Get the context for the medications chart
+const ctxMedications = document.getElementById("medications-bar-chart").getContext("2d");
+
+// Default to the current year and "All Patients" selected
+let currentYear = "{{ current_year }}";  // Get the current year from Django context
+let currentPatient = "all";  // Default patient is "all"
+
+// Initialize the medications chart
+let currentMedicationsData = medicationsData["all"][currentYear] || {};  // Data for "all" patient for the selected year
+
+const medicationsChart = new Chart(ctxMedications, {
+  type: "bar",
   data: {
-    labels: Object.keys(yearlyCaseCounts), // Year labels
+    labels: Object.keys(currentMedicationsData),
     datasets: [{
-      label: "Number of Chronic Bronchitis Cases",
-      data: Object.values(yearlyCaseCounts), // Total cases per year
-      borderColor: "#FF6384",
-      fill: false,
-    }]
+      label: "Number of Medications Prescribed",
+      data: Object.values(currentMedicationsData),
+      backgroundColor: "#36A2EB",  // Customize the color
+    }],
   },
   options: {
     responsive: true,
     scales: {
-      x: {
+      y: {
+        beginAtZero: true,
         title: {
           display: true,
-          text: "Year"
+          text: "Number of Prescriptions",
         },
         ticks: {
-          stepSize: 1, // Makes sure each tick represents a single year
+          stepSize: 10,
+          beginAtZero: true
         },
       },
-      y: { 
-        title: { 
-          display: true, 
-          text: "Number of Cases"
-        },
-        ticks: {
-          stepSize: 10, // Forces the y-axis to display whole numbers only
-          beginAtZero: true
-        }
-      }
-    }
-  }
+    },
+  },
 });
-
-// Function to update chart with monthly data for a specific year
-function updateChart(year) {
-  const dataForYear = monthlyCaseCounts[year] || {};
-  const monthlyData = Array.from({ length: 12 }, (_, i) => dataForYear[i + 1] || 0);
-  
-  // Update chart labels to months and data for the selected year
-  chart.data.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  chart.data.datasets[0].data = monthlyData;
-  chart.data.datasets[0].label = `Number of Chronic Bronchitis Cases in ${year} (Monthly)`;
-  chart.update();
-}
 
 // Event listener for year selection
-const yearSelect = document.getElementById("year-select");
-yearSelect.addEventListener("change", function () {
+const medYearSelect = document.getElementById("med-year-select");
+medYearSelect.addEventListener("change", function () {
   const selectedYear = this.value;
-  if (selectedYear) {
-    updateChart(selectedYear); // Update chart to show monthly data for selected year
+
+  // Update current year
+  currentYear = selectedYear;
+
+  // Update the patient select dropdown based on the selected year
+  updatePatientSelect(selectedYear);
+
+  // Update chart data based on the selected year and patient
+  updateChartData();
+});
+
+// Function to update the patient select dropdown based on the selected year
+function updatePatientSelect(year) {
+  const patientSelect = document.getElementById("patient-select");
+
+  // Clear the current options in the patient select dropdown
+  patientSelect.innerHTML = '<option value="all" selected>All Patients</option>';
+
+  // Populate the patient select dropdown with available patients for the selected year
+  Object.keys(medicationsData).forEach((patientId) => {
+    if (patientId !== 'all' && medicationsData[patientId][year]) {
+      const option = document.createElement("option");
+      option.value = patientId;
+      const patientData = sortedPatients.find(patient => patient.uid === patientId);
+      if (patientData) {
+        option.textContent = `${patientData.fname} ${patientData.lname}`;  // Use first and last name
+      }
+      patientSelect.appendChild(option);
+    }
+  });
+}
+
+// Event listener for patient selection
+const patientSelect = document.getElementById("patient-select");
+patientSelect.addEventListener("change", function () {
+  const selectedPatient = this.value;
+
+  // Update current patient
+  currentPatient = selectedPatient;
+
+  // Update chart data based on the selected year and patient
+  updateChartData();
+});
+
+// Function to update the chart data based on the selected year and patient
+function updateChartData() {
+  let currentData = {};
+
+  // If a specific patient is selected, load their data for the selected year
+  if (currentPatient !== "all") {
+    currentData = medicationsData[currentPatient] ? medicationsData[currentPatient][currentYear] : {};
   } else {
-    // Revert back to showing the total cases by year if "Select Year" is selected
-    chart.data.labels = Object.keys(yearlyCaseCounts); // Set labels to years
-    chart.data.datasets[0].data = Object.values(yearlyCaseCounts); // Set data to yearly cases
-    chart.data.datasets[0].label = "Number of Chronic Bronchitis Cases (Yearly)";
-    chart.update();
+    // If "All Patients" is selected, show the total data for the selected year
+    currentData = medicationsData["all"][currentYear] || {};
   }
-});
 
-// Initialize chart with the default year (total cases per year)
-// Default view is total cases per year
-const defaultYear = yearSelect.value || Object.keys(yearlyCaseCounts)[0]; // Default to the first year if no selection
-chart.data.labels = Object.keys(yearlyCaseCounts); // Set labels to years
-chart.data.datasets[0].data = Object.values(yearlyCaseCounts); // Set data to yearly cases
-chart.data.datasets[0].label = "Number of Chronic Bronchitis Cases (Yearly)";
-chart.update();
-});
+  // Update chart labels and data
+  medicationsChart.data.labels = Object.keys(currentData);
+  medicationsChart.data.datasets[0].data = Object.values(currentData);
+  medicationsChart.update();
+}
 
+// Initial setup: update patient select and chart data based on the current year
+updatePatientSelect(currentYear);
+updateChartData();
+
+});
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -504,6 +710,124 @@ chart.update();
     },
     plugins: [ChartDataLabels],
   });
+
+  const sortedPatients = {{ sorted_patients | safe }};
+  // Function to calculate age from birthday
+function calculateAge(birthdate) {
+  const today = new Date();
+  const birthDate = new Date(birthdate);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+// Age Ranges
+const ageRanges = {
+  "Under 18": 0,
+  "18-35": 0,
+  "36-50": 0,
+  "51-65": 0,
+  "66+": 0
+};
+
+// Gender Distribution
+const genderDistribution = {
+  "Male": 0,
+  "Female": 0,
+  "Other": 0
+};
+
+// Process the combined data
+sortedPatients.forEach(patient => {
+  // Calculate age and update age range
+  const age = calculateAge(patient.bday);
+  if (age < 18) {
+    ageRanges["Under 18"]++;
+  } else if (age >= 18 && age <= 35) {
+    ageRanges["18-35"]++;
+  } else if (age >= 36 && age <= 50) {
+    ageRanges["36-50"]++;
+  } else if (age >= 51 && age <= 65) {
+    ageRanges["51-65"]++;
+  } else {
+    ageRanges["66+"]++;
+  }
+
+  // Update gender count
+  genderDistribution[patient.gender] = (genderDistribution[patient.gender] || 0) + 1;
+});
+
+   // Prepare data for Age Pie Chart
+   const ageLabels = Object.keys(ageRanges);
+   const ageData = Object.values(ageRanges);
+ 
+   // Prepare data for Gender Pie Chart
+   const genderLabels = Object.keys(genderDistribution);
+   const genderData = Object.values(genderDistribution);
+ 
+   // Pie Chart for Age Distribution
+   const ctxAgePie = document.getElementById("age-pie-chart").getContext("2d");
+   new Chart(ctxAgePie, {
+     type: "pie",
+     data: {
+       labels: ageLabels,
+       datasets: [{
+         data: ageData,
+         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+       }]
+     },
+     options: {
+       responsive: true,
+       plugins: {
+         datalabels: {
+           formatter: (value, context) => {
+             const total = context.chart.data.datasets[0].data.reduce((sum, val) => sum + val, 0);
+             const percentage = ((value / total) * 100).toFixed(1) + "%";
+             return percentage;
+           },
+           color: "#fff",
+           font: {
+             weight: 'bold'
+           }
+         }
+       }
+     },
+     plugins: [ChartDataLabels],
+   });
+ 
+   // Pie Chart for Gender Distribution
+   const ctxGenderPie = document.getElementById("gender-pie-chart").getContext("2d");
+   new Chart(ctxGenderPie, {
+     type: "pie",
+     data: {
+       labels: genderLabels,
+       datasets: [{
+         data: genderData,
+         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+       }]
+     },
+     options: {
+       responsive: true,
+       plugins: {
+         datalabels: {
+           formatter: (value, context) => {
+             const total = context.chart.data.datasets[0].data.reduce((sum, val) => sum + val, 0);
+             const percentage = ((value / total) * 100).toFixed(1) + "%";
+             return percentage;
+           },
+           color: "#fff",
+           font: {
+             weight: 'bold'
+           }
+         }
+       }
+     },
+     plugins: [ChartDataLabels],
+   });
+ 
 </script>
 
 
