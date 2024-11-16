@@ -3166,8 +3166,64 @@ def pharmacy_drugs(request):
 def generate_unique_id():
     return str(uuid.uuid4())
 
+def removal_reason_function(request):
+    previous_url = request.META.get('HTTP_REFERER')
+    uid = request.session['uid']
+    removalReasonButton = request.POST.get('removalReasonButton')
+    chosenPatient = request.GET.get('chosenPatient', '')
+    todaydate = datetime.now().strftime("%Y-%m-%d")
+    if 'removalReasonButton' in request.POST:
+        try:
+            prescriptions = db.child("prescriptionsorders").child(chosenPatient).get().val()
+        
+            if prescriptions:
+                # Find the latest prescription for the patient
+                sorted_prescriptions = sorted(prescriptions.items(), key=lambda x: x[1].get('dateCreated', ''), reverse=True)
+                latest_prescription_id, latest_prescription = sorted_prescriptions[0] if sorted_prescriptions else (None, None)
+
+                if latest_prescription and 'medicines' in latest_prescription:
+                    # Find the index of the medicine to be removed based on the name
+                    medicines = latest_prescription['medicines']
+                    medicine_names = medicines['name']
+
+                    # Find the index of the medicine to be turned off
+                    index_to_turn_off = medicine_names.index(removalReasonButton)
+                    
+                    # Set the maintenance flag to 'off' for that medicine
+                    medicines['maintenance'][index_to_turn_off] = 'off'
+                    
+                    # Update the prescription in the database
+                    db.child("prescriptionsorders").child(chosenPatient).child(latest_prescription_id).update({
+                        'medicines': medicines
+                    })
+
+                    # Log the removal reason data
+                    data = {
+                        'doctorUID': uid,
+                        'patientUID': chosenPatient,
+                        'medicineName': removalReasonButton,
+                        'reason': request.POST.get('removalReasonInput'),
+                        'dateRemoved': todaydate
+                    }
+                    
+                    db_path = f"removalMaintenance/{chosenPatient}"
+                    db.child(db_path).push(data)
+
+                else:
+                    print("No medicines found in the latest prescription.")
+            else:
+                print("No prescriptions found for the patient.")
+                
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+    
+    return redirect(previous_url)
+
 def outpatient_medication_order(request):
     patients = db.child("patients").get().val()
+    if patients is None:
+        # Handle the case where patients data is None
+        patients = {}
     patient_uid = request.GET.get('chosenPatient')
     medications_cursor = collection.find({}, {"Disease": 1, "_id": 0, "Drug": 2,})
     medicines_set = {medication['Drug'] for medication in medications_cursor}
@@ -3205,8 +3261,6 @@ def outpatient_medication_order(request):
         # Handle the case where 'maintenance' key doesn't exist
         print("Maintenance key not found in latest_prescription.")
 
-
-    print(maintenance_medicines)
 
     todaydate = datetime.now().strftime("%Y-%m-%d")
     clinics = db.child("clinics").get().val()
@@ -3400,8 +3454,8 @@ def save_prescriptions(request):
             
         # Success message
         messages.success(request, 'Prescriptions created successfully.')           
-        return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}&appointmentID={endAppointment}')  
-        # return redirect(previous_url)
+        # return redirect(reverse('patient_personal_information_inpatient') + f'?chosenPatient={patient_uid}&appointmentID={endAppointment}')  
+        return redirect(previous_url)
     except Exception as e:
         messages.error(request, f"An error occurred: {e}")
         return redirect(reverse('outpatient_medication_order') + f'?chosenPatient={patient_uid}')

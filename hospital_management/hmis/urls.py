@@ -40,6 +40,7 @@ urlpatterns = [
     path('patient_medication_table/', views.patient_medication_table, name = 'patient_medication_table'),
     path('outpatient_medication_order/', views.outpatient_medication_order, name = 'outpatient_medication_order'),
     path('save_prescriptions/', views.save_prescriptions, name = 'save_prescriptions'),
+    path('removal_reason_function/', views.removal_reason_function, name = 'removal_reason_function'),
     path('test/', views.pharmacy_drugs, name='pharmacy_drugs'),
     path('diagnostic_imagery_reports/read/<int:notification_id>/', views.diagnostic_imagery_reports, name="diagnostic_imagery_reports"),
     path('diagnostic_reports/', views.diagnostic_reports, name="diagnostic_reports"),

@@ -158,6 +158,47 @@
                     appearance: none;
                 }
             }
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+              }
+        
+              .modal-content {
+                width: 30%;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: #fff;
+                padding: 20px;
+              }
+        
+              .close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 30px;
+                cursor: pointer;
+              }
+
+              .small-btn {
+                font-size: 0.8rem;
+                padding: 5px 10px;
+            }
+            
+            /* Container to align buttons to the right */
+            .button-container {
+                display: flex;
+                justify-content: flex-end; /* Align buttons to the right */
+                gap: 10px; /* Space between buttons */
+                margin-top: 10px;
+            }
+              
         </style>
         {% endblock styles%}
     </head>
@@ -322,7 +363,10 @@
                                                 <label for="dosage"><strong>Dosage:</strong></label>
                                                 <input type="text" name="dosage" id="dosage_input" value="{{ medicine.dosage }}"> 
                                                 
-                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeMedicineRow(this)">Remove</button>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="openModal(this)" data-medicine-name="{{ medicine.name }}" data-patient-id="{{ patient_uid }}">Remove</button>
+
+                                                
+
                                             </div>
                                             <p style="margin-bottom:10px;">
                                                 Sig.: take through
@@ -340,7 +384,7 @@
                                                 times for 
                                                 <input type="text" name="days" value="{{ medicine.days }}" size="2" >
                                                 days &nbsp;&nbsp;
-                                                <input type="checkbox" name="maintenance" checked > maintenance</input>
+                                                <input type="checkbox" name="maintenance" checked > maintenance1</input>
                                             </p>
                                             <p>
                                                 Purpose: 
@@ -387,7 +431,7 @@
                                         times for 
                                         <input type="text" name="days" size="2" required>
                                         days &nbsp;&nbsp;
-                                        <input type="checkbox" name="maintenance" > maintenance</input>
+                                        <input type="checkbox" name="maintenance" > maintenance2</input>
                                        
                                     </p>
                                     <p>
@@ -416,6 +460,24 @@
                         </button>
                     </div>
                 </form>
+
+                <div id="removalReasonModal" class="modal" style="display: none;">
+                    <form method="post" action="{% url 'removal_reason_function' %}">
+                        {% csrf_token %}
+                        <div class="modal-content">
+                            <h4>Reason for Removing</h4>
+                            <label for="medicine-name-display"><strong>Medicine Name:</strong></label>
+                            <input type="text" id="medicine-name-display" readonly>
+
+                            <label for="removalReasonInput"><strong>Enter the reason:</strong></label>
+                            <input type="text" id="removalReasonInput" name="removalReasonInput"placeholder="Enter the reason">
+                            <div class="button-container">
+                                <button type="submit" class="btn btn-primary small-btn" onclick="removeMedicineRow(this)" name="removalReasonButton" id="removalReasonButton">Confirm</button>
+                                <button type="button" class="btn btn-secondary small-btn" onclick="closeModal()">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -537,7 +599,7 @@
                     times for
                     <input type="text" name="days" size="2">
                     days &nbsp;&nbsp;
-                    <input type="checkbox" name="maintenance" > maintenance</input>
+                    <input type="checkbox" name="maintenance" > maintenance3</input>
                 </p>
                 <p>
                     Purpose: 
@@ -550,8 +612,36 @@
         }
 
         function removeMedicineRow(button) {
-            button.closest('.medicine').remove();
+            // Find the parent elements of the button clicked
+            var medicineContainer = button.closest('#medicine-container');
+    
+            // Uncheck the maintenance checkbox
+            var maintenanceCheckbox = medicineContainer.querySelector('input[name="maintenance"]');
+            if (maintenanceCheckbox) {
+                maintenanceCheckbox.checked = false;
+            }
+
+            // Remove the medicine container from the DOM
+            medicineContainer.remove();
         }
+
+        function openModal(button) {
+            var medicineName = button.getAttribute('data-medicine-name');
+            var patientUid = button.getAttribute('data-patient-id');
+            document.querySelector('#removalReasonModal').style.display = 'block';
+            document.getElementById('medicine-name-display').value = medicineName;
+            document.getElementById('removalReasonButton').value = medicineName;
+            var formAction = "{% url 'removal_reason_function' %}?chosenPatient=" + patientUid;
+            document.querySelector('#removalReasonModal form').action = formAction;
+            document.querySelector('#removalReasonModal').dataset.button = button;
+        }
+        
+        function closeModal() {
+            document.querySelector('#removalReasonModal').style.display = 'none';
+        }
+        
+        
+        
     </script>
 
 </body>
